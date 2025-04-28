@@ -1,10 +1,3 @@
-## 二开注意事项
-
-- 在 sys_sys、sys_menu、sys_scheduled_task 表中，二开时产生的数据的 id，建议从 10001 开始，否则可能会与本项目后续产生的新数据冲突
-- 本项目中未对 DTO、VO、POJO、ENTITY 等做区分，均使用 DTO
-- 接口限流需要在 controller 上添加注解 @Throttle() 后才会生效
-- 目前项目中存在行分隔符不统一（LF/CRLF混用）的情况，因影响较小且调整涉及文件较多，暂不立即修复，后续会统一优化
-
 ## 运行教程
 
 若已初始化过，则可直接在项目根目录运行 `pnpm "[dev] [server] start:dev"` 命令，然后下面步骤可忽略。

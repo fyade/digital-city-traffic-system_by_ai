@@ -6,7 +6,7 @@ import { timeUtils } from "@ms/common";
 
 declare const module: any;
 
-const banner = 'This is a banner.';
+const banner = '数字孪生城市交通管理系统后端启动成功。';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,8 +18,8 @@ async function bootstrap() {
   if (node_env.ifShowSwagger) {
     const swaggerOptions = new DocumentBuilder()
       .addBearerAuth()
-      .setTitle('知笙后台管理系统')
-      .setDescription('知笙后台管理系统接口文档')
+      .setTitle('数字孪生城市交通管理系统')
+      .setDescription('数字孪生城市交通管理系统接口文档')
       .setVersion(serverConfig.currentVersion)
       .build();
     const swaggerDocuemnt = SwaggerModule.createDocument(app, swaggerOptions);

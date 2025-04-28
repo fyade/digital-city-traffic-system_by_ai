@@ -61,7 +61,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       host: '0.0.0.0',
-      port: 5100,
+      port: 7947,
       proxy: {
         [config.VITE_API_PREFIX]: {
           target: config.VITE_BASEURL,
