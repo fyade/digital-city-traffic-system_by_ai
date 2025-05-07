@@ -1,12 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { serverConfig } from "@dcts/config";
+import { adminConfig, serverConfig } from "@dcts/config";
 import { timeUtils } from "@dcts/common";
 
 declare const module: any;
 
-const banner = '数字孪生城市交通管理系统后端启动成功。';
+const banner = `${adminConfig.APP_NAME}后端启动成功。`;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,8 +18,8 @@ async function bootstrap() {
   if (node_env.ifShowSwagger) {
     const swaggerOptions = new DocumentBuilder()
       .addBearerAuth()
-      .setTitle('数字孪生城市交通管理系统')
-      .setDescription('数字孪生城市交通管理系统接口文档')
+      .setTitle(adminConfig.APP_NAME)
+      .setDescription(`${adminConfig.APP_NAME}接口文档`)
       .setVersion(serverConfig.currentVersion)
       .build();
     const swaggerDocuemnt = SwaggerModule.createDocument(app, swaggerOptions);

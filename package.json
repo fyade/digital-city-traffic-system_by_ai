@@ -5,12 +5,14 @@
   "main": "index.js",
   "scripts": {
     "[dev] [admin ] dev": "cross-env NODE_ENV=dev pnpm --filter @dcts/admin dev",
+    "[dev] [board ] dev": "cross-env NODE_ENV=dev pnpm --filter @dcts/dashboard dev",
     "[dev] [server] start:dev": "cross-env NODE_ENV=dev pnpm --filter @dcts/server start:dev",
     "[dev] [server] start:debug": "cross-env NODE_ENV=dev pnpm --filter @dcts/server start:debug",
     "[build] [config] build": "pnpm -filter @dcts/config build",
     "[build] [common] build": "pnpm -filter @dcts/common build",
     "[build] [config & common]": "pnpm -filter @dcts/config build && pnpm -filter @dcts/common build",
     "[build] [admin ] build:prod": "cross-env NODE_ENV=prod pnpm --filter @dcts/admin build:prod",
+    "[build] [board ] build:prod": "cross-env NODE_ENV=prod pnpm --filter @dcts/dashboard build:prod",
     "[build] [server] build:wp": "npm run generate:prisma && cross-env NODE_ENV=prod pnpm --filter @dcts/server build:wp",
     "generate:prisma": "npx prisma generate"
   },

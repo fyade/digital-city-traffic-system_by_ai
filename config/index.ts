@@ -1,6 +1,7 @@
 import * as adminConfig from './config/admin.config.js'
 import * as serverConfig from './config/server.config.js'
 import * as publicConfig from './config/public.config.js'
+import * as dashboardConfig from './config/dashboard.config.js'
 import * as process from "process";
 
 export function getCurrentConfig<T extends object>(config: T) {
@@ -28,4 +29,5 @@ export {
   adminConfig,
   serverConfig,
   publicConfig,
+  dashboardConfig,
 }

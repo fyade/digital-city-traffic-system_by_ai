@@ -6,6 +6,7 @@ import { useRouterStore } from "@/store/module/router.ts";
 import { useUserStore } from '@/store/module/user';
 import { fileBaseUrl } from "@/api/request.ts";
 import { useSysStore } from "@/store/module/sys.ts";
+import { dashboardConfig } from "@dcts/config";
 
 const props = defineProps({
   ifShowBreadcrumb: {
@@ -58,6 +59,11 @@ if (props.ifShowBreadcrumb) {
     immediate: true
   })
 }
+
+const dashboardC = dashboardConfig.currentConfig();
+const gotoBoard = () => {
+  window.open(dashboardC.url)
+}
 </script>
 
 <template>
@@ -85,30 +91,31 @@ if (props.ifShowBreadcrumb) {
     </div>
     <div class="center"></div>
     <div class="right">
-      <el-space>
-        <div>
-          <el-dropdown>
-            <div style="display: flex;align-items: center;gap: 8px;">
-              <el-image
-                  style="width: 30px;height: 30px;border-radius: 8px;"
-                  v-if="userStore.userinfo.avatar"
-                  :src="sysStore.urlAddAuth(fileBaseUrl+userStore.userinfo.avatar)"
-                  fit="contain"
-              ></el-image>
-              <SvgIcon v-else name="user" color="#000000"/>
-              {{ userStore.userinfo.nickname }}
-            </div>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item>
-                  <div @click="router.push('/user')">个人中心</div>
-                </el-dropdown-item>
-                <el-dropdown-item @click="userStore.logOut">登出</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </div>
-      </el-space>
+      <div>
+        <el-button link @click="gotoBoard">去大屏端</el-button>
+      </div>
+      <div>
+        <el-dropdown>
+          <div style="display: flex;align-items: center;gap: 8px;">
+            <el-image
+                style="width: 30px;height: 30px;border-radius: 8px;"
+                v-if="userStore.userinfo.avatar"
+                :src="sysStore.urlAddAuth(fileBaseUrl+userStore.userinfo.avatar)"
+                fit="contain"
+            ></el-image>
+            <SvgIcon v-else name="user" color="#000000"/>
+            {{ userStore.userinfo.nickname }}
+          </div>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item>
+                <div @click="router.push('/user')">个人中心</div>
+              </el-dropdown-item>
+              <el-dropdown-item @click="userStore.logOut">登出</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </div>
     </div>
   </div>
 </template>
