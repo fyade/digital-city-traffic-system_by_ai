@@ -5,8 +5,8 @@ import { Upload } from '@element-plus/icons-vue'
 import { ElMessage } from "element-plus"
 import { FileUploadInterfaceMoreFullConcur } from "@/type/common/fileUpload.ts";
 import { selectFiles } from "@/utils/FileUtils.ts";
-import { adminConfig } from '@ms/config';
-import { numberUtils } from "@ms/common";
+import { adminConfig } from '@dcts/config';
+import { numberUtils } from "@dcts/common";
 
 interface ProgressI {
   started: number[],

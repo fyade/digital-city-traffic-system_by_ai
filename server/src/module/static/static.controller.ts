@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Res, UseGuards } from '@nestjs/common';
 import { StaticGuard } from '../../guard/static.guard';
 import { Response } from 'express';
-import { serverConfig } from "@ms/config";
+import { serverConfig } from "@dcts/config";
 
 @Controller(serverConfig.currentConfig().staticRoot)
 @UseGuards(StaticGuard)

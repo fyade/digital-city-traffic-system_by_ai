@@ -4,7 +4,7 @@ import { BullModule } from "@nestjs/bullmq";
 import { QueueoService } from "./queueo.service";
 import { LogOperationConsumer } from "./log-operation.consumer";
 import { LogScheduledTaskConsumer } from "./log-scheduled-task.consumer";
-import { serverConfig } from "@ms/config";
+import { serverConfig } from "@dcts/config";
 
 const redisConfig = serverConfig.currentConfig().redis;
 

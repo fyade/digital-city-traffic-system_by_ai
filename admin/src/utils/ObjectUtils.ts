@@ -1,5 +1,5 @@
 import { isProxy, toRaw } from "vue";
-import { objectUtils } from "@ms/common";
+import { objectUtils } from "@dcts/common";
 
 /**
  * 两数组是否一样

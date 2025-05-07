@@ -12,7 +12,7 @@ import {
 import { Authorize } from '../../../../../decorator/authorize.decorator';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Exception } from "../../../../../exception/exception";
-import { serverConfig } from "@ms/config";
+import { serverConfig } from "@dcts/config";
 
 @Controller('/main/sys/file-upload')
 @ApiTags('通用/文件上传')

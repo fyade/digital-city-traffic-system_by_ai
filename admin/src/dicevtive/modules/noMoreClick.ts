@@ -1,4 +1,4 @@
-import { baseUtils } from "@ms/common";
+import { baseUtils } from "@dcts/common";
 
 /**
  * v-no-more-click 禁止多次点击

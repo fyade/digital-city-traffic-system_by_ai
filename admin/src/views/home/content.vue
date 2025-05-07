@@ -2,7 +2,7 @@
 import { useSysStore } from "@/store/module/sys.ts";
 import { onBeforeUnmount, reactive, ref } from "vue";
 import { getSysInfo, getSysTime } from "@/api/common/sys.ts";
-import { numberUtils, timeUtils } from "@ms/common";
+import { numberUtils, timeUtils } from "@dcts/common";
 
 const sysStore = useSysStore()
 let timer_systime: NodeJS.Timeout | null = null;

@@ -1,8 +1,8 @@
 import { Injectable, LoggerService } from '@nestjs/common';
 import * as winston from 'winston';
 import 'winston-daily-rotate-file';
-import { serverConfig } from '@ms/config';
-import { timeUtils } from '@ms/common';
+import { serverConfig } from '@dcts/config';
+import { timeUtils } from '@dcts/common';
 
 const env = serverConfig.currentConfig();
 

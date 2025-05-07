@@ -9,7 +9,7 @@ import { Refresh } from "@element-plus/icons-vue";
 import { viewRealTimeApi } from "@/api/module/main/sysLog/viewRealTime.ts";
 import { nextTick, reactive, ref, useTemplateRef } from "vue";
 import { ViewRealTimeDirs, ViewRealTimeSelDirsDto } from "@/type/module/main/sysLog/viewRealTime.ts";
-import { numberUtils } from "@ms/common";
+import { numberUtils } from "@dcts/common";
 
 const param = reactive<ViewRealTimeSelDirsDto>({
   parentDir: '/',

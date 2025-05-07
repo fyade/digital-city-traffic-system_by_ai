@@ -8,7 +8,7 @@ import {
   AdminResetUserPsdDto,
   RegistDto
 } from "@/type/module/main/sysManage/user.ts";
-import { encryptUtils } from "@ms/common";
+import { encryptUtils } from "@dcts/common";
 
 export const userApi: ApiConfig<UserDto, UserUpdDto> = {
   /**

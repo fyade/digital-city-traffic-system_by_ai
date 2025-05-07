@@ -5,7 +5,7 @@ import { R } from '../../../../../common/R';
 import { Authorize } from '../../../../../decorator/authorize.decorator';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Exception } from "../../../../../exception/exception";
-import { encryptUtils } from '@ms/common'
+import { encryptUtils } from '@dcts/common'
 
 @Controller('/main/sys-manage/user')
 @ApiTags('主系统/系统管理/用户')

@@ -1,4 +1,4 @@
-import { publicConfig } from '@ms/config'
+import { publicConfig } from '@dcts/config'
 import * as crypto_ from 'crypto-js'
 import * as bcrypt from 'bcryptjs'
 

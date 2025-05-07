@@ -10,7 +10,7 @@ import { SysConfigDto } from "@/type/module/main/sysManage/sysConfig.ts";
 import { sysConfigApi } from "@/api/module/main/sysManage/sysConfig.ts";
 import { sysConfigDict } from "@/dict/module/main/sysManage/sysConfig.ts";
 import { final } from "@/utils/base.ts";
-import { objectUtils } from "@ms/common";
+import { objectUtils } from "@dcts/common";
 import { ElMessage } from "element-plus";
 
 const form = ref<SysConfigDto>(new SysConfigDto())

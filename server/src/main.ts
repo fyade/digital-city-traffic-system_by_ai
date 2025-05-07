@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { serverConfig } from "@ms/config";
-import { timeUtils } from "@ms/common";
+import { serverConfig } from "@dcts/config";
+import { timeUtils } from "@dcts/common";
 
 declare const module: any;
 

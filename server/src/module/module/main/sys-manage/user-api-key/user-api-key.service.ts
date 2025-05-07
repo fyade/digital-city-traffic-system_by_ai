@@ -3,7 +3,7 @@ import { PrismaService } from '../../../../../prisma/prisma.service';
 import { R } from '../../../../../common/R';
 import { UserApiKeyDto, UserApiKeySelListDto, UserApiKeySelAllDto, UserApiKeyInsOneDto, UserApiKeyUpdOneDto } from './dto';
 import { BaseContextService } from '../../../../base-context/base-context.service';
-import { idUtils } from '@ms/common';
+import { idUtils } from '@dcts/common';
 
 @Injectable()
 export class UserApiKeyService {

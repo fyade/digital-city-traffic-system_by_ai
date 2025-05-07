@@ -10,7 +10,7 @@ import IconsResolver from 'unplugin-icons/resolver';
 import Inspect from 'vite-plugin-inspect';
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
 import { visualizer } from 'rollup-plugin-visualizer';
-import { adminConfig } from '@ms/config';
+import { adminConfig } from '@dcts/config';
 
 const root = process.cwd()
 // https://vitejs.dev/config/

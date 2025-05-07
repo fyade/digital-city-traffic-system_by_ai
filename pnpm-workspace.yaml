@@ -5,6 +5,8 @@ packages:
   - 'common'
   # 配置
   - 'config'
+  # 大屏
+  - 'dashboard'
   # 子项目
   - 'packages/*'
   # 后端

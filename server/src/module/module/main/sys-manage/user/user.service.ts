@@ -20,8 +20,8 @@ import { NOT_ADMIN, PASSWORD_ERROR } from '../../sys-log/log-user-login/dto';
 import { UserVisitorDto } from '../../other-user/user-visitor/dto';
 import * as svgCaptcha from 'svg-captcha';
 import { Exception } from "../../../../../exception/exception";
-import { cryptUtils, encryptUtils, idUtils, timeUtils } from '@ms/common'
-import { serverConfig } from "@ms/config";
+import { cryptUtils, encryptUtils, idUtils, timeUtils } from '@dcts/common'
+import { serverConfig } from "@dcts/config";
 import { PrismaoService } from "../../../../../prisma/prismao.service";
 
 @Injectable()

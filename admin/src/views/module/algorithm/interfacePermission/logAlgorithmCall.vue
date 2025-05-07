@@ -9,7 +9,7 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { LogAlgorithmCallDto, LogAlgorithmCallUpdDto } from "@/type/module/algorithm/logAlgorithmCall.ts";
 import { logAlgorithmCallApi } from "@/api/module/algorithm/logAlgorithmCall.ts";
 import { logAlgorithmCallDict } from "@/dict/module/algorithm/logAlgorithmCall.ts";
-import { timeUtils } from "@ms/common";
+import { timeUtils } from "@dcts/common";
 
 const props = defineProps({
   selectUGPId: {

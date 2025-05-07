@@ -6,7 +6,7 @@ import {
   UserVisitorRegistDto,
   UserVisitorUpdDto
 } from "@/type/module/main/otherUser/userVisitor.ts";
-import { encryptUtils } from "@ms/common";
+import { encryptUtils } from "@dcts/common";
 
 export const userVisitorApi: ApiConfig<UserVisitorDto, UserVisitorUpdDto> = {
   /**

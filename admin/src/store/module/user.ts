@@ -6,7 +6,7 @@ import { LoginDto, UserDto } from "@/type/module/main/sysManage/user.ts";
 import { getSelfInfo } from "@/api/module/main/sysManage/user.ts";
 import { ifWebsiteLink } from "@/utils/LinkUtils.ts";
 import { UserVisitorDto } from "@/type/module/main/otherUser/userVisitor.ts";
-import { objectUtils } from "@ms/common";
+import { objectUtils } from "@dcts/common";
 import { BCService } from "@/services/broadcastChannel.ts";
 import { loginApi, logOutApi } from "@/api/module/main/sysManage/userLogin.ts";
 

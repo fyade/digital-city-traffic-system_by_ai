@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../../../prisma/prisma.service';
-// import { serverConfig, tencentSmsConfig } from '@ms/config';
+// import { serverConfig, tencentSmsConfig } from '@dcts/config';
 // import * as tencentcloud from 'tencentcloud-sdk-nodejs';
 import { R } from '../../../../../common/R';
 import { WinstonService } from '../../../../winston/winston.service';

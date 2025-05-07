@@ -15,7 +15,7 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { LogOperationDto, LogOperationUpdDto } from "@/type/module/main/sysLog/logOperation.ts";
 import { logOperationApi } from "@/api/module/main/sysLog/logOperation.ts";
 import { logOperationDict } from "@/dict/module/main/sysLog/logOperation.ts";
-import { timeUtils } from "@ms/common";
+import { timeUtils } from "@dcts/common";
 
 const state = reactive<State2<LogOperationDto, LogOperationUpdDto>>({
   dialogForm: {

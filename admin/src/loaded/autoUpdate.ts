@@ -1,6 +1,6 @@
 import { getScriptTagFromHtmlText } from "@/utils/RegularUtils.ts";
 import { ifSameArray } from "@/utils/ObjectUtils.ts";
-import { baseUtils } from "@ms/common";
+import { baseUtils } from "@dcts/common";
 
 const whiteList = [
   {

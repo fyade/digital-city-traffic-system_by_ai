@@ -3,7 +3,7 @@ import { useUserStore } from "@/store/module/user.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useSysStore } from "@/store/module/sys.ts";
 import { AxiosRes } from "@/type/asiox.ts";
-import { adminConfig } from '@ms/config'
+import { adminConfig } from '@dcts/config'
 
 const env = adminConfig.currentConfig();
 export const baseURL = env.VITE_API_PREFIX

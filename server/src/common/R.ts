@@ -1,5 +1,5 @@
 import { HTTP } from './Enum';
-import { timeUtils } from "@ms/common";
+import { timeUtils } from "@dcts/common";
 
 export class R<T = any> {
   public code: number;

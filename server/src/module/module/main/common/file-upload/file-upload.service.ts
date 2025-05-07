@@ -16,8 +16,8 @@ import { BaseContextService } from '../../../../base-context/base-context.servic
 import { saveFile } from '../../../../../util/FileUtils';
 import { Exception } from "../../../../../exception/exception";
 import { UnknownException } from "../../../../../exception/unknown.exception";
-import { serverConfig } from "@ms/config";
-import { idUtils, timeUtils } from "@ms/common";
+import { serverConfig } from "@dcts/config";
+import { idUtils, timeUtils } from "@dcts/common";
 import { WinstonService } from "../../../../winston/winston.service";
 
 const SparkMD5 = require('spark-md5');

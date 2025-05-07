@@ -18,7 +18,7 @@ import { CodeGenColumnDto } from '../code-gen-column/dto';
 import { base } from '../../../../../util/base';
 import { Exception } from '../../../../../exception/exception';
 import { SysDto } from '../../sys-manage/sys/dto';
-import { baseUtils } from "@ms/common";
+import { baseUtils } from "@dcts/common";
 
 const publicDict = {
   id: '主键id',

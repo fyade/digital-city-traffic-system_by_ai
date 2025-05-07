@@ -3,8 +3,8 @@ import { computed, reactive, ref } from "vue";
 import { getSysVersion } from "@/api/common/sys.ts";
 import { SysDto } from "@/type/module/main/sysManage/sys.ts";
 import { useUserStore } from "@/store/module/user.ts";
-import { adminConfig } from '@ms/config'
-import { objectUtils } from "@ms/common";
+import { adminConfig } from '@dcts/config'
+import { objectUtils } from "@dcts/common";
 
 export const useSysStore = defineStore('sysStore', () => {
   const version = reactive({

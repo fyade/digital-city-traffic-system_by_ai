@@ -15,7 +15,7 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { OnlineUserDto, OnlineUserUpdDto } from "@/type/module/main/sysMonitor/onlineUser.ts";
 import { onlineUserApi } from "@/api/module/main/sysMonitor/onlineUser.ts";
 import { onlineUserDict } from "@/dict/module/main/sysMonitor/onlineUser.ts";
-import { timeUtils } from "@ms/common";
+import { timeUtils } from "@dcts/common";
 
 const state = reactive<State2<OnlineUserDto, OnlineUserUpdDto>>({
   dialogForm: new OnlineUserUpdDto(),

@@ -13,7 +13,7 @@ import { ChooseTableTableColInterface, ChooseTableTableColInterfaceDict, ChooseT
 import { getDbInfo } from "@/api/module/main/sysUtil/codeGeneration.ts";
 import { deepClone } from "@/utils/ObjectUtils.ts";
 import { TypeOM } from "@/type/utils/base.ts";
-import { baseUtils } from "@ms/common";
+import { baseUtils } from "@dcts/common";
 import { mysqlLengthFromRowRemark } from "@/utils/RegularUtils.ts";
 
 const props = defineProps({

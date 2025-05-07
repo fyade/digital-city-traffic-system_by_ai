@@ -11,7 +11,7 @@ import { UserUserGroupDto } from '../../../algorithm/user-user-group/dto';
 import { UserGroupDto } from '../../../algorithm/user-group/dto';
 import { BaseContextService } from '../../../../base-context/base-context.service';
 import { Exception } from "../../../../../exception/exception";
-import { encryptUtils, idUtils } from '@ms/common'
+import { encryptUtils, idUtils } from '@dcts/common'
 
 @Injectable()
 export class UserVisitorService {

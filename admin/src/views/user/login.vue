@@ -4,7 +4,7 @@ import { useUserStore } from "@/store/module/user.ts";
 import { useSysStore } from "@/store/module/sys.ts";
 import { allLoginRoles } from "@/utils/base.ts";
 import { getVerificationCode } from "@/api/module/main/sysManage/userLogin.ts";
-import { adminConfig } from "@ms/config";
+import { adminConfig } from "@dcts/config";
 
 const userStore = useUserStore();
 const sysStore = useSysStore();

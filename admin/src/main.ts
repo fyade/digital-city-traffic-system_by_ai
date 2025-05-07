@@ -9,7 +9,7 @@ import ElementPlus from 'element-plus'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import 'virtual:svg-icons-register'
 import 'element-plus/dist/index.css'
-import { adminConfig } from '@ms/config'
+import { adminConfig } from '@dcts/config'
 
 import './loaded/autoUpdate.ts'
 import './loaded/singleInputNoEnterSubmit.ts'

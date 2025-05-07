@@ -3,7 +3,7 @@ import { PrismaService } from '../../../../../prisma/prisma.service';
 import { R } from '../../../../../common/R';
 import { BaseContextService } from '../../../../base-context/base-context.service';
 import { ViewRealTimeDirs, ViewRealTimeSelDirsDto, ViewRealTimeSelFileDto } from './dto';
-import { serverConfig } from '@ms/config';
+import { serverConfig } from '@dcts/config';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 

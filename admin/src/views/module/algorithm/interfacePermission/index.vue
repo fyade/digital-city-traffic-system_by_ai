@@ -24,7 +24,7 @@ import { interfaceGroupDict } from "@/dict/module/algorithm/interfaceGroup.ts";
 import { interfaceGroupApi } from "@/api/module/algorithm/interfaceGroup.ts";
 import { userGroupDict } from "@/dict/module/algorithm/userGroup.ts";
 import { userGroupPermissionDict } from "@/dict/module/algorithm/userGroupPermission.ts";
-import { objectUtils } from "@ms/common";
+import { objectUtils } from "@dcts/common";
 
 const userGroupState = reactive<State2<UserGroupDto, UserGroupUpdDto>>({
   dialogForm: {

@@ -1,6 +1,6 @@
 import request from "@/api/request.ts";
 import { LoginDto } from "@/type/module/main/sysManage/user.ts";
-import { cryptUtils } from "@ms/common";
+import { cryptUtils } from "@dcts/common";
 
 /**
  * 获取公钥

@@ -18,7 +18,7 @@ import { fileBaseUrl } from "@/api/request.ts";
 import { FileUploadDto, FileUploadUpdDto } from "@/type/common/file.ts";
 import { AxiosProgressEvent } from "axios";
 import { useSysStore } from "@/store/module/sys.ts";
-import { numberUtils } from "@ms/common";
+import { numberUtils } from "@dcts/common";
 
 const sysStore = useSysStore();
 

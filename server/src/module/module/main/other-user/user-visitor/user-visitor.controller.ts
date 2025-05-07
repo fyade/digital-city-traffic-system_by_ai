@@ -4,7 +4,7 @@ import { UserVisitorService } from './user-visitor.service';
 import { Authorize } from '../../../../../decorator/authorize.decorator';
 import { R } from '../../../../../common/R';
 import { UserVisitorSelListDto, AdminNewUserVisitorDto, ResetUserVisitorPsdDto } from './dto';
-import { encryptUtils } from '@ms/common';
+import { encryptUtils } from '@dcts/common';
 
 @Controller('/main/other-user/user-visitor')
 @ApiTags('主系统/非系统用户管理/访客用户')

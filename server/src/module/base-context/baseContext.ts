@@ -1,5 +1,5 @@
 import { baseInterfaceColumns2 } from '../module/main/sys-util/code-generation/codeGeneration';
-import { idUtils } from '@ms/common';
+import { idUtils } from '@dcts/common';
 import { AuthTypeEnum } from '../../util/base';
 
 export const USER_INFO_LINSHI_FIELD_NAME = 'user-info-linshi';

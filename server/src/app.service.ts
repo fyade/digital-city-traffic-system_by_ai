@@ -7,7 +7,7 @@ import { MenuTypeEnum } from './util/base';
 import { BaseContextService } from './module/base-context/base-context.service';
 import { CacheTokenService } from './module/cache/cache.token.service';
 import { PrismaoService } from "./prisma/prismao.service";
-import { serverConfig } from "@ms/config";
+import { serverConfig } from "@dcts/config";
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 

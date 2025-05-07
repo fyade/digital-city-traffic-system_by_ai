@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { RedisService } from '../../redis/redis.service';
 import { TokenDto } from '../../common/token';
-import { serverConfig } from '@ms/config';
-import { idUtils } from '@ms/common';
+import { serverConfig } from '@dcts/config';
+import { idUtils } from '@dcts/common';
 
 const currentConfig = serverConfig.currentConfig();
 

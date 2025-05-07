@@ -20,7 +20,7 @@ import { arr2ToDiguiObj } from "@/utils/baseUtils.ts";
 import { SysDto } from "@/type/module/main/sysManage/sys.ts";
 import { sysApi } from "@/api/module/main/sysManage/sys.ts";
 import MenuIpWhiteList from "@/views/module/main/sysManage/menu/menuIpWhiteList.vue";
-import { objectUtils } from "@ms/common";
+import { objectUtils } from "@dcts/common";
 import MenuThrottle from "@/views/module/main/sysManage/menu/menuThrottle.vue";
 
 const state = reactive<State2<MenuDto, MenuUpdDto>>({

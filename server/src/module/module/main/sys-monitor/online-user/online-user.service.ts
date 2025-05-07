@@ -7,8 +7,8 @@ import { OnlineUserSelListDto } from './dto';
 import { PageVo } from '../../../../../common/vo/PageVo';
 import { TokenDto } from '../../../../../common/token';
 import { WinstonService } from '../../../../winston/winston.service';
-import { idUtils } from '@ms/common';
-import { serverConfig } from '@ms/config';
+import { idUtils } from '@dcts/common';
+import { serverConfig } from '@dcts/config';
 import { deepClone } from "../../../../../util/ObjectUtils";
 
 @Injectable()

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import Redis from 'ioredis';
-import { serverConfig } from "@ms/config";
+import { serverConfig } from "@dcts/config";
 
 const env = serverConfig.currentConfig();
 

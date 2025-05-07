@@ -7,7 +7,7 @@ import { Workbook } from "exceljs";
 import { selectFiles } from "@/utils/FileUtils.ts";
 import { TypeIU, TypeOM } from "@/type/utils/base.ts";
 import { downloadFromBlob } from "@/utils/DownloadUtils.ts";
-import { objectUtils } from "@ms/common";
+import { objectUtils } from "@dcts/common";
 
 const exportIgnoreKeys = ['createRole', 'updateRole', 'createBy', 'updateBy', 'createTime', 'updateTime', 'deleted']
 const importIgnoreKeys = ['id', ...exportIgnoreKeys]

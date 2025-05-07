@@ -3,7 +3,7 @@ import { CONFIG, final } from "@/utils/base.ts";
 import { computed } from "vue";
 import { RouteRecordNormalized, useRoute } from "vue-router";
 import { useSysConfigStore } from "@/store/module/sysConfig.ts";
-import { objectUtils } from "@ms/common";
+import { objectUtils } from "@dcts/common";
 
 const route = useRoute()
 const props = defineProps({

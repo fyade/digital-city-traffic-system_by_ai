@@ -1,6 +1,6 @@
 import { directiveBinding } from "@/dicevtive";
 import { useSysStore } from "@/store/module/sys.ts";
-import { baseUtils } from "@ms/common";
+import { baseUtils } from "@dcts/common";
 
 const hasPerm = {
   mounted: (el: HTMLElement, binging: directiveBinding<string[] | string>) => {

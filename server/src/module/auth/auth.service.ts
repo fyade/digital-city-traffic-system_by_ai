@@ -12,7 +12,7 @@ import { CachePermissionService } from '../cache/cache.permission.service';
 import { UserTableDefaultPermissionDto } from '../module/main/other-user/user-table-default-permission/dto';
 import { SysDto } from '../module/main/sys-manage/sys/dto';
 import { PrismaoService } from '../../prisma/prismao.service';
-import { baseUtils, timeUtils } from '@ms/common';
+import { baseUtils, timeUtils } from '@dcts/common';
 import { MenuThrottleDto } from '../module/main/sys-manage/menu-throttle/dto';
 import { WinstonService } from '../winston/winston.service';
 

@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { BaseContextService } from '../module/base-context/base-context.service';
 import { baseInterfaceColumns2 } from '../module/module/main/sys-util/code-generation/codeGeneration';
 import { PrismaClient, Prisma } from '@prisma/client';
-import { serverConfig } from "@ms/config";
-import { baseUtils } from "@ms/common";
+import { serverConfig } from "@dcts/config";
+import { baseUtils } from "@dcts/common";
 
 const env = serverConfig.currentConfig();
 

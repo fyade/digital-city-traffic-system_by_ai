@@ -6,8 +6,8 @@ import { Upload } from '@element-plus/icons-vue'
 import { ElMessage } from "element-plus"
 import { FileUploadInterfaceMoreChunk } from "@/type/common/fileUpload.ts";
 import { selectFiles } from "@/utils/FileUtils.ts";
-import { adminConfig } from '@ms/config';
-import { objectUtils } from "@ms/common";
+import { adminConfig } from '@dcts/config';
+import { objectUtils } from "@dcts/common";
 
 let pageNotUnmounted = true
 onBeforeUnmount(() => {

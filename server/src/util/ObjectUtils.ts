@@ -1,4 +1,4 @@
-import { objectUtils } from "@ms/common";
+import { objectUtils } from "@dcts/common";
 
 /**
  * 深克隆

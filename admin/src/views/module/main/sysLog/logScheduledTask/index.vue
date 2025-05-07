@@ -15,7 +15,7 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { LogScheduledTaskDto, LogScheduledTaskUpdDto } from "@/type/module/main/sysLog/logScheduledTask.ts";
 import { logScheduledTaskApi } from "@/api/module/main/sysLog/logScheduledTask.ts";
 import { logScheduledTaskDict } from "@/dict/module/main/sysLog/logScheduledTask.ts";
-import { timeUtils } from "@ms/common";
+import { timeUtils } from "@dcts/common";
 
 const state = reactive<State2<LogScheduledTaskDto, LogScheduledTaskUpdDto>>({
   dialogForm: {

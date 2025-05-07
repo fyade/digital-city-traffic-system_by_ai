@@ -4,7 +4,7 @@ import { BaseContextService } from '../module/base-context/base-context.service'
 import { R } from '../common/R';
 import { WinstonService } from '../module/winston/winston.service';
 import { HTTP } from '../common/Enum';
-import { baseUtils } from '@ms/common';
+import { baseUtils } from '@dcts/common';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {

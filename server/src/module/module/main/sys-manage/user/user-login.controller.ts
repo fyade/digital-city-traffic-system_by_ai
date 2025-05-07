@@ -6,7 +6,7 @@ import { Authorize } from '../../../../../decorator/authorize.decorator';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { getIpInfoFromRequest } from '../../../../../util/RequestUtils';
 import { Request } from 'express';
-import { cryptUtils, encryptUtils } from '@ms/common'
+import { cryptUtils, encryptUtils } from '@dcts/common'
 import { CacheTokenService } from "../../../../cache/cache.token.service";
 
 @Controller('/sys/user')
