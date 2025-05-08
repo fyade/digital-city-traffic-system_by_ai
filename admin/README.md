@@ -1,39 +1,3 @@
-## 运行教程
-
-注：
-
-- 项目根目录指的是整个项目根目录
-- 模块根目录指的是项目根目录/本项目所在的子文件夹
-- 配置模块根目录指的是项目根目录/配置模块所在的子文件夹（默认是项目根目录/config）
-
-若已初始化过，则可直接在项目根目录运行 `pnpm "[dev] [admin ] dev"` 命令，然后下面步骤可忽略。
-
-1. 安装依赖
-
-在项目根目录运行命令 `pnpm install`；
-
-2. 配置
-
-在 配置模块根目录/config 目录中，新建 publicConfig.ts，将 publicConfig.txt 中的内容粘贴至 publicConfig.ts；
-
-在 配置模块根目录/config 目录中，新建 adminConfig.ts，将 adminConfig.txt 中的内容粘贴至 adminConfig.ts；
-
-在 配置模块根目录/config/publicConfig.ts 中，根据注释，将每个配置改为自己的配置；
-
-在 配置模块根目录/config/adminConfig.ts 中，根据注释，将每个配置改为自己的配置；
-
-3. 启动项目
-
-在项目根目录运行 `pnpm "[dev] [admin ] dev"` 命令。
-
-## 打包教程
-
-注意：以生产环境为例子：在 配置模块根目录/adminConfig.ts 中有一个变量，叫 config，其第一个键为 dev，表示开发环境的配置，接下来你需要加一个键 prod，表示生产环境的配置，然后你需要把 dev 的值复制进去并修改为生产环境的配置；
-
-注意：若修改了配置，需要在打包前先构造一下配置模块；
-
-随后在项目根目录运行 `pnpm "[build] [admin ] build:prod"` 命令。
-
 ## 其他注意事项
 
 菜单相关常量：

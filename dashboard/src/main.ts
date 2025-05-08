@@ -5,7 +5,11 @@ import router from './router'
 import { createPinia } from "pinia";
 import { createPersistedState } from 'pinia-plugin-persistedstate'
 import 'virtual:svg-icons-register'
+import 'cesium/Build/Cesium/Widgets/widgets.css'
 import { dashboardConfig } from '@dcts/config'
+
+// @ts-ignore
+window.CESIUM_BASE_URL = '/'
 
 document.title = dashboardConfig.APP_NAME
 

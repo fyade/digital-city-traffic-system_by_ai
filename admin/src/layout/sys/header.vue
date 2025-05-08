@@ -92,7 +92,7 @@ const gotoBoard = () => {
     <div class="center"></div>
     <div class="right">
       <div>
-        <el-button link @click="gotoBoard">去大屏端</el-button>
+        <el-button link @click="gotoBoard" style="text-decoration: underline;">前往大屏端</el-button>
       </div>
       <div>
         <el-dropdown>
