@@ -2,6 +2,7 @@
 import * as Cesium from "cesium";
 import { cesiumConfig, tiandituConfig } from "@dcts/config";
 import { onMounted, useTemplateRef } from "vue";
+import DataLayer from "@/views/home/dataLayer.vue";
 
 onMounted(async () => {
   console.log('开始加载');
@@ -42,9 +43,19 @@ const init = async () => {
     style: 'default',
     format: 'tiles',
     tileMatrixSetID: 'w',
-    credit: new Cesium.Credit('天地图'),
+    credit: new Cesium.Credit('天地图影像底图'),
   });
   viewer.imageryLayers.addImageryProvider(provider);
+  // 添加天地图影像注记
+  const provider1 = new Cesium.WebMapTileServiceImageryProvider({
+    url: `https://t0.tianditu.gov.cn/cia_w/wmts?tk=${tiandituConfig.key}`,
+    layer: 'cia',
+    style: 'default',
+    format: 'tiles',
+    tileMatrixSetID: 'w',
+    credit: new Cesium.Credit('天地图影像注记')
+  });
+  viewer.imageryLayers.addImageryProvider(provider1);
 
   console.log('加载完成')
 }
@@ -63,6 +74,7 @@ const setViewTo = (lon: number, lat: number, height: number): void => {
 </script>
 
 <template>
+  <DataLayer/>
   <div id="cesiumContainer" ref="cesiumContainer"></div>
 </template>
 
