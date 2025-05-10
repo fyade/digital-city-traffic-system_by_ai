@@ -9,8 +9,6 @@ onMounted(async () => {
   await init()
 })
 
-const tiandituCurrentConfig = tiandituConfig.currentConfig();
-
 const cesiumContainer = useTemplateRef<HTMLDivElement>("cesiumContainer");
 let viewer: Cesium.Viewer | null = null;
 
@@ -38,7 +36,7 @@ const init = async () => {
   viewer.imageryLayers.remove(defaultImagery);
   // 添加天地图影像底图
   const provider = new Cesium.WebMapTileServiceImageryProvider({
-    url: tiandituCurrentConfig.url,
+    url: tiandituConfig.url,
     layer: 'img',
     style: 'default',
     format: 'tiles',
@@ -49,7 +47,7 @@ const init = async () => {
   viewer.imageryLayers.addImageryProvider(provider);
   // 添加天地图影像注记
   const provider1 = new Cesium.WebMapTileServiceImageryProvider({
-    url: tiandituCurrentConfig.url2,
+    url: tiandituConfig.url2,
     layer: 'cia',
     style: 'default',
     format: 'tiles',

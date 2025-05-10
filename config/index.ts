@@ -33,4 +33,4 @@ export {
 }
 
 export { cesiumConfig } from './third-config/cesium.config.js'
-export * as tiandituConfig from './third-config/tianditu.config.js'
+export { tiandituConfig } from './third-config/tianditu.config.js'
