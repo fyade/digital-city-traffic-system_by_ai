@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as Cesium from "cesium";
-import { cesiumConfig, tiandituConfig } from "@dcts/config";
+import { tiandituConfig } from "@dcts/config";
 import { onMounted, useTemplateRef } from "vue";
 import DataLayer from "@/views/home/dataLayer.vue";
 
@@ -9,10 +9,10 @@ onMounted(async () => {
   await init()
 })
 
+const tiandituCurrentConfig = tiandituConfig.currentConfig();
+
 const cesiumContainer = useTemplateRef<HTMLDivElement>("cesiumContainer");
 let viewer: Cesium.Viewer | null = null;
-
-Cesium.Ion.defaultAccessToken = cesiumConfig.token
 
 /**
  * 初始化
@@ -38,21 +38,23 @@ const init = async () => {
   viewer.imageryLayers.remove(defaultImagery);
   // 添加天地图影像底图
   const provider = new Cesium.WebMapTileServiceImageryProvider({
-    url: `https://t0.tianditu.gov.cn/img_w/wmts?tk=${tiandituConfig.key}`,
+    url: tiandituCurrentConfig.url,
     layer: 'img',
     style: 'default',
     format: 'tiles',
     tileMatrixSetID: 'w',
+    maximumLevel: 18,
     credit: new Cesium.Credit('天地图影像底图'),
   });
   viewer.imageryLayers.addImageryProvider(provider);
   // 添加天地图影像注记
   const provider1 = new Cesium.WebMapTileServiceImageryProvider({
-    url: `https://t0.tianditu.gov.cn/cia_w/wmts?tk=${tiandituConfig.key}`,
+    url: tiandituCurrentConfig.url2,
     layer: 'cia',
     style: 'default',
     format: 'tiles',
     tileMatrixSetID: 'w',
+    maximumLevel: 18,
     credit: new Cesium.Credit('天地图影像注记')
   });
   viewer.imageryLayers.addImageryProvider(provider1);

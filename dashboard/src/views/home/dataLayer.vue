@@ -11,10 +11,11 @@ const goto = (url: string) => {
 <template>
   <div class="data-layer">
     <div class="footer">
+      <p>因瓦片调用额度限制，若地图加载异常，请切换图层或次日重试。</p>
       <p>v{{ currentVersion }}</p>
-      <p>影像底图来源：<span @click="goto('https://www.tianditu.gov.cn/')">天地图</span></p>
-      <p>影像注记来源：<span @click="goto('https://www.tianditu.gov.cn/')">天地图</span></p>
-      <p>路网数据来源：<span @click="goto('https://www.openstreetmap.org/')">OpenStreetMap</span></p>
+      <p>影像底图来源<span @click="goto('https://www.tianditu.gov.cn/')">天地图</span></p>
+      <p>影像注记来源<span @click="goto('https://www.tianditu.gov.cn/')">天地图</span></p>
+      <p>路网数据来源<span @click="goto('https://www.openstreetmap.org/')">OpenStreetMap</span></p>
     </div>
   </div>
 </template>
@@ -33,16 +34,26 @@ const goto = (url: string) => {
 
   > .footer {
     position: absolute;
-    bottom: 0;
-    width: 100%;
+    bottom: 12px;
+    left: 12px;
+    width: calc(100% - 12px * 2);
+    height: 0;
+    transform: translateY(-12px);
     display: flex;
     gap: 12px;
-    padding: 8px;
     color: #fff;
     font-size: 12px;
 
+    p {
+      line-height: 12px;
+    }
+
     span {
-      cursor: pointer;
+      text-decoration: underline;
+
+      &:hover {
+        cursor: pointer;
+      }
     }
   }
 }
