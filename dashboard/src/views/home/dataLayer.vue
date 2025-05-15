@@ -11,11 +11,10 @@ const goto = (url: string) => {
 <template>
   <div class="data-layer">
     <div class="footer">
-      <p>因瓦片调用额度限制，若地图加载异常，请切换图层或次日重试。</p>
+      <!--<p>因瓦片调用额度限制，若地图加载异常，请切换图层或次日重试。</p>-->
       <p>v{{ currentVersion }}</p>
-      <p>影像底图来源<span @click="goto('https://www.tianditu.gov.cn/')">天地图</span></p>
-      <p>影像注记来源<span @click="goto('https://www.tianditu.gov.cn/')">天地图</span></p>
-      <p>路网数据来源<span @click="goto('https://www.openstreetmap.org/')">OpenStreetMap</span></p>
+      <p>影像底图来自<span @click="goto('https://www.supermapol.com/resource-center/map/detail?id=2118000783')">SuperMap</span></p>
+      <p>路网数据来自<span @click="goto('https://www.openstreetmap.org/')">OpenStreetMap</span></p>
     </div>
   </div>
 </template>

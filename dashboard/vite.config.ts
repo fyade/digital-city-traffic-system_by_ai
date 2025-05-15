@@ -74,7 +74,7 @@ export default defineConfig(({mode}) => {
       }
     },
     build: {
-      assetsDir: `./${adminConfig.currentVersion}`
+      assetsDir: `./${dashboardConfig.currentVersion}`
     }
   }
 })

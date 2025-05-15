@@ -35,27 +35,35 @@ const init = async () => {
   // 移除默认图层
   viewer.imageryLayers.remove(defaultImagery);
   // 添加天地图影像底图
-  const provider = new Cesium.WebMapTileServiceImageryProvider({
-    url: tiandituConfig.url,
-    layer: 'img',
-    style: 'default',
-    format: 'tiles',
-    tileMatrixSetID: 'w',
-    maximumLevel: 18,
-    credit: new Cesium.Credit('天地图影像底图'),
-  });
-  viewer.imageryLayers.addImageryProvider(provider);
+  // const provider = new Cesium.WebMapTileServiceImageryProvider({
+  //   url: tiandituConfig.url,
+  //   layer: 'img',
+  //   style: 'default',
+  //   format: 'tiles',
+  //   tileMatrixSetID: 'w',
+  //   maximumLevel: 18,
+  //   credit: new Cesium.Credit('天地图影像底图'),
+  // });
+  // viewer.imageryLayers.addImageryProvider(provider);
   // 添加天地图影像注记
-  const provider1 = new Cesium.WebMapTileServiceImageryProvider({
-    url: tiandituConfig.url2,
-    layer: 'cia',
-    style: 'default',
-    format: 'tiles',
-    tileMatrixSetID: 'w',
-    maximumLevel: 18,
-    credit: new Cesium.Credit('天地图影像注记')
+  // const provider1 = new Cesium.WebMapTileServiceImageryProvider({
+  //   url: tiandituConfig.url2,
+  //   layer: 'cia',
+  //   style: 'default',
+  //   format: 'tiles',
+  //   tileMatrixSetID: 'w',
+  //   maximumLevel: 18,
+  //   credit: new Cesium.Credit('天地图影像注记')
+  // });
+  // viewer.imageryLayers.addImageryProvider(provider1);
+
+  const provider2 = new Cesium.UrlTemplateImageryProvider({
+    url: `https://www.supermapol.com/proxy/y8f150ad/iserver/services/map-geovis-img/rest/maps/GEOVIS_Img/zxyTileImage.png?width=256&height=256&x={x}&y={y}&z={z}`,
+    minimumLevel: 0,
+    maximumLevel: 17,
+    credit: new Cesium.Credit('SuperMap iServer')
   });
-  viewer.imageryLayers.addImageryProvider(provider1);
+  viewer.imageryLayers.addImageryProvider(provider2);
 
   console.log('加载完成')
 }
