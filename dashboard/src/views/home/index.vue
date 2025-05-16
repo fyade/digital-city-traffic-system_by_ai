@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import * as Cesium from "cesium";
-import { tiandituConfig } from "@dcts/config";
 import { onMounted, useTemplateRef } from "vue";
 import DataLayer from "@/views/home/dataLayer.vue";
+import { geoserverConfig } from "@dcts/config";
 
 onMounted(async () => {
   console.log('开始加载');
@@ -34,36 +34,26 @@ const init = async () => {
   const defaultImagery = viewer.imageryLayers.get(0);
   // 移除默认图层
   viewer.imageryLayers.remove(defaultImagery);
-  // 添加天地图影像底图
-  // const provider = new Cesium.WebMapTileServiceImageryProvider({
-  //   url: tiandituConfig.url,
-  //   layer: 'img',
-  //   style: 'default',
-  //   format: 'tiles',
-  //   tileMatrixSetID: 'w',
-  //   maximumLevel: 18,
-  //   credit: new Cesium.Credit('天地图影像底图'),
-  // });
-  // viewer.imageryLayers.addImageryProvider(provider);
-  // 添加天地图影像注记
-  // const provider1 = new Cesium.WebMapTileServiceImageryProvider({
-  //   url: tiandituConfig.url2,
-  //   layer: 'cia',
-  //   style: 'default',
-  //   format: 'tiles',
-  //   tileMatrixSetID: 'w',
-  //   maximumLevel: 18,
-  //   credit: new Cesium.Credit('天地图影像注记')
-  // });
-  // viewer.imageryLayers.addImageryProvider(provider1);
 
+  // 超图影像地图
   const provider2 = new Cesium.UrlTemplateImageryProvider({
     url: `https://www.supermapol.com/proxy/y8f150ad/iserver/services/map-geovis-img/rest/maps/GEOVIS_Img/zxyTileImage.png?width=256&height=256&x={x}&y={y}&z={z}`,
     minimumLevel: 0,
-    maximumLevel: 17,
+    maximumLevel: 18,
     credit: new Cesium.Credit('SuperMap iServer')
   });
   viewer.imageryLayers.addImageryProvider(provider2);
+
+  // osm路网
+  const provider3 = new Cesium.WebMapServiceImageryProvider({
+    url: `${geoserverConfig.VITE_API_PREFIX}/geoserver/wms`,
+    layers: 'ne:planet_osm_roads',
+    parameters: {
+      transparent: true,
+      format: 'image/png'
+    }
+  });
+  viewer.imageryLayers.addImageryProvider(provider3);
 
   console.log('加载完成')
 }

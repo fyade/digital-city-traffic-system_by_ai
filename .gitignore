@@ -5,6 +5,8 @@ node_modules
 pnpm-lock.yaml
 .editorconfig
 
+/.bin/china-latest.osm.pbf
+
 /config/*/*.config.ts
 
 /admin/stats.html

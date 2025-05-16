@@ -9,7 +9,7 @@ import IconsResolver from 'unplugin-icons/resolver';
 import Inspect from "vite-plugin-inspect";
 import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
 import { visualizer } from "rollup-plugin-visualizer";
-import { adminConfig, dashboardConfig } from "@dcts/config";
+import { adminConfig, dashboardConfig, geoserverConfig } from "@dcts/config";
 
 const root = process.cwd()
 // https://vitejs.dev/config/
@@ -71,6 +71,11 @@ export default defineConfig(({mode}) => {
           changeOrigin: true,
           rewrite: path => path.substring(config.VITE_API_FILE_PREFIX.length)
         },
+        [geoserverConfig.VITE_API_PREFIX]: {
+          target: geoserverConfig.VITE_BASEURL,
+          changeOrigin: true,
+          rewrite: path => path.substring(geoserverConfig.VITE_API_PREFIX.length)
+        }
       }
     },
     build: {

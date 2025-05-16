@@ -11,3 +11,5 @@ packages:
   - 'packages/*'
   # 后端
   - 'server'
+  # test
+  - 'test'

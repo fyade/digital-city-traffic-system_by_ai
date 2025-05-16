@@ -32,5 +32,4 @@ export {
   dashboardConfig,
 }
 
-export { cesiumConfig } from './third-config/cesium.config.js'
-export { tiandituConfig } from './third-config/tianditu.config.js'
+export { geoserverConfig } from './third-config/geoserver.config.js'
