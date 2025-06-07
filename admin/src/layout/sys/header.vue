@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ArrowRight } from '@element-plus/icons-vue'
 import { RouteRecordNormalized, RouteRecordRaw, useRoute, useRouter } from "vue-router";
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRouterStore } from "@/store/module/router.ts";
 import { useUserStore } from '@/store/module/user';
 import { fileBaseUrl } from "@/api/request.ts";
 import { useSysStore } from "@/store/module/sys.ts";
+import { allLoginRoles } from "@/utils/base.ts";
 import { dashboardConfig } from "@dcts/config";
 
 const props = defineProps({
@@ -19,6 +20,28 @@ const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 const sysStore = useSysStore();
+
+const userInfo = computed(() => {
+  const userinfo = userStore.userinfo;
+  const ret = {
+    _loginRole: '',
+    avatar: '',
+    nickname: '',
+  }
+  if (userStore.loginRole === 'admin') {
+    ret.avatar = userinfo.admin!.avatar;
+    ret.nickname = userinfo.admin!.nickname;
+  }
+  if (userStore.loginRole === 'visitor') {
+    ret.avatar = userinfo.visitor!.avatar;
+    ret.nickname = userinfo.visitor!.nickname;
+  }
+  const find2 = allLoginRoles.find(item => item.value === userStore.loginRole);
+  if (find2) {
+    ret._loginRole = find2.label
+  }
+  return ret;
+})
 
 const list = ref<(RouteRecordNormalized | RouteRecordRaw)[]>([])
 
@@ -91,31 +114,28 @@ const gotoBoard = () => {
     </div>
     <div class="center"></div>
     <div class="right">
-      <div>
-        <el-button link @click="gotoBoard" style="text-decoration: underline;">前往大屏端</el-button>
-      </div>
-      <div>
-        <el-dropdown>
-          <div style="display: flex;align-items: center;gap: 8px;">
-            <el-image
-                style="width: 30px;height: 30px;border-radius: 8px;"
-                v-if="userStore.userinfo.avatar"
-                :src="sysStore.urlAddAuth(fileBaseUrl+userStore.userinfo.avatar)"
-                fit="contain"
-            ></el-image>
-            <SvgIcon v-else name="user" color="#000000"/>
-            {{ userStore.userinfo.nickname }}
-          </div>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item>
-                <div @click="router.push('/user')">个人中心</div>
-              </el-dropdown-item>
-              <el-dropdown-item @click="userStore.logOut">登出</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
-      </div>
+      <el-button link @click="gotoBoard" style="text-decoration: underline;">前往大屏端</el-button>
+      <el-dropdown>
+        <div style="display: flex;align-items: center;gap: 8px;">
+          <el-image
+              style="width: 30px;height: 30px;border-radius: 8px;"
+              v-if="userInfo.avatar"
+              :src="sysStore.urlAddAuth(fileBaseUrl+userInfo.avatar)"
+              fit="contain"
+          ></el-image>
+          <SvgIcon v-else name="user" color="#000000"/>
+          <span>{{ userInfo.nickname }}</span>
+          <span>(登录身份：{{ userInfo._loginRole }})</span>
+        </div>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item>
+              <div @click="router.push('/user')">个人中心</div>
+            </el-dropdown-item>
+            <el-dropdown-item @click="userStore.logOut">登出</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
     </div>
   </div>
 </template>

@@ -28,7 +28,7 @@ const init = async () => {
     fullscreenButton: false
   });
   (viewer.cesiumWidget.creditContainer as HTMLElement).style.display = "none";
-  setViewTo(118.92844631852402, 32.12752744546319, 10000)
+  setViewTo(118.92844631852402, 32.12752744546319, 10000, true)
 
   // 获取默认的影像图层
   const defaultImagery = viewer.imageryLayers.get(0);
@@ -63,11 +63,18 @@ const init = async () => {
  * @param lon
  * @param lat
  * @param height
+ * @param ifFly
  */
-const setViewTo = (lon: number, lat: number, height: number): void => {
-  viewer?.camera.flyTo({
-    destination: Cesium.Cartesian3.fromDegrees(lon, lat, height)
-  })
+const setViewTo = (lon: number, lat: number, height: number, ifFly = false): void => {
+  if (ifFly) {
+    viewer?.camera.flyTo({
+      destination: Cesium.Cartesian3.fromDegrees(lon, lat, height)
+    })
+  } else {
+    viewer?.camera.setView({
+      destination: Cesium.Cartesian3.fromDegrees(lon, lat, height)
+    })
+  }
 }
 </script>
 
