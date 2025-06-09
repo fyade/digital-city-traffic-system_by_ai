@@ -36,5 +36,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "dependencies": {
+    "@dcts/prisma-generated": "workspace:^"
   }
 }

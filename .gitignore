@@ -20,7 +20,8 @@ pnpm-lock.yaml
 /dashboard/public/Widgets
 /dashboard/public/Workers
 
-/prisma-generated
+/prisma-generated/client
+/prisma-generated/client-postgresql
 /prisma-generated.zip
 /prisma/migrations
 

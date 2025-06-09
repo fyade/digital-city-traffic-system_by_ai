@@ -1,4 +1,4 @@
-import { PrismaClient } from '../../../prisma-generated/client-postgresql'
+import { PrismaClient } from '@dcts/prisma-generated/client-postgresql'
 import { serverConfig } from "@dcts/config";
 import { Injectable } from "@nestjs/common";
 import { BaseContextService } from "../module/base-context/base-context.service";

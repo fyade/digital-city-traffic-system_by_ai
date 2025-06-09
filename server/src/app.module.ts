@@ -15,6 +15,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { RedisModule } from './redis/redis.module';
 import { AlgorithmModule } from './module/module/algorithm/algorithm.module';
 import { MainModule } from './module/module/main/main.module';
+import { DctsModule } from "./module/module/dcts/dcts.module";
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { MainModule } from './module/module/main/main.module';
     RedisModule,
     AlgorithmModule,
     MainModule,
+    DctsModule
   ],
   providers: [
     {

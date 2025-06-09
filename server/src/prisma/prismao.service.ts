@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { BaseContextService } from '../module/base-context/base-context.service';
 import { baseInterfaceColumns2 } from '../module/module/main/sys-util/code-generation/codeGeneration';
 import { Prisma } from '@prisma/client';
-import { PrismaClient } from '../../../prisma-generated/client'
+import { PrismaClient } from '@dcts/prisma-generated/client'
 import { serverConfig } from "@dcts/config";
 import { baseUtils } from "@dcts/common";
 

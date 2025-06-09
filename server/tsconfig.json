@@ -19,9 +19,6 @@
     "noFallthroughCasesInSwitch": false,
     "baseUrl": "./",
     "paths": {
-      "@prisma/client": [
-        "./prisma/client"
-      ]
     }
   },
   "include": [

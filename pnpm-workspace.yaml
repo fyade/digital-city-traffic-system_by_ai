@@ -9,6 +9,8 @@ packages:
   - 'dashboard'
   # 子项目
   - 'packages/*'
+  # prisma 生成的文件
+  - 'prisma-generated'
   # 后端
   - 'server'
   # test
