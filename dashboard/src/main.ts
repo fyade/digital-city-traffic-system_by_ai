@@ -7,6 +7,7 @@ import { createPersistedState } from 'pinia-plugin-persistedstate'
 import 'virtual:svg-icons-register'
 import 'cesium/Build/Cesium/Widgets/widgets.css'
 import { dashboardConfig } from '@dcts/config'
+import naive from "naive-ui";
 
 // @ts-ignore
 window.CESIUM_BASE_URL = '/'
@@ -21,6 +22,7 @@ pinia.use(createPersistedState({
 
 app.use(router)
 app.use(pinia)
+app.use(naive)
 app.mount('#app')
 
 console.info(import.meta.env.MODE)

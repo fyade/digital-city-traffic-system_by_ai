@@ -1,10 +1,31 @@
 <script setup lang="ts">
 import { dashboardConfig } from "@dcts/config";
 
-const currentVersion = dashboardConfig.currentVersion;
+const props = defineProps({
+  imgFromCompany: {
+    type: String,
+    required: true
+  },
+  imgFromUrl: {
+    type: String,
+    required: true
+  },
+  roadFromCompany: {
+    type: String,
+    required: true
+  },
+  roadFromUrl: {
+    type: String,
+    required: true
+  },
+});
+const emits = defineEmits(['openLayerChange']);
 
 const goto = (url: string) => {
   window.open(url);
+}
+const sz = () => {
+  emits('openLayerChange')
 }
 </script>
 
@@ -12,9 +33,12 @@ const goto = (url: string) => {
   <div class="data-layer">
     <div class="footer">
       <!--<p>因瓦片调用额度限制，若地图加载异常，请切换图层或次日重试。</p>-->
-      <p>v{{ currentVersion }}</p>
-      <p>影像底图来自<span @click="goto('https://www.supermapol.com/resource-center/map/detail?id=2118000783')">SuperMap</span></p>
-      <p>路网数据来自<span @click="goto('https://www.openstreetmap.org/')">OpenStreetMap</span></p>
+      <p>v{{ dashboardConfig.currentVersion }}</p>
+      <p>影像底图来自<span @click="goto(props.imgFromUrl)">{{ props.imgFromCompany }}</span></p>
+      <p>路网数据来自<span @click="goto(props.roadFromUrl)">{{ props.roadFromCompany }}</span></p>
+      <p @click="sz"><span class="no-underline">设置</span></p>
+      <p><span class="no-underline">管理员工具</span></p>
+      <p><span class="no-underline">登录</span></p>
     </div>
   </div>
 </template>
@@ -52,6 +76,10 @@ const goto = (url: string) => {
 
       &:hover {
         cursor: pointer;
+      }
+
+      &.no-underline {
+        text-decoration: none;
       }
     }
   }
