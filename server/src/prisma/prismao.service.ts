@@ -2,7 +2,8 @@ import { base } from '../util/base';
 import { Injectable } from '@nestjs/common';
 import { BaseContextService } from '../module/base-context/base-context.service';
 import { baseInterfaceColumns2 } from '../module/module/main/sys-util/code-generation/codeGeneration';
-import { PrismaClient, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { PrismaClient } from '../../../prisma-generated/client'
 import { serverConfig } from "@dcts/config";
 import { baseUtils } from "@dcts/common";
 
@@ -13,15 +14,14 @@ export class PrismaoService extends PrismaClient {
   constructor(
     private readonly bcs: BaseContextService,
   ) {
-    const dbConfig = {
+    super({
       datasources: {
         db: {
           url: serverConfig.getMysqlUrlFromEnv(env),
         },
       },
       log: (env.prismaLogLevel && baseUtils.typeOf(env.prismaLogLevel) === 'array') ? (env.prismaLogLevel as Prisma.PrismaClientOptions['log']) : [],
-    };
-    super(dbConfig);
+    });
     // 使用中间件对查询结果中的 Bigint 类型进行序列化
     super.$use(async (params, next) => {
       const t1 = Date.now();

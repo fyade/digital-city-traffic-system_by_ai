@@ -33,7 +33,8 @@ module.exports = {
   resolve: {
     extensions: [".js", ".ts", ".json", ".prisma"],
     alias: {
-      '@prisma/client': path.resolve(__dirname, '../prisma-generated/client'),
+      '../../../prisma-generated/client': path.resolve(__dirname, '../prisma-generated/client'),
+      '../../../prisma-generated/client-postgresql': path.resolve(__dirname, '../prisma-generated/client-postgresql'),
     },
   },
   plugins: [

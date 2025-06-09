@@ -23,6 +23,5 @@ pnpm-lock.yaml
 /prisma-generated
 /prisma-generated.zip
 /prisma/migrations
-/.env
 
 /server/dist.zip

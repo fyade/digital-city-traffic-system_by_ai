@@ -1,33 +1,13 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../prisma-generated/client"
+  binaryTargets   = ["darwin", "windows", "linux-musl", "rhel-openssl-1.0.x", "debian-openssl-3.0.x"]
+  previewFeatures = ["prismaSchemaFolder"]
+}
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
-}
-
-datasource dbPostgresql {
-  provider = "postgresql"
-  url      = env("POSTGRESQL_DATABASE_URL")
-}
-
-generator client {
-  provider        = "prisma-client-js"
-  // output          = "../prisma-generated/client" // todo 开发时注掉，打包前打开
-  binaryTargets   = ["darwin", "windows", "linux-musl", "rhel-openssl-1.0.x", "debian-openssl-3.0.x"]
-  previewFeatures = ["prismaSchemaFolder"]
-  datasource      = mysql
-}
-
-generator clientPostgresql {
-  provider        = "prisma-client-js"
-  // output          = "../prisma-generated/client-postgresql" // todo 开发时注掉，打包前打开
-  binaryTargets   = ["darwin", "windows", "linux-musl", "rhel-openssl-1.0.x", "debian-openssl-3.0.x"]
-  previewFeatures = ["prismaSchemaFolder"]
-  datasource      = postgresql
+  url      = "mysql://root:123456@localhost:3306/proj_digital-city-traffic-system"
 }
 
 // 1.0 系统配置
