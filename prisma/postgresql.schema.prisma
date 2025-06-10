@@ -1,8 +1,8 @@
 generator clientPostgresql {
   provider        = "prisma-client-js"
   output          = "../prisma-generated/client-postgresql"
-  previewFeatures = ["prismaSchemaFolder"]
   binaryTargets   = ["darwin", "windows", "linux-musl", "rhel-openssl-1.0.x", "debian-openssl-3.0.x"]
+  previewFeatures = ["prismaSchemaFolder"]
 }
 
 datasource dbPostgresql {

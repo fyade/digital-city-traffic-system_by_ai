@@ -1,8 +1,7 @@
 import { Module } from "@nestjs/common";
-import { DctsTestModule } from './dcts-test/dcts-test.module';
 
 @Module({
-  imports: [DctsTestModule]
+  imports: []
 })
 export class DctsModule {
 }
