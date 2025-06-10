@@ -29,7 +29,7 @@ export class CodeGenerationService {
     } catch (e) {
       throw new NonSupportException('读取数据库信息');
     }
-    const regex1 = /\/\/ .+/;
+    const regex1 = /\/\/(|\/) .+/;
     const regex2 = /^model (\w+) {/;
     const regex3 = /^ *([\w-]+) +([\w-?]+) +([\w-@(). "']+) */;
     const lines = text.split('\n');
@@ -41,7 +41,7 @@ export class CodeGenerationService {
           tableNameCnInitial: lines[i],
           tableNameEnInitial: lines[i + 1],
           tableNameCn: lines[i].replace(/\/+ +/, ''),
-          tableNameEn: lines[i + 1].replace(/^model +/, '').replace(/ +{/, '').match(/([a-zA-Z_]+)/g)[0],
+          tableNameEn: lines[i + 1].replace(/^model +/, '').replace(/ +{/, '').trim(),
           cols: [],
         });
       }
@@ -51,13 +51,26 @@ export class CodeGenerationService {
       const ie: number = i === tables.length - 1 ? lines.length - 1 : tables[i + 1].rowIndex - 2;
       let is1: number = is;
       let ie1: number = ie;
-      while (!regex3.test(lines[is1])) {
+      // while (!regex3.test(lines[is1])) {
+      //   is1++;
+      // }
+      // while (!regex3.test(lines[ie1])) {
+      //   ie1--;
+      // }
+      while (lines[is1].trim().endsWith('{') || lines[is1].trim().length === 0) {
         is1++;
       }
-      while (!regex3.test(lines[ie1])) {
-        ie1--;
+      ie1 = is1;
+      while (!lines[ie1 + 1].trim().endsWith('}')) {
+        ie1++;
       }
       for (let j = is1; j <= ie1; j++) {
+        if (lines[j].trim().length === 0) {
+          continue;
+        }
+        if (lines[j].trim().startsWith('@@')) {
+          continue;
+        }
         tables[i].cols.push({
           colInfo: lines[j],
           colName: lines[j].replace(regex3, '$1').match(/([a-zA-Z_]+)/g)[0],
@@ -73,11 +86,11 @@ export class CodeGenerationService {
   async genCode(id: number): Promise<R> {
     const table = await this.prisma.findById<CodeGenTableDto>('sys_code_gen_table', Number(id));
     const columns = await this.prisma.findAll<CodeGenColumnDto>('sys_code_gen_column', {
-      data: { tableId: Number(id) },
+      data: {tableId: Number(id)},
       orderBy: true,
     });
     const sys = await this.prisma.findById<SysDto>('sys_sys', table.sysId);
-    const cgRes = codeGeneration({ table, columns, sys });
+    const cgRes = codeGeneration({table, columns, sys});
     return R.ok({
       table,
       columns,

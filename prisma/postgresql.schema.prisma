@@ -10,6 +10,7 @@ datasource dbPostgresql {
   url      = "postgresql://postgres:123456@localhost:5432/digital-city-traffic-system?schema=public"
 }
 
+// properties
 model osm2pgsql_properties {
   property String @id
   value    String
@@ -93,6 +94,7 @@ model planet_osm_line {
   @@ignore
 }
 
+// nodes
 model planet_osm_nodes {
   id   BigInt @id
   lat  Int

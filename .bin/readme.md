@@ -14,11 +14,15 @@ osm2pgsql -c -d your_database -U your_user -W -H localhost -P 5432 --slim -G --h
 
 ##### 2.1.1.1、public库：
 
-| 表名               | 含义        |
-|------------------|-----------|
-| planet_osm_nodes | nodes     |
-| planet_osm_ways  | ways      |
-| planet_osm_rels  | relations |
+| 表名                 | 含义                                                  |
+|--------------------|-----------------------------------------------------|
+| planet_osm_nodes   | nodes                                               |
+| planet_osm_ways    | ways                                                |
+| planet_osm_rels    | relations                                           |
+| planet_osm_point   | 从nodes创建的点几何                                        |
+| planet_osm_line    | 根据标记type=route方式和关系创建的线几何                           |
+| planet_osm_roads   | 包含与line表相同的部分数据，但选定了用于低缩放渲染的属性，它不仅包含道路              |
+| planet_osm_polygon | 通过封闭方式和标记为type=multipolygon或type=boundary关系创建的多边形几何 |
 
 ##### 2.1.1.2、字段含义：
 
