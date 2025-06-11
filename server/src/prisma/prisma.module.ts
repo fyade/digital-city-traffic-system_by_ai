@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { PrismaoService } from './prismao.service';
-import { PostgresqlPrismaService } from "./postgresql.prisma";
+import { PostgresqlPrismaService } from "./postgresql.prisma.service";
 import { PostgresqlPrismaoService } from "./postgresql.prismao.service";
 
 @Global()

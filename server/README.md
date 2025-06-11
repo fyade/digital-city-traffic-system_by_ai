@@ -32,6 +32,11 @@ prisma 生成 Prisma Client：
 $ npx prisma generate
 ```
 
+prisma 从数据库同步结构
+```bash
+$ npx prisma db pull --schema=./prisma/postgresql.schema.prisma
+```
+
 nest 生成拦截器：
 
 ```bash
