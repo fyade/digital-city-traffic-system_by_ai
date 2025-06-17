@@ -15,6 +15,7 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { JunctionPositionDto, JunctionPositionUpdDto } from "@/type/module/dcts/junction/junctionPosition.ts";
 import { junctionPositionApi } from "@/api/module/dcts/junction/junctionPosition.ts";
 import { junctionPositionDict } from "@/dict/module/dcts/junction/junctionPosition.ts";
+import { timeUtils } from "@dcts/common";
 
 const state = reactive<State2<JunctionPositionDto, JunctionPositionUpdDto>>({
   dialogForm: {
@@ -25,7 +26,10 @@ const state = reactive<State2<JunctionPositionDto, JunctionPositionUpdDto>>({
   },
   dialogForms: [],
   dialogForms_error: {},
-  filterForm: {},
+  filterForm: {
+    name: '',
+    junctionType: '',
+  },
 })
 const dFormRules: FormRules = {
   geom: [{required: true, trigger: 'change'}],
@@ -224,9 +228,12 @@ const {
         @keyup.enter="fEnter"
     >
       <!--在此下方添加表单项-->
-      <!--<el-form-item :label="junctionPositionDict." prop="">-->
-      <!--  <el-input v-model="state.filterForm." :placeholder="junctionPositionDict."/>-->
-      <!--</el-form-item>-->
+      <el-form-item :label="junctionPositionDict.name" prop="name">
+        <el-input v-model="state.filterForm.name" :placeholder="junctionPositionDict.name"/>
+      </el-form-item>
+      <el-form-item :label="junctionPositionDict.junctionType" prop="junctionType">
+        <el-input v-model="state.filterForm.junctionType" :placeholder="junctionPositionDict.junctionType"/>
+      </el-form-item>
       <!--在此上方添加表单项-->
       <el-form-item>
         <el-button type="primary" @click="fCon">筛选</el-button>
@@ -269,8 +276,16 @@ const {
       <!--<el-table-column prop="updateRole" :label="junctionPositionDict.updateRole" width="120"/>-->
       <!--<el-table-column prop="createBy" :label="junctionPositionDict.createBy" width="120"/>-->
       <!--<el-table-column prop="updateBy" :label="junctionPositionDict.updateBy" width="120"/>-->
-      <!--<el-table-column prop="createTime" :label="junctionPositionDict.createTime" width="220"/>-->
-      <!--<el-table-column prop="updateTime" :label="junctionPositionDict.updateTime" width="220"/>-->
+      <el-table-column prop="createTime" :label="junctionPositionDict.createTime" width="220">
+        <template #default="{row}">
+          {{ timeUtils.formatDate(new Date(row.createTime)) }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="updateTime" :label="junctionPositionDict.updateTime" width="220">
+        <template #default="{row}">
+          {{ timeUtils.formatDate(new Date(row.updateTime)) }}
+        </template>
+      </el-table-column>
       <!--<el-table-column prop="deleted" :label="junctionPositionDict.deleted" width="60"/>-->
       <!--上方几个酌情使用-->
       <el-table-column fixed="right" label="操作" min-width="140">

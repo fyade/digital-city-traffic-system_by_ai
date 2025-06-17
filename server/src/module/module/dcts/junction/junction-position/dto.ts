@@ -12,6 +12,14 @@ export class JunctionPositionDto extends BaseDto {
   name: string;
 
   junctionType: string;
+
+  constructor() {
+    super();
+    this.id = null;
+    this.geom = null;
+    this.name = null;
+    this.junctionType = null;
+  }
 }
 
 export class JunctionPositionSelListDto extends PageDto {

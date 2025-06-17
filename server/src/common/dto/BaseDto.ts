@@ -21,4 +21,14 @@ export class BaseDto {
 
   @ApiProperty({ description: 'deleted', required: false })
   deleted: string;
+
+  constructor() {
+    this.createRole = null;
+    this.updateRole = null;
+    this.createBy = null;
+    this.updateBy = null;
+    this.createTime = null;
+    this.updateTime = null;
+    this.deleted = null;
+  }
 }
