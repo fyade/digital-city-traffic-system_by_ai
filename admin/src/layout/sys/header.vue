@@ -7,7 +7,6 @@ import { useUserStore } from '@/store/module/user';
 import { fileBaseUrl } from "@/api/request.ts";
 import { useSysStore } from "@/store/module/sys.ts";
 import { allLoginRoles } from "@/utils/base.ts";
-import { dashboardConfig } from "@dcts/config";
 
 const props = defineProps({
   ifShowBreadcrumb: {
@@ -83,9 +82,8 @@ if (props.ifShowBreadcrumb) {
   })
 }
 
-const dashboardC = dashboardConfig.currentConfig();
 const gotoBoard = () => {
-  window.open(dashboardC.url)
+  router.push('/dashboard')
 }
 </script>
 

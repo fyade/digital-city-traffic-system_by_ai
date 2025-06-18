@@ -67,11 +67,13 @@ export const useUserStore = defineStore('userStore', () => {
       })
     })
   }
-  const logOut = () => {
+  const logOut = (ifReload = true) => {
     logOutApi()
     setTimeout(() => {
       removeToken()
-      location.reload()
+      if (ifReload) {
+        location.reload()
+      }
     })
   }
   const removeToken = () => {

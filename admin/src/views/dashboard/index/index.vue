@@ -1,17 +1,23 @@
 <script setup lang="ts">
 import * as Cesium from "cesium";
-import { onMounted, ref, useTemplateRef } from "vue";
-import DataLayer from "@/views/home/dataLayer.vue";
+import { h, onMounted, ref, useTemplateRef } from "vue";
+import DataLayer from "@/views/dashboard/index/dataLayer.vue";
+import AdminPanel from "@/views/dashboard/adminPanel/index.vue";
 import { geoserverConfig } from "@dcts/config";
-import { LayerDto } from "@/views/home/dto";
+import { LayerDto } from "@/views/dashboard/index/dto.ts";
+import { NotificationReactive, NSpin, useNotification } from "naive-ui";
 
 onMounted(async () => {
   await init()
 })
 
+const notification = useNotification();
+
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 变量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 const cesiumContainer = useTemplateRef<HTMLDivElement>("cesiumContainer");
 let viewer: Cesium.Viewer | null = null;
+let layerLoading = ref(false)
+let layerLoadingNotification: NotificationReactive | null = null
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 数据 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 // 所有图层的链接及当前图层index
@@ -74,15 +80,16 @@ const init = async () => {
   console.info('开始加载');
 
   viewer = new Cesium.Viewer('cesiumContainer', {
-    infoBox: true,
-    geocoder: false,
-    homeButton: false,
-    sceneModePicker: false,
-    baseLayerPicker: false,
-    navigationHelpButton: false,
-    animation: false,
-    timeline: false,
-    fullscreenButton: false
+    infoBox: false, // 属性面板
+    selectionIndicator: false, // 选择指示器
+    geocoder: false, // 搜索框
+    homeButton: false, // 主页按钮
+    sceneModePicker: false, // 场景模式选择器
+    baseLayerPicker: false, // 底图选择器
+    navigationHelpButton: false, // 帮助按钮
+    animation: false, // 动画控制器
+    timeline: false, // 时间轴
+    fullscreenButton: false, // 全屏按钮
   });
   (viewer.cesiumWidget.creditContainer as HTMLElement).style.display = "none";
   setViewTo(118.92844631852402, 32.12752744546319, 10000)
@@ -95,6 +102,51 @@ const init = async () => {
   setLayer()
 
   console.info('加载完成')
+
+  // 瓦片图层加载事件
+  viewer.scene.globe.tileLoadProgressEvent.addEventListener(queuedTileCount => {
+    // 加载中
+    if (queuedTileCount > 0 && !layerLoading.value) {
+      layerLoading.value = true
+      layerLoadingNotification = notification.create({
+        title: '提示',
+        content: '图层加载中...',
+        duration: 0,
+        avatar: () => h(NSpin, {
+          size: 'medium',
+          strokeWidth: 20
+        }),
+        closable: false,
+      });
+    }
+    // 加载完成
+    if (queuedTileCount === 0 && layerLoading.value) {
+      if (layerLoadingNotification) {
+        layerLoadingNotification.destroy()
+      }
+      layerLoading.value = false
+      notification.success({
+        title: '提示',
+        content: '图层加载完成',
+        duration: 3000
+      })
+    }
+  })
+  // 图层点击事件
+  viewer.cesiumWidget.canvas.addEventListener('click', e => {
+    // 屏幕坐标
+    const pickedPosition = new Cesium.Cartesian2(e.clientX, e.clientY);
+    // 转为笛卡尔坐标
+    const cartesian = viewer?.camera.pickEllipsoid(pickedPosition, viewer?.scene.globe.ellipsoid);
+    if (cartesian) {
+      // 转为地理坐标
+      const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+      const lon = Cesium.Math.toDegrees(cartographic.longitude);
+      const lat = Cesium.Math.toDegrees(cartographic.latitude);
+      const height = cartographic.height;
+      console.log('经度', lon, '纬度', lat, '高度', height)
+    }
+  })
 }
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 工具函数 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -136,9 +188,9 @@ const setLayer = () => {
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 其他 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 // 设置抽屉
-const drawerActive = ref(false)
-const openLayerChange = () => {
-  drawerActive.value = true
+const settingDrawerActive = ref(false)
+const openSettingLayerChange = () => {
+  settingDrawerActive.value = true
 }
 </script>
 
@@ -148,20 +200,22 @@ const openLayerChange = () => {
       :img-from-url="bianliang2"
       :road-from-company="bianliang3"
       :road-from-url="bianliang4"
-      @open-layer-change="openLayerChange"
+      @open-setting-layer-change="openSettingLayerChange"
   />
   <div id="cesiumContainer" ref="cesiumContainer"></div>
 
-  <n-drawer v-model:show="drawerActive" width="50rem">
+  <n-drawer v-model:show="settingDrawerActive" width="50rem">
     <n-drawer-content title="设置">
-      aaaaaaaaaaaaaaaaa
+      设置
     </n-drawer-content>
   </n-drawer>
+
+  <router-view/>
 </template>
 
 <style scoped>
 #cesiumContainer {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
 }
 </style>

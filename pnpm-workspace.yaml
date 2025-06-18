@@ -5,8 +5,6 @@ packages:
   - 'common'
   # 配置
   - 'config'
-  # 大屏
-  - 'dashboard'
   # 子项目
   - 'packages/*'
   # prisma 生成的文件

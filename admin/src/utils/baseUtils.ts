@@ -1,6 +1,10 @@
 import { deepClone } from "@/utils/ObjectUtils.ts";
 import { final } from "@/utils/base.ts";
 
+export function goToLogin() {
+  window.location.href = `/login?redirect=${window.location.pathname}`
+}
+
 type Arr2ToDiguiObjI<T, K extends string, V> = T & {
   [P in K]: V
 }

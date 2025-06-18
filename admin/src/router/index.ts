@@ -67,6 +67,25 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/views/user/login.vue')
   },
   {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: () => import('@/views/dashboard/index.vue'),
+    children: [
+      {
+        path: '',
+        name: 'dashboard/',
+        component: () => import('@/views/dashboard/index/index.vue'),
+        children: [
+          {
+            path: 'admin-panel',
+            name: 'dashboard/adminPanel',
+            component: () => import('@/views/dashboard/adminPanel/index.vue')
+          }
+        ]
+      }
+    ]
+  },
+  {
     path: '/:pathMatch(.*)*',
     component: () => import('@/views/redirect/index.vue')
   },
@@ -88,7 +107,11 @@ router.beforeEach((to, from, next) => {
   }
   const userStore = useUserStore();
   if (!userStore.ifLogin && whitelist.indexOf(to.path) === -1) {
-    next(`/login?redirect=${to.path}`)
+    if (to.path.startsWith('/dashboard/') || to.fullPath === '/dashboard') {
+      next()
+    } else {
+      next(`/login?redirect=${to.path}`)
+    }
   } else {
     next()
   }

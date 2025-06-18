@@ -4,6 +4,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { useSysStore } from "@/store/module/sys.ts";
 import { AxiosRes } from "@/type/asiox.ts";
 import { adminConfig } from '@dcts/config'
+import { goToLogin } from "@/utils/baseUtils.ts";
 
 const env = adminConfig.currentConfig();
 export const baseURL = env.VITE_API_PREFIX
@@ -50,7 +51,7 @@ request.interceptors.response.use(
         '警告',
       ).finally(() => {
         useUserStore().removeToken()
-        window.location.href = `/login?redirect=${window.location.pathname}`
+        goToLogin()
       })
       status401 = true;
     } else {
