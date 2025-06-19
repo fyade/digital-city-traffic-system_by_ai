@@ -74,7 +74,7 @@ const getRoutes = () => {
   diguiRun(
       arr2ToDiguiObj1,
       data => {
-        if (data.obj.children && data.obj.children.length === 0) {
+        if (data.obj.children && (data.obj.children as unknown as typeof routesSimple).length === 0) {
           delete data.obj.children
         }
       }

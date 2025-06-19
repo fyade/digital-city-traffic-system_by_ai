@@ -7,8 +7,6 @@ export function goToLogin() {
 
 type Arr2ToDiguiObjI<T, K extends string, V> = T & {
   [P in K]: V
-} & {
-  children?: T[]
 }
 
 /**
