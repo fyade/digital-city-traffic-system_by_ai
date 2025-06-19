@@ -1,11 +1,16 @@
 import { getScriptTagFromHtmlText } from "@/utils/RegularUtils.ts";
 import { ifSameArray } from "@/utils/ObjectUtils.ts";
 import { baseUtils } from "@dcts/common";
+import { adminConfig } from "@dcts/config";
 
 const whiteList = [
   {
     type: 'start',
     content: 'chrome-extension://'
+  },
+  {
+    type: 'start',
+    content: 'https://dev.virtualearth.net'
   }
 ];
 
@@ -25,6 +30,10 @@ async function main() {
   })
   const html = await fetch(`/?timestamp=${new Date().getTime()}`).then(res => res.text())
   const newTag = getScriptTagFromHtmlText(html)
+  const currentConfig = adminConfig.currentConfig();
+  if (currentConfig.VITE_MODE === 'dev') {
+    console.log(oldTag, newTag)
+  }
   const ifNeedUpdate = !ifSameArray(oldTag, newTag)
   if (ifNeedUpdate) {
     const result = confirm('检测到新版本，请点击确定更新。')

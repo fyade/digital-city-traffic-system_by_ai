@@ -1,22 +1,23 @@
 <script setup lang="ts">
-import { getPages, getSystems } from "@/api/common/sys.ts";
 import { ArrowBarToRight } from '@vicons/tabler'
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import Layout from '@/views/dashboard/layout/index.vue';
-import { ref } from "vue";
+import { provide, ref } from "vue";
+import { goToAdminPanelSystem } from "@/views/dashboard/adminPanel/dashboardUtilFunc.ts";
 
+const route = useRoute()
 const router = useRouter();
 
-const adminPanelLoading = ref(false)
+const adminPanelLoading = ref(true)
+provide('adminPanelLoading', adminPanelLoading)
 const getRouters = async () => {
   adminPanelLoading.value = true
   try {
-    const systems = await getSystems()
-    const system = systems.find(item => item.perms === 'sys:dcts');
-    if (system) {
-      const pages = await getPages(system.id)
-      console.log(pages)
-    }
+    await goToAdminPanelSystem(path => {
+      if (route.path === '/dashboard/admin-panel' || route.path === '/dashboard/admin-panel/') {
+        router.push(`/dashboard/admin-panel/${path}`)
+      }
+    })
   } finally {
     adminPanelLoading.value = false
   }
@@ -29,7 +30,11 @@ const closeAdminPanel = () => {
 </script>
 
 <template>
-  <n-drawer show width="calc(100% - 10rem)">
+  <n-drawer
+      show
+      width="calc(100% - 10rem)"
+      :show-mask="false"
+  >
     <n-drawer-content>
       <template #header>
         <div class="title-row">
@@ -39,7 +44,11 @@ const closeAdminPanel = () => {
           <span>管理员面板</span>
         </div>
       </template>
-      <Layout v-loading="adminPanelLoading" element-loading-text="管理员面板加载中..."/>
+      <Layout
+          v-loading="adminPanelLoading"
+          element-loading-text="管理员面板加载中..."
+          :admin-panel-loading="adminPanelLoading"
+      />
     </n-drawer-content>
   </n-drawer>
 </template>

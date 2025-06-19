@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import { useUserStore } from "@/store/module/user.ts";
 import { ifWebsiteLink } from "@/utils/LinkUtils.ts";
+import { adminConfig } from "@dcts/config";
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -79,7 +80,13 @@ export const routes: RouteRecordRaw[] = [
           {
             path: 'admin-panel',
             name: 'dashboard/adminPanel',
-            component: () => import('@/views/dashboard/adminPanel/index.vue')
+            component: () => import('@/views/dashboard/adminPanel/index.vue'),
+            children: [
+              {
+                path: ':pathMatch(.*)*',
+                component: () => import('@/views/dashboard/redirect/index.vue')
+              }
+            ]
           }
         ]
       }
@@ -100,8 +107,13 @@ const router = createRouter({
   routes: routes
 })
 
+const currentConfig = adminConfig.currentConfig();
+
 const whitelist = ['/login']
 router.beforeEach((to, from, next) => {
+  if (currentConfig.VITE_MODE === 'dev') {
+    console.log(to.path, from.path)
+  }
   if (ifWebsiteLink(to.path, '/')) {
     return
   }
