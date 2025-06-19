@@ -2,7 +2,6 @@
 import * as Cesium from "cesium";
 import { h, onMounted, ref, useTemplateRef } from "vue";
 import DataLayer from "@/views/dashboard/index/dataLayer.vue";
-import AdminPanel from "@/views/dashboard/adminPanel/index.vue";
 import { geoserverConfig } from "@dcts/config";
 import { LayerDto } from "@/views/dashboard/index/dto.ts";
 import { NotificationReactive, NSpin, useNotification } from "naive-ui";
@@ -16,8 +15,12 @@ const notification = useNotification();
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 变量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 const cesiumContainer = useTemplateRef<HTMLDivElement>("cesiumContainer");
 let viewer: Cesium.Viewer | null = null;
-let layerLoading = ref(false)
+// 图层是否正在加载
+const layerLoading = ref(false)
+// 右上角的 Loading 通知
 let layerLoadingNotification: NotificationReactive | null = null
+// 右上角的通知内容变化定时器
+let layerLoadingTimer: NodeJS.Timeout | null = null
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 数据 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 // 所有图层的链接及当前图层index
@@ -118,6 +121,14 @@ const init = async () => {
         }),
         closable: false,
       });
+      // 设置定时器
+      if (!layerLoadingTimer) {
+        layerLoadingTimer = setTimeout(() => {
+          if (layerLoadingNotification) {
+            layerLoadingNotification.content = '加载时间可能稍长，请稍作等待，感谢您的配合...'
+          }
+        }, 3000)
+      }
     }
     // 加载完成
     if (queuedTileCount === 0 && layerLoading.value) {
@@ -130,6 +141,11 @@ const init = async () => {
         content: '图层加载完成',
         duration: 3000
       })
+      // 清除定时器
+      if (layerLoadingTimer) {
+        clearTimeout(layerLoadingTimer)
+        layerLoadingTimer = null
+      }
     }
   })
   // 图层点击事件
