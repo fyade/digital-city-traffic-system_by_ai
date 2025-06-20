@@ -10,6 +10,11 @@ import { CodeGenColumnDto } from '../code-gen-column/dto';
 import { CgTablesInterface } from './dto';
 import { SysDto } from '../../sys-manage/sys/dto';
 import { getAllFiles } from '../../../../../util/FileUtils';
+import {
+  REGEX_MAIN_CODEGEN_regex1_test,
+  REGEX_MAIN_CODEGEN_regex2_test,
+  REGEX_MAIN_CODEGEN_regex3, REGEX_MAIN_STRING_1_match
+} from "../../../../../util/RegularUtils";
 
 @Injectable()
 export class CodeGenerationService {
@@ -29,13 +34,10 @@ export class CodeGenerationService {
     } catch (e) {
       throw new NonSupportException('读取数据库信息');
     }
-    const regex1 = /\/\/(|\/) .+/;
-    const regex2 = /^model (\w+) {/;
-    const regex3 = /^ *([\w-]+) +([\w-?]+) +([\w-@(). "']+) */;
     const lines = text.split('\n');
     const tables: CgTablesInterface[] = [];
     for (let i = 0; i < lines.length - 1; i++) {
-      if (regex1.test(lines[i]) && regex2.test(lines[i + 1])) {
+      if (REGEX_MAIN_CODEGEN_regex1_test(lines[i]) && REGEX_MAIN_CODEGEN_regex2_test(lines[i + 1])) {
         tables.push({
           rowIndex: i,
           tableNameCnInitial: lines[i],
@@ -51,12 +53,6 @@ export class CodeGenerationService {
       const ie: number = i === tables.length - 1 ? lines.length - 1 : tables[i + 1].rowIndex - 2;
       let is1: number = is;
       let ie1: number = ie;
-      // while (!regex3.test(lines[is1])) {
-      //   is1++;
-      // }
-      // while (!regex3.test(lines[ie1])) {
-      //   ie1--;
-      // }
       while (lines[is1].trim().endsWith('{') || lines[is1].trim().length === 0) {
         is1++;
       }
@@ -73,10 +69,10 @@ export class CodeGenerationService {
         }
         tables[i].cols.push({
           colInfo: lines[j],
-          colName: lines[j].replace(regex3, '$1').match(/([a-zA-Z_]+)/g)[0],
-          colType: lines[j].replace(regex3, '$2').replace('?', ''),
-          ifMust: !lines[j].replace(regex3, '$2').endsWith('?'),
-          colRemark: lines[j].replace(regex3, '$3'),
+          colName: REGEX_MAIN_STRING_1_match(lines[j].replace(REGEX_MAIN_CODEGEN_regex3, '$1'))[0],
+          colType: lines[j].replace(REGEX_MAIN_CODEGEN_regex3, '$2').replace('?', ''),
+          ifMust: !lines[j].replace(REGEX_MAIN_CODEGEN_regex3, '$2').endsWith('?'),
+          colRemark: lines[j].replace(REGEX_MAIN_CODEGEN_regex3, '$3'),
         });
       }
     }

@@ -5,6 +5,7 @@ import { R } from '../common/R';
 import { WinstonService } from '../module/winston/winston.service';
 import { HTTP } from '../common/Enum';
 import { baseUtils } from '@dcts/common';
+import { REGEX_GLOBAL_EXCEPTION_1_match } from "../util/RegularUtils";
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -28,7 +29,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       message =
         response1.message
           .map((str) => {
-            const match = str.match(/^items\.(\d+)\./);
+            const match = REGEX_GLOBAL_EXCEPTION_1_match(str);
             if (match) {
               return str.replace(`items.${match[1]}.`, `第${Number(match[1]) + 1}条数据的`);
             }

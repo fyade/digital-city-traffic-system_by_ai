@@ -10,6 +10,7 @@ import { PrismaoService } from "./prisma/prismao.service";
 import { serverConfig } from "@dcts/config";
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { REGEX_MAIN_APP_1_match, REGEX_MAIN_APP_2_match, REGEX_MAIN_APP_3_match } from "./util/RegularUtils";
 
 const si = require("systeminformation");
 
@@ -64,17 +65,14 @@ export class AppService {
       for (const filePath of filePaths) {
         const text = await fs.readFileSync(filePath, 'utf-8');
         // 正则表达式来匹配单引号或双引号内的字符串
-        const simpleAuthorizeRegex = /@Authorize\('([^']*)'\)/g;
-        const complexAuthorizeRegex = /@Authorize\(\s*{[^}]*}\s*\)/g;
         // 提取简单授权字符串
-        const simpleAuthorizeMatches = text.match(simpleAuthorizeRegex);
+        const simpleAuthorizeMatches = REGEX_MAIN_APP_1_match(text);
         const simpleAuthorizePermissions = simpleAuthorizeMatches?.map(match => {
-          const regex = /'([^']*)'/;
-          const permissionMatch = match.match(regex);
+          const permissionMatch = REGEX_MAIN_APP_3_match(match);
           return permissionMatch ? permissionMatch[1] : null;
         }) || [];
         // 提取复杂授权对象字符串
-        const complexAuthorizeMatches = text.match(complexAuthorizeRegex);
+        const complexAuthorizeMatches = REGEX_MAIN_APP_2_match(text);
         const complexAuthorizeObjects = complexAuthorizeMatches;
 
         function parseAuthorizeObject(str) {
