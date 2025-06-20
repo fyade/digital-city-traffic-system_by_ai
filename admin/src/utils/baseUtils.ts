@@ -5,8 +5,23 @@ export function goToLogin() {
   window.location.href = `/login?redirect=${window.location.pathname}`
 }
 
+type Arr2ToDiguiObjI2<T> = T[]
+
 type Arr2ToDiguiObjI<T, K extends string, V> = T & {
   [P in K]: V
+}
+
+export function arr2ToDiguiObj2<T = any>(list: T[], {
+                                           key = 'parentId',
+                                           defaultParent = final.DEFAULT_PARENT_ID,
+                                           ifDeepClone = true
+                                         }: {
+                                           key?: string,
+                                           defaultParent?: number,
+                                           ifDeepClone?: boolean
+                                         } = {}
+): Arr2ToDiguiObjI2<T> {
+  return arr2ToDiguiObj(list, {key, defaultParent, ifDeepClone}) as Arr2ToDiguiObjI2<T>
 }
 
 /**
@@ -137,10 +152,10 @@ function diguiRun2<T>(objs: T[], func: (data: { obj: T, parent: T | null }) => v
                       }
 ) {
   for (const obj of objs) {
-    func({ obj, parent })
+    func({obj, parent})
     const objElement = obj[key as keyof typeof obj] as T[];
     if (objElement && objElement.length > 0) {
-      diguiRun2(objElement, func, { parent: obj })
+      diguiRun2(objElement, func, {parent: obj})
     }
   }
 }
