@@ -31,7 +31,7 @@ watchHandle = watch(() => props.adminPanelLoading, (newVal) => {
 }, {immediate: false});
 
 const menuOptions = ref<MenuOption[]>([])
-const defaultExpandedKeys: string[] = []
+const defaultExpandedKeys = ref<string[]>([])
 const init = () => {
   const pathFragments = route.path.split('/').filter(_ => _);
   for (let i = 0; i < pathFragments.length; i++) {
@@ -39,11 +39,10 @@ const init = () => {
     for (let j = 0; j <= i; j++) {
       s += `/${pathFragments[j]}`
     }
-    defaultExpandedKeys.push(s)
+    defaultExpandedKeys.value.push(s)
   }
-  defaultExpandedKeys.sort(_ => -1)
+  defaultExpandedKeys.value.sort(_ => -1)
 }
-init()
 
 const getRoutes = () => {
   const allRoutes = router.getRoutes();
@@ -82,11 +81,13 @@ const getRoutes = () => {
   for (const arr2ToDiguiObj1Element of arr2ToDiguiObj1) {
     menuOptions.value.push(arr2ToDiguiObj1Element)
   }
+  init()
 }
 </script>
 
 <template>
   <n-menu
+      v-if="menuOptions.length > 0"
       :options="menuOptions"
       :indent="12"
       accordion

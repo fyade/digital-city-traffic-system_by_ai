@@ -21,7 +21,7 @@ export const goToAdminPanelSystem = async (callback: (path: string) => void) => 
       if (ifHasAddRoutes) {
         continue
       }
-      const find = routes.find(item => item.name === page.perms);
+      const find = routes.find(item => item.name === `${page.perms}-dashboardPage`);
       if (find) {
         ifHasAddRoutes = true
       }
@@ -55,8 +55,17 @@ export const goToAdminPanelSystem = async (callback: (path: string) => void) => 
         router.addRoute('dashboard/adminPanel', permissionObj[i])
       }
       if (permissionObj.length > 0) {
+        const find1 = router.getRoutes().find(item => item.path === '/dashboard/admin-panel');
+        if (find1) {
+          find1.redirect = `${find1.path}/${permissionObj[0].path}`
+        }
         callback(permissionObj[0].path)
       }
+    }
+    const index = router.getRoutes().findIndex(item => item.path === location.pathname);
+    if (index === -1) {
+      const obj = arr2ToDiguiObj(pages);
+      await router.push(`/dashboard/admin-panel/${obj[0].path}`)
     }
   }
 }
