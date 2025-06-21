@@ -27,3 +27,8 @@ CREATE TABLE manual_junctions
 
 -- 创建空间索引
 CREATE INDEX idx_manual_junctions_geom ON manual_junctions USING GIST(geom);
+
+-- ===== ===== ===== ===== ===== ===== 2025.06.21 ===== ===== ===== ===== ===== =====
+drop table manual_junctions;
+
+-- ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== =====
