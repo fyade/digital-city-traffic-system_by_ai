@@ -358,21 +358,3 @@ model spatial_ref_sys {
   srtext    String? @dbPostgresql.VarChar(2048)
   proj4text String? @dbPostgresql.VarChar(2048)
 }
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model manual_junctions {
-  id            Int                     @id @default(autoincrement())
-  geom          Unsupported("geometry")
-  feature_id    Int                     @default(autoincrement())
-  name          String?                 @dbPostgresql.VarChar(255)
-  junction_type String?                 @dbPostgresql.VarChar(50)
-  create_role   String                  @dbPostgresql.VarChar(30)
-  update_role   String                  @dbPostgresql.VarChar(30)
-  create_by     String                  @dbPostgresql.VarChar(10)
-  update_by     String                  @dbPostgresql.VarChar(10)
-  create_time   DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
-  update_time   DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
-  deleted       String                  @default("N") @dbPostgresql.Char(1)
-
-  @@index([geom], map: "idx_manual_junctions_geom", type: Gist)
-}
