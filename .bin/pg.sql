@@ -60,4 +60,11 @@ CREATE TABLE manual_junctions
 -- 创建空间索引
 CREATE INDEX idx_manual_junctions_geom ON manual_junctions USING GIST(geom);
 
+-- 创建一个视图，带相比较nodes表多了一个geom字段
+CREATE
+OR REPLACE VIEW planet_osm_nodes_view AS
+SELECT *,
+       ST_SetSRID(ST_MakePoint(lon, lat), 4326) AS geom
+FROM planet_osm_nodes;
+
 -- ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== =====

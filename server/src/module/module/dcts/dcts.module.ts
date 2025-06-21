@@ -3,13 +3,15 @@ import { SignalLightSpecificationModule } from './signal-light/signal-light-spec
 import { SignalLightStaticStrategyModule } from './signal-light/signal-light-static-strategy/signal-light-static-strategy.module';
 import { JunctionPositionModule } from './junction/junction-position/junction-position.module';
 import { JunctionConnectionModule } from './junction/junction-connection/junction-connection.module';
+import { SpatialDataModule } from './spatial-data/spatial-data.module';
 
 @Module({
   imports: [
     SignalLightSpecificationModule,
     SignalLightStaticStrategyModule,
     JunctionPositionModule,
-    JunctionConnectionModule
+    JunctionConnectionModule,
+    SpatialDataModule
   ]
 })
 export class DctsModule {

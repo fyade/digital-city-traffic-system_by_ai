@@ -3,6 +3,7 @@ export class LayerDto {
   name!: string
   preview!: string
   func!: () => void
+  dataType!: string
   fromCompany!: string
   fromUrl!: string
 }

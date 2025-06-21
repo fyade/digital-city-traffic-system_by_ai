@@ -24,8 +24,8 @@ let layerLoadingTimer: NodeJS.Timeout | null = null
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 数据 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 // 所有图层的链接及当前图层index
-const currentIdOfBaseMap = ref(['', 'a1'])
-const currentIdOfRoadData = ref(['', 'b1'])
+const currentIdOfBaseMap = ref([[''], ['a1']])
+const currentIdOfRoadData = ref([[''], ['b1']])
 const allLayersOfBaseMap: LayerDto[] = [
   {
     id: 'a1',
@@ -43,6 +43,7 @@ const allLayersOfBaseMap: LayerDto[] = [
       });
       viewer.imageryLayers.addImageryProvider(provider);
     },
+    dataType: '影像底图',
     fromCompany: 'SuperMap',
     fromUrl: 'https://www.supermapol.com/resource-center/map/detail?id=2118000783'
   }
@@ -50,7 +51,7 @@ const allLayersOfBaseMap: LayerDto[] = [
 const allLayersOfRoadData: LayerDto[] = [
   {
     id: 'b1',
-    name: 'OSM路网数据(2025.05.16)',
+    name: 'OSM路网数据[路网](2025.05.16)',
     preview: '',
     func: () => {
       if (!viewer) {
@@ -66,14 +67,12 @@ const allLayersOfRoadData: LayerDto[] = [
       });
       viewer.imageryLayers.addImageryProvider(provider);
     },
+    dataType: '路网数据[路网]',
     fromCompany: 'OpenStreetMap',
     fromUrl: 'https://www.openstreetmap.org/'
   }
 ]
-const bianliang1 = ref('')
-const bianliang2 = ref('')
-const bianliang3 = ref('')
-const bianliang4 = ref('')
+const allLabels = ref<string[][]>([])
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 操作 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 /**
@@ -148,6 +147,11 @@ const init = async () => {
       }
     }
   })
+  // 镜头移动结束事件
+  viewer.camera.moveEnd.addEventListener(() => {
+    const viewCornerCoordinates = getViewCornerCoordinates();
+    console.log(viewCornerCoordinates)
+  })
   // 图层点击事件
   viewer.cesiumWidget.canvas.addEventListener('click', e => {
     // 屏幕坐标
@@ -185,20 +189,68 @@ const setViewTo = (lon: number, lat: number, height: number, ifFly = false): voi
   }
 }
 /**
+ * 获取可视区域的四个角的经纬度坐标
+ */
+const getViewCornerCoordinates = () => {
+  const scene = viewer?.scene;
+  const camera = viewer?.camera;
+  const canvas = viewer?.canvas;
+
+  if (!scene || !camera || !canvas) {
+    return
+  }
+
+  // 屏幕四个角的像素坐标
+  const corners = [
+    {x: 0, y: 0},
+    {x: canvas.width, y: 0},
+    {x: canvas.width, y: canvas.height},
+    {x: 0, y: canvas.height},
+  ]
+
+  const cartographicCorners: (null | { lon: number, lat: number })[] = []
+
+  corners.forEach(corner => {
+    // 生成射线
+    const ray = camera.getPickRay(new Cesium.Cartesian2(corner.x, corner.y));
+    if (!ray) {
+      cartographicCorners.push(null);
+      return;
+    }
+    // 射线与地球表面相交点
+    const cartesian = scene.globe.pick(ray, scene);
+    if (!cartesian) {
+      cartographicCorners.push(null);
+      return;
+    }
+    // 转换为经纬度坐标
+    const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+    cartographicCorners.push(cartographic);
+  });
+
+  // 转换为经纬度十进制度数
+  return cartographicCorners.map(c => {
+    if (!c) return null;
+    return {
+      lon: Cesium.Math.toDegrees(c.longitude),
+      lat: Cesium.Math.toDegrees(c.latitude)
+    };
+  });
+}
+/**
  * 设置图层
  */
 const setLayer = () => {
-  const find1 = allLayersOfBaseMap.find(item => item.id === currentIdOfBaseMap.value[1]);
-  if (find1) {
-    find1.func()
-    bianliang1.value = find1.fromCompany
-    bianliang2.value = find1.fromUrl
+  allLabels.value = []
+  const filter1 = allLayersOfBaseMap.filter(item => currentIdOfBaseMap.value[1].includes(item.id));
+  for (const f of filter1) {
+    f.func()
+    allLabels.value.push([f.dataType, f.fromCompany, f.fromUrl])
   }
-  const find2 = allLayersOfRoadData.find(item => item.id === currentIdOfRoadData.value[1]);
-  if (find2) {
-    find2.func()
-    bianliang3.value = find2.fromCompany
-    bianliang4.value = find2.fromUrl
+  const filter2 = allLayersOfRoadData.filter(item => currentIdOfRoadData.value[1].includes(item.id));
+  for (const f of filter2) {
+    f.func()
+    allLabels.value.push([f.dataType, f.fromCompany, f.fromUrl])
   }
 }
 
@@ -212,10 +264,7 @@ const openSettingLayerChange = () => {
 
 <template>
   <DataLayer
-      :img-from-company="bianliang1"
-      :img-from-url="bianliang2"
-      :road-from-company="bianliang3"
-      :road-from-url="bianliang4"
+      :labels="allLabels"
       @open-setting-layer-change="openSettingLayerChange"
   />
   <div id="cesiumContainer" ref="cesiumContainer"></div>

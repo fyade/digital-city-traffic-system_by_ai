@@ -7,20 +7,8 @@ import { useRouter } from "vue-router";
 const router = useRouter()
 const userStore = useUserStore();
 const props = defineProps({
-  imgFromCompany: {
-    type: String,
-    required: true
-  },
-  imgFromUrl: {
-    type: String,
-    required: true
-  },
-  roadFromCompany: {
-    type: String,
-    required: true
-  },
-  roadFromUrl: {
-    type: String,
+  labels: {
+    type: Array<Array<string>>,
     required: true
   },
 });
@@ -42,8 +30,9 @@ const windowOpen = (url: string) => {
     <div class="footer">
       <!--<p>因瓦片调用额度限制，若地图加载异常，请切换图层或次日重试。</p>-->
       <p>v{{ dashboardConfig.currentVersion }}</p>
-      <p>影像底图来自<span @click="windowOpen(props.imgFromUrl)">{{ props.imgFromCompany }}</span></p>
-      <p>路网数据来自<span @click="windowOpen(props.roadFromUrl)">{{ props.roadFromCompany }}</span></p>
+      <p v-for="(item, index) in props.labels" :key="index">
+        {{ item[0] }}来自<span @click="windowOpen(item[2])">{{ item[1] }}</span>
+      </p>
       <p @click="emits('openSettingLayerChange')"><span class="no-underline">设置</span></p>
       <p v-if="!userStore.ifLogin" @click="goToLogin"><span class="no-underline">登录</span></p>
       <p v-if="userStore.ifLogin" @click="userStore.logOut(false)"><span class="no-underline">退出登录</span></p>
