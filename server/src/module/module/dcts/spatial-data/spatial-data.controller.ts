@@ -1,9 +1,9 @@
-import { Controller, Get, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { SpatialDataService } from "./spatial-data.service";
 import { Authorize } from "../../../../decorator/authorize.decorator";
 import { R } from "../../../../common/R";
-import { AaaaaaaaDto } from "./dto";
+import { NodesWithWaysInPolygonDto } from "./dto";
 
 @Controller('/dcts/spatial-data')
 @ApiTags('数字孪生城市交通管理系统/空间数据')
@@ -13,15 +13,15 @@ export class SpatialDataController {
   constructor(private readonly spatialDataService: SpatialDataService) {
   }
 
-  @Get('/aaaaaaaaaaaaaa')
+  @Post('/nodes-with-ways-in-polygon')
   @ApiOperation({
-    summary: 'aaaaaaaaaaaaa',
+    summary: '查询多边形内的所有节点及有连接的道路',
   })
   @Authorize({
-    permission: 'dcts:spatialData:aaaaaaaaaaaaaaaaaaa',
-    label: 'aaaaaaaaaaaaaaaa',
+    permission: 'dcts:spatialData:nodesWithWaysInPolygon',
+    label: '查询多边形内的所有节点及有连接的道路',
   })
-  async aaaaaaaaaaaaa(@Query() dto: AaaaaaaaDto): Promise<R> {
-    return R.ok(null)
+  async nodesWithWaysInPolygon(@Body() dto: NodesWithWaysInPolygonDto): Promise<R> {
+    return this.spatialDataService.nodesWithWaysInPolygon(dto);
   }
 }

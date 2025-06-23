@@ -10,10 +10,12 @@ import {
 import { BaseContextService } from '../../../../base-context/base-context.service';
 import { PostgresqlPrismaoService } from "../../../../../prisma/postgresql.prismao.service";
 import { PageVo } from "../../../../../common/vo/PageVo";
+import { CommonPostgresqlPrismaoService } from "../../../../../prisma/common.postgresql.prismao.service";
 
 @Injectable()
 export class JunctionPositionService {
   constructor(
+      private readonly cpgprismao: CommonPostgresqlPrismaoService,
       private readonly pgprismao: PostgresqlPrismaoService,
       private readonly bcs: BaseContextService,
   ) {
@@ -27,7 +29,7 @@ export class JunctionPositionService {
     const pageSize = dto.pageSize;
     delete dto.pageNum;
     delete dto.pageSize;
-    const sqls = this.pgprismao.genSql<JunctionPositionDto>({
+    const sqls = this.cpgprismao.genSql<JunctionPositionDto>({
       type: 'selList',
       tblName: 'manual_junctions',
       clas: new JunctionPositionDto(),
@@ -39,7 +41,7 @@ export class JunctionPositionService {
       pageSize: pageSize,
     });
     const datas: JunctionPositionDto[] = await this.pgprismao.$queryRawUnsafe(sqls[0]);
-    const sqls2 = this.pgprismao.genSql<JunctionPositionDto>({
+    const sqls2 = this.cpgprismao.genSql<JunctionPositionDto>({
       type: 'selCount',
       tblName: 'manual_junctions',
       selParam: dto
@@ -50,7 +52,7 @@ export class JunctionPositionService {
   }
 
   async selAllJunctionPosition(dto: JunctionPositionSelAllDto): Promise<R> {
-    const sqls = this.pgprismao.genSql<JunctionPositionDto>({
+    const sqls = this.cpgprismao.genSql<JunctionPositionDto>({
       type: 'selAll',
       tblName: 'manual_junctions',
       clas: new JunctionPositionDto(),
@@ -65,7 +67,7 @@ export class JunctionPositionService {
 
   async selOnesJunctionPosition(ids: number[]): Promise<R> {
     ids = Object.values(ids).map(n => Number(n));
-    const sqls = this.pgprismao.genSql({
+    const sqls = this.cpgprismao.genSql({
       type: 'selByIds',
       tblName: 'manual_junctions',
       clas: new JunctionPositionDto(),
@@ -79,7 +81,7 @@ export class JunctionPositionService {
   }
 
   async selOneJunctionPosition(id: number): Promise<R> {
-    const sqls = this.pgprismao.genSql({
+    const sqls = this.cpgprismao.genSql({
       type: 'selById',
       tblName: 'manual_junctions',
       clas: new JunctionPositionDto(),
@@ -94,7 +96,7 @@ export class JunctionPositionService {
   }
 
   async insJunctionPosition(dto: JunctionPositionInsOneDto): Promise<R> {
-    const sqls = this.pgprismao.genSql<JunctionPositionDto>({
+    const sqls = this.cpgprismao.genSql<JunctionPositionDto>({
       type: 'ins',
       tblName: 'manual_junctions',
       datas: [dto],
@@ -107,7 +109,7 @@ export class JunctionPositionService {
   }
 
   async insJunctionPositions(dtos: JunctionPositionInsOneDto[]): Promise<R> {
-    const sqls = this.pgprismao.genSql<JunctionPositionDto>({
+    const sqls = this.cpgprismao.genSql<JunctionPositionDto>({
       type: 'ins',
       tblName: 'manual_junctions',
       datas: dtos,
@@ -124,7 +126,7 @@ export class JunctionPositionService {
   }
 
   async updJunctionPosition(dto: JunctionPositionUpdOneDto): Promise<R> {
-    const sqls = this.pgprismao.genSql<JunctionPositionDto>({
+    const sqls = this.cpgprismao.genSql<JunctionPositionDto>({
       type: 'upd',
       tblName: 'manual_junctions',
       datas: [dto],
@@ -137,7 +139,7 @@ export class JunctionPositionService {
   }
 
   async updJunctionPositions(dtos: JunctionPositionUpdOneDto[]): Promise<R> {
-    const sqls = this.pgprismao.genSql<JunctionPositionDto>({
+    const sqls = this.cpgprismao.genSql<JunctionPositionDto>({
       type: 'upd',
       tblName: 'manual_junctions',
       datas: dtos,
@@ -154,7 +156,7 @@ export class JunctionPositionService {
   }
 
   async delJunctionPosition(ids: number[]): Promise<R> {
-    const sqls = this.pgprismao.genSql<JunctionPositionDto>({
+    const sqls = this.cpgprismao.genSql<JunctionPositionDto>({
       type: 'del',
       tblName: 'manual_junctions',
       delIds: ids,

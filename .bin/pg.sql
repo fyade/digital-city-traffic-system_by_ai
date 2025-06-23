@@ -1,4 +1,5 @@
 -- ===== ===== ===== ===== ===== ===== 2025.06.11 ===== ===== ===== ===== ===== =====
+
 CREATE TABLE manual_junctions
 (
     id            SERIAL PRIMARY KEY,
@@ -29,6 +30,7 @@ CREATE TABLE manual_junctions
 CREATE INDEX idx_manual_junctions_geom ON manual_junctions USING GIST(geom);
 
 -- ===== ===== ===== ===== ===== ===== 2025.06.21 ===== ===== ===== ===== ===== =====
+
 drop table manual_junctions;
 
 CREATE TABLE manual_junctions
@@ -66,5 +68,22 @@ OR REPLACE VIEW planet_osm_nodes_view AS
 SELECT *,
        ST_SetSRID(ST_MakePoint(lon, lat), 4326) AS geom
 FROM planet_osm_nodes;
+
+-- ===== ===== ===== ===== ===== ===== 2025.06.22 ===== ===== ===== ===== ===== =====
+
+-- ##################################################
+-- 清空 pgsql 中的所有数据，单独导入 江苏省 的数据
+-- ##################################################
+
+-- ===== ===== ===== ===== ===== ===== 2025.06.23 ===== ===== ===== ===== ===== =====
+
+set search_path to jiangsu;
+
+create table jiangsu.table_name
+(
+    column_name integer not null
+        constraint table_name_pk
+            primary key
+);
 
 -- ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== =====

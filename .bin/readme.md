@@ -3,7 +3,7 @@
 OSM数据导入PostgreSQL：
 
 ```
-osm2pgsql -c -d your_database -U your_user -W -H localhost -P 5432 --slim -G --hstore your_data.osm.pbf
+osm2pgsql -c -d your_database --output-pgsql-schema=schema -U your_user -W -H localhost -P 5432 --slim --proj=4326 --hstore your_data.osm.pbf
 ```
 
 ## 二、数据库结构说明
@@ -12,7 +12,7 @@ osm2pgsql -c -d your_database -U your_user -W -H localhost -P 5432 --slim -G --h
 
 #### 2.1.1、digital-city-traffic-system：
 
-##### 2.1.1.1、public库：
+##### 2.1.1.1、public 架构表：
 
 | 表名                 | 含义                                                  |
 |--------------------|-----------------------------------------------------|
@@ -24,7 +24,7 @@ osm2pgsql -c -d your_database -U your_user -W -H localhost -P 5432 --slim -G --h
 | planet_osm_roads   | 包含与line表相同的部分数据，但选定了用于低缩放渲染的属性，它不仅包含道路              |
 | planet_osm_polygon | 通过封闭方式和标记为type=multipolygon或type=boundary关系创建的多边形几何 |
 
-##### 2.1.1.2、字段含义：
+##### 2.1.1.2、public 架构表字段含义：
 
 ##### 公共字段：
 

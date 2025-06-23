@@ -2,9 +2,12 @@
 import * as Cesium from "cesium";
 import { h, onMounted, ref, useTemplateRef } from "vue";
 import DataLayer from "@/views/dashboard/index/dataLayer.vue";
+import DebugPanel from '@/views/dashboard/debugPanel/index.vue';
 import { geoserverConfig } from "@dcts/config";
 import { LayerDto } from "@/views/dashboard/index/dto.ts";
 import { NotificationReactive, NSpin, useNotification } from "naive-ui";
+import { useCesium } from "@/views/dashboard/utils/useCesium.ts";
+import { createCesiumUtils, getCesiumUtils } from "@/views/dashboard/utils/createCesiumUtils.ts";
 
 onMounted(async () => {
   await init()
@@ -15,6 +18,7 @@ const notification = useNotification();
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 变量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 const cesiumContainer = useTemplateRef<HTMLDivElement>("cesiumContainer");
 let viewer: Cesium.Viewer | null = null;
+let cesiumUtils: ReturnType<typeof createCesiumUtils> | null = null;
 // 图层是否正在加载
 const layerLoading = ref(false)
 // 右上角的 Loading 通知
@@ -25,7 +29,7 @@ let layerLoadingTimer: NodeJS.Timeout | null = null
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 数据 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 // 所有图层的链接及当前图层index
 const currentIdOfBaseMap = ref([[''], ['a1']])
-const currentIdOfRoadData = ref([[''], ['b1']])
+const currentIdOfRoadData = ref([[''], ['']])
 const allLayersOfBaseMap: LayerDto[] = [
   {
     id: 'a1',
@@ -51,7 +55,7 @@ const allLayersOfBaseMap: LayerDto[] = [
 const allLayersOfRoadData: LayerDto[] = [
   {
     id: 'b1',
-    name: 'OSM路网数据[路网](2025.05.16)',
+    name: 'OSM路网数据[路网](2025.06.22)',
     preview: '',
     func: () => {
       if (!viewer) {
@@ -81,20 +85,14 @@ const allLabels = ref<string[][]>([])
 const init = async () => {
   console.info('开始加载');
 
-  viewer = new Cesium.Viewer('cesiumContainer', {
-    infoBox: false, // 属性面板
-    selectionIndicator: false, // 选择指示器
-    geocoder: false, // 搜索框
-    homeButton: false, // 主页按钮
-    sceneModePicker: false, // 场景模式选择器
-    baseLayerPicker: false, // 底图选择器
-    navigationHelpButton: false, // 帮助按钮
-    animation: false, // 动画控制器
-    timeline: false, // 时间轴
-    fullscreenButton: false, // 全屏按钮
-  });
-  (viewer.cesiumWidget.creditContainer as HTMLElement).style.display = "none";
-  setViewTo(118.92844631852402, 32.12752744546319, 10000)
+  const useCesium1 = await useCesium('cesiumContainer');
+  if (!useCesium1.viewer.value) {
+    return;
+  }
+  viewer = useCesium1.viewer.value
+  cesiumUtils = getCesiumUtils()
+
+  cesiumUtils?.setViewTo(118.92844631852402, 32.12752744546319, 10000)
 
   // 获取默认的影像图层
   const defaultImagery = viewer.imageryLayers.get(0);
@@ -149,8 +147,6 @@ const init = async () => {
   })
   // 镜头移动结束事件
   viewer.camera.moveEnd.addEventListener(() => {
-    const viewCornerCoordinates = getViewCornerCoordinates();
-    console.log(viewCornerCoordinates)
   })
   // 图层点击事件
   viewer.cesiumWidget.canvas.addEventListener('click', e => {
@@ -170,73 +166,6 @@ const init = async () => {
 }
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 工具函数 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-/**
- * 设置视角到
- * @param lon
- * @param lat
- * @param height
- * @param ifFly
- */
-const setViewTo = (lon: number, lat: number, height: number, ifFly = false): void => {
-  if (ifFly) {
-    viewer?.camera.flyTo({
-      destination: Cesium.Cartesian3.fromDegrees(lon, lat, height)
-    })
-  } else {
-    viewer?.camera.setView({
-      destination: Cesium.Cartesian3.fromDegrees(lon, lat, height)
-    })
-  }
-}
-/**
- * 获取可视区域的四个角的经纬度坐标
- */
-const getViewCornerCoordinates = () => {
-  const scene = viewer?.scene;
-  const camera = viewer?.camera;
-  const canvas = viewer?.canvas;
-
-  if (!scene || !camera || !canvas) {
-    return
-  }
-
-  // 屏幕四个角的像素坐标
-  const corners = [
-    {x: 0, y: 0},
-    {x: canvas.width, y: 0},
-    {x: canvas.width, y: canvas.height},
-    {x: 0, y: canvas.height},
-  ]
-
-  const cartographicCorners: (null | { lon: number, lat: number })[] = []
-
-  corners.forEach(corner => {
-    // 生成射线
-    const ray = camera.getPickRay(new Cesium.Cartesian2(corner.x, corner.y));
-    if (!ray) {
-      cartographicCorners.push(null);
-      return;
-    }
-    // 射线与地球表面相交点
-    const cartesian = scene.globe.pick(ray, scene);
-    if (!cartesian) {
-      cartographicCorners.push(null);
-      return;
-    }
-    // 转换为经纬度坐标
-    const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
-    cartographicCorners.push(cartographic);
-  });
-
-  // 转换为经纬度十进制度数
-  return cartographicCorners.map(c => {
-    if (!c) return null;
-    return {
-      lon: Cesium.Math.toDegrees(c.longitude),
-      lat: Cesium.Math.toDegrees(c.latitude)
-    };
-  });
-}
 /**
  * 设置图层
  */
@@ -260,18 +189,30 @@ const settingDrawerActive = ref(false)
 const openSettingLayerChange = () => {
   settingDrawerActive.value = true
 }
+// 调试面板抽屉
+const debugDrawerActive = ref(false)
+const openDebugLayerChange = () => {
+  debugDrawerActive.value = true
+}
 </script>
 
 <template>
   <DataLayer
       :labels="allLabels"
       @open-setting-layer-change="openSettingLayerChange"
+      @open-debug-panel="openDebugLayerChange"
   />
   <div id="cesiumContainer" ref="cesiumContainer"></div>
 
   <n-drawer v-model:show="settingDrawerActive" width="50rem">
     <n-drawer-content title="设置">
       设置
+    </n-drawer-content>
+  </n-drawer>
+
+  <n-drawer v-model:show="debugDrawerActive" width="50rem">
+    <n-drawer-content title="调试面板">
+      <DebugPanel/>
     </n-drawer-content>
   </n-drawer>
 

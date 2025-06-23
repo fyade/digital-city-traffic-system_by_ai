@@ -12,7 +12,7 @@ const props = defineProps({
     required: true
   },
 });
-const emits = defineEmits(['openSettingLayerChange']);
+const emits = defineEmits(['openSettingLayerChange', 'openDebugPanel']);
 
 const goAdminPanel = () => {
   router.push('/dashboard/admin-panel');
@@ -37,6 +37,7 @@ const windowOpen = (url: string) => {
       <p v-if="!userStore.ifLogin" @click="goToLogin"><span class="no-underline">登录</span></p>
       <p v-if="userStore.ifLogin" @click="userStore.logOut(false)"><span class="no-underline">退出登录</span></p>
       <p v-if="userStore.ifLogin" @click="goAdminPanel"><span class="no-underline">管理员面板</span></p>
+      <p v-if="userStore.ifLogin" @click="emits('openDebugPanel')"><span class="no-underline">调试面板</span></p>
       <p v-if="userStore.ifLogin" @click="goHome"><span class="no-underline">前往管理端</span></p>
     </div>
   </div>

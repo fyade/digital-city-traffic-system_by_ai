@@ -18,6 +18,7 @@ pnpm-lock.yaml
 
 /prisma-generated/client
 /prisma-generated/client-postgresql
+/prisma-generated/client-postgresql-jiangsu
 /prisma-generated.zip
 /prisma/migrations
 
