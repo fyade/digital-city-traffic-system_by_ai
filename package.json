@@ -13,10 +13,9 @@
     "[build] [admin ] build:prod": "cross-env NODE_ENV=prod pnpm --filter @dcts/admin build:prod",
     "[build] [server] build:wp": "pnpm generate:prisma && cross-env NODE_ENV=prod pnpm --filter @dcts/server build:wp",
     "[build] all": "pnpm \"[build] [config & common]\" && pnpm \"[build] [server] build:wp\" && pnpm \"[build] [admin ] build:prod\"",
-    "generate:prisma": "pnpm generate:prisma:mysql && pnpm generate:prisma:postgresql && pnpm generate:prisma:postgresql:jiangsu",
+    "generate:prisma": "pnpm generate:prisma:mysql && pnpm generate:prisma:postgresql",
     "generate:prisma:mysql": "npx prisma generate --schema=./prisma/schema.prisma",
-    "generate:prisma:postgresql": "npx prisma generate --schema=./prisma/postgresql.schema.prisma",
-    "generate:prisma:postgresql:jiangsu": "npx prisma generate --schema=./prisma/jiangsu.postgresql.schema.prisma"
+    "generate:prisma:postgresql": "npx prisma generate --schema=./prisma/postgresql.schema.prisma"
   },
   "keywords": [],
   "author": "",

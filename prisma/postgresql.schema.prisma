@@ -44,3 +44,315 @@ model spatial_ref_sys {
   srtext    String? @dbPostgresql.VarChar(2048)
   proj4text String? @dbPostgresql.VarChar(2048)
 }
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model planet_osm_line {
+  osm_id             BigInt?
+  access             String?
+  addr_housename     String?                  @map("addr:housename")
+  addr_housenumber   String?                  @map("addr:housenumber")
+  addr_interpolation String?                  @map("addr:interpolation")
+  admin_level        String?
+  aerialway          String?
+  aeroway            String?
+  amenity            String?
+  area               String?
+  barrier            String?
+  bicycle            String?
+  brand              String?
+  bridge             String?
+  boundary           String?
+  building           String?
+  construction       String?
+  covered            String?
+  culvert            String?
+  cutting            String?
+  denomination       String?
+  disused            String?
+  embankment         String?
+  foot               String?
+  generator_source   String?                  @map("generator:source")
+  harbour            String?
+  highway            String?
+  historic           String?
+  horse              String?
+  intermittent       String?
+  junction           String?
+  landuse            String?
+  layer              String?
+  leisure            String?
+  lock               String?
+  man_made           String?
+  military           String?
+  motorcar           String?
+  name               String?
+  natural            String?
+  office             String?
+  oneway             String?
+  operator           String?
+  place              String?
+  population         String?
+  power              String?
+  power_source       String?
+  public_transport   String?
+  railway            String?
+  ref                String?
+  religion           String?
+  route              String?
+  service            String?
+  shop               String?
+  sport              String?
+  surface            String?
+  toll               String?
+  tourism            String?
+  tower_type         String?                  @map("tower:type")
+  tracktype          String?
+  tunnel             String?
+  water              String?
+  waterway           String?
+  wetland            String?
+  width              String?
+  wood               String?
+  z_order            Int?
+  way_area           Float?                   @dbPostgresql.Real
+  tags               Unsupported("hstore")?
+  way                Unsupported("geometry")?
+
+  @@index([osm_id])
+  @@index([way], type: Gist)
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model planet_osm_point {
+  osm_id             BigInt?
+  access             String?
+  addr_housename     String?                  @map("addr:housename")
+  addr_housenumber   String?                  @map("addr:housenumber")
+  addr_interpolation String?                  @map("addr:interpolation")
+  admin_level        String?
+  aerialway          String?
+  aeroway            String?
+  amenity            String?
+  area               String?
+  barrier            String?
+  bicycle            String?
+  brand              String?
+  bridge             String?
+  boundary           String?
+  building           String?
+  capital            String?
+  construction       String?
+  covered            String?
+  culvert            String?
+  cutting            String?
+  denomination       String?
+  disused            String?
+  ele                String?
+  embankment         String?
+  foot               String?
+  generator_source   String?                  @map("generator:source")
+  harbour            String?
+  highway            String?
+  historic           String?
+  horse              String?
+  intermittent       String?
+  junction           String?
+  landuse            String?
+  layer              String?
+  leisure            String?
+  lock               String?
+  man_made           String?
+  military           String?
+  motorcar           String?
+  name               String?
+  natural            String?
+  office             String?
+  oneway             String?
+  operator           String?
+  place              String?
+  population         String?
+  power              String?
+  power_source       String?
+  public_transport   String?
+  railway            String?
+  ref                String?
+  religion           String?
+  route              String?
+  service            String?
+  shop               String?
+  sport              String?
+  surface            String?
+  toll               String?
+  tourism            String?
+  tower_type         String?                  @map("tower:type")
+  tunnel             String?
+  water              String?
+  waterway           String?
+  wetland            String?
+  width              String?
+  wood               String?
+  z_order            Int?
+  tags               Unsupported("hstore")?
+  way                Unsupported("geometry")?
+
+  @@index([osm_id])
+  @@index([way], type: Gist)
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model planet_osm_polygon {
+  osm_id             BigInt?
+  access             String?
+  addr_housename     String?                  @map("addr:housename")
+  addr_housenumber   String?                  @map("addr:housenumber")
+  addr_interpolation String?                  @map("addr:interpolation")
+  admin_level        String?
+  aerialway          String?
+  aeroway            String?
+  amenity            String?
+  area               String?
+  barrier            String?
+  bicycle            String?
+  brand              String?
+  bridge             String?
+  boundary           String?
+  building           String?
+  construction       String?
+  covered            String?
+  culvert            String?
+  cutting            String?
+  denomination       String?
+  disused            String?
+  embankment         String?
+  foot               String?
+  generator_source   String?                  @map("generator:source")
+  harbour            String?
+  highway            String?
+  historic           String?
+  horse              String?
+  intermittent       String?
+  junction           String?
+  landuse            String?
+  layer              String?
+  leisure            String?
+  lock               String?
+  man_made           String?
+  military           String?
+  motorcar           String?
+  name               String?
+  natural            String?
+  office             String?
+  oneway             String?
+  operator           String?
+  place              String?
+  population         String?
+  power              String?
+  power_source       String?
+  public_transport   String?
+  railway            String?
+  ref                String?
+  religion           String?
+  route              String?
+  service            String?
+  shop               String?
+  sport              String?
+  surface            String?
+  toll               String?
+  tourism            String?
+  tower_type         String?                  @map("tower:type")
+  tracktype          String?
+  tunnel             String?
+  water              String?
+  waterway           String?
+  wetland            String?
+  width              String?
+  wood               String?
+  z_order            Int?
+  way_area           Float?                   @dbPostgresql.Real
+  tags               Unsupported("hstore")?
+  way                Unsupported("geometry")?
+
+  @@index([osm_id])
+  @@index([way], type: Gist)
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model planet_osm_roads {
+  osm_id             BigInt?
+  access             String?
+  addr_housename     String?                  @map("addr:housename")
+  addr_housenumber   String?                  @map("addr:housenumber")
+  addr_interpolation String?                  @map("addr:interpolation")
+  admin_level        String?
+  aerialway          String?
+  aeroway            String?
+  amenity            String?
+  area               String?
+  barrier            String?
+  bicycle            String?
+  brand              String?
+  bridge             String?
+  boundary           String?
+  building           String?
+  construction       String?
+  covered            String?
+  culvert            String?
+  cutting            String?
+  denomination       String?
+  disused            String?
+  embankment         String?
+  foot               String?
+  generator_source   String?                  @map("generator:source")
+  harbour            String?
+  highway            String?
+  historic           String?
+  horse              String?
+  intermittent       String?
+  junction           String?
+  landuse            String?
+  layer              String?
+  leisure            String?
+  lock               String?
+  man_made           String?
+  military           String?
+  motorcar           String?
+  name               String?
+  natural            String?
+  office             String?
+  oneway             String?
+  operator           String?
+  place              String?
+  population         String?
+  power              String?
+  power_source       String?
+  public_transport   String?
+  railway            String?
+  ref                String?
+  religion           String?
+  route              String?
+  service            String?
+  shop               String?
+  sport              String?
+  surface            String?
+  toll               String?
+  tourism            String?
+  tower_type         String?                  @map("tower:type")
+  tracktype          String?
+  tunnel             String?
+  water              String?
+  waterway           String?
+  wetland            String?
+  width              String?
+  wood               String?
+  z_order            Int?
+  way_area           Float?                   @dbPostgresql.Real
+  tags               Unsupported("hstore")?
+  way                Unsupported("geometry")?
+
+  @@index([osm_id])
+  @@index([way], type: Gist)
+  @@ignore
+}

@@ -17,9 +17,9 @@ export class SpatialDataService {
         .join(', ');
     // 公共sql
     const publicSql = `
-        FROM jiangsu.planet_osm_line,
+        FROM planet_osm_line,
              polygon
-        WHERE ST_Intersects(jiangsu.planet_osm_line.way, polygon.geom)
+        WHERE ST_Intersects(planet_osm_line.way, polygon.geom)
           AND highway IN
               ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'service')
           AND (access IS NULL OR access NOT IN ('no', 'private'))
