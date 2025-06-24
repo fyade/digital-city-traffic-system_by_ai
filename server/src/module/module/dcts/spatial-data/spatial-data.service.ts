@@ -54,7 +54,7 @@ export class SpatialDataService {
                                          lon,
                                          tags,
                                          ST_SetSRID(ST_MakePoint(lon / 10000000.0, lat / 10000000.0), 4326) AS geom
-                                  FROM public.planet_osm_nodes
+                                  FROM planet_osm_nodes
                                   WHERE ST_Contains((SELECT geom FROM polygon)
                                             , ST_SetSRID(ST_MakePoint(lon / 10000000.0
                                                              , lat / 10000000.0)

@@ -6,8 +6,7 @@ import DebugPanel from '@/views/dashboard/debugPanel/index.vue';
 import { geoserverConfig } from "@dcts/config";
 import { LayerDto } from "@/views/dashboard/index/dto.ts";
 import { NotificationReactive, NSpin, useNotification } from "naive-ui";
-import { useCesium } from "@/views/dashboard/utils/useCesium.ts";
-import { createCesiumUtils, getCesiumUtils } from "@/views/dashboard/utils/createCesiumUtils.ts";
+import { UseCesium } from "@/views/dashboard/utils/useCesium.ts";
 
 onMounted(async () => {
   await init()
@@ -18,7 +17,7 @@ const notification = useNotification();
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 变量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 const cesiumContainer = useTemplateRef<HTMLDivElement>("cesiumContainer");
 let viewer: Cesium.Viewer | null = null;
-let cesiumUtils: ReturnType<typeof createCesiumUtils> | null = null;
+let cesiumClass :UseCesium|null= null;
 // 图层是否正在加载
 const layerLoading = ref(false)
 // 右上角的 Loading 通知
@@ -29,7 +28,7 @@ let layerLoadingTimer: NodeJS.Timeout | null = null
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 数据 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 // 所有图层的链接及当前图层index
 const currentIdOfBaseMap = ref([[''], ['a1']])
-const currentIdOfRoadData = ref([[''], ['']])
+const currentIdOfRoadData = ref([[''], ['b1']])
 const allLayersOfBaseMap: LayerDto[] = [
   {
     id: 'a1',
@@ -85,14 +84,15 @@ const allLabels = ref<string[][]>([])
 const init = async () => {
   console.info('开始加载');
 
-  const useCesium1 = await useCesium('cesiumContainer');
-  if (!useCesium1.viewer.value) {
-    return;
+  const useCesium = new UseCesium({container: 'cesiumContainer'});
+  const viewer1 = useCesium.getViewer();
+  if (!viewer1) {
+    return
   }
-  viewer = useCesium1.viewer.value
-  cesiumUtils = getCesiumUtils()
+  cesiumClass = useCesium;
+  viewer = viewer1;
 
-  cesiumUtils?.setViewTo(118.92844631852402, 32.12752744546319, 10000)
+  cesiumClass.setViewTo(118.92844631852402, 32.12752744546319, 10000)
 
   // 获取默认的影像图层
   const defaultImagery = viewer.imageryLayers.get(0);

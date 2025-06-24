@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import { getCesiumUtils } from "@/views/dashboard/utils/createCesiumUtils.ts";
 import { nodesWithWaysInPolygonApi } from "@/api/module/dcts/spatialData.ts";
+import { UseCesium } from "@/views/dashboard/utils/useCesium.ts";
 
-const cesiumUtils = getCesiumUtils();
+const useCesium = new UseCesium();
 
 const a1 = () => {
-  const coordinates = cesiumUtils?.getViewCornerCoordinates();
-  const points: { lon: number, lat: number }[] = []
-  coordinates?.forEach((coordinate) => coordinate ? points.push(coordinate) : null)
-  points.push(points[0])
+  const coordinates = useCesium.getViewCornerCoordinates();
+  if (!coordinates) {
+    return
+  }
+  coordinates.push(coordinates[0])
   nodesWithWaysInPolygonApi({
     version: '1.0',
-    points: points
+    points: coordinates
   }).then((res) => {
     console.log(res)
   })
