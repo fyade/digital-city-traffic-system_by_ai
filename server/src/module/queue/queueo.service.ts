@@ -1,13 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { InjectQueue } from "@nestjs/bullmq";
 import { Queue } from "bullmq";
-import { LogOperationQueueJobDataDto, LogScheduledTaskQueueJobDataDto } from "./dto";
+import { LogOperationQueueJobDataDto, LogOperationWsQueueJobDataDto, LogScheduledTaskQueueJobDataDto } from "./dto";
 
 @Injectable()
 export class QueueoService {
   constructor(
-    @InjectQueue('log-operation-queue') private readonly logOperationQueue: Queue,
-    @InjectQueue('log-scheduled-task-queue') private readonly logScheduledTaskQueue: Queue,
+      @InjectQueue('log-operation-queue') private readonly logOperationQueue: Queue,
+      @InjectQueue('log-operation-ws-queue') private readonly logOperationWsQueue: Queue,
+      @InjectQueue('log-scheduled-task-queue') private readonly logScheduledTaskQueue: Queue,
   ) {
   }
 
@@ -17,6 +18,14 @@ export class QueueoService {
 
   async addLogOperationQueue(name: string, data: LogOperationQueueJobDataDto) {
     await this.logOperationQueue.add(name, data)
+  }
+
+  getLogOperationWsQueue(): Queue<LogOperationWsQueueJobDataDto> {
+    return this.logOperationWsQueue
+  }
+
+  async addLogOperationWsQueue(name: string, data: LogOperationWsQueueJobDataDto) {
+    await this.logOperationWsQueue.add(name, data)
   }
 
   getLogScheduledTaskQueue(): Queue<LogScheduledTaskQueueJobDataDto> {

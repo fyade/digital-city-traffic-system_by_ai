@@ -13,7 +13,7 @@ export class ResponseInterceptor implements NestInterceptor {
   constructor(
     private readonly reflector: Reflector,
     private readonly bcs: BaseContextService,
-    private readonly queueoService: QueueoService,
+    private readonly queueo: QueueoService,
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> | Promise<Observable<any>> {
@@ -33,7 +33,7 @@ export class ResponseInterceptor implements NestInterceptor {
         const reqId = userData.reqId;
         const userId = userData.userId;
         const loginRole = userData.loginRole;
-        await this.queueoService.addLogOperationQueue('ins', {
+        await this.queueo.addLogOperationQueue('ins', {
           permission: permission,
           request: ipInfoFromRequest,
           ifSuccess: response ? response.code === 200 : 'O',
@@ -57,7 +57,7 @@ export class ResponseInterceptor implements NestInterceptor {
         const reqId = userData.reqId;
         const userId = userData.userId;
         const loginRole = userData.loginRole;
-        await this.queueoService.addLogOperationQueue('ins', {
+        await this.queueo.addLogOperationQueue('ins', {
           permission: permission,
           request: ipInfoFromRequest,
           ifSuccess: false,

@@ -24,3 +24,15 @@ export class LogScheduledTaskQueueJobDataDto {
   remark: string;
   createTime: Date;
 }
+
+export class LogOperationWsQueueJobDataDto {
+  socketId: string
+  callIp: string
+  hostName: string
+  wsPerms: string
+  userId: string
+  loginRole: string
+  ifSuccess: string
+  remark: string
+  createTime: Date;
+}

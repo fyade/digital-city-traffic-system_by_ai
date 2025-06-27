@@ -3,6 +3,7 @@ import { WsService } from './ws.service';
 
 @Global()
 @Module({
-  providers: [WsService]
+  providers: [WsService],
+  exports: [WsService],
 })
 export class WsModule {}

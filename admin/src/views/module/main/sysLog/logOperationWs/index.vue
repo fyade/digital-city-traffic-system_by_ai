@@ -483,13 +483,24 @@ const fCan2 = () => {
       <!--<el-table-column fixed prop="id" :label="logOperationWsDict.id" width="180"/>-->
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
-      <el-table-column prop="socketId" :label="logOperationWsDict.socketId" width="120"/>
-      <el-table-column prop="callIp" :label="logOperationWsDict.callIp" width="120"/>
-      <el-table-column prop="hostName" :label="logOperationWsDict.hostName" width="120"/>
-      <el-table-column prop="wsPerms" :label="logOperationWsDict.wsPerms" width="120"/>
+      <el-table-column prop="socketId" :label="logOperationWsDict.socketId" width="180"/>
+      <el-table-column prop="callIp" :label="logOperationWsDict.callIp" width="180"/>
+      <el-table-column prop="hostName" :label="logOperationWsDict.hostName" width="180"/>
+      <el-table-column prop="wsPerms" :label="logOperationWsDict.wsPerms" width="240"/>
       <el-table-column prop="userId" :label="logOperationWsDict.userId" width="120"/>
       <el-table-column prop="loginRole" :label="logOperationWsDict.loginRole" width="120"/>
-      <el-table-column prop="ifSuccess" :label="logOperationWsDict.ifSuccess" width="120"/>
+      <el-table-column prop="ifSuccess" :label="logOperationWsDict.ifSuccess" width="120">
+        <template #header>
+          <Tooltip content="Y表示成功，N表示失败，O表示接口无返回值，无法确定是否成功。">
+            {{ logOperationWsDict.ifSuccess }}
+          </Tooltip>
+        </template>
+        <template #default="row">
+          <el-tag v-if="row.ifSuccess === final.Y" type="success">成功</el-tag>
+          <el-tag v-else-if="row.ifSuccess === final.N" type="danger">失败</el-tag>
+          <el-tag v-else type="info">不详</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="remark" :label="logOperationWsDict.remark" width="120"/>
       <!--在此上方添加表格列-->
       <!--<el-table-column prop="createRole" :label="logOperationWsDict.createRole" width="120"/>-->

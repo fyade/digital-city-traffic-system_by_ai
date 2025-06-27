@@ -3,6 +3,7 @@ import { QueueService } from "./queue.service";
 import { BullModule } from "@nestjs/bullmq";
 import { QueueoService } from "./queueo.service";
 import { LogOperationConsumer } from "./log-operation.consumer";
+import { LogOperationWsConsumer } from "./log-operation-ws.consumer";
 import { LogScheduledTaskConsumer } from "./log-scheduled-task.consumer";
 import { serverConfig } from "@dcts/config";
 
@@ -24,14 +25,16 @@ const redisConfig = serverConfig.currentConfig().redis;
       }
     }),
     BullModule.registerQueue(
-      { name: 'log-operation-queue' },
-      { name: 'log-scheduled-task-queue' }
+        {name: 'log-operation-queue'},
+        {name: 'log-operation-ws-queue'},
+        {name: 'log-scheduled-task-queue'}
     ),
   ],
   providers: [
     QueueService,
     QueueoService,
     LogOperationConsumer,
+    LogOperationWsConsumer,
     LogScheduledTaskConsumer,
   ],
   exports: [

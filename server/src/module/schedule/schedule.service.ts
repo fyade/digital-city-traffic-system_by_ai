@@ -11,7 +11,7 @@ export class ScheduleService implements OnModuleInit {
   constructor(
     private readonly schedulerRegistry: SchedulerRegistry,
     private readonly prismao: PrismaoService,
-    private readonly queueoService: QueueoService,
+    private readonly queueo: QueueoService,
     private readonly winston: WinstonService,
   ) {}
 
@@ -47,7 +47,7 @@ export class ScheduleService implements OnModuleInit {
         this.winston.error(e);
         ifSuccess = false;
       }
-      await this.queueoService.addLogScheduledTaskQueue('ins', {
+      await this.queueo.addLogScheduledTaskQueue('ins', {
         taskTarget: name,
         operateType: 'by:self',
         ifSuccess: ifSuccess ? base.Y : base.N,
@@ -79,7 +79,7 @@ export class ScheduleService implements OnModuleInit {
           this.winston.error(e);
           ifSuccess = false;
         }
-        await this.queueoService.addLogScheduledTaskQueue('ins', {
+        await this.queueo.addLogScheduledTaskQueue('ins', {
           taskTarget: name,
           operateType: 'user:trigger',
           ifSuccess: ifSuccess ? base.Y : base.N,
