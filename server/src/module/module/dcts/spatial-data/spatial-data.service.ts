@@ -20,35 +20,28 @@ export class SpatialDataService {
         FROM planet_osm_line,
              polygon
         WHERE ST_Intersects(planet_osm_line.way, polygon.geom)
-          AND highway IN
-              ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'service')
+          AND highway IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'service')
           AND (access IS NULL OR access NOT IN ('no', 'private'))
     `;
     // 查询所有道路
     const selAllRoadsSql = `
-        WITH polygon AS (SELECT ST_SetSRID(
-                                        ST_GeomFromText('POLYGON((${pointsstring}))'),
-                                        4326
-                                ) AS geom)
+        WITH polygon AS (SELECT ST_SetSRID(ST_GeomFromText('POLYGON((${pointsstring}))'), 4326) AS geom)
         SELECT osm_id,
                name,
                highway,
                motorcar,
                st_astext(way) as way
-            ${publicSql};
+        ${publicSql};
     `
     // 查询所有节点
     const selAllNodesSql = `
-        WITH polygon AS (SELECT ST_SetSRID(
-                                        ST_GeomFromText('POLYGON((${pointsstring}))'),
-                                        4326
-                                ) AS geom),
+        WITH polygon AS (SELECT ST_SetSRID(ST_GeomFromText('POLYGON((${pointsstring}))'), 4326) AS geom),
              motor_vehicle_roads AS (SELECT osm_id,
                                             name,
                                             highway,
                                             motorcar,
                                             way
-                                                ${publicSql}),
+                                     ${publicSql}),
              nodes_in_polygon AS (SELECT id,
                                          lat,
                                          lon,
@@ -56,17 +49,18 @@ export class SpatialDataService {
                                          ST_SetSRID(ST_MakePoint(lon / 10000000.0, lat / 10000000.0), 4326) AS geom
                                   FROM planet_osm_nodes
                                   WHERE ST_Contains((SELECT geom FROM polygon)
-                                            , ST_SetSRID(ST_MakePoint(lon / 10000000.0
-                                                             , lat / 10000000.0)
-                                                        , 4326)))
-                ,
-             nodes_linked_to_roads AS (SELECT DISTINCT n.id, n.lat, n.lon, n.tags
-                                       FROM nodes_in_polygon n
-                                                JOIN motor_vehicle_roads r
-                                                     ON ST_DWithin(n.geom, r.way, 0.00001) -- 约1米距离阈值
-             )
-        SELECT *
-        FROM nodes_linked_to_roads;
+                                            , ST_SetSRID(ST_MakePoint(lon / 10000000.0, lat / 10000000.0), 4326))),
+             node_road_connections AS (select n.id,
+                                              n.lat,
+                                              n.lon,
+                                              n.tags,
+                                              count(DISTINCT r.osm_id) as road_count
+                                       from nodes_in_polygon n
+                                                join motor_vehicle_roads r on st_dwithin(n.geom, r.way, 0.00001)
+                                       group by n.id, n.lat, n.lon, n.tags
+                                       having count(distinct r.osm_id) >= 2)
+        SELECT id, CAST((lon / 10000000.0) AS FLOAT) AS lon, CAST((lat / 10000000.0) AS FLOAT) AS lat, tags
+        FROM node_road_connections;
     `
     const allRoads = await this.pgprismao.$queryRawUnsafe(selAllRoadsSql);
     const allNodes = await this.pgprismao.$queryRawUnsafe(selAllNodesSql);

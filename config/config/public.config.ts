@@ -1,0 +1,20 @@
+import { getCurrentConfig } from "../index.js";
+import { configProd } from "./public-prod.config.js";
+
+export const currentVersion = '0.3.4'
+
+export const currentConfig = () => {
+  return getCurrentConfig(config) as unknown as typeof config.dev
+}
+
+const config = {
+  dev: {
+    mode: 'dev',
+    fPort: 7947,
+    bPort: 8937,
+    bWsPort: 8938,
+    staticRoot: '/static/file',
+    SECRET_KEY: 'ajkfbdaJHG@Dk',
+  },
+  prod: configProd,
+}

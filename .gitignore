@@ -5,7 +5,8 @@ node_modules
 pnpm-lock.yaml
 .editorconfig
 
-/config/*/*.config.ts
+#/config/*/*.config.ts
+/config/*/*prod.config.ts
 
 /admin/public/Assets
 /admin/public/ThirdParty

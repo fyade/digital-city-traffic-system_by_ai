@@ -652,6 +652,20 @@ model log_operation {
   create_time  DateTime @default(now())
 }
 
+// 0.2.2 系统 WebSocket 操作日志表
+model log_operation_ws {
+  id          Int      @id @default(autoincrement()) @db.Int
+  socket_id   String   @db.VarChar(40)
+  call_ip     String   @db.VarChar(20)
+  host_name   String   @db.VarChar(100)
+  ws_perms    String   @db.VarChar(100)
+  user_id     String   @db.VarChar(10)
+  login_role  String   @db.VarChar(30)
+  if_success  String   @db.Char(1)
+  remark      String?  @db.VarChar(100)
+  create_time DateTime @default(now())
+}
+
 // 0.3 算法调用日志表
 model log_algorithm_call {
   id                        Int                       @id @default(autoincrement()) @db.Int

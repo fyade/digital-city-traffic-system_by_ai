@@ -30,6 +30,7 @@ import { ViewRealTimeModule } from './sys-log/view-real-time/view-real-time.modu
 import { SysConfigModule } from './sys-manage/sys-config/sys-config.module';
 import { MenuThrottleModule } from './sys-manage/menu-throttle/menu-throttle.module';
 import { UserApiKeyModule } from './sys-manage/user-api-key/user-api-key.module';
+import { LogOperationWsModule } from './sys-log/log-operation-ws/log-operation-ws.module';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { UserApiKeyModule } from './sys-manage/user-api-key/user-api-key.module'
     SysConfigModule,
     MenuThrottleModule,
     UserApiKeyModule,
+    LogOperationWsModule,
   ],
 })
 export class MainModule {}

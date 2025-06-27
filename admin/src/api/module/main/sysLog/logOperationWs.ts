@@ -1,0 +1,90 @@
+import request from "@/api/request.ts";
+import { ApiConfig } from "@/type/tablePage.ts";
+import { LogOperationWsDto, LogOperationWsUpdDto } from "@/type/module/main/sysLog/logOperationWs.ts";
+
+export const logOperationWsApi: ApiConfig<LogOperationWsDto, LogOperationWsUpdDto> = {
+  /**
+   * 分页查询
+   * @param params
+   */
+  selectList: (params) => request({
+    url: '/main/sys-log/log-operation-ws',
+    method: 'GET',
+    params: params
+  }),
+  /**
+   * 查询所有
+   * @param params
+   */
+  selectAll: (params) => request({
+    url: '/main/sys-log/log-operation-ws/all',
+    method: 'GET',
+    params: params
+  }),
+  /**
+   * 查询单个
+   * @param id
+   */
+  selectById: (id) => request({
+    url: `/main/sys-log/log-operation-ws/${id}`,
+    method: 'GET'
+  }),
+  /**
+   * 查询多个
+   * @param ids
+   */
+  selectByIds: (ids) => request({
+    url: `/main/sys-log/log-operation-ws/ids`,
+    method: 'GET',
+    params: ids
+  }),
+  /**
+   * 新增
+   * @param obj
+   */
+  insertOne: (obj) => request({
+    url: '/main/sys-log/log-operation-ws',
+    method: 'POST',
+    data: obj
+  }),
+  /**
+   * 修改
+   * @param obj
+   */
+  updateOne: (obj) => request({
+    url: '/main/sys-log/log-operation-ws',
+    method: 'PUT',
+    data: obj
+  }),
+  /**
+   * 新增多个
+   * @param objs
+   */
+  insertMore: (objs) => request({
+    url: '/main/sys-log/log-operation-ws/s',
+    method: 'POST',
+    data: {
+      items: objs,
+    }
+  }),
+  /**
+   * 修改多个
+   * @param objs
+   */
+  updateMore: (objs) => request({
+    url: '/main/sys-log/log-operation-ws/s',
+    method: 'PUT',
+    data: {
+      items: objs,
+    }
+  }),
+  /**
+   * 删除
+   * @param ids
+   */
+  deleteList: (...ids) => request({
+    url: '/main/sys-log/log-operation-ws',
+    method: 'DELETE',
+    data: ids
+  })
+}

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { nodesWithWaysInPolygonApi } from "@/api/module/dcts/spatialData.ts";
 import { UseCesium } from "@/views/dashboard/utils/useCesium.ts";
+import { CesiumLine, CesiumPoint } from "@/views/dashboard/utils/dto.ts";
+import { getLonlatFromLinestring } from "@/utils/RegularUtils.ts";
 
 const useCesium = new UseCesium();
 
@@ -14,7 +16,19 @@ const a1 = () => {
     version: '1.0',
     points: coordinates
   }).then((res) => {
-    console.log(res)
+    const map = res.allNodes.map((node) => useCesium.addPoint(new CesiumPoint({lon: node.lon, lat: node.lat})));
+    setTimeout(() => {
+      map.forEach(node => {
+        if (node)
+          useCesium.updPoint(node)
+      })
+    }, 2000)
+
+    const map1 = res.allRoads.map(road => {
+      const linestring = getLonlatFromLinestring(road.way);
+      return new CesiumLine({points: linestring.map(p => new CesiumPoint(p))})
+    });
+    useCesium.addLines(map1)
   })
 }
 </script>

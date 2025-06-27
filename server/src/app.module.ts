@@ -11,6 +11,7 @@ import { QueueModule } from "./module/queue/queue.module";
 import { ScheduleModule } from "./module/schedule/schedule.module";
 import { StaticModule } from './module/static/static.module';
 import { WinstonModule } from "./module/winston/winston.module";
+import { WsModule } from './module/ws/ws.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RedisModule } from './redis/redis.module';
 import { AlgorithmModule } from './module/module/algorithm/algorithm.module';
@@ -27,6 +28,7 @@ import { DctsModule } from "./module/module/dcts/dcts.module";
     ScheduleModule,
     StaticModule,
     WinstonModule,
+    WsModule,
     PrismaModule,
     RedisModule,
     AlgorithmModule,

@@ -1,4 +1,4 @@
-import { NodesWithWaysInPolygonDto } from "@/type/module/dcts/spatialData.ts";
+import { NodesWithWaysInPolygonDto, NodesWithWaysInPolygonVo } from "@/type/module/dcts/spatialData.ts";
 import request from "@/api/request.ts";
 
 /**
@@ -6,7 +6,7 @@ import request from "@/api/request.ts";
  * @param data
  */
 export function nodesWithWaysInPolygonApi(data: NodesWithWaysInPolygonDto) {
-  return request({
+  return request<NodesWithWaysInPolygonVo>({
     url: '/dcts/spatial-data/nodes-with-ways-in-polygon',
     method: 'POST',
     data: data,

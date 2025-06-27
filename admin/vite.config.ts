@@ -10,12 +10,14 @@ import IconsResolver from 'unplugin-icons/resolver';
 import Inspect from 'vite-plugin-inspect';
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
 import { visualizer } from 'rollup-plugin-visualizer';
-import { adminConfig, geoserverConfig } from '@dcts/config';
+import { adminConfig, geoserverConfig, publicConfig, serverConfig } from '@dcts/config';
 
 const root = process.cwd()
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(({mode}) => {
   const config = adminConfig.currentConfig();
+  const pConfig = publicConfig.currentConfig();
+  const sConfig = serverConfig.currentConfig();
   return {
     define: {
       'import.meta.env.MODE': JSON.stringify(mode),
@@ -61,7 +63,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       host: '0.0.0.0',
-      port: 7947,
+      port: pConfig.fPort,
       proxy: {
         [config.VITE_API_PREFIX]: {
           target: config.VITE_BASEURL,
@@ -72,6 +74,12 @@ export default defineConfig(({ mode }) => {
           target: config.VITE_FILE_BASEURL,
           changeOrigin: true,
           rewrite: path => path.substring(config.VITE_API_FILE_PREFIX.length)
+        },
+        [config.VITE_API_WS_PREFIX]: {
+          target: `ws://localhost:${sConfig.wsPort}`,
+          changeOrigin: true,
+          ws: true,
+          rewrite: path => path.substring(config.VITE_API_WS_PREFIX.length)
         },
         [geoserverConfig.VITE_API_PREFIX]: {
           target: geoserverConfig.VITE_BASEURL,

@@ -62,7 +62,7 @@ const allLayersOfRoadData: LayerDto[] = [
       }
       const provider = new Cesium.WebMapServiceImageryProvider({
         url: `${geoserverConfig.VITE_API_PREFIX}/geoserver/wms`,
-        layers: 'ne:planet_osm_roads',
+        layers: 'ne:planet_osm_line',
         parameters: {
           transparent: true,
           format: 'image/png'
