@@ -77,7 +77,8 @@ FROM planet_osm_nodes;
 
 -- ===== ===== ===== ===== ===== ===== 2025.06.23 ===== ===== ===== ===== ===== =====
 
-set search_path to jiangsu;
+set
+search_path to jiangsu;
 
 create table jiangsu.table_name
 (
@@ -91,5 +92,28 @@ create table jiangsu.table_name
 -- ##################################################
 -- 清空 pgsql 中的所有数据，单独导入 江苏省 的数据到 public schema
 -- ##################################################
+
+-- ===== ===== ===== ===== ===== ===== 2025.06.28 ===== ===== ===== ===== ===== =====
+
+set
+search_path to public;
+
+create table signal_light_info
+(
+    id          serial primary key,
+    name        varchar(100)             not null,
+    location    geometry(Point, 4326)    not null,
+    description varchar(100),
+    create_role VARCHAR(30)              NOT NULL,
+    update_role VARCHAR(30)              NOT NULL,
+    create_by   VARCHAR(10)              NOT NULL,
+    update_by   VARCHAR(10)              NOT NULL,
+    create_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted     CHAR(1)                  NOT NULL DEFAULT 'N'
+);
+create index idx_signal_light_info_location on signal_light_info using gist (location);
+alter table public.signal_light_info
+    alter column description set not null;
 
 -- ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== =====

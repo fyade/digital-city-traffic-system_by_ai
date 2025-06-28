@@ -7,3 +7,8 @@ export class LayerDto {
   fromCompany!: string
   fromUrl!: string
 }
+
+export class ContextMenuItem {
+  id!: string
+  func!: () => void
+}

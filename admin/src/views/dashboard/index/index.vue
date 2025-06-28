@@ -1,15 +1,21 @@
 <script setup lang="ts">
 import * as Cesium from "cesium";
-import { h, onMounted, ref, useTemplateRef } from "vue";
+import { computed, h, onBeforeUnmount, onMounted, ref, useTemplateRef } from "vue";
 import DataLayer from "@/views/dashboard/index/dataLayer.vue";
 import DebugPanel from '@/views/dashboard/debugPanel/index.vue';
 import { geoserverConfig } from "@dcts/config";
-import { LayerDto } from "@/views/dashboard/index/dto.ts";
-import { NotificationReactive, NSpin, useNotification } from "naive-ui";
+import { ContextMenuItem, LayerDto } from "@/views/dashboard/index/dto.ts";
+import { DropdownGroupOption, DropdownOption, NotificationReactive, NSpin, useNotification } from "naive-ui";
 import { UseCesium } from "@/views/dashboard/utils/useCesium.ts";
+import { useUserStore } from "@/store/module/user.ts";
+
+const userStore = useUserStore();
 
 onMounted(async () => {
   await init()
+})
+onBeforeUnmount(async () => {
+  await destroy()
 })
 
 const notification = useNotification();
@@ -17,13 +23,46 @@ const notification = useNotification();
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 变量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 const cesiumContainer = useTemplateRef<HTMLDivElement>("cesiumContainer");
 let viewer: Cesium.Viewer | null = null;
-let cesiumClass :UseCesium|null= null;
+let cesiumClass: UseCesium | null = null;
 // 图层是否正在加载
 const layerLoading = ref(false)
 // 右上角的 Loading 通知
 let layerLoadingNotification: NotificationReactive | null = null
 // 右上角的通知内容变化定时器
 let layerLoadingTimer: NodeJS.Timeout | null = null
+// 右键菜单的显示
+const contextMenuShow = ref(false)
+// 右键菜单的坐标
+const contextMenuXY = ref([0, 0])
+const contextMenus: ContextMenuItem[] = []
+const contextMenuOption = computed(() => {
+  const ret: Array<DropdownOption | DropdownGroupOption | DropdownDividerOption | DropdownRenderOption> = [
+    {
+      label: '信号灯管理',
+      key: 'signalLight',
+      show: userStore.ifLogin,
+      children: [
+        {
+          label: '信号灯信息管理',
+          key: 'signalLight:signalLightInfo',
+          show: userStore.ifLogin,
+          children: [
+            {
+              label: '新增信号灯',
+              key: 'signalLight:signalLightInfo:ins',
+              show: userStore.ifLogin,
+            }
+          ]
+        }
+      ]
+    },
+    {
+      label: '关闭',
+      key: 'close'
+    }
+  ]
+  return ret;
+})
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 数据 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 // 所有图层的链接及当前图层index
@@ -163,6 +202,30 @@ const init = async () => {
       console.log('经度', lon, '纬度', lat, '高度', height)
     }
   })
+  // 右键自定义菜单
+  viewer.canvas.addEventListener('contextmenu', e => {
+    contextMenuXY.value = [e.clientX, e.clientY];
+    contextMenuShow.value = true
+  })
+  contextMenus.push(
+      {
+        id: 'signalLight:signalLightInfo:ins',
+        func: () => {
+        }
+      },
+      {
+        id: 'close',
+        func: () => {
+          contextMenuShow.value = false
+        }
+      }
+  )
+}
+/**
+ * 销毁
+ */
+const destroy = async () => {
+  cesiumClass?.destroy()
 }
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 工具函数 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -194,6 +257,11 @@ const debugDrawerActive = ref(false)
 const openDebugLayerChange = () => {
   debugDrawerActive.value = true
 }
+
+const contextMenuSelect = (key: string) => {
+  const find = contextMenus.find(item => item.id === key);
+  if (find) find.func()
+}
 </script>
 
 <template>
@@ -215,6 +283,15 @@ const openDebugLayerChange = () => {
       <DebugPanel/>
     </n-drawer-content>
   </n-drawer>
+
+  <n-dropdown
+      v-model:show="contextMenuShow"
+      trigger="manual"
+      :x="contextMenuXY[0]"
+      :y="contextMenuXY[1]"
+      :options="contextMenuOption"
+      @select="contextMenuSelect"
+  />
 
   <router-view/>
 </template>

@@ -59,3 +59,5 @@ export const base = {
   TEST: 'test',
   PROD: 'prod',
 };
+
+export type CountSqlReturnDto = [{ count: number }]

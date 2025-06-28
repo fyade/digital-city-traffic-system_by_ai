@@ -66,6 +66,18 @@ export class UseCesium {
   }
 
   /**
+   * 销毁
+   */
+  public destroy() {
+    UseCesium.instance = null
+    this.viewer?.destroy()
+    this.viewer = null
+
+    this.pointCollection = null
+    this.polylineCollection = null
+  }
+
+  /**
    * 设置视角到
    * @param lon
    * @param lat

@@ -171,6 +171,10 @@ export class CommonPostgresqlPrismaoService {
     const completeMatchingKeys = fieldSelectParam.completeMatchingKeys;
 
     const notInsertKeys = ['createTime', 'updateTime'];
+    const notSampleSelParam = {
+      createTime: ' to_char(create_time, \'YYYY-MM-DD"T"HH24:MI:SS"Z"\') ',
+      updateTime: ' to_char(update_time, \'YYYY-MM-DD"T"HH24:MI:SS"Z"\') '
+    }
 
     let sql = '';
     const sqls: string[] = [];
@@ -182,7 +186,7 @@ export class CommonPostgresqlPrismaoService {
       } else {
         sql += Object.keys(dto.clas)
             .map(key => {
-              const as1 = dto.selfDefineSelKey[key] || toSnakeCase(key)
+              const as1 = notSampleSelParam[key] || dto.selfDefineSelKey[key] || toSnakeCase(key)
               return ` ${as1} as "${key}" `
             })
             .join(',');

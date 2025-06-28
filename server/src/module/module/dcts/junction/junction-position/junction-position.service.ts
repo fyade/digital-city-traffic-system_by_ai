@@ -11,6 +11,7 @@ import { BaseContextService } from '../../../../base-context/base-context.servic
 import { PostgresqlPrismaoService } from "../../../../../prisma/postgresql.prismao.service";
 import { PageVo } from "../../../../../common/vo/PageVo";
 import { CommonPostgresqlPrismaoService } from "../../../../../prisma/common.postgresql.prismao.service";
+import { CountSqlReturnDto } from "../../../../../util/base";
 
 @Injectable()
 export class JunctionPositionService {
@@ -46,7 +47,7 @@ export class JunctionPositionService {
       tblName: 'manual_junctions',
       selParam: dto
     });
-    const total = await this.pgprismao.$queryRawUnsafe(sqls2[0])
+    const total: CountSqlReturnDto = await this.pgprismao.$queryRawUnsafe(sqls2[0])
     const pageVo = new PageVo<JunctionPositionDto>(pageNum, pageSize, total[0].count, datas);
     return R.ok(pageVo);
   }

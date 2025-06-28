@@ -46,7 +46,7 @@ $ nest generate interceptor auth-token
 nest 创建模块：
 
 ```bash
-$ nest g mo module/name # 创建一个用户模块
+$ nest g mo module/name # 创建一个模块
 $ nest g co module/name --no-spec # 创建不带测试文件的控制器
 $ nest g s module/name --no-spec # 创建不带测试文件的服务层
 ```

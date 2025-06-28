@@ -10,11 +10,13 @@ datasource dbPostgresql {
   url      = "postgresql://postgres:123456@localhost:5432/digital-city-traffic-system?schema=public"
 }
 
+// osm2pgsql_properties
 model osm2pgsql_properties {
   property String @id
   value    String
 }
 
+// planet_osm_nodes
 model planet_osm_nodes {
   id   BigInt @id
   lat  Int
@@ -22,21 +24,21 @@ model planet_osm_nodes {
   tags Json?
 }
 
-/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
+// planet_osm_rels
 model planet_osm_rels {
   id      BigInt @id
   members Json
   tags    Json?
 }
 
-/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
+// planet_osm_ways
 model planet_osm_ways {
   id    BigInt   @id
   nodes BigInt[]
   tags  Json?
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+// spatial_ref_sys
 model spatial_ref_sys {
   srid      Int     @id
   auth_name String? @dbPostgresql.VarChar(256)
@@ -45,7 +47,7 @@ model spatial_ref_sys {
   proj4text String? @dbPostgresql.VarChar(2048)
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+// planet_osm_line
 model planet_osm_line {
   osm_id             BigInt?
   access             String?
@@ -123,7 +125,7 @@ model planet_osm_line {
   @@ignore
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+// planet_osm_point
 model planet_osm_point {
   osm_id             BigInt?
   access             String?
@@ -201,7 +203,7 @@ model planet_osm_point {
   @@ignore
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+// planet_osm_polygon
 model planet_osm_polygon {
   osm_id             BigInt?
   access             String?
@@ -279,7 +281,7 @@ model planet_osm_polygon {
   @@ignore
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+// planet_osm_roads
 model planet_osm_roads {
   osm_id             BigInt?
   access             String?
@@ -355,4 +357,21 @@ model planet_osm_roads {
   @@index([osm_id])
   @@index([way], type: Gist)
   @@ignore
+}
+
+// signal_light_info
+model signal_light_info {
+  id          Int                     @id @default(autoincrement())
+  name        String                  @dbPostgresql.VarChar(100)
+  location    Unsupported("geometry")
+  description String                  @dbPostgresql.VarChar(100)
+  create_role String                  @dbPostgresql.VarChar(30)
+  update_role String                  @dbPostgresql.VarChar(30)
+  create_by   String                  @dbPostgresql.VarChar(10)
+  update_by   String                  @dbPostgresql.VarChar(10)
+  create_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted     String                  @default("N") @dbPostgresql.Char(1)
+
+  @@index([location], map: "idx_signal_light_info_location", type: Gist)
 }
