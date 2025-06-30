@@ -4,12 +4,13 @@ import { useRoute, useRouter } from "vue-router";
 import Layout from '@/views/dashboard/layout/index.vue';
 import { provide, ref } from "vue";
 import { goToAdminPanelSystem } from "@/views/dashboard/adminPanel/dashboardUtilFunc.ts";
+import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
 
 const route = useRoute()
 const router = useRouter();
 
 const adminPanelLoading = ref(true)
-provide('adminPanelLoading', adminPanelLoading)
+provide('dashboard::adminPanelLoading', adminPanelLoading)
 const getRouters = async () => {
   adminPanelLoading.value = true
   try {
@@ -23,10 +24,6 @@ const getRouters = async () => {
   }
 }
 getRouters()
-
-const closeAdminPanel = () => {
-  router.push('/dashboard')
-}
 </script>
 
 <template>
@@ -38,7 +35,7 @@ const closeAdminPanel = () => {
     <n-drawer-content>
       <template #header>
         <div class="title-row">
-          <n-icon class="icon" @click="closeAdminPanel">
+          <n-icon class="icon" @click="gotoDashboardHome">
             <ArrowBarToRight/>
           </n-icon>
           <span>管理员面板</span>

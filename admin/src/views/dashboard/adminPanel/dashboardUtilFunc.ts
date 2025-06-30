@@ -52,7 +52,7 @@ export const goToAdminPanelSystem = async (callback: (path: string) => void) => 
       const permissionObj = arr2ToDiguiObj(permissions, {ifDeepClone: false})
           .sort((m1, m2) => m1.orderNum - m2.orderNum)
       for (let i = 0; i < permissionObj.length; i++) {
-        router.addRoute('dashboard/adminPanel', permissionObj[i])
+        router.addRoute('~dashboard/adminPanel', permissionObj[i])
       }
       if (permissionObj.length > 0) {
         const find1 = router.getRoutes().find(item => item.path === '/dashboard/admin-panel');

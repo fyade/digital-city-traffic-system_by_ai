@@ -5,7 +5,7 @@ import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { REGEX_DCTS_GEOM, REGEX_DCTS_GEOM_DESCR } from "../../../../../util/RegularUtils";
 
-export class SignalLightInfoDto extends BaseDto {
+export class SignalLightGroupInfoDto extends BaseDto {
   id: number;
 
   name: string;
@@ -23,8 +23,8 @@ export class SignalLightInfoDto extends BaseDto {
   }
 }
 
-export class SignalLightInfoSelListDto extends PageDto {
-  @ApiProperty({ description: '信号灯名', required: false })
+export class SignalLightGroupInfoSelListDto extends PageDto {
+  @ApiProperty({ description: '信号灯组名', required: false })
   name: string;
 
   @ApiProperty({ description: '位置', required: false })
@@ -34,8 +34,8 @@ export class SignalLightInfoSelListDto extends PageDto {
   description: string;
 }
 
-export class SignalLightInfoSelAllDto {
-  @ApiProperty({ description: '信号灯名', required: false })
+export class SignalLightGroupInfoSelAllDto {
+  @ApiProperty({ description: '信号灯组名', required: false })
   name: string;
 
   @ApiProperty({ description: '位置', required: false })
@@ -45,9 +45,9 @@ export class SignalLightInfoSelAllDto {
   description: string;
 }
 
-export class SignalLightInfoInsOneDto {
-  @ApiProperty({ description: '信号灯名', required: true })
-  @IsNotEmpty({ message: '信号灯名不能为空' })
+export class SignalLightGroupInfoInsOneDto {
+  @ApiProperty({ description: '信号灯组名', required: true })
+  @IsNotEmpty({ message: '信号灯组名不能为空' })
   name: string;
 
   @ApiProperty({ description: '位置', required: true })
@@ -60,22 +60,22 @@ export class SignalLightInfoInsOneDto {
   description: string;
 }
 
-export class SignalLightInfoUpdOneDto extends SignalLightInfoInsOneDto {
+export class SignalLightGroupInfoUpdOneDto extends SignalLightGroupInfoInsOneDto {
   @ApiProperty({ description: '主键id', required: true })
   @IsNotEmpty({ message: '主键id不能为空' })
   id: number;
 }
 
-export class SignalLightInfoInsMoreDto {
+export class SignalLightGroupInfoInsMoreDto {
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => SignalLightInfoInsOneDto)
-  items: SignalLightInfoInsOneDto[];
+  @Type(() => SignalLightGroupInfoInsOneDto)
+  items: SignalLightGroupInfoInsOneDto[];
 }
 
-export class SignalLightInfoUpdMoreDto {
+export class SignalLightGroupInfoUpdMoreDto {
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => SignalLightInfoUpdOneDto)
-  items: SignalLightInfoUpdOneDto[];
+  @Type(() => SignalLightGroupInfoUpdOneDto)
+  items: SignalLightGroupInfoUpdOneDto[];
 }

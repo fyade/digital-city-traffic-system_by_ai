@@ -162,7 +162,7 @@ export class AppService {
       userId: this.bcs.getUserData().userId,
       loginRole: this.bcs.getUserData().loginRole,
       sysId,
-      menuType: [MenuTypeEnum.T_Inter],
+      menuType: [MenuTypeEnum.T_IS, MenuTypeEnum.T_Inter],
     });
     return R.ok(buttonsOfUser);
   }

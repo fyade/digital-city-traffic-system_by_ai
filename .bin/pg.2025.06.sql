@@ -98,6 +98,7 @@ create table jiangsu.table_name
 set
 search_path to public;
 
+-- 信号灯信息表
 create table signal_light_info
 (
     id          serial primary key,
@@ -115,5 +116,65 @@ create table signal_light_info
 create index idx_signal_light_info_location on signal_light_info using gist (location);
 alter table public.signal_light_info
     alter column description set not null;
+
+-- ===== ===== ===== ===== ===== ===== 2025.06.30 ===== ===== ===== ===== ===== =====
+
+-- 信号灯信息表 改为 信号灯组信息表
+ALTER TABLE signal_light_info RENAME TO signal_light_group_info;
+-- 创建子信号灯信息表，结构与信号灯组信息表相同
+CREATE TABLE signal_light_info
+(
+    id          serial PRIMARY KEY,
+    name        VARCHAR(100)             NOT NULL,
+    location    geometry(Point, 4326)    NOT NULL,
+    description VARCHAR(100)             NOT NULL,
+    create_role VARCHAR(30)              NOT NULL,
+    update_role VARCHAR(30)              NOT NULL,
+    create_by   VARCHAR(10)              NOT NULL,
+    update_by   VARCHAR(10)              NOT NULL,
+    create_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted     CHAR(1)                  NOT NULL DEFAULT 'N'
+);
+
+-- 重命名信号灯组信息表上的索引
+ALTER
+INDEX idx_signal_light_info_location RENAME TO idx_signal_light_group_info_location;
+CREATE INDEX idx_signal_light_info_location ON signal_light_info USING gist (location);
+-- 创建信号灯组 - 子信号灯对应表
+CREATE TABLE signal_light_group_child_mapping
+(
+    id             serial PRIMARY KEY,
+    group_id       INT NOT NULL,
+    child_light_id INT NOT NULL
+);
+
+-- 创建子信号灯 - 受控道路对应表
+CREATE TABLE signal_light_child_road_mapping
+(
+    id             serial PRIMARY KEY,
+    child_light_id INT NOT NULL,
+    road_id        INT NOT NULL
+);
+
+-- 给信号灯组-子信号灯对应表添加字段
+ALTER TABLE signal_light_group_child_mapping
+    ADD COLUMN create_role VARCHAR(30) NOT NULL,
+ADD COLUMN update_role VARCHAR(30) NOT NULL,
+ADD COLUMN create_by VARCHAR(10) NOT NULL,
+ADD COLUMN update_by VARCHAR(10) NOT NULL,
+ADD COLUMN create_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN update_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN deleted CHAR(1) NOT NULL DEFAULT 'N';
+
+-- 给子信号灯-受控道路对应表添加字段
+ALTER TABLE signal_light_child_road_mapping
+    ADD COLUMN create_role VARCHAR(30) NOT NULL,
+ADD COLUMN update_role VARCHAR(30) NOT NULL,
+ADD COLUMN create_by VARCHAR(10) NOT NULL,
+ADD COLUMN update_by VARCHAR(10) NOT NULL,
+ADD COLUMN create_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN update_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN deleted CHAR(1) NOT NULL DEFAULT 'N';
 
 -- ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== =====

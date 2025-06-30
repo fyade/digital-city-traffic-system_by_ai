@@ -6,12 +6,12 @@ import { adminConfig } from "@dcts/config";
 export const routes: RouteRecordRaw[] = [
   {
     path: '/home',
-    name: 'workbench-home',
+    name: '~workbench-home',
     component: () => import('@/views/home/index.vue')
   },
   {
     path: '/',
-    name: '/',
+    name: '~',
     redirect: '/home',
     meta: {
       label: '控制台主页'
@@ -21,7 +21,7 @@ export const routes: RouteRecordRaw[] = [
   },
   {
     path: '/user',
-    name: '/user',
+    name: '~user',
     meta: {
       label: '个人中心'
     },
@@ -64,27 +64,53 @@ export const routes: RouteRecordRaw[] = [
   },
   {
     path: '/login',
-    name: 'login',
+    name: '~login',
     component: () => import('@/views/user/login.vue')
   },
   {
     path: '/dashboard',
-    name: 'dashboard',
+    name: '~dashboard',
     component: () => import('@/views/dashboard/index.vue'),
     children: [
       {
         path: '',
-        name: 'dashboard/',
+        name: '~dashboard/',
         component: () => import('@/views/dashboard/index/index.vue'),
         children: [
           {
             path: 'admin-panel',
-            name: 'dashboard/adminPanel',
+            name: '~dashboard/adminPanel',
             component: () => import('@/views/dashboard/adminPanel/index.vue'),
             children: [
               {
                 path: ':pathMatch(.*)*',
                 component: () => import('@/views/dashboard/redirect/index.vue')
+              }
+            ]
+          },
+          {
+            path: 'form-panel',
+            name: '~fp~',
+            component: () => import('@/views/dashboard/formPanel/index.vue'),
+            children: [
+              {
+                path: 'signal-light',
+                name: '~fp~:signalLight',
+                component: () => import('@/views/dashboard/formPanel/signalLight/index.vue'),
+                children: [
+                  {
+                    path: 'signal-light-group-info',
+                    name: '~fp~:signalLight:signalLightGroupInfo',
+                    component: () => import('@/views/dashboard/formPanel/signalLight/signalLightGroupInfo/index.vue'),
+                    children: [
+                      {
+                        path: 'ins',
+                        name: '~fp~:signalLight:signalLightGroupInfo:ins',
+                        component: () => import('@/views/dashboard/formPanel/signalLight/signalLightGroupInfo/ins.vue')
+                      }
+                    ]
+                  }
+                ]
               }
             ]
           }

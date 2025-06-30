@@ -100,6 +100,26 @@ export class UseCesium {
   }
 
   /**
+   * 屏幕坐标转地理坐标
+   * @param x
+   * @param y
+   */
+  public screenXYToLonLat(x: number, y: number) {
+    const pickedPosition = new Cesium.Cartesian2(x, y);
+    // 转为笛卡尔坐标
+    const cartesian = this.viewer?.camera.pickEllipsoid(pickedPosition, this.viewer?.scene.globe.ellipsoid);
+    if (!cartesian) {
+      return null
+    }
+    // 转为地理坐标
+    const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+    const lon = Cesium.Math.toDegrees(cartographic.longitude);
+    const lat = Cesium.Math.toDegrees(cartographic.latitude);
+    const height = cartographic.height;
+    return {lon, lat, height}
+  }
+
+  /**
    * 获取可视区域的四个角的经纬度坐标（逆时针）
    */
   public getViewCornerCoordinates() {

@@ -1,15 +1,28 @@
 <script setup lang="ts">
 import * as Cesium from "cesium";
-import { computed, h, onBeforeUnmount, onMounted, ref, useTemplateRef } from "vue";
+import { computed, h, onBeforeUnmount, onMounted, provide, ref, useTemplateRef, watch } from "vue";
 import DataLayer from "@/views/dashboard/index/dataLayer.vue";
 import DebugPanel from '@/views/dashboard/debugPanel/index.vue';
 import { geoserverConfig } from "@dcts/config";
 import { ContextMenuItem, LayerDto } from "@/views/dashboard/index/dto.ts";
-import { DropdownGroupOption, DropdownOption, NotificationReactive, NSpin, useNotification } from "naive-ui";
+import {
+  DropdownDividerOption,
+  DropdownGroupOption,
+  DropdownOption,
+  DropdownRenderOption,
+  NotificationReactive,
+  NSpin,
+  useNotification
+} from "naive-ui";
 import { UseCesium } from "@/views/dashboard/utils/useCesium.ts";
 import { useUserStore } from "@/store/module/user.ts";
+import { useRouter } from "vue-router";
+import { useSysStore } from "@/store/module/sys.ts";
+import { baseUtils } from "@dcts/common";
 
+const router = useRouter();
 const userStore = useUserStore();
+const sysStore = useSysStore();
 
 onMounted(async () => {
   await init()
@@ -30,31 +43,52 @@ const layerLoading = ref(false)
 let layerLoadingNotification: NotificationReactive | null = null
 // 右上角的通知内容变化定时器
 let layerLoadingTimer: NodeJS.Timeout | null = null
+// 鼠标点击的位置[经度、纬度、按键]（0左键、2右键）
+let mouseClickPosition = [0, 0, 0]
+provide('dashboard::mouseClickPosition', mouseClickPosition)
+// 鼠标移动的位置[经度、纬度]（实时）
+let mouseMovePosition = [0, 0]
 // 右键菜单的显示
 const contextMenuShow = ref(false)
 // 右键菜单的坐标
 const contextMenuXY = ref([0, 0])
-const contextMenus: ContextMenuItem[] = []
+const contextMenus: ContextMenuItem[] = [
+  {
+    id: 'dcts:signalLight:signalLightGroupInfo:ins',
+    func: () => {
+      router.push({name: '~fp~:signalLight:signalLightGroupInfo:ins'})
+    }
+  },
+  {
+    id: 'close',
+    func: () => {
+      contextMenuShow.value = false
+    }
+  }
+]
 const contextMenuOption = computed(() => {
   const ret: Array<DropdownOption | DropdownGroupOption | DropdownDividerOption | DropdownRenderOption> = [
     {
       label: '信号灯管理',
-      key: 'signalLight',
-      show: userStore.ifLogin,
+      key: 'i:dcts:signalLight',
+      show: contextMenuIfHasPermission('i:dcts:signalLight'),
       children: [
         {
-          label: '信号灯信息管理',
-          key: 'signalLight:signalLightInfo',
-          show: userStore.ifLogin,
+          label: '信号灯组信息管理',
+          key: 'i:dcts:signalLight:signalLightGroupInfo',
+          show: contextMenuIfHasPermission('i:dcts:signalLight:signalLightGroupInfo'),
           children: [
             {
-              label: '新增信号灯',
-              key: 'signalLight:signalLightInfo:ins',
-              show: userStore.ifLogin,
+              label: '新增信号灯组',
+              key: 'dcts:signalLight:signalLightGroupInfo:ins',
+              show: contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:ins'),
             }
           ]
         }
       ]
+    },
+    {
+      type: 'divider'
     },
     {
       label: '关闭',
@@ -62,6 +96,20 @@ const contextMenuOption = computed(() => {
     }
   ]
   return ret;
+})
+const formPanelTitle = ref('')
+provide('dashboard::formPanelTitle', formPanelTitle)
+
+// 有权限的按钮
+const permissionAbleButtons = ref<string[]>([])
+const visibleButtons = sysStore.getVisibleButtons();
+watch(visibleButtons, () => {
+  const dctsButtons = visibleButtons.get('sys:dcts');
+  if (dctsButtons) {
+    permissionAbleButtons.value = dctsButtons;
+  }
+}, {
+  immediate: true
 })
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 数据 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -189,37 +237,26 @@ const init = async () => {
   })
   // 图层点击事件
   viewer.cesiumWidget.canvas.addEventListener('click', e => {
-    // 屏幕坐标
-    const pickedPosition = new Cesium.Cartesian2(e.clientX, e.clientY);
-    // 转为笛卡尔坐标
-    const cartesian = viewer?.camera.pickEllipsoid(pickedPosition, viewer?.scene.globe.ellipsoid);
-    if (cartesian) {
-      // 转为地理坐标
-      const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
-      const lon = Cesium.Math.toDegrees(cartographic.longitude);
-      const lat = Cesium.Math.toDegrees(cartographic.latitude);
-      const height = cartographic.height;
-      console.log('经度', lon, '纬度', lat, '高度', height)
+    const lonLat = useCesium.screenXYToLonLat(e.clientX, e.clientY);
+    if (lonLat) {
+      mouseClickPosition[0] = lonLat.lon
+      mouseClickPosition[1] = lonLat.lat
+      mouseClickPosition[2] = e.button
     }
   })
   // 右键自定义菜单
   viewer.canvas.addEventListener('contextmenu', e => {
+    const lonLat = useCesium.screenXYToLonLat(e.clientX, e.clientY);
+    if (lonLat) {
+      mouseClickPosition[0] = lonLat.lon
+      mouseClickPosition[1] = lonLat.lat
+      mouseClickPosition[2] = e.button
+    }
     contextMenuXY.value = [e.clientX, e.clientY];
     contextMenuShow.value = true
   })
-  contextMenus.push(
-      {
-        id: 'signalLight:signalLightInfo:ins',
-        func: () => {
-        }
-      },
-      {
-        id: 'close',
-        func: () => {
-          contextMenuShow.value = false
-        }
-      }
-  )
+
+  await sysStore.refreshVisibleButton('sys:dcts')
 }
 /**
  * 销毁
@@ -245,6 +282,13 @@ const setLayer = () => {
     allLabels.value.push([f.dataType, f.fromCompany, f.fromUrl])
   }
 }
+/**
+ * 右键菜单项是否有权限
+ * @param perm
+ */
+const contextMenuIfHasPermission = (perm: string) => {
+  return userStore.ifLogin && permissionAbleButtons.value.includes(perm)
+}
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 其他 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 // 设置抽屉
@@ -258,7 +302,8 @@ const openDebugLayerChange = () => {
   debugDrawerActive.value = true
 }
 
-const contextMenuSelect = (key: string) => {
+const contextMenuSelect = (key: string, obj: DropdownOption) => {
+  formPanelTitle.value = obj?.label as string
   const find = contextMenus.find(item => item.id === key);
   if (find) find.func()
 }

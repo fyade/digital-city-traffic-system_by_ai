@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: 'dcts:signalLight:signalLightInfo'
+  name: 'dcts:signalLight:signalLightGroupInfo'
 }
 </script>
 
@@ -12,12 +12,11 @@ import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
 import { FormRules } from "element-plus";
 import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-plus/icons-vue";
-import { SignalLightInfoDto, SignalLightInfoUpdDto } from "@/type/module/dcts/signalLight/signalLightInfo.ts";
-import { signalLightInfoApi } from "@/api/module/dcts/signalLight/signalLightInfo.ts";
-import { signalLightInfoDict } from "@/dict/module/dcts/signalLight/signalLightInfo.ts";
-import { ifDashboardPage } from "@/views/dashboard/utils/base.ts";
+import { SignalLightGroupInfoDto, SignalLightGroupInfoUpdDto } from "@/type/module/dcts/signalLight/signalLightGroupInfo.ts";
+import { signalLightGroupInfoApi } from "@/api/module/dcts/signalLight/signalLightGroupInfo.ts";
+import { signalLightGroupInfoDict } from "@/dict/module/dcts/signalLight/signalLightGroupInfo.ts";
 
-const state = reactive<State2<SignalLightInfoDto, SignalLightInfoUpdDto>>({
+const state = reactive<State2<SignalLightGroupInfoDto, SignalLightGroupInfoUpdDto>>({
   dialogForm: {
     id: -1,
     name: '',
@@ -74,12 +73,12 @@ const {
   dfIns,
   dfDel,
   ifRequired,
-} = funcTablePage<SignalLightInfoDto, SignalLightInfoUpdDto>({
+} = funcTablePage<SignalLightGroupInfoDto, SignalLightGroupInfoUpdDto>({
   state,
   dFormRules,
   config,
-  api: signalLightInfoApi,
-  dict: signalLightInfoDict,
+  api: signalLightGroupInfoApi,
+  dict: signalLightGroupInfoDict,
 })
 </script>
 
@@ -108,43 +107,43 @@ const {
         <!--  <el-col :span="12"></el-col>-->
         <!--  <el-col :span="12"></el-col>-->
         <!--</el-row>-->
-        <el-form-item v-if="dialogType.value!==final.ins" :label="signalLightInfoDict.id" prop="id">
+        <el-form-item v-if="dialogType.value!==final.ins" :label="signalLightGroupInfoDict.id" prop="id">
           <span>{{ state.dialogForm.id }}</span>
         </el-form-item>
         <!--在此下方添加表单项-->
         <el-row>
           <el-col :span="12">
-            <el-form-item :label="signalLightInfoDict.name" prop="name">
-              <el-input v-model="state.dialogForm.name" :placeholder="signalLightInfoDict.name"/>
+            <el-form-item :label="signalLightGroupInfoDict.name" prop="name">
+              <el-input v-model="state.dialogForm.name" :placeholder="signalLightGroupInfoDict.name"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item :label="signalLightInfoDict.location" prop="location">
-              <el-input v-model="state.dialogForm.location" :placeholder="signalLightInfoDict.location"/>
+            <el-form-item :label="signalLightGroupInfoDict.location" prop="location">
+              <el-input v-model="state.dialogForm.location" :placeholder="signalLightGroupInfoDict.location"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item :label="signalLightInfoDict.description" prop="description">
-              <el-input v-model="state.dialogForm.description" :placeholder="signalLightInfoDict.description"/>
+            <el-form-item :label="signalLightGroupInfoDict.description" prop="description">
+              <el-input v-model="state.dialogForm.description" :placeholder="signalLightGroupInfoDict.description"/>
             </el-form-item>
           </el-col>
         </el-row>
         <!--在此上方添加表单项-->
-        <!--<el-form-item :label="signalLightInfoDict.orderNum" prop='orderNum'>-->
+        <!--<el-form-item :label="signalLightGroupInfoDict.orderNum" prop='orderNum'>-->
         <!--  <el-input-number v-model="state.dialogForm.orderNum" controls-position="right"/>-->
         <!--</el-form-item>-->
-        <!--<el-form-item :label="signalLightInfoDict.ifDefault" prop='ifDefault'>-->
+        <!--<el-form-item :label="signalLightGroupInfoDict.ifDefault" prop='ifDefault'>-->
         <!--  <el-switch v-model="state.dialogForm.ifDefault" :active-value='final.Y' :inactive-value='final.N'/>-->
         <!--</el-form-item>-->
-        <!--<el-form-item :label="signalLightInfoDict.ifDisabled" prop='ifDisabled'>-->
+        <!--<el-form-item :label="signalLightGroupInfoDict.ifDisabled" prop='ifDisabled'>-->
         <!--  <el-radio-group v-model="state.dialogForm.ifDisabled">-->
         <!--    <el-radio :value="final.Y">是</el-radio>-->
         <!--    <el-radio :value="final.N">否</el-radio>-->
         <!--  </el-radio-group>-->
         <!--</el-form-item>-->
-        <!--<el-form-item :label="signalLightInfoDict.ifDisabled" prop="ifDisabled">-->
+        <!--<el-form-item :label="signalLightGroupInfoDict.ifDisabled" prop="ifDisabled">-->
         <!--  <el-switch v-model="state.dialogForm.ifDisabled" :active-value="final.N" :inactive-value="final.Y"/>-->
         <!--</el-form-item>-->
         <!--上方几个酌情使用-->
@@ -165,33 +164,33 @@ const {
             </template>
           </el-table-column>
           <!--在此下方添加表格列-->
-          <el-table-column prop="name" :label="signalLightInfoDict.name" width="300">
+          <el-table-column prop="name" :label="signalLightGroupInfoDict.name" width="300">
             <template #header>
-              <span :class="ifRequired('name')?'tp-table-header-required':''">{{ signalLightInfoDict.name }}</span>
+              <span :class="ifRequired('name')?'tp-table-header-required':''">{{ signalLightGroupInfoDict.name }}</span>
             </template>
             <template #default="{$index}">
               <div :class="state.dialogForms_error?.[`${$index}-name`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].name" :placeholder="signalLightInfoDict.name"/>
+                <el-input v-model="state.dialogForms[$index].name" :placeholder="signalLightGroupInfoDict.name"/>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="location" :label="signalLightInfoDict.location" width="300">
+          <el-table-column prop="location" :label="signalLightGroupInfoDict.location" width="300">
             <template #header>
-              <span :class="ifRequired('location')?'tp-table-header-required':''">{{ signalLightInfoDict.location }}</span>
+              <span :class="ifRequired('location')?'tp-table-header-required':''">{{ signalLightGroupInfoDict.location }}</span>
             </template>
             <template #default="{$index}">
               <div :class="state.dialogForms_error?.[`${$index}-location`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].location" :placeholder="signalLightInfoDict.location"/>
+                <el-input v-model="state.dialogForms[$index].location" :placeholder="signalLightGroupInfoDict.location"/>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="description" :label="signalLightInfoDict.description" width="300">
+          <el-table-column prop="description" :label="signalLightGroupInfoDict.description" width="300">
             <template #header>
-              <span :class="ifRequired('description')?'tp-table-header-required':''">{{ signalLightInfoDict.description }}</span>
+              <span :class="ifRequired('description')?'tp-table-header-required':''">{{ signalLightGroupInfoDict.description }}</span>
             </template>
             <template #default="{$index}">
               <div :class="state.dialogForms_error?.[`${$index}-description`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].description" :placeholder="signalLightInfoDict.description"/>
+                <el-input v-model="state.dialogForms[$index].description" :placeholder="signalLightGroupInfoDict.description"/>
               </div>
             </template>
           </el-table-column>
@@ -225,8 +224,8 @@ const {
         @keyup.enter="fEnter"
     >
       <!--在此下方添加表单项-->
-      <!--<el-form-item :label="signalLightInfoDict." prop="">-->
-      <!--  <el-input v-model="state.filterForm." :placeholder="signalLightInfoDict."/>-->
+      <!--<el-form-item :label="signalLightGroupInfoDict." prop="">-->
+      <!--  <el-input v-model="state.filterForm." :placeholder="signalLightGroupInfoDict."/>-->
       <!--</el-form-item>-->
       <!--在此上方添加表单项-->
       <el-form-item>
@@ -259,20 +258,20 @@ const {
         @selection-change="handleSelectionChange"
     >
       <el-table-column fixed type="selection" width="55"/>
-      <!--<el-table-column fixed prop="id" :label="signalLightInfoDict.id" width="180"/>-->
+      <!--<el-table-column fixed prop="id" :label="signalLightGroupInfoDict.id" width="180"/>-->
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
-      <el-table-column prop="name" :label="signalLightInfoDict.name" width="120"/>
-      <el-table-column prop="location" :label="signalLightInfoDict.location" width="120"/>
-      <el-table-column prop="description" :label="signalLightInfoDict.description" width="120"/>
+      <el-table-column prop="name" :label="signalLightGroupInfoDict.name" width="120"/>
+      <el-table-column prop="location" :label="signalLightGroupInfoDict.location" width="240"/>
+      <el-table-column prop="description" :label="signalLightGroupInfoDict.description" width="120"/>
       <!--在此上方添加表格列-->
-      <!--<el-table-column prop="createRole" :label="signalLightInfoDict.createRole" width="120"/>-->
-      <!--<el-table-column prop="updateRole" :label="signalLightInfoDict.updateRole" width="120"/>-->
-      <!--<el-table-column prop="createBy" :label="signalLightInfoDict.createBy" width="120"/>-->
-      <!--<el-table-column prop="updateBy" :label="signalLightInfoDict.updateBy" width="120"/>-->
-      <!--<el-table-column prop="createTime" :label="signalLightInfoDict.createTime" width="220"/>-->
-      <!--<el-table-column prop="updateTime" :label="signalLightInfoDict.updateTime" width="220"/>-->
-      <!--<el-table-column prop="deleted" :label="signalLightInfoDict.deleted" width="60"/>-->
+      <!--<el-table-column prop="createRole" :label="signalLightGroupInfoDict.createRole" width="120"/>-->
+      <!--<el-table-column prop="updateRole" :label="signalLightGroupInfoDict.updateRole" width="120"/>-->
+      <!--<el-table-column prop="createBy" :label="signalLightGroupInfoDict.createBy" width="120"/>-->
+      <!--<el-table-column prop="updateBy" :label="signalLightGroupInfoDict.updateBy" width="120"/>-->
+      <!--<el-table-column prop="createTime" :label="signalLightGroupInfoDict.createTime" width="220"/>-->
+      <!--<el-table-column prop="updateTime" :label="signalLightGroupInfoDict.updateTime" width="220"/>-->
+      <!--<el-table-column prop="deleted" :label="signalLightGroupInfoDict.deleted" width="60"/>-->
       <!--上方几个酌情使用-->
       <el-table-column fixed="right" label="操作" min-width="140">
         <template #default="{row}">

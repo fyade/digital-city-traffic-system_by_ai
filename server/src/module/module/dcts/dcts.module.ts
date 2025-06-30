@@ -4,7 +4,7 @@ import { SignalLightStaticStrategyModule } from './signal-light/signal-light-sta
 import { JunctionPositionModule } from './junction/junction-position/junction-position.module';
 import { JunctionConnectionModule } from './junction/junction-connection/junction-connection.module';
 import { SpatialDataModule } from './spatial-data/spatial-data.module';
-import { SignalLightInfoModule } from './signal-light/signal-light-info/signal-light-info.module';
+import { SignalLightGroupInfoModule } from "./signal-light/signal-light-group-info/signal-light-group-info.module";
 
 @Module({
   imports: [
@@ -13,7 +13,7 @@ import { SignalLightInfoModule } from './signal-light/signal-light-info/signal-l
     JunctionPositionModule,
     JunctionConnectionModule,
     SpatialDataModule,
-    SignalLightInfoModule
+    SignalLightGroupInfoModule
   ]
 })
 export class DctsModule {

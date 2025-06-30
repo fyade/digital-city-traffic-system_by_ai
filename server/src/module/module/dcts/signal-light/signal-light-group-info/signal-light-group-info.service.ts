@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { R } from '../../../../../common/R';
-import { SignalLightInfoDto, SignalLightInfoSelListDto, SignalLightInfoSelAllDto, SignalLightInfoInsOneDto, SignalLightInfoUpdOneDto } from './dto';
+import { SignalLightGroupInfoDto, SignalLightGroupInfoSelListDto, SignalLightGroupInfoSelAllDto, SignalLightGroupInfoInsOneDto, SignalLightGroupInfoUpdOneDto } from './dto';
 import { BaseContextService } from '../../../../base-context/base-context.service';
 import { CommonPostgresqlPrismaoService } from "../../../../../prisma/common.postgresql.prismao.service";
 import { PostgresqlPrismaoService } from "../../../../../prisma/postgresql.prismao.service";
@@ -8,26 +8,26 @@ import { PageVo } from "../../../../../common/vo/PageVo";
 import { CountSqlReturnDto } from "../../../../../util/base";
 
 @Injectable()
-export class SignalLightInfoService {
+export class SignalLightGroupInfoService {
   constructor(
       private readonly cpgprismao: CommonPostgresqlPrismaoService,
       private readonly pgprismao: PostgresqlPrismaoService,
       private readonly bcs: BaseContextService,
   ) {
-    this.bcs.setFieldSelectParam('signal_light_info', {
+    this.bcs.setFieldSelectParam('signal_light_group_info', {
       notNullKeys: ['name', 'location', 'description'],
     });
   }
 
-  async selSignalLightInfo(dto: SignalLightInfoSelListDto): Promise<R> {
+  async selSignalLightGroupInfo(dto: SignalLightGroupInfoSelListDto): Promise<R> {
     const pageNum = dto.pageNum
     const pageSize = dto.pageSize
     delete dto.pageNum;
     delete dto.pageSize;
-    const sqls = this.cpgprismao.genSql<SignalLightInfoDto>({
+    const sqls = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
       type: 'selList',
-      tblName: 'signal_light_info',
-      clas: new SignalLightInfoDto(),
+      tblName: 'signal_light_group_info',
+      clas: new SignalLightGroupInfoDto(),
       selfDefineSelKey: {
         location: 'concat(st_x(location)::text, \',\', st_y(location)::text)'
       },
@@ -35,22 +35,22 @@ export class SignalLightInfoService {
       pageNum: pageNum,
       pageSize: pageSize,
     });
-    const datas: SignalLightInfoDto[] = await this.pgprismao.$queryRawUnsafe(sqls[0]);
-    const sqls2 = this.cpgprismao.genSql<SignalLightInfoDto>({
+    const datas: SignalLightGroupInfoDto[] = await this.pgprismao.$queryRawUnsafe(sqls[0]);
+    const sqls2 = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
       type: 'selCount',
-      tblName: 'signal_light_info',
+      tblName: 'signal_light_group_info',
       selParam: dto,
     });
     const total: CountSqlReturnDto = await this.pgprismao.$queryRawUnsafe(sqls2[0]);
-    const pageVo = new PageVo<SignalLightInfoDto>(pageNum, pageSize, total[0].count, datas);
+    const pageVo = new PageVo<SignalLightGroupInfoDto>(pageNum, pageSize, total[0].count, datas);
     return R.ok(pageVo);
   }
 
-  async selAllSignalLightInfo(dto: SignalLightInfoSelAllDto): Promise<R> {
-    const sqls = this.cpgprismao.genSql<SignalLightInfoDto>({
+  async selAllSignalLightGroupInfo(dto: SignalLightGroupInfoSelAllDto): Promise<R> {
+    const sqls = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
       type: 'selAll',
-      tblName: 'signal_light_info',
-      clas: new SignalLightInfoDto(),
+      tblName: 'signal_light_group_info',
+      clas: new SignalLightGroupInfoDto(),
       selfDefineSelKey: {
         location: 'concat(st_x(location)::text, \',\', st_y(location)::text)'
       },
@@ -60,12 +60,12 @@ export class SignalLightInfoService {
     return R.ok(datas)
   }
 
-  async selOnesSignalLightInfo(ids: number[]): Promise<R> {
+  async selOnesSignalLightGroupInfo(ids: number[]): Promise<R> {
     ids = Object.values(ids).map(n => Number(n));
-    const sqls = this.cpgprismao.genSql<SignalLightInfoDto>({
+    const sqls = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
       type: 'selByIds',
-      tblName: 'signal_light_info',
-      clas: new SignalLightInfoDto(),
+      tblName: 'signal_light_group_info',
+      clas: new SignalLightGroupInfoDto(),
       selfDefineSelKey: {
         location: 'concat(st_x(location)::text, \',\', st_y(location)::text)'
       },
@@ -75,11 +75,11 @@ export class SignalLightInfoService {
     return R.ok(res)
   }
 
-  async selOneSignalLightInfo(id: number): Promise<R> {
-    const sqls = this.cpgprismao.genSql<SignalLightInfoDto>({
+  async selOneSignalLightGroupInfo(id: number): Promise<R> {
+    const sqls = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
       type: 'selById',
-      tblName: 'signal_light_info',
-      clas: new SignalLightInfoDto(),
+      tblName: 'signal_light_group_info',
+      clas: new SignalLightGroupInfoDto(),
       selfDefineSelKey: {
         location: 'concat(st_x(location)::text, \',\', st_y(location)::text)'
       },
@@ -90,10 +90,10 @@ export class SignalLightInfoService {
     return R.ok(res)
   }
 
-  async insSignalLightInfo(dto: SignalLightInfoInsOneDto): Promise<R> {
-    const sqls = this.cpgprismao.genSql<SignalLightInfoDto>({
+  async insSignalLightGroupInfo(dto: SignalLightGroupInfoInsOneDto): Promise<R> {
+    const sqls = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
       type: 'ins',
-      tblName: 'signal_light_info',
+      tblName: 'signal_light_group_info',
       datas: [dto],
       selfDefineInsUpdKey: {
         location: value => `st_setsrid(st_makepoint(${value.split(',')[0]}, ${value.split(',')[1]}), 4326)`
@@ -103,10 +103,10 @@ export class SignalLightInfoService {
     return R.ok(res)
   }
 
-  async insSignalLightInfos(dtos: SignalLightInfoInsOneDto[]): Promise<R> {
-    const sqls = this.cpgprismao.genSql<SignalLightInfoDto>({
+  async insSignalLightGroupInfos(dtos: SignalLightGroupInfoInsOneDto[]): Promise<R> {
+    const sqls = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
       type: 'ins',
-      tblName: 'signal_light_info',
+      tblName: 'signal_light_group_info',
       datas: dtos,
       selfDefineInsUpdKey: {
         location: value => `st_setsrid(st_makepoint(${value.split(',')[0]}, ${value.split(',')[1]}), 4326)`
@@ -120,10 +120,10 @@ export class SignalLightInfoService {
     return R.ok(res)
   }
 
-  async updSignalLightInfo(dto: SignalLightInfoUpdOneDto): Promise<R> {
-    const sqls = this.cpgprismao.genSql<SignalLightInfoDto>({
+  async updSignalLightGroupInfo(dto: SignalLightGroupInfoUpdOneDto): Promise<R> {
+    const sqls = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
       type: 'upd',
-      tblName: 'signal_light_info',
+      tblName: 'signal_light_group_info',
       datas: [dto],
       selfDefineInsUpdKey: {
         location: value => `st_setsrid(st_makepoint(${value.split(',')[0]}, ${value.split(',')[1]}), 4326)`
@@ -133,10 +133,10 @@ export class SignalLightInfoService {
     return R.ok(res)
   }
 
-  async updSignalLightInfos(dtos: SignalLightInfoUpdOneDto[]): Promise<R> {
-    const sqls = this.cpgprismao.genSql<SignalLightInfoDto>({
+  async updSignalLightGroupInfos(dtos: SignalLightGroupInfoUpdOneDto[]): Promise<R> {
+    const sqls = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
       type: 'upd',
-      tblName: 'signal_light_info',
+      tblName: 'signal_light_group_info',
       datas: dtos,
       selfDefineInsUpdKey: {
         location: value => `st_setsrid(st_makepoint(${value.split(',')[0]}, ${value.split(',')[1]}), 4326)`
@@ -150,10 +150,10 @@ export class SignalLightInfoService {
     return R.ok(res)
   }
 
-  async delSignalLightInfo(ids: number[]): Promise<R> {
-    const sqls = this.cpgprismao.genSql<SignalLightInfoDto>({
+  async delSignalLightGroupInfo(ids: number[]): Promise<R> {
+    const sqls = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
       type: 'del',
-      tblName: 'signal_light_info',
+      tblName: 'signal_light_group_info',
       delIds: ids
     });
     await this.pgprismao.$queryRawUnsafe(sqls[0]);

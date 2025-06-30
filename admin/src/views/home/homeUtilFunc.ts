@@ -60,7 +60,7 @@ export const goToSystem = async (
         .sort((m1, m2) => m1.orderNum - m2.orderNum)
       router.addRoute({
         path: `/${dto.path}`,
-        name: `/${dto.path}`,
+        name: dto.perms,
         meta: {
           label: `${dto.name}首页`
         },
@@ -69,7 +69,7 @@ export const goToSystem = async (
         children: []
       })
       for (let i = 0; i < permissionsObj.length; i++) {
-        router.addRoute(`/${dto.path}`, permissionsObj[i])
+        router.addRoute(dto.perms, permissionsObj[i])
       }
       const routes = router.getRoutes();
       const fixs = permissions.filter(item => item.ifFixed === final.Y).map(item => item.perms);

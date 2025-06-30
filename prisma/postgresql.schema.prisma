@@ -359,9 +359,9 @@ model planet_osm_roads {
   @@ignore
 }
 
-// signal_light_info
+// 子信号灯信息表
 model signal_light_info {
-  id          Int                     @id @default(autoincrement())
+  id          Int                     @id(map: "signal_light_info_pkey1") @default(autoincrement())
   name        String                  @dbPostgresql.VarChar(100)
   location    Unsupported("geometry")
   description String                  @dbPostgresql.VarChar(100)
@@ -374,4 +374,49 @@ model signal_light_info {
   deleted     String                  @default("N") @dbPostgresql.Char(1)
 
   @@index([location], map: "idx_signal_light_info_location", type: Gist)
+}
+
+// 子信号灯-受控道路对应表
+model signal_light_child_road_mapping {
+  id             Int      @id @default(autoincrement())
+  child_light_id Int
+  road_id        Int
+  create_role    String   @dbPostgresql.VarChar(30)
+  update_role    String   @dbPostgresql.VarChar(30)
+  create_by      String   @dbPostgresql.VarChar(10)
+  update_by      String   @dbPostgresql.VarChar(10)
+  create_time    DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time    DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted        String   @default("N") @dbPostgresql.Char(1)
+}
+
+// 信号灯组-子信号灯对应表
+model signal_light_group_child_mapping {
+  id             Int      @id @default(autoincrement())
+  group_id       Int
+  child_light_id Int
+  create_role    String   @dbPostgresql.VarChar(30)
+  update_role    String   @dbPostgresql.VarChar(30)
+  create_by      String   @dbPostgresql.VarChar(10)
+  update_by      String   @dbPostgresql.VarChar(10)
+  create_time    DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time    DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted        String   @default("N") @dbPostgresql.Char(1)
+}
+
+// 信号灯组信息表
+model signal_light_group_info {
+  id          Int                     @id(map: "signal_light_info_pkey") @default(autoincrement())
+  name        String                  @dbPostgresql.VarChar(100)
+  location    Unsupported("geometry")
+  description String                  @dbPostgresql.VarChar(100)
+  create_role String                  @dbPostgresql.VarChar(30)
+  update_role String                  @dbPostgresql.VarChar(30)
+  create_by   String                  @dbPostgresql.VarChar(10)
+  update_by   String                  @dbPostgresql.VarChar(10)
+  create_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted     String                  @default("N") @dbPostgresql.Char(1)
+
+  @@index([location], map: "idx_signal_light_group_info_location", type: Gist)
 }

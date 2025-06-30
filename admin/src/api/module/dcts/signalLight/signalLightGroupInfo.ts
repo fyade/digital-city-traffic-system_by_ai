@@ -1,14 +1,14 @@
 import request from "@/api/request.ts";
 import { ApiConfig } from "@/type/tablePage.ts";
-import { SignalLightInfoDto, SignalLightInfoUpdDto } from "@/type/module/dcts/signalLight/signalLightInfo.ts";
+import { SignalLightGroupInfoDto, SignalLightGroupInfoUpdDto } from "@/type/module/dcts/signalLight/signalLightGroupInfo.ts";
 
-export const signalLightInfoApi: ApiConfig<SignalLightInfoDto, SignalLightInfoUpdDto> = {
+export const signalLightGroupInfoApi: ApiConfig<SignalLightGroupInfoDto, SignalLightGroupInfoUpdDto> = {
   /**
    * 分页查询
    * @param params
    */
   selectList: (params) => request({
-    url: '/dcts/signal-light/signal-light-info',
+    url: '/dcts/signal-light/signal-light-group-info',
     method: 'GET',
     params: params
   }),
@@ -17,7 +17,7 @@ export const signalLightInfoApi: ApiConfig<SignalLightInfoDto, SignalLightInfoUp
    * @param params
    */
   selectAll: (params) => request({
-    url: '/dcts/signal-light/signal-light-info/all',
+    url: '/dcts/signal-light/signal-light-group-info/all',
     method: 'GET',
     params: params
   }),
@@ -26,7 +26,7 @@ export const signalLightInfoApi: ApiConfig<SignalLightInfoDto, SignalLightInfoUp
    * @param id
    */
   selectById: (id) => request({
-    url: `/dcts/signal-light/signal-light-info/${id}`,
+    url: `/dcts/signal-light/signal-light-group-info/${id}`,
     method: 'GET'
   }),
   /**
@@ -34,7 +34,7 @@ export const signalLightInfoApi: ApiConfig<SignalLightInfoDto, SignalLightInfoUp
    * @param ids
    */
   selectByIds: (ids) => request({
-    url: `/dcts/signal-light/signal-light-info/ids`,
+    url: `/dcts/signal-light/signal-light-group-info/ids`,
     method: 'GET',
     params: ids
   }),
@@ -43,7 +43,7 @@ export const signalLightInfoApi: ApiConfig<SignalLightInfoDto, SignalLightInfoUp
    * @param obj
    */
   insertOne: (obj) => request({
-    url: '/dcts/signal-light/signal-light-info',
+    url: '/dcts/signal-light/signal-light-group-info',
     method: 'POST',
     data: obj
   }),
@@ -52,7 +52,7 @@ export const signalLightInfoApi: ApiConfig<SignalLightInfoDto, SignalLightInfoUp
    * @param obj
    */
   updateOne: (obj) => request({
-    url: '/dcts/signal-light/signal-light-info',
+    url: '/dcts/signal-light/signal-light-group-info',
     method: 'PUT',
     data: obj
   }),
@@ -61,7 +61,7 @@ export const signalLightInfoApi: ApiConfig<SignalLightInfoDto, SignalLightInfoUp
    * @param objs
    */
   insertMore: (objs) => request({
-    url: '/dcts/signal-light/signal-light-info/s',
+    url: '/dcts/signal-light/signal-light-group-info/s',
     method: 'POST',
     data: {
       items: objs,
@@ -72,7 +72,7 @@ export const signalLightInfoApi: ApiConfig<SignalLightInfoDto, SignalLightInfoUp
    * @param objs
    */
   updateMore: (objs) => request({
-    url: '/dcts/signal-light/signal-light-info/s',
+    url: '/dcts/signal-light/signal-light-group-info/s',
     method: 'PUT',
     data: {
       items: objs,
@@ -83,7 +83,7 @@ export const signalLightInfoApi: ApiConfig<SignalLightInfoDto, SignalLightInfoUp
    * @param ids
    */
   deleteList: (...ids) => request({
-    url: '/dcts/signal-light/signal-light-info',
+    url: '/dcts/signal-light/signal-light-group-info',
     method: 'DELETE',
     data: ids
   })

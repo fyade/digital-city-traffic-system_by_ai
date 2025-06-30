@@ -7,6 +7,7 @@ import { useUserStore } from '@/store/module/user';
 import { fileBaseUrl } from "@/api/request.ts";
 import { useSysStore } from "@/store/module/sys.ts";
 import { allLoginRoles } from "@/utils/base.ts";
+import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
 
 const props = defineProps({
   ifShowBreadcrumb: {
@@ -81,10 +82,6 @@ if (props.ifShowBreadcrumb) {
     immediate: true
   })
 }
-
-const gotoBoard = () => {
-  router.push('/dashboard')
-}
 </script>
 
 <template>
@@ -112,7 +109,7 @@ const gotoBoard = () => {
     </div>
     <div class="center"></div>
     <div class="right">
-      <el-button link @click="gotoBoard" style="text-decoration: underline;">前往大屏端</el-button>
+      <el-button link @click="gotoDashboardHome" style="text-decoration: underline;">前往大屏端</el-button>
       <el-dropdown>
         <div style="display: flex;align-items: center;gap: 8px;">
           <el-image

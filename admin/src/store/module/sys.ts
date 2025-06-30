@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, reactive, ref } from "vue";
-import { getSysVersion } from "@/api/common/sys.ts";
+import { getButtons, getSystems, getSysVersion } from "@/api/common/sys.ts";
 import { SysDto } from "@/type/module/main/sysManage/sys.ts";
 import { useUserStore } from "@/store/module/user.ts";
 import { adminConfig } from '@dcts/config'
@@ -36,12 +36,25 @@ export const useSysStore = defineStore('sysStore', () => {
   const setVisibleButtons = (sysPerm: string, buttonPerms: string[]) => {
     visibleButtons.value.set(sysPerm, buttonPerms)
   }
+  const getVisibleButtons = () => {
+    return visibleButtons.value
+  }
   const getVisibleButton = (sysPerm: string, buttonPerm: string) => {
     const newVar = visibleButtons.value.get(sysPerm);
     if (newVar && newVar.includes(buttonPerm)) {
       return true
     }
     return false
+  }
+  const refreshVisibleButton = async (sysPerm: string) => {
+    const systems = await getSystems();
+    const find = systems.find(item => item.perms === sysPerm);
+    if (!find) {
+      return
+    }
+    const buttons = await getButtons(find.id);
+    const buttonPerms = buttons.map(item => item.perms);
+    setVisibleButtons(sysPerm, buttonPerms)
   }
 
   return {
@@ -51,6 +64,8 @@ export const useSysStore = defineStore('sysStore', () => {
     publicHeader,
     urlAddAuth,
     setVisibleButtons,
+    getVisibleButtons,
     getVisibleButton,
+    refreshVisibleButton,
   }
 })

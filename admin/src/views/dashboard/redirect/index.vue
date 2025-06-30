@@ -5,7 +5,7 @@ import { inject, Ref, ref, watch } from "vue";
 const msg = ref('')
 const route = useRoute();
 const router = useRouter()
-const adminPanelLoading = inject<Ref<boolean>>('adminPanelLoading')
+const adminPanelLoading = inject<Ref<boolean>>('dashboard::adminPanelLoading')
 
 watch(() => adminPanelLoading?.value, (newVal) => {
   if (!newVal) {

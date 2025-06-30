@@ -18,7 +18,7 @@ const goAdminPanel = () => {
   router.push('/dashboard/admin-panel');
 }
 const goHome = () => {
-  router.push('/');
+  router.push('/dcts');
 }
 const windowOpen = (url: string) => {
   window.open(url);
@@ -33,12 +33,12 @@ const windowOpen = (url: string) => {
       <p v-for="(item, index) in props.labels" :key="index">
         {{ item[0] }}来自<span @click="windowOpen(item[2])">{{ item[1] }}</span>
       </p>
-      <p @click="emits('openSettingLayerChange')"><span class="no-underline">设置</span></p>
+      <!--<p @click="emits('openSettingLayerChange')"><span class="no-underline">设置</span></p>-->
       <p v-if="!userStore.ifLogin" @click="goToLogin"><span class="no-underline">登录</span></p>
       <p v-if="userStore.ifLogin" @click="userStore.logOut(false)"><span class="no-underline">退出登录</span></p>
       <p v-if="userStore.ifLogin" @click="goAdminPanel"><span class="no-underline">管理员面板</span></p>
-      <p v-if="userStore.ifLogin" @click="emits('openDebugPanel')"><span class="no-underline">调试面板</span></p>
       <p v-if="userStore.ifLogin" @click="goHome"><span class="no-underline">前往管理端</span></p>
+      <p v-if="userStore.ifLogin" @click="emits('openDebugPanel')"><span class="no-underline">调试面板</span></p>
     </div>
   </div>
 </template>
