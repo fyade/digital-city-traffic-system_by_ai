@@ -1,4 +1,5 @@
 import { idUtils } from "@dcts/common";
+import { ID_PREFIX_LINE, ID_PREFIX_POINT } from "@/views/dashboard/utils/useCesium.ts";
 
 export class CesiumPoint {
   id!: string
@@ -6,7 +7,7 @@ export class CesiumPoint {
   lat!: number
 
   constructor({
-                id = idUtils.genId(),
+                id = ID_PREFIX_POINT + idUtils.genId(),
                 lon,
                 lat
               }: {
@@ -26,7 +27,7 @@ export class CesiumLine {
   points!: CesiumPoint[]
 
   constructor({
-                id = idUtils.genId(),
+                id = ID_PREFIX_LINE + idUtils.genId(),
                 points = []
               }: {
                 id?: string

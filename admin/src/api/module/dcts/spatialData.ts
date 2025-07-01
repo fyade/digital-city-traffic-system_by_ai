@@ -1,10 +1,10 @@
 import {
   NodesWithWaysInPolygonDto,
   NodesWithWaysInPolygonVo,
-  SignalLightGroupsInPolygonDto,
-  SignalLightGroupsInPolygonVo
+  SignalLightGroupsInPolygonDto
 } from "@/type/module/dcts/spatialData.ts";
 import request from "@/api/request.ts";
+import { SignalLightGroupInfoDto } from "@/type/module/dcts/signalLight/signalLightGroupInfo.ts";
 
 /**
  * 查询多边形内的所有节点及有连接的道路
@@ -19,7 +19,7 @@ export function nodesWithWaysInPolygonApi(data: NodesWithWaysInPolygonDto) {
 }
 
 export function signalLightGroupsInPolygonApi(data: SignalLightGroupsInPolygonDto) {
-  return request<SignalLightGroupsInPolygonVo>({
+  return request<SignalLightGroupInfoDto[]>({
     url: '/dcts/spatial-data/signal-light-groups-in-polygon',
     method: 'POST',
     data: data,

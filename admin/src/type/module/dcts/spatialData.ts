@@ -17,6 +17,3 @@ export class SignalLightGroupsInPolygonDto {
   version!: string
   points!: PolygonPointDto[]
 }
-
-export class SignalLightGroupsInPolygonVo {
-}

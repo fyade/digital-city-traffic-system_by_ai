@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, useTemplateRef } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import DataLayer from "@/views/dashboard/index/dataLayer.vue";
 import DebugPanel from '@/views/dashboard/debugPanel/index.vue';
-import { DropdownOption } from "naive-ui";
 import { UseCesium } from "@/views/dashboard/utils/useCesium.ts";
 import { useSysStore } from "@/store/module/sys.ts";
 
@@ -11,12 +10,11 @@ const sysStore = useSysStore();
 onMounted(async () => {
   await init()
 })
-onBeforeUnmount(async () => {
-  await destroy()
+onBeforeUnmount(() => {
+  cesiumClass.value?.destroy()
 })
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 变量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-const cesiumContainer = useTemplateRef<HTMLDivElement>("cesiumContainer");
 const cesiumClass = ref<UseCesium | null>(null);
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 操作 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -36,12 +34,6 @@ const init = async () => {
   console.info('加载完成')
   await sysStore.refreshVisibleButton('sys:dcts')
 }
-/**
- * 销毁
- */
-const destroy = async () => {
-  cesiumClass.value?.destroy()
-}
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 其他 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 // 设置抽屉
@@ -54,15 +46,6 @@ const debugDrawerActive = ref(false)
 const openDebugLayerChange = () => {
   debugDrawerActive.value = true
 }
-
-const contextMenuSelect = (key: string, obj: DropdownOption) => {
-  if (cesiumClass.value)
-    cesiumClass.value.formPanelTitle = obj?.label as string
-  if (cesiumClass.value?.contextMenus) {
-    const find = cesiumClass.value.contextMenus.find(item => item.id === key);
-    if (find) find.func()
-  }
-}
 </script>
 
 <template>
@@ -72,7 +55,7 @@ const contextMenuSelect = (key: string, obj: DropdownOption) => {
       @open-setting-layer-change="openSettingLayerChange"
       @open-debug-panel="openDebugLayerChange"
   />
-  <div id="cesiumContainer" ref="cesiumContainer"></div>
+  <div id="cesiumContainer"></div>
 
   <n-drawer v-model:show="settingDrawerActive" width="50rem">
     <n-drawer-content title="设置">
@@ -90,10 +73,11 @@ const contextMenuSelect = (key: string, obj: DropdownOption) => {
       v-if="cesiumClass"
       v-model:show="cesiumClass.contextMenuShow"
       trigger="manual"
+      placement="bottom-start"
       :x="cesiumClass.contextMenuXY[0]"
       :y="cesiumClass.contextMenuXY[1]"
       :options="cesiumClass.contextMenuOption"
-      @select="contextMenuSelect"
+      @select="cesiumClass.contextMenuSelect"
   />
 
   <router-view/>

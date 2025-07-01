@@ -17,11 +17,17 @@ import {
 } from "naive-ui";
 import router from "@/router";
 import { signalLightGroupsInPolygonApi } from "@/api/module/dcts/spatialData.ts";
+import signalLight1Svg from '@/assets/images2/signal-light-1.png'
 
 const currentConfig = adminConfig.currentConfig();
 
 const sysStore = useSysStore()
 const userStore = useUserStore()
+
+// ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 常量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+export const ID_PREFIX_POINT = 'ID_PREFIX_POINT::::::::::'
+export const ID_PREFIX_LINE = 'ID_PREFIX_LINE::::::::::'
+export const ID_PREFIX_SIGNAL_LIGHT = 'ID_PREFIX_SIGNAL_LIGHT::::::::::'
 
 /**
  * 大屏页面的Cesium
@@ -84,6 +90,7 @@ export class UseCesium {
 
 
         const notification = useNotification();
+
         // 瓦片图层加载事件
         this.viewer.scene.globe.tileLoadProgressEvent.addEventListener(queuedTileCount => {
           // 加载中
@@ -126,39 +133,71 @@ export class UseCesium {
             }
           }
         })
-        // 镜头移动结束事件
-        this.viewer.camera.moveEnd.addEventListener(() => {
-          const viewCornerCoordinates = this.getViewCornerCoordinates();
-          if (viewCornerCoordinates) {
-            viewCornerCoordinates.push(viewCornerCoordinates[0])
-            signalLightGroupsInPolygonApi({
-              version: '1.0',
-              points: viewCornerCoordinates
-            }).then(res => {
-              console.log(res)
-            })
-          }
-        })
-        // 图层点击事件
-        this.viewer.cesiumWidget.canvas.addEventListener('click', e => {
-          const lonLat = this.screenXYToLonLat(e.clientX, e.clientY);
+
+        const handler = new Cesium.ScreenSpaceEventHandler(this.viewer.canvas);
+
+        // 鼠标左键按下
+        handler.setInputAction(() => {
+          this.MOUSE_LEFT_DOWN = true
+        }, Cesium.ScreenSpaceEventType.LEFT_DOWN)
+
+        // 鼠标左键抬起
+        handler.setInputAction(() => {
+          this.MOUSE_LEFT_DOWN = false
+          this.drawSignalLightGroupsWhenMapMove()
+        }, Cesium.ScreenSpaceEventType.LEFT_UP)
+
+        // 鼠标右键按下
+        handler.setInputAction(() => {
+          this.MOUSE_RIGHT_DOWN = true
+        }, Cesium.ScreenSpaceEventType.RIGHT_DOWN)
+
+        // 鼠标右键抬起
+        handler.setInputAction(() => {
+          this.MOUSE_RIGHT_DOWN = false
+          this.drawSignalLightGroupsWhenMapMove()
+        }, Cesium.ScreenSpaceEventType.RIGHT_DOWN)
+
+        // 左键点击
+        handler.setInputAction((m: Cesium.ScreenSpaceEventHandler.PositionedEvent) => {
+          const lonLat = this.screenXYToLonLat(m.position.x, m.position.y);
           if (lonLat) {
             this.mouseClickPosition[0] = lonLat.lon
             this.mouseClickPosition[1] = lonLat.lat
-            this.mouseClickPosition[2] = e.button
+            this.mouseClickPosition[2] = 0
           }
-        })
-        // 右键自定义菜单
-        this.viewer.canvas.addEventListener('contextmenu', e => {
-          const lonLat = this.screenXYToLonLat(e.clientX, e.clientY);
+          // 拾取该位置的物体
+          if (this.viewer) {
+            const pickedObject = this.viewer.scene.pick(m.position);
+            console.log(pickedObject)
+          }
+        }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
+
+        // 右键点击
+        handler.setInputAction((m: Cesium.ScreenSpaceEventHandler.PositionedEvent) => {
+          const lonLat = this.screenXYToLonLat(m.position.x, m.position.y);
           if (lonLat) {
             this.mouseClickPosition[0] = lonLat.lon
             this.mouseClickPosition[1] = lonLat.lat
-            this.mouseClickPosition[2] = e.button
+            this.mouseClickPosition[2] = 2
           }
-          this.contextMenuXY.value = [e.clientX, e.clientY];
+          this.contextMenuXY.value = [m.position.x, m.position.y];
           this.contextMenuShow.value = true
-        })
+        }, Cesium.ScreenSpaceEventType.RIGHT_CLICK)
+
+        // 鼠标移动
+        handler.setInputAction((m: Cesium.ScreenSpaceEventHandler.MotionEvent) => {
+          const lonLat = this.screenXYToLonLat(m.endPosition.x, m.endPosition.y);
+          if (lonLat) {
+            this.mouseMovePosition[0] = lonLat.lon
+            this.mouseMovePosition[1] = lonLat.lat
+          }
+        }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
+
+        // 缩放
+        handler.setInputAction((m: number) => {
+          this.drawSignalLightGroupsWhenMapMove()
+        }, Cesium.ScreenSpaceEventType.WHEEL)
       }
 
       // 获取有权限的按钮
@@ -181,6 +220,7 @@ export class UseCesium {
     return this.viewer;
   }
 
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 通用工具函数 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   /**
    * 销毁
    */
@@ -245,11 +285,9 @@ export class UseCesium {
     const scene = this.viewer.scene;
     const camera = this.viewer.camera;
     const canvas = this.viewer.canvas;
-
     if (!scene || !camera || !canvas) {
       return null;
     }
-
     // 屏幕四个角的像素坐标
     const corners = [
       {x: 0, y: canvas.height},
@@ -257,9 +295,7 @@ export class UseCesium {
       {x: canvas.width, y: 0},
       {x: 0, y: 0},
     ]
-
     const cartographicCorners: ({ longitude: number, latitude: number })[] = []
-
     corners.forEach(corner => {
       // 生成射线
       const ray = camera.getPickRay(new Cesium.Cartesian2(corner.x, corner.y));
@@ -275,13 +311,11 @@ export class UseCesium {
       const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
       cartographicCorners.push(cartographic);
     });
-
     for (const cartographicCorner of cartographicCorners) {
       if (!cartographicCorner) {
         return null;
       }
     }
-
     // 转换为经纬度十进制度数
     return cartographicCorners.map(c => {
       return {
@@ -291,6 +325,7 @@ export class UseCesium {
     });
   }
 
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 通用基础对象函数 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   /**
    * 新增点
    * @param obj
@@ -417,6 +452,12 @@ export class UseCesium {
   }
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 以下为定制功能 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 状态值 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+  // 鼠标左键是否按下
+  private MOUSE_LEFT_DOWN = false
+  // 鼠标右键是否按下
+  private MOUSE_RIGHT_DOWN = false
+
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 变量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   // 图层是否正在加载
   public layerLoading = ref(false)
@@ -530,32 +571,30 @@ export class UseCesium {
     }
   ]
   private _allLabels = ref<string[][]>([])
+  get allLabels() {
+    return this._allLabels;
+  }
+
   // 有权限的按钮
   private permissionAbleButtons = ref<string[]>([])
+  // 已渲染的信号灯组的id列表
+  private renderedSignalLightGroupIds: string[] = []
 
-  get allLabels(): string[][] {
-    return this._allLabels.value;
-  }
-
-  set allLabels(value: string[][]) {
-    this._allLabels.value = value;
-  }
-
-  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 工具函数 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 工具函数（不涉及外部接口） ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   /**
    * 设置图层
    */
   public setLayer() {
-    this.allLabels = []
+    this._allLabels.value = []
     const filter1 = this.allLayersOfBaseMap.filter(item => this.currentIdOfBaseMap[1].includes(item.id));
     for (const f of filter1) {
       f.func()
-      this.allLabels.push([f.dataType, f.fromCompany, f.fromUrl])
+      this._allLabels.value.push([f.dataType, f.fromCompany, f.fromUrl])
     }
     const filter2 = this.allLayersOfRoadData.filter(item => this.currentIdOfRoadData[1].includes(item.id));
     for (const f of filter2) {
       f.func()
-      this.allLabels.push([f.dataType, f.fromCompany, f.fromUrl])
+      this._allLabels.value.push([f.dataType, f.fromCompany, f.fromUrl])
     }
   }
 
@@ -565,5 +604,58 @@ export class UseCesium {
    */
   public contextMenuIfHasPermission(perm: string) {
     return userStore.ifLogin && this.permissionAbleButtons.value.includes(perm)
+  }
+
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 工具函数（涉及外部接口） ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+  /**
+   * 查询可视区域内的信号灯组
+   */
+  public drawSignalLightGroupsWhenMapMove() {
+    const viewCornerCoordinates = this.getViewCornerCoordinates();
+    if (viewCornerCoordinates && viewCornerCoordinates.length >= 3) {
+      viewCornerCoordinates.push(viewCornerCoordinates[0])
+      signalLightGroupsInPolygonApi({
+        version: '1.0',
+        points: viewCornerCoordinates
+      }).then(res => {
+        if (!this.viewer) {
+          return
+        }
+        for (const re of res) {
+          const d = `${ID_PREFIX_SIGNAL_LIGHT}${re.id}`;
+          if (this.renderedSignalLightGroupIds.includes(d)) {
+            continue;
+          }
+          this.renderedSignalLightGroupIds.push(d)
+          const strings = re.location.split(',').map(Number) as [number, number];
+          this.viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(strings[0], strings[1]),
+            billboard: {
+              image: signalLight1Svg,
+              verticalOrigin: Cesium.VerticalOrigin.CENTER,
+              width: 32,
+              height: 32
+            },
+            id: d,
+          });
+        }
+      })
+    }
+  }
+
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 组件事件 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+  /**
+   * 右键菜单的事件
+   * @param key
+   * @param obj
+   */
+  public contextMenuSelect = (key: string, obj: DropdownOption) => {
+    if (obj) {
+      this.formPanelTitle.value = obj.label as string
+    }
+    const find = this.contextMenus.find(item => item.id === key);
+    if (find) {
+      find.func()
+    }
   }
 }
