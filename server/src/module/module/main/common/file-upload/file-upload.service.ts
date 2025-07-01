@@ -119,7 +119,6 @@ export class FileUploadService {
       }
       return R.ok(fillObj.fileNewName);
     } catch (e) {
-      console.error(e);
       this.winston.error(e);
       throw new UnknownException(this.bcs.getUserData().reqId, e as HttpException);
     }
@@ -242,7 +241,6 @@ export class FileUploadService {
       });
       return R.ok(true);
     } catch (e) {
-      console.error(e);
       this.winston.error(e);
       throw new UnknownException(this.bcs.getUserData().reqId, e as HttpException)
     }
@@ -296,7 +294,6 @@ export class FileUploadService {
         fs.closeSync(outputFd);
       })
       .catch((error) => {
-        console.error('Error while processing file chunks:', error);
         this.winston.error(error);
       });
     for (let i = 0; i < fileInfos.length; i++) {
@@ -307,7 +304,6 @@ export class FileUploadService {
           ifFinished: base.Y,
         });
       } catch (e) {
-        console.error(e);
         this.winston.error(e);
       }
     }

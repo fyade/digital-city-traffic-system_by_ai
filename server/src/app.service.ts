@@ -11,6 +11,7 @@ import { serverConfig } from "@dcts/config";
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { REGEX_MAIN_APP_1_match, REGEX_MAIN_APP_2_match, REGEX_MAIN_APP_3_match } from "./util/RegularUtils";
+import { WinstonService } from "./module/winston/winston.service";
 
 const si = require("systeminformation");
 
@@ -23,6 +24,7 @@ export class AppService {
     private readonly bcs: BaseContextService,
     private readonly cacheTokenService: CacheTokenService,
     private readonly prismao: PrismaoService,
+    private readonly winston: WinstonService,
   ) {
     this.cpuUsageMSDefault = 100; // CPU 利用率默认时间段
   }
@@ -93,7 +95,7 @@ export class AppService {
         };
       }
     } catch (e) {
-      console.error(e);
+      this.winston.error(e);
       throw new NonSupportException('读取源代码信息');
     }
     return R.ok(allAuthApis);

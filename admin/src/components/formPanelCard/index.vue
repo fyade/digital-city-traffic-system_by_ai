@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { inject, Ref } from "vue";
+import { nextTick, ref } from "vue";
 import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
+import { UseCesium } from "@/views/dashboard/utils/useCesium.ts";
 
 const props = defineProps({
   title: {
@@ -9,11 +10,14 @@ const props = defineProps({
   }
 });
 
-const formPanelTitle = inject<Ref<string>>('dashboard::formPanelTitle');
-const modalTitle = props.title || formPanelTitle?.value
-if (!modalTitle) {
-  gotoDashboardHome()
-}
+const modalTitle = ref('')
+nextTick(() => {
+  const useCesium = new UseCesium();
+  modalTitle.value = props.title || useCesium.formPanelTitle.value
+  if (!modalTitle.value) {
+    gotoDashboardHome()
+  }
+})
 </script>
 
 <template>

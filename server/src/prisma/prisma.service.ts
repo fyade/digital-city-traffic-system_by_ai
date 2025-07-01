@@ -9,6 +9,7 @@ import { AuthService } from '../module/auth/auth.service';
 import { BaseContextService } from '../module/base-context/base-context.service';
 import { UTDPTypeEnum } from '../util/base';
 import { baseUtils, objectUtils } from "@dcts/common";
+import { WinstonService } from "../module/winston/winston.service";
 
 enum RowPermissionEnum {
   all = 'all',
@@ -31,6 +32,7 @@ export class PrismaService {
     private readonly authService: AuthService,
     private readonly bcs: BaseContextService,
     private readonly prismao: PrismaoService,
+    private readonly winston: WinstonService,
   ) {
   }
 
@@ -58,7 +60,7 @@ export class PrismaService {
       },
     });
     if (!permissionData) {
-      console.error(`不存在的权限：${userData.perms}`);
+      this.winston.error(`不存在的权限：${userData.perms}`);
       throw new UnknownException(userData.reqId);
     }
     const ifTopAdmin = userData.topAdmin;

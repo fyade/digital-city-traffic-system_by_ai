@@ -1,27 +1,11 @@
 <script setup lang="ts">
-import * as Cesium from "cesium";
-import { computed, h, onBeforeUnmount, onMounted, provide, ref, useTemplateRef, watch } from "vue";
+import { onBeforeUnmount, onMounted, ref, useTemplateRef } from "vue";
 import DataLayer from "@/views/dashboard/index/dataLayer.vue";
 import DebugPanel from '@/views/dashboard/debugPanel/index.vue';
-import { geoserverConfig } from "@dcts/config";
-import { ContextMenuItem, LayerDto } from "@/views/dashboard/index/dto.ts";
-import {
-  DropdownDividerOption,
-  DropdownGroupOption,
-  DropdownOption,
-  DropdownRenderOption,
-  NotificationReactive,
-  NSpin,
-  useNotification
-} from "naive-ui";
+import { DropdownOption } from "naive-ui";
 import { UseCesium } from "@/views/dashboard/utils/useCesium.ts";
-import { useUserStore } from "@/store/module/user.ts";
-import { useRouter } from "vue-router";
 import { useSysStore } from "@/store/module/sys.ts";
-import { baseUtils } from "@dcts/common";
 
-const router = useRouter();
-const userStore = useUserStore();
 const sysStore = useSysStore();
 
 onMounted(async () => {
@@ -31,138 +15,9 @@ onBeforeUnmount(async () => {
   await destroy()
 })
 
-const notification = useNotification();
-
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 变量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 const cesiumContainer = useTemplateRef<HTMLDivElement>("cesiumContainer");
-let viewer: Cesium.Viewer | null = null;
-let cesiumClass: UseCesium | null = null;
-// 图层是否正在加载
-const layerLoading = ref(false)
-// 右上角的 Loading 通知
-let layerLoadingNotification: NotificationReactive | null = null
-// 右上角的通知内容变化定时器
-let layerLoadingTimer: NodeJS.Timeout | null = null
-// 鼠标点击的位置[经度、纬度、按键]（0左键、2右键）
-let mouseClickPosition = [0, 0, 0]
-provide('dashboard::mouseClickPosition', mouseClickPosition)
-// 鼠标移动的位置[经度、纬度]（实时）
-let mouseMovePosition = [0, 0]
-// 右键菜单的显示
-const contextMenuShow = ref(false)
-// 右键菜单的坐标
-const contextMenuXY = ref([0, 0])
-const contextMenus: ContextMenuItem[] = [
-  {
-    id: 'dcts:signalLight:signalLightGroupInfo:ins',
-    func: () => {
-      router.push({name: '~fp~:signalLight:signalLightGroupInfo:ins'})
-    }
-  },
-  {
-    id: 'close',
-    func: () => {
-      contextMenuShow.value = false
-    }
-  }
-]
-const contextMenuOption = computed(() => {
-  const ret: Array<DropdownOption | DropdownGroupOption | DropdownDividerOption | DropdownRenderOption> = [
-    {
-      label: '信号灯管理',
-      key: 'i:dcts:signalLight',
-      show: contextMenuIfHasPermission('i:dcts:signalLight'),
-      children: [
-        {
-          label: '信号灯组信息管理',
-          key: 'i:dcts:signalLight:signalLightGroupInfo',
-          show: contextMenuIfHasPermission('i:dcts:signalLight:signalLightGroupInfo'),
-          children: [
-            {
-              label: '新增信号灯组',
-              key: 'dcts:signalLight:signalLightGroupInfo:ins',
-              show: contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:ins'),
-            }
-          ]
-        }
-      ]
-    },
-    {
-      type: 'divider'
-    },
-    {
-      label: '关闭',
-      key: 'close'
-    }
-  ]
-  return ret;
-})
-const formPanelTitle = ref('')
-provide('dashboard::formPanelTitle', formPanelTitle)
-
-// 有权限的按钮
-const permissionAbleButtons = ref<string[]>([])
-const visibleButtons = sysStore.getVisibleButtons();
-watch(visibleButtons, () => {
-  const dctsButtons = visibleButtons.get('sys:dcts');
-  if (dctsButtons) {
-    permissionAbleButtons.value = dctsButtons;
-  }
-}, {
-  immediate: true
-})
-
-// ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 数据 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-// 所有图层的链接及当前图层index
-const currentIdOfBaseMap = ref([[''], ['a1']])
-const currentIdOfRoadData = ref([[''], ['b1']])
-const allLayersOfBaseMap: LayerDto[] = [
-  {
-    id: 'a1',
-    name: 'SuperMap影像底图',
-    preview: '',
-    func: () => {
-      if (!viewer) {
-        return
-      }
-      const provider = new Cesium.UrlTemplateImageryProvider({
-        url: `https://www.supermapol.com/proxy/y8f150ad/iserver/services/map-geovis-img/rest/maps/GEOVIS_Img/zxyTileImage.png?width=256&height=256&x={x}&y={y}&z={z}`,
-        minimumLevel: 0,
-        maximumLevel: 18,
-        credit: new Cesium.Credit('SuperMap iServer')
-      });
-      viewer.imageryLayers.addImageryProvider(provider);
-    },
-    dataType: '影像底图',
-    fromCompany: 'SuperMap',
-    fromUrl: 'https://www.supermapol.com/resource-center/map/detail?id=2118000783'
-  }
-]
-const allLayersOfRoadData: LayerDto[] = [
-  {
-    id: 'b1',
-    name: 'OSM路网数据[路网](2025.06.22)',
-    preview: '',
-    func: () => {
-      if (!viewer) {
-        return
-      }
-      const provider = new Cesium.WebMapServiceImageryProvider({
-        url: `${geoserverConfig.VITE_API_PREFIX}/geoserver/wms`,
-        layers: 'ne:planet_osm_line',
-        parameters: {
-          transparent: true,
-          format: 'image/png'
-        }
-      });
-      viewer.imageryLayers.addImageryProvider(provider);
-    },
-    dataType: '路网数据[路网]',
-    fromCompany: 'OpenStreetMap',
-    fromUrl: 'https://www.openstreetmap.org/'
-  }
-]
-const allLabels = ref<string[][]>([])
+const cesiumClass = ref<UseCesium | null>(null);
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 操作 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 /**
@@ -172,122 +27,20 @@ const init = async () => {
   console.info('开始加载');
 
   const useCesium = new UseCesium({container: 'cesiumContainer'});
-  const viewer1 = useCesium.getViewer();
-  if (!viewer1) {
+  const viewer = useCesium.getViewer();
+  cesiumClass.value = useCesium;
+  if (!viewer || !cesiumClass.value) {
     return
   }
-  cesiumClass = useCesium;
-  viewer = viewer1;
-
-  cesiumClass.setViewTo(118.92844631852402, 32.12752744546319, 10000)
-
-  // 获取默认的影像图层
-  const defaultImagery = viewer.imageryLayers.get(0);
-  // 移除默认图层
-  viewer.imageryLayers.remove(defaultImagery);
-
-  setLayer()
 
   console.info('加载完成')
-
-  // 瓦片图层加载事件
-  viewer.scene.globe.tileLoadProgressEvent.addEventListener(queuedTileCount => {
-    // 加载中
-    if (queuedTileCount > 0 && !layerLoading.value) {
-      layerLoading.value = true
-      layerLoadingNotification = notification.create({
-        title: '提示',
-        content: '图层加载中...',
-        duration: 0,
-        avatar: () => h(NSpin, {
-          size: 'medium',
-          strokeWidth: 20
-        }),
-        closable: false,
-      });
-      // 设置定时器
-      if (!layerLoadingTimer) {
-        layerLoadingTimer = setTimeout(() => {
-          if (layerLoadingNotification) {
-            layerLoadingNotification.content = '加载时间可能稍长，请稍作等待，感谢您的配合...'
-          }
-        }, 3000)
-      }
-    }
-    // 加载完成
-    if (queuedTileCount === 0 && layerLoading.value) {
-      if (layerLoadingNotification) {
-        layerLoadingNotification.destroy()
-      }
-      layerLoading.value = false
-      notification.success({
-        title: '提示',
-        content: '图层加载完成',
-        duration: 3000
-      })
-      // 清除定时器
-      if (layerLoadingTimer) {
-        clearTimeout(layerLoadingTimer)
-        layerLoadingTimer = null
-      }
-    }
-  })
-  // 镜头移动结束事件
-  viewer.camera.moveEnd.addEventListener(() => {
-  })
-  // 图层点击事件
-  viewer.cesiumWidget.canvas.addEventListener('click', e => {
-    const lonLat = useCesium.screenXYToLonLat(e.clientX, e.clientY);
-    if (lonLat) {
-      mouseClickPosition[0] = lonLat.lon
-      mouseClickPosition[1] = lonLat.lat
-      mouseClickPosition[2] = e.button
-    }
-  })
-  // 右键自定义菜单
-  viewer.canvas.addEventListener('contextmenu', e => {
-    const lonLat = useCesium.screenXYToLonLat(e.clientX, e.clientY);
-    if (lonLat) {
-      mouseClickPosition[0] = lonLat.lon
-      mouseClickPosition[1] = lonLat.lat
-      mouseClickPosition[2] = e.button
-    }
-    contextMenuXY.value = [e.clientX, e.clientY];
-    contextMenuShow.value = true
-  })
-
   await sysStore.refreshVisibleButton('sys:dcts')
 }
 /**
  * 销毁
  */
 const destroy = async () => {
-  cesiumClass?.destroy()
-}
-
-// ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 工具函数 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-/**
- * 设置图层
- */
-const setLayer = () => {
-  allLabels.value = []
-  const filter1 = allLayersOfBaseMap.filter(item => currentIdOfBaseMap.value[1].includes(item.id));
-  for (const f of filter1) {
-    f.func()
-    allLabels.value.push([f.dataType, f.fromCompany, f.fromUrl])
-  }
-  const filter2 = allLayersOfRoadData.filter(item => currentIdOfRoadData.value[1].includes(item.id));
-  for (const f of filter2) {
-    f.func()
-    allLabels.value.push([f.dataType, f.fromCompany, f.fromUrl])
-  }
-}
-/**
- * 右键菜单项是否有权限
- * @param perm
- */
-const contextMenuIfHasPermission = (perm: string) => {
-  return userStore.ifLogin && permissionAbleButtons.value.includes(perm)
+  cesiumClass.value?.destroy()
 }
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 其他 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -303,15 +56,19 @@ const openDebugLayerChange = () => {
 }
 
 const contextMenuSelect = (key: string, obj: DropdownOption) => {
-  formPanelTitle.value = obj?.label as string
-  const find = contextMenus.find(item => item.id === key);
-  if (find) find.func()
+  if (cesiumClass.value)
+    cesiumClass.value.formPanelTitle = obj?.label as string
+  if (cesiumClass.value?.contextMenus) {
+    const find = cesiumClass.value.contextMenus.find(item => item.id === key);
+    if (find) find.func()
+  }
 }
 </script>
 
 <template>
   <DataLayer
-      :labels="allLabels"
+      v-if="cesiumClass"
+      :labels="cesiumClass.allLabels"
       @open-setting-layer-change="openSettingLayerChange"
       @open-debug-panel="openDebugLayerChange"
   />
@@ -330,11 +87,12 @@ const contextMenuSelect = (key: string, obj: DropdownOption) => {
   </n-drawer>
 
   <n-dropdown
-      v-model:show="contextMenuShow"
+      v-if="cesiumClass"
+      v-model:show="cesiumClass.contextMenuShow"
       trigger="manual"
-      :x="contextMenuXY[0]"
-      :y="contextMenuXY[1]"
-      :options="contextMenuOption"
+      :x="cesiumClass.contextMenuXY[0]"
+      :y="cesiumClass.contextMenuXY[1]"
+      :options="cesiumClass.contextMenuOption"
       @select="contextMenuSelect"
   />
 

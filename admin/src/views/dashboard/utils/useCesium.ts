@@ -1,9 +1,27 @@
 import * as Cesium from "cesium";
 import { CesiumLine, CesiumPoint } from "@/views/dashboard/utils/dto.ts";
-import { adminConfig } from "@dcts/config";
+import { adminConfig, geoserverConfig } from "@dcts/config";
 import { idUtils } from "@dcts/common";
+import { computed, h, ref, watch } from "vue";
+import { ContextMenuItem, LayerDto } from "@/views/dashboard/index/dto.ts";
+import { useUserStore } from "@/store/module/user.ts";
+import { useSysStore } from "@/store/module/sys.ts";
+import {
+  DropdownDividerOption,
+  DropdownGroupOption,
+  DropdownOption,
+  DropdownRenderOption,
+  NotificationReactive,
+  NSpin,
+  useNotification
+} from "naive-ui";
+import router from "@/router";
+import { signalLightGroupsInPolygonApi } from "@/api/module/dcts/spatialData.ts";
 
 const currentConfig = adminConfig.currentConfig();
+
+const sysStore = useSysStore()
+const userStore = useUserStore()
 
 /**
  * 大屏页面的Cesium
@@ -26,7 +44,7 @@ export class UseCesium {
                 container?: string
               } = {}
   ) {
-    if (!UseCesium.instance) {
+    if (!UseCesium.instance || container) {
       if (container) {
         this.viewer = new Cesium.Viewer(container, {
           infoBox: false, // 属性面板
@@ -54,7 +72,105 @@ export class UseCesium {
         if (currentConfig.VITE_MODE === 'dev') {
           this.viewer.scene.debugShowFramesPerSecond = true
         }
+
+        this.setViewTo(118.92844631852402, 32.12752744546319, 10000)
+
+        // 获取默认的影像图层
+        const defaultImagery = this.viewer.imageryLayers.get(0);
+        // 移除默认图层
+        this.viewer.imageryLayers.remove(defaultImagery);
+
+        this.setLayer()
+
+
+        const notification = useNotification();
+        // 瓦片图层加载事件
+        this.viewer.scene.globe.tileLoadProgressEvent.addEventListener(queuedTileCount => {
+          // 加载中
+          if (queuedTileCount > 0 && !this.layerLoading.value) {
+            this.layerLoading.value = true
+            this.layerLoadingNotification = notification.create({
+              title: '提示',
+              content: '图层加载中...',
+              duration: 0,
+              avatar: () => h(NSpin, {
+                size: 'medium',
+                strokeWidth: 20
+              }),
+              closable: false,
+            });
+            // 设置定时器
+            if (!this.layerLoadingTimer) {
+              this.layerLoadingTimer = setTimeout(() => {
+                if (this.layerLoadingNotification) {
+                  this.layerLoadingNotification.content = '加载时间可能稍长，请稍作等待，感谢您的配合...'
+                }
+              }, 3000)
+            }
+          }
+          // 加载完成
+          if (queuedTileCount === 0 && this.layerLoading.value) {
+            if (this.layerLoadingNotification) {
+              this.layerLoadingNotification.destroy()
+            }
+            this.layerLoading.value = false
+            notification.success({
+              title: '提示',
+              content: '图层加载完成',
+              duration: 3000
+            })
+            // 清除定时器
+            if (this.layerLoadingTimer) {
+              clearTimeout(this.layerLoadingTimer)
+              this.layerLoadingTimer = null
+            }
+          }
+        })
+        // 镜头移动结束事件
+        this.viewer.camera.moveEnd.addEventListener(() => {
+          const viewCornerCoordinates = this.getViewCornerCoordinates();
+          if (viewCornerCoordinates) {
+            viewCornerCoordinates.push(viewCornerCoordinates[0])
+            signalLightGroupsInPolygonApi({
+              version: '1.0',
+              points: viewCornerCoordinates
+            }).then(res => {
+              console.log(res)
+            })
+          }
+        })
+        // 图层点击事件
+        this.viewer.cesiumWidget.canvas.addEventListener('click', e => {
+          const lonLat = this.screenXYToLonLat(e.clientX, e.clientY);
+          if (lonLat) {
+            this.mouseClickPosition[0] = lonLat.lon
+            this.mouseClickPosition[1] = lonLat.lat
+            this.mouseClickPosition[2] = e.button
+          }
+        })
+        // 右键自定义菜单
+        this.viewer.canvas.addEventListener('contextmenu', e => {
+          const lonLat = this.screenXYToLonLat(e.clientX, e.clientY);
+          if (lonLat) {
+            this.mouseClickPosition[0] = lonLat.lon
+            this.mouseClickPosition[1] = lonLat.lat
+            this.mouseClickPosition[2] = e.button
+          }
+          this.contextMenuXY.value = [e.clientX, e.clientY];
+          this.contextMenuShow.value = true
+        })
       }
+
+      // 获取有权限的按钮
+      const visibleButtons = sysStore.getVisibleButtons();
+      watch(visibleButtons, () => {
+        const dctsButtons = visibleButtons.get('sys:dcts');
+        if (dctsButtons) {
+          this.permissionAbleButtons.value = dctsButtons;
+        }
+      }, {
+        immediate: true
+      })
 
       UseCesium.instance = this
     }
@@ -301,4 +417,153 @@ export class UseCesium {
   }
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 以下为定制功能 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 变量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+  // 图层是否正在加载
+  public layerLoading = ref(false)
+  // 右上角的 Loading 通知
+  public layerLoadingNotification: NotificationReactive | null = null
+  // 右上角的通知内容变化定时器
+  public layerLoadingTimer: NodeJS.Timeout | null = null
+  // 鼠标点击的位置[经度、纬度、按键]（0左键、2右键）
+  public mouseClickPosition = [0, 0, 0]
+  // 鼠标移动的位置[经度、纬度]（实时）
+  public mouseMovePosition = [0, 0]
+  // 右键菜单的显示
+  public contextMenuShow = ref(false)
+  // 右键菜单的坐标
+  public contextMenuXY = ref([0, 0])
+  public contextMenus: ContextMenuItem[] = [
+    {
+      id: 'dcts:signalLight:signalLightGroupInfo:ins',
+      func: () => {
+        router.push({name: '~fp~:signalLight:signalLightGroupInfo:ins'})
+      }
+    },
+    {
+      id: 'close',
+      func: () => {
+        this.contextMenuShow.value = false
+      }
+    }
+  ]
+  public contextMenuOption = computed(() => {
+    const ret: Array<DropdownOption | DropdownGroupOption | DropdownDividerOption | DropdownRenderOption> = [
+      {
+        label: '信号灯管理',
+        key: 'i:dcts:signalLight',
+        show: this.contextMenuIfHasPermission('i:dcts:signalLight'),
+        children: [
+          {
+            label: '信号灯组信息管理',
+            key: 'i:dcts:signalLight:signalLightGroupInfo',
+            show: this.contextMenuIfHasPermission('i:dcts:signalLight:signalLightGroupInfo'),
+            children: [
+              {
+                label: '新增信号灯组',
+                key: 'dcts:signalLight:signalLightGroupInfo:ins',
+                show: this.contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:ins'),
+              }
+            ]
+          }
+        ]
+      },
+      {
+        type: 'divider'
+      },
+      {
+        label: '关闭',
+        key: 'close'
+      }
+    ]
+    return ret;
+  })
+  public formPanelTitle = ref('')
+
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 数据 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+  // 所有图层的链接及当前图层index
+  private currentIdOfBaseMap = [[''], ['a1']]
+  private currentIdOfRoadData = [[''], ['b1']]
+  private allLayersOfBaseMap: LayerDto[] = [
+    {
+      id: 'a1',
+      name: 'SuperMap影像底图',
+      preview: '',
+      func: () => {
+        if (!this.viewer) {
+          return
+        }
+        const provider = new Cesium.UrlTemplateImageryProvider({
+          url: `https://www.supermapol.com/proxy/y8f150ad/iserver/services/map-geovis-img/rest/maps/GEOVIS_Img/zxyTileImage.png?width=256&height=256&x={x}&y={y}&z={z}`,
+          minimumLevel: 0,
+          maximumLevel: 18,
+          credit: new Cesium.Credit('SuperMap iServer')
+        });
+        this.viewer.imageryLayers.addImageryProvider(provider);
+      },
+      dataType: '影像底图',
+      fromCompany: 'SuperMap',
+      fromUrl: 'https://www.supermapol.com/resource-center/map/detail?id=2118000783'
+    }
+  ]
+  private allLayersOfRoadData: LayerDto[] = [
+    {
+      id: 'b1',
+      name: 'OSM路网数据[路网](2025.06.22)',
+      preview: '',
+      func: () => {
+        if (!this.viewer) {
+          return
+        }
+        const provider = new Cesium.WebMapServiceImageryProvider({
+          url: `${geoserverConfig.VITE_API_PREFIX}/geoserver/wms`,
+          layers: 'ne:planet_osm_line',
+          parameters: {
+            transparent: true,
+            format: 'image/png'
+          }
+        });
+        this.viewer.imageryLayers.addImageryProvider(provider);
+      },
+      dataType: '路网数据[路网]',
+      fromCompany: 'OpenStreetMap',
+      fromUrl: 'https://www.openstreetmap.org/'
+    }
+  ]
+  private _allLabels = ref<string[][]>([])
+  // 有权限的按钮
+  private permissionAbleButtons = ref<string[]>([])
+
+  get allLabels(): string[][] {
+    return this._allLabels.value;
+  }
+
+  set allLabels(value: string[][]) {
+    this._allLabels.value = value;
+  }
+
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 工具函数 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+  /**
+   * 设置图层
+   */
+  public setLayer() {
+    this.allLabels = []
+    const filter1 = this.allLayersOfBaseMap.filter(item => this.currentIdOfBaseMap[1].includes(item.id));
+    for (const f of filter1) {
+      f.func()
+      this.allLabels.push([f.dataType, f.fromCompany, f.fromUrl])
+    }
+    const filter2 = this.allLayersOfRoadData.filter(item => this.currentIdOfRoadData[1].includes(item.id));
+    for (const f of filter2) {
+      f.func()
+      this.allLabels.push([f.dataType, f.fromCompany, f.fromUrl])
+    }
+  }
+
+  /**
+   * 右键菜单项是否有权限
+   * @param perm
+   */
+  public contextMenuIfHasPermission(perm: string) {
+    return userStore.ifLogin && this.permissionAbleButtons.value.includes(perm)
+  }
 }

@@ -490,7 +490,6 @@ export class AuthService {
         const ipInfoFromRequest = getIpInfoFromRequest(request);
         algorithmCallDto.callIp = `${ipInfoFromRequest.ip}`;
       } catch (e) {
-        console.error(e);
         this.winston.error(e);
       }
     }

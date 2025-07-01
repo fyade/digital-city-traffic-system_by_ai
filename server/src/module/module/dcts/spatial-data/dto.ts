@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { ArrayMinSize, IsArray, IsIn, IsNotEmpty, IsNumber, ValidateNested } from "class-validator";
 
-class NodesWithWaysInPolygonDto_point {
+class PolygonPointDto {
   @ApiProperty({description: '经度', required: true})
   @Type(() => Number)
   @IsNotEmpty({message: '经度不能为空'})
@@ -22,11 +22,26 @@ export class NodesWithWaysInPolygonDto {
   @IsIn(['1.0'], {message: '参数版本值不在允许的值中'})
   version: string;
 
-  @ApiProperty({description: '多边形', required: true, type: [NodesWithWaysInPolygonDto_point]})
+  @ApiProperty({description: '多边形', required: true, type: [PolygonPointDto]})
   @IsNotEmpty({message: '多边形不能为空'})
   @IsArray({message: '多边形必须为数组'})
   @ArrayMinSize(3, {message: '多边形至少需要 3 个顶点'})
   @ValidateNested({each: true})
-  @Type(() => NodesWithWaysInPolygonDto_point)
-  points: NodesWithWaysInPolygonDto_point[]
+  @Type(() => PolygonPointDto)
+  points: PolygonPointDto[]
+}
+
+export class SignalLightGroupsInPolygonDto {
+  @ApiProperty({description: '参数版本', required: true})
+  @IsNotEmpty({message: '参数版本不能为空'})
+  @IsIn(['1.0'], {message: '参数版本值不在允许的值中'})
+  version: string;
+
+  @ApiProperty({description: '多边形', required: true, type: [PolygonPointDto]})
+  @IsNotEmpty({message: '多边形不能为空'})
+  @IsArray({message: '多边形必须为数组'})
+  @ArrayMinSize(3, {message: '多边形至少需要 3 个顶点'})
+  @ValidateNested({each: true})
+  @Type(() => PolygonPointDto)
+  points: PolygonPointDto[]
 }

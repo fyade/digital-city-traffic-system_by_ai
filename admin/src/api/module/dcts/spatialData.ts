@@ -1,4 +1,9 @@
-import { NodesWithWaysInPolygonDto, NodesWithWaysInPolygonVo } from "@/type/module/dcts/spatialData.ts";
+import {
+  NodesWithWaysInPolygonDto,
+  NodesWithWaysInPolygonVo,
+  SignalLightGroupsInPolygonDto,
+  SignalLightGroupsInPolygonVo
+} from "@/type/module/dcts/spatialData.ts";
 import request from "@/api/request.ts";
 
 /**
@@ -8,6 +13,14 @@ import request from "@/api/request.ts";
 export function nodesWithWaysInPolygonApi(data: NodesWithWaysInPolygonDto) {
   return request<NodesWithWaysInPolygonVo>({
     url: '/dcts/spatial-data/nodes-with-ways-in-polygon',
+    method: 'POST',
+    data: data,
+  })
+}
+
+export function signalLightGroupsInPolygonApi(data: SignalLightGroupsInPolygonDto) {
+  return request<SignalLightGroupsInPolygonVo>({
+    url: '/dcts/spatial-data/signal-light-groups-in-polygon',
     method: 'POST',
     data: data,
   })

@@ -6,13 +6,11 @@ import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
 import { SignalLightGroupInfoDto } from "@/type/module/dcts/signalLight/signalLightGroupInfo.ts";
 import { signalLightGroupInfoDict } from "@/dict/module/dcts/signalLight/signalLightGroupInfo.ts";
 import { signalLightGroupInfoApi } from "@/api/module/dcts/signalLight/signalLightGroupInfo.ts";
+import { UseCesium } from "@/views/dashboard/utils/useCesium.ts";
 
-const mouseClickPosition = inject<[number, number, number]>('dashboard::mouseClickPosition');
 nextTick(() => {
-  if (!mouseClickPosition) {
-    return
-  }
-  form.value.location = `${mouseClickPosition[0]},${mouseClickPosition[1]}`
+  const useCesium = new UseCesium();
+  form.value.location = `${useCesium.mouseClickPosition[0]},${useCesium.mouseClickPosition[1]}`
 })
 
 const dialogFormRef = useTemplateRef<FormInst>('dialogFormRef')
