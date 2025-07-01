@@ -1,8 +1,6 @@
 import { getCurrentConfig } from "../index.js";
 import { configProd } from "./server-prod.config.js";
-import { currentVersion as cv, currentConfig as publicCurrentConfig } from './public.config.js'
-
-const config1 = publicCurrentConfig();
+import { currentVersion as cv, publicConfigDev } from './public.config.js'
 
 export const currentVersion = `${cv}.1`;
 
@@ -13,10 +11,10 @@ export const currentConfig = () => {
 const mysqlConnectParam = '';
 const config = {
   dev: {
-    mode: config1.mode,
-    port: config1.bPort,
-    wsPort: config1.bWsPort,
-    staticRoot: config1.staticRoot,
+    mode: publicConfigDev.mode,
+    port: publicConfigDev.bPort,
+    wsPort: publicConfigDev.bWsPort,
+    staticRoot: publicConfigDev.staticRoot,
     redis: {
       host: 'localhost',
       port: 6379,

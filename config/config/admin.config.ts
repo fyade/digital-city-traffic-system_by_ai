@@ -1,8 +1,6 @@
 import { getCurrentConfig } from '../index.js'
 import { configProd } from "./admin-prod.config.js";
-import { currentVersion as cv, currentConfig as publicCurrentConfig } from './public.config.js'
-
-const config1 = publicCurrentConfig();
+import { currentVersion as cv, publicConfigDev } from './public.config.js'
 
 export const APP_NAME = '数字孪生城市交通管理系统'
 export const currentVersion = `${cv}.1`
@@ -13,9 +11,9 @@ export const currentConfig = () => {
 
 const config = {
   dev: {
-    VITE_MODE: config1.mode,
-    VITE_BASEURL: `http://localhost:${config1.bPort}`,
-    VITE_FILE_BASEURL: `http://localhost:${config1.bPort}${config1.staticRoot}/`,
+    VITE_MODE: publicConfigDev.mode,
+    VITE_BASEURL: `http://localhost:${publicConfigDev.bPort}`,
+    VITE_FILE_BASEURL: `http://localhost:${publicConfigDev.bPort}${publicConfigDev.staticRoot}/`,
     VITE_API_PREFIX: '/api-dev',
     VITE_API_FILE_PREFIX: '/api-file-dev',
     VITE_API_WS_PREFIX: '/api-ws-dev',

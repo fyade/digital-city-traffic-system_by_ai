@@ -6,9 +6,11 @@ import * as process from "process";
 
 export function getCurrentConfig<T extends object>(config: T) {
   let environmentMode;
-  if (typeof import.meta !== 'undefined' && (import.meta as unknown as ImportMeta).env) {
+  const isViteEnv = typeof import.meta !== 'undefined' && !!(import.meta as unknown as ImportMeta).env;
+  const isNodeEnv = typeof process !== 'undefined' && !!process.env
+  if (isViteEnv) {
     environmentMode = (import.meta as unknown as ImportMeta).env.MODE;
-  } else if (typeof process !== 'undefined' && process.env) {
+  } else if (isNodeEnv) {
     environmentMode = process.env.NODE_ENV;
   } else {
     environmentMode = 'dev';
