@@ -177,7 +177,7 @@ const saveTrp = (index: number) => {
       <el-table-column prop="perms" :label="menuDictInter.perms" width="300"/>
       <!--<el-table-column prop="remark" :label="menuDictInter.remark" width="200"/>-->
       <!--在此上方添加表格列-->
-      <el-table-column fixed="right" label="操作" min-width="140">
+      <el-table-column fixed="right" label="操作" min-width="200">
         <template #default="{row, $index}">
           <div class="zs-table-data-operate-button-row">
             <el-select :disabled="loading1" v-model="trps[$index][0]" placeholder="请选择权限范围" clearable filterable>
@@ -206,4 +206,7 @@ const saveTrp = (index: number) => {
 </template>
 
 <style scoped>
+.zs-table-data-operate-button-row {
+  flex-wrap: nowrap;
+}
 </style>

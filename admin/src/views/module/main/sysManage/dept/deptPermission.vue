@@ -148,7 +148,7 @@ const loadNode = (node: Node, resolve: (data: (MenuDto & {leaf?: boolean, disabl
     type: JSON.stringify({in: {value: [MenuTypeEnum.T_IS, MenuTypeEnum.T_Inter]}}),
     sysId: selectSys.value || final.DEFAULT_PARENT_ID,
   }).then((res: MenuDto[]) => {
-    resolve(res.map(item => ({...item, leaf: item.type === MenuTypeEnum.T_Inter, disabled: item.type === MenuTypeEnum.T_IS})))
+    resolve(res.map(item => ({...item, leaf: item.type === MenuTypeEnum.T_Inter })))
   })
 }
 
@@ -252,7 +252,6 @@ const selectSysChange = (value: number | undefined) => {
               node-key="id"
               lazy
               show-checkbox
-              check-on-click-node
               :props="{isLeaf: 'leaf', disabled: 'disabled'}"
               :load="loadNode"
               :check-strictly="true"
