@@ -1,5 +1,5 @@
 import { idUtils } from "@dcts/common";
-import { ID_PREFIX_LINE, ID_PREFIX_POINT } from "@/views/dashboard/utils/useCesium.ts";
+import { ID_PREFIX_LINE, ID_PREFIX_POINT } from "@/views/dashboard/class/useDashboardCesium.ts";
 
 export class CesiumPoint {
   id!: string

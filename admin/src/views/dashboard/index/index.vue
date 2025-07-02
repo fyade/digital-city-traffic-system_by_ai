@@ -2,8 +2,8 @@
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import DataLayer from "@/views/dashboard/index/dataLayer.vue";
 import DebugPanel from '@/views/dashboard/debugPanel/index.vue';
-import { UseCesium } from "@/views/dashboard/utils/useCesium.ts";
 import { useSysStore } from "@/store/module/sys.ts";
+import { UseDashboardCesium } from "@/views/dashboard/class/useDashboardCesium.ts";
 
 const sysStore = useSysStore();
 
@@ -15,7 +15,7 @@ onBeforeUnmount(() => {
 })
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 变量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-const cesiumClass = ref<UseCesium>(new UseCesium());
+const cesiumClass = ref<UseDashboardCesium>(new UseDashboardCesium());
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 操作 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 /**
@@ -24,7 +24,7 @@ const cesiumClass = ref<UseCesium>(new UseCesium());
 const init = async () => {
   console.info('开始加载');
 
-  const useCesium = new UseCesium({container: 'cesiumContainer'});
+  const useCesium = new UseDashboardCesium({container: 'cesiumContainer'});
   const viewer = useCesium.getViewer();
   cesiumClass.value = useCesium;
   if (!viewer || !cesiumClass.value) {
