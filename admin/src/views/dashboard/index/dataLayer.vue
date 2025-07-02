@@ -18,7 +18,7 @@ const goAdminPanel = () => {
   router.push('/dashboard/admin-panel');
 }
 const goHome = () => {
-  router.push('/dcts');
+  router.push('/');
 }
 const windowOpen = (url: string) => {
   window.open(url);

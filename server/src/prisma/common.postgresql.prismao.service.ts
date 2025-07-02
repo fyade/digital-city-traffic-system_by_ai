@@ -160,8 +160,8 @@ export class CommonPostgresqlPrismaoService {
    *   - 查数量时：selParam必填
    *   - 查所有时：clas、selParam必填
    *   - 查单个/多个时：clas、selIds必填
-   * - 新增时：type、tblName、datas必填
-   * - 修改时：type、tblName、datas必填
+   * - 新增时：type、tblName、clas、datas必填
+   * - 修改时：type、tblName、clas、datas必填
    * - 删除时：type、tblName、delIds必填
    */
   genSql<T>(dto: GenSqlDto<T>) {
@@ -176,6 +176,12 @@ export class CommonPostgresqlPrismaoService {
       updateTime: ' to_char(update_time, \'YYYY-MM-DD"T"HH24:MI:SS"Z"\') '
     }
 
+    const sql_select_keys = !dto.clas ? '' : Object.keys(dto.clas)
+        .map(key => {
+          const as1 = notSampleSelParam[key] || dto?.selfDefineSelKey?.[key] || toSnakeCase(key)
+          return ` ${as1} as "${key}" `
+        })
+        .join(',');
     let sql = '';
     const sqls: string[] = [];
     // 操作
@@ -184,12 +190,7 @@ export class CommonPostgresqlPrismaoService {
       if (dto.type === 'selCount') {
         sql += ` count(*) as count `
       } else {
-        sql += Object.keys(dto.clas)
-            .map(key => {
-              const as1 = notSampleSelParam[key] || dto.selfDefineSelKey[key] || toSnakeCase(key)
-              return ` ${as1} as "${key}" `
-            })
-            .join(',');
+        sql += sql_select_keys;
       }
     } else if (this._ifIns(dto.type)) {
       sql += ' insert ';
@@ -274,7 +275,8 @@ export class CommonPostgresqlPrismaoService {
                 })
                 .join(',')
         }) `;
-        _sqlsOfInsUpd.push(_sql)
+        const s2 = ` ${_sql} RETURNING ${sql_select_keys} `;
+        _sqlsOfInsUpd.push(s2)
       }
     } else if (this._ifUpd(dto.type)) {
       // 修改数据的拼接
@@ -360,7 +362,8 @@ export class CommonPostgresqlPrismaoService {
       } else {
         // 不是删除，就传入当前数据的id
         for (let i = 0; i < dto.datas.length; i++) {
-          _sqlsOfInsUpd.push(` ${_sqls[i]} ${_sql} and id = ${dto.datas[i]['id']} `)
+          const s3 = ` ${_sqls[i]} ${_sql} and id = ${dto.datas[i]['id']} RETURNING ${sql_select_keys} `;
+          _sqlsOfInsUpd.push(s3)
         }
       }
     }

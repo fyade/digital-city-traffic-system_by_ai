@@ -29,10 +29,10 @@ class RowPermissionRet {
 @Injectable()
 export class PrismaService {
   constructor(
-    private readonly authService: AuthService,
-    private readonly bcs: BaseContextService,
-    private readonly prismao: PrismaoService,
-    private readonly winston: WinstonService,
+    protected readonly authService: AuthService,
+    protected readonly bcs: BaseContextService,
+    protected readonly prismao: PrismaoService,
+    protected readonly winston: WinstonService,
   ) {
   }
 
@@ -107,7 +107,7 @@ export class PrismaService {
     return rowPermissionRet;
   }
 
-  private getModel(model: string) {
+  protected getModel(model: string) {
     const modelInstance = this.prismao.getOrigin()[model];
     if (!modelInstance) {
       throw new UnknownException(this.bcs.getUserData().reqId);

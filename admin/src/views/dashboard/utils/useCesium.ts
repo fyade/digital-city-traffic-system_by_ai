@@ -572,6 +572,18 @@ export class UseCesium {
                 show: this.contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:del') && this.selectedEntityIds.value.length > 0,
               }
             ]
+          },
+          {
+            label: '子信号灯信息管理',
+            key: 'i:dcts:signalLight:signalLightInfo',
+            show: this.contextMenuIfHasPermission('i:dcts:signalLight:signalLightInfo'),
+            children: [
+              {
+                label: '新增子信号灯',
+                key: 'dcts:signalLight:signalLightInfo:ins',
+                show: this.contextMenuIfHasPermission('dcts:signalLight:signalLightInfo:ins') && this.selectedEntityIds.value.length > 0,
+              }
+            ]
           }
         ]
       },
