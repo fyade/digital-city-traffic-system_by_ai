@@ -106,11 +106,25 @@ export const routes: RouteRecordRaw[] = [
                       {
                         path: 'ins',
                         name: '~fp~:signalLight:signalLightGroupInfo:ins',
-                        component: () => import('@/views/dashboard/formPanel/signalLight/signalLightGroupInfo/ins.vue')
+                        component: () => import('@/views/dashboard/formPanel/signalLight/signalLightGroupInfo/form.vue')
+                      },
+                      {
+                        path: 'upd',
+                        name: '~fp~:signalLight:signalLightGroupInfo:upd',
+                        component: () => import('@/views/dashboard/formPanel/signalLight/signalLightGroupInfo/form.vue')
+                      },
+                      {
+                        path: 'del',
+                        name: '~fp~:signalLight:signalLightGroupInfo:del',
+                        component: () => import('@/views/dashboard/formPanel/signalLight/signalLightGroupInfo/form.vue')
                       }
                     ]
                   }
                 ]
+              },
+              {
+                path: ':pathMatch(.*)*',
+                redirect: '/dashboard'
               }
             ]
           }

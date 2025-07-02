@@ -11,11 +11,11 @@ onMounted(async () => {
   await init()
 })
 onBeforeUnmount(() => {
-  cesiumClass.value?.destroy()
+  cesiumClass.value.destroy()
 })
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 变量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-const cesiumClass = ref<UseCesium | null>(null);
+const cesiumClass = ref<UseCesium>(new UseCesium());
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 操作 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 /**
@@ -31,8 +31,8 @@ const init = async () => {
     return
   }
 
-  console.info('加载完成')
   await sysStore.refreshVisibleButton('sys:dcts')
+  console.info('加载完成')
 }
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 其他 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====

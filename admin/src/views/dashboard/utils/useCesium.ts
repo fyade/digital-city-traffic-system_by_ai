@@ -27,7 +27,7 @@ const userStore = useUserStore()
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 常量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 export const ID_PREFIX_POINT = 'ID_PREFIX_POINT::::::::::'
 export const ID_PREFIX_LINE = 'ID_PREFIX_LINE::::::::::'
-export const ID_PREFIX_SIGNAL_LIGHT = 'ID_PREFIX_SIGNAL_LIGHT::::::::::'
+export const ID_PREFIX_SIGNAL_LIGHT_GROUP = 'ID_PREFIX_SIGNAL_LIGHT_GROUP::::::::::'
 
 /**
  * 大屏页面的Cesium
@@ -79,7 +79,7 @@ export class UseCesium {
           this.viewer.scene.debugShowFramesPerSecond = true
         }
 
-        this.setViewTo(118.92844631852402, 32.12752744546319, 10000)
+        this.setViewTo(this.mapCenterPosition[0], this.mapCenterPosition[1], this.cameraHeight)
 
         // 获取默认的影像图层
         const defaultImagery = this.viewer.imageryLayers.get(0);
@@ -117,6 +117,10 @@ export class UseCesium {
           }
           // 加载完成
           if (queuedTileCount === 0 && this.layerLoading.value) {
+            this.layerLoadingCount++;
+            // 第一次图层加载完成后调用
+            if (this.layerLoadingCount === 1) {
+            }
             if (this.layerLoadingNotification) {
               this.layerLoadingNotification.destroy()
             }
@@ -134,6 +138,19 @@ export class UseCesium {
           }
         })
 
+        // 相机移动结束事件
+        this.viewer.camera.moveEnd.addEventListener(e => {
+          const centerLonLat1 = this.centerLonLat();
+          if (centerLonLat1) {
+            this.mapCenterPosition[0] = centerLonLat1.lon
+            this.mapCenterPosition[1] = centerLonLat1.lat
+          }
+          if (this.viewer) {
+            this.cameraHeight = this.viewer.camera.positionCartographic.height
+          }
+          this.mapWheeledOrMovesFunc()
+        })
+
         const handler = new Cesium.ScreenSpaceEventHandler(this.viewer.canvas);
 
         // 鼠标左键按下
@@ -144,7 +161,6 @@ export class UseCesium {
         // 鼠标左键抬起
         handler.setInputAction(() => {
           this.MOUSE_LEFT_DOWN = false
-          this.drawSignalLightGroupsWhenMapMove()
         }, Cesium.ScreenSpaceEventType.LEFT_UP)
 
         // 鼠标右键按下
@@ -155,26 +171,25 @@ export class UseCesium {
         // 鼠标右键抬起
         handler.setInputAction(() => {
           this.MOUSE_RIGHT_DOWN = false
-          this.drawSignalLightGroupsWhenMapMove()
         }, Cesium.ScreenSpaceEventType.RIGHT_DOWN)
 
         // 左键点击
         handler.setInputAction((m: Cesium.ScreenSpaceEventHandler.PositionedEvent) => {
+          this.mouseClickPositionXY[0] = m.position.x
+          this.mouseClickPositionXY[1] = m.position.y
           const lonLat = this.screenXYToLonLat(m.position.x, m.position.y);
           if (lonLat) {
             this.mouseClickPosition[0] = lonLat.lon
             this.mouseClickPosition[1] = lonLat.lat
             this.mouseClickPosition[2] = 0
           }
-          // 拾取该位置的物体
-          if (this.viewer) {
-            const pickedObject = this.viewer.scene.pick(m.position);
-            console.log(pickedObject)
-          }
+          this.handlerGetClickEntity()
         }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
 
         // 右键点击
         handler.setInputAction((m: Cesium.ScreenSpaceEventHandler.PositionedEvent) => {
+          this.mouseClickPositionXY[0] = m.position.x
+          this.mouseClickPositionXY[1] = m.position.y
           const lonLat = this.screenXYToLonLat(m.position.x, m.position.y);
           if (lonLat) {
             this.mouseClickPosition[0] = lonLat.lon
@@ -183,10 +198,13 @@ export class UseCesium {
           }
           this.contextMenuXY.value = [m.position.x, m.position.y];
           this.contextMenuShow.value = true
+          this.handlerGetClickEntity()
         }, Cesium.ScreenSpaceEventType.RIGHT_CLICK)
 
         // 鼠标移动
         handler.setInputAction((m: Cesium.ScreenSpaceEventHandler.MotionEvent) => {
+          this.mouseMovePositionXY[0] = m.endPosition.x
+          this.mouseMovePositionXY[1] = m.endPosition.y
           const lonLat = this.screenXYToLonLat(m.endPosition.x, m.endPosition.y);
           if (lonLat) {
             this.mouseMovePosition[0] = lonLat.lon
@@ -196,20 +214,19 @@ export class UseCesium {
 
         // 缩放
         handler.setInputAction((m: number) => {
-          this.drawSignalLightGroupsWhenMapMove()
         }, Cesium.ScreenSpaceEventType.WHEEL)
-      }
 
-      // 获取有权限的按钮
-      const visibleButtons = sysStore.getVisibleButtons();
-      watch(visibleButtons, () => {
-        const dctsButtons = visibleButtons.get('sys:dcts');
-        if (dctsButtons) {
-          this.permissionAbleButtons.value = dctsButtons;
-        }
-      }, {
-        immediate: true
-      })
+        // 获取有权限的按钮
+        const visibleButtons = sysStore.getVisibleButtons();
+        watch(visibleButtons, () => {
+          const dctsButtons = visibleButtons.get('sys:dcts');
+          if (dctsButtons) {
+            this.permissionAbleButtons.value = dctsButtons;
+          }
+        }, {
+          immediate: true
+        })
+      }
 
       UseCesium.instance = this
     }
@@ -273,6 +290,16 @@ export class UseCesium {
     const lat = Cesium.Math.toDegrees(cartographic.latitude);
     const height = cartographic.height;
     return {lon, lat, height}
+  }
+
+  /**
+   * 获取屏幕中心地理坐标
+   */
+  public centerLonLat() {
+    if (!this.viewer) {
+      return null
+    }
+    return this.screenXYToLonLat(this.viewer.canvas.width / 2, this.viewer.canvas.height / 2);
   }
 
   /**
@@ -452,23 +479,33 @@ export class UseCesium {
   }
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 以下为定制功能 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 状态值 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 硬件状态变量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   // 鼠标左键是否按下
   private MOUSE_LEFT_DOWN = false
   // 鼠标右键是否按下
   private MOUSE_RIGHT_DOWN = false
 
-  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 变量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 地图通用变量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   // 图层是否正在加载
-  public layerLoading = ref(false)
+  private layerLoading = ref(false)
+  // 图层加载次数
+  private layerLoadingCount = 0
   // 右上角的 Loading 通知
-  public layerLoadingNotification: NotificationReactive | null = null
+  private layerLoadingNotification: NotificationReactive | null = null
   // 右上角的通知内容变化定时器
-  public layerLoadingTimer: NodeJS.Timeout | null = null
+  private layerLoadingTimer: NodeJS.Timeout | null = null
   // 鼠标点击的位置[经度、纬度、按键]（0左键、2右键）
-  public mouseClickPosition = [0, 0, 0]
+  public mouseClickPosition: [number, number, number] = [0, 0, 0]
   // 鼠标移动的位置[经度、纬度]（实时）
-  public mouseMovePosition = [0, 0]
+  public mouseMovePosition: [number, number] = [0, 0]
+  // 鼠标点击的位置[x, y]
+  public mouseClickPositionXY: [number, number] = [0, 0]
+  // 鼠标移动的位置[x, y]
+  public mouseMovePositionXY: [number, number] = [0, 0]
+  // 相机高度
+  public cameraHeight = 10000
+  // 地图中心点位置[经度、纬度]
+  public mapCenterPosition: [number, number] = [118.92844631852402, 32.12752744546319]
   // 右键菜单的显示
   public contextMenuShow = ref(false)
   // 右键菜单的坐标
@@ -478,6 +515,26 @@ export class UseCesium {
       id: 'dcts:signalLight:signalLightGroupInfo:ins',
       func: () => {
         router.push({name: '~fp~:signalLight:signalLightGroupInfo:ins'})
+      }
+    },
+    {
+      id: 'dcts:signalLight:signalLightGroupInfo:upd',
+      func: () => {
+        let itemId = ''
+        if (this.selectedEntityIds.value[0].startsWith(ID_PREFIX_SIGNAL_LIGHT_GROUP)) {
+          itemId = this.selectedEntityIds.value[0].replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, '')
+        }
+        router.push({name: '~fp~:signalLight:signalLightGroupInfo:upd', query: {id: itemId}})
+      }
+    },
+    {
+      id: 'dcts:signalLight:signalLightGroupInfo:del',
+      func: () => {
+        let itemId = ''
+        if (this.selectedEntityIds.value[0].startsWith(ID_PREFIX_SIGNAL_LIGHT_GROUP)) {
+          itemId = this.selectedEntityIds.value[0].replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, '')
+        }
+        router.push({name: '~fp~:signalLight:signalLightGroupInfo:del', query: {id: itemId}})
       }
     },
     {
@@ -503,6 +560,16 @@ export class UseCesium {
                 label: '新增信号灯组',
                 key: 'dcts:signalLight:signalLightGroupInfo:ins',
                 show: this.contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:ins'),
+              },
+              {
+                label: '修改信号灯组',
+                key: 'dcts:signalLight:signalLightGroupInfo:upd',
+                show: this.contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:upd') && this.selectedEntityIds.value.length > 0,
+              },
+              {
+                label: '删除信号灯组',
+                key: 'dcts:signalLight:signalLightGroupInfo:del',
+                show: this.contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:del') && this.selectedEntityIds.value.length > 0,
               }
             ]
           }
@@ -519,6 +586,10 @@ export class UseCesium {
     return ret;
   })
   public formPanelTitle = ref('')
+
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 选择状态变量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+  // 当前选中的实体
+  private selectedEntityIds = ref<string[]>([])
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 数据 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   // 所有图层的链接及当前图层index
@@ -580,6 +651,15 @@ export class UseCesium {
   // 已渲染的信号灯组的id列表
   private renderedSignalLightGroupIds: string[] = []
 
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 事件封装 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+  /**
+   * 地图缩放或移动后的回调
+   * @private
+   */
+  private mapWheeledOrMovesFunc() {
+    this.drawSignalLightGroupsWhenMapMove()
+  }
+
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 工具函数（不涉及外部接口） ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   /**
    * 设置图层
@@ -606,11 +686,48 @@ export class UseCesium {
     return userStore.ifLogin && this.permissionAbleButtons.value.includes(perm)
   }
 
+  /**
+   * 鼠标左击事件
+   */
+  public handlerGetClickEntity() {
+    // 拾取该位置的物体
+    if (!this.viewer) {
+      return
+    }
+    this.selectedEntityIds.value = []
+    const cartesian2 = new Cesium.Cartesian2(this.mouseClickPositionXY[0], this.mouseClickPositionXY[1]);
+    const pickedObject = this.viewer.scene.pick(cartesian2);
+    if (!pickedObject) {
+      return;
+    }
+    // 情况1：如果点击的是 Entity（如点、线、面）
+    if (pickedObject.id instanceof Cesium.Entity) {
+      const entity = pickedObject.id as Cesium.Entity;
+      this.selectedEntityIds.value = [entity.id];
+    }
+    // 情况2：如果点击的是 Primitive（如3D模型、自定义图元）
+    else if (pickedObject.primitive instanceof Cesium.Primitive) {
+      const primitive = pickedObject.primitive;
+    }
+    // 情况3：如果点击的是3D Tiles（如倾斜摄影、BIM模型）
+    else if (pickedObject.tileset instanceof Cesium.Cesium3DTileset) {
+      const tileset = pickedObject.tileset;
+    }
+  }
+
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 工具函数（涉及外部接口） ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   /**
-   * 查询可视区域内的信号灯组
+   * 刷新可视区域内的实体
    */
-  public drawSignalLightGroupsWhenMapMove() {
+  public refreshScreenEntities() {
+    this.drawSignalLightGroupsWhenMapMove(true)
+  }
+
+  /**
+   * 查询可视区域内的信号灯组
+   * @param ifRefresh
+   */
+  public drawSignalLightGroupsWhenMapMove(ifRefresh = false) {
     const viewCornerCoordinates = this.getViewCornerCoordinates();
     if (viewCornerCoordinates && viewCornerCoordinates.length >= 3) {
       viewCornerCoordinates.push(viewCornerCoordinates[0])
@@ -621,8 +738,22 @@ export class UseCesium {
         if (!this.viewer) {
           return
         }
+        if (ifRefresh) {
+          const ids = [
+            ...res.map(item => item.id),
+            ...this.selectedEntityIds.value.map(item => item.replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, ''))
+          ]
+          for (const id of ids) {
+            const d = `${ID_PREFIX_SIGNAL_LIGHT_GROUP}${id}`;
+            const index = this.renderedSignalLightGroupIds.indexOf(d);
+            if (index > -1) {
+              this.viewer.entities.removeById(d)
+              this.renderedSignalLightGroupIds.splice(index, 1)
+            }
+          }
+        }
         for (const re of res) {
-          const d = `${ID_PREFIX_SIGNAL_LIGHT}${re.id}`;
+          const d = `${ID_PREFIX_SIGNAL_LIGHT_GROUP}${re.id}`;
           if (this.renderedSignalLightGroupIds.includes(d)) {
             continue;
           }
