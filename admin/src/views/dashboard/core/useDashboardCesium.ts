@@ -133,6 +133,7 @@ class UseDashboardCesium extends UseCesium {
 
   protected ScreenSpaceEventTypeLeftClickCB(m: Cesium.ScreenSpaceEventHandler.PositionedEvent) {
     super.ScreenSpaceEventTypeLeftClickCB(m);
+    this.contextMenuShow = false
   }
 
   protected ScreenSpaceEventTypeRightClickCB(m: Cesium.ScreenSpaceEventHandler.PositionedEvent) {
