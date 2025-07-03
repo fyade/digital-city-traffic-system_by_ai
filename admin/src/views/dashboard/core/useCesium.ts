@@ -41,7 +41,6 @@ export class UseCesium {
   }
 
   protected init() {
-    console.log('init')
   }
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 通用工具函数 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -311,7 +310,6 @@ export class UseCesium {
    * @param container
    */
   public setContainer(container: string) {
-    console.log('setContainer')
     this.viewer = new Cesium.Viewer(container, {
       infoBox: false, // 属性面板
       selectionIndicator: false, // 选择指示器

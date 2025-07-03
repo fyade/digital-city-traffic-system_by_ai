@@ -1,5 +1,5 @@
 import { UseCesium } from "@/views/dashboard/core/useCesium.ts";
-import { computed, h } from "vue";
+import { h, watch } from "vue";
 import {
   createDiscreteApi,
   DropdownDividerOption,
@@ -20,6 +20,8 @@ import { useSysStore } from "@/store/module/sys.ts";
 
 const sysStore = useSysStore()
 const userStore = useUserStore();
+
+const visibleButtons = sysStore.getVisibleButtons();
 
 const {notification} = createDiscreteApi(['notification'])
 
@@ -45,8 +47,6 @@ class UseDashboardCesium extends UseCesium {
   protected init() {
     super.init();
 
-    console.log('initinitinitinit')
-
     this.setLayer()
   }
 
@@ -54,7 +54,6 @@ class UseDashboardCesium extends UseCesium {
     super.globeTileLoadProgressEventCB(queuedTileCount);
     // 加载中
     if (queuedTileCount > 0 && !this.layerLoading) {
-      console.log(this.layerLoading)
       this.layerLoading = true
       this.layerLoadingNotification = notification.create({
         title: '提示',
@@ -240,14 +239,22 @@ class UseDashboardCesium extends UseCesium {
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 右键菜单业务 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   // 右键菜单的显示
-  public contextMenuShow = false
+  private _contextMenuShow = false
+
+  get contextMenuShow(): boolean {
+    return this._contextMenuShow;
+  }
+
+  set contextMenuShow(value: boolean) {
+    this._contextMenuShow = value;
+  }
+
   // 右键菜单的坐标
   public contextMenuXY = [0, 0]
   public contextMenus: ContextMenuItem[] = [
     {
       id: 'dcts:signalLight:signalLightGroupInfo:ins',
       func: () => {
-        console.log('aaaaaaaaaaaaaaaaaaaaaaaaaa')
         router.push({name: '~fp~:signalLight:signalLightGroupInfo:ins'})
       }
     },
@@ -278,8 +285,10 @@ class UseDashboardCesium extends UseCesium {
       }
     }
   ]
-  public contextMenuOption = computed(() => {
-    const ret: Array<DropdownOption | DropdownGroupOption | DropdownDividerOption | DropdownRenderOption> = [
+  public contextMenuOption: Array<DropdownOption | DropdownGroupOption | DropdownDividerOption | DropdownRenderOption> = []
+
+  public refreshContextMenuOption() {
+    this.contextMenuOption = [
       {
         label: '信号灯管理',
         key: 'i:dcts:signalLight',
@@ -298,24 +307,24 @@ class UseDashboardCesium extends UseCesium {
               {
                 label: '修改信号灯组',
                 key: 'dcts:signalLight:signalLightGroupInfo:upd',
-                show: this.contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:upd') && this.selectedEntityIds.length > 0,
+                show: this.contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:upd', true),
               },
               {
                 label: '删除信号灯组',
                 key: 'dcts:signalLight:signalLightGroupInfo:del',
-                show: this.contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:del') && this.selectedEntityIds.length > 0,
+                show: this.contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:del', true),
               }
             ]
           },
           {
             label: '子信号灯信息管理',
             key: 'i:dcts:signalLight:signalLightInfo',
-            show: this.contextMenuIfHasPermission('i:dcts:signalLight:signalLightInfo') && this.selectedEntityIds.length > 0,
+            show: this.contextMenuIfHasPermission('i:dcts:signalLight:signalLightInfo', true),
             children: [
               {
                 label: '新增子信号灯',
                 key: 'dcts:signalLight:signalLightInfo:ins',
-                show: this.contextMenuIfHasPermission('dcts:signalLight:signalLightInfo:ins') && this.selectedEntityIds.length > 0,
+                show: this.contextMenuIfHasPermission('dcts:signalLight:signalLightInfo:ins', true),
               }
             ]
           }
@@ -329,8 +338,8 @@ class UseDashboardCesium extends UseCesium {
         key: 'close'
       }
     ]
-    return ret;
-  })
+  }
+
   public formPanelTitle = ''
   /**
    * 右键菜单的事件
@@ -349,7 +358,17 @@ class UseDashboardCesium extends UseCesium {
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 地图实体业务 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   // 当前选中的实体
-  private selectedEntityIds: string[] = []
+  private _selectedEntityIds: string[] = []
+
+  get selectedEntityIds(): string[] {
+    return this._selectedEntityIds;
+  }
+
+  set selectedEntityIds(value: string[]) {
+    this._selectedEntityIds = value;
+    this.refreshContextMenuOption()
+  }
+
   // 已渲染的信号灯组的id列表
   private renderedSignalLightGroupIds: string[] = []
 
@@ -415,15 +434,23 @@ class UseDashboardCesium extends UseCesium {
   /**
    * 右键菜单项是否有权限
    * @param perm
+   * @param ifNeedEntity
+   * @private
    */
-  private contextMenuIfHasPermission(perm: string) {
-    const visibleButtons = sysStore.getVisibleButtons();
+  private contextMenuIfHasPermission(perm: string, ifNeedEntity = false) {
     const dctsButtons = visibleButtons.get('sys:dcts');
     if (dctsButtons) {
-      return userStore.ifLogin && dctsButtons.includes(perm)
+      return userStore.ifLogin && dctsButtons.includes(perm) && (ifNeedEntity ? this.selectedEntityIds.length > 0 : true)
     }
     return false
   }
 }
 
 export const useDashboardCesium = new UseDashboardCesium();
+
+// 获取有权限的按钮
+watch(visibleButtons, () => {
+  useDashboardCesium.refreshContextMenuOption()
+}, {
+  immediate: true
+})
