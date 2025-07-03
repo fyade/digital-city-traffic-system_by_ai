@@ -54,13 +54,13 @@ const dCon = () => {
     }
     if (ifIns) {
       signalLightGroupInfoApi.insertOne(form.value).then(_ => {
-        useCesium.refreshScreenEntities()
+        useCesium.refreshScreenEntities(true)
         gotoDashboardHome()
       })
     }
     if (ifUpd) {
       signalLightGroupInfoApi.updateOne(form.value).then(_ => {
-        useCesium.refreshScreenEntities()
+        useCesium.refreshScreenEntities(true)
         gotoDashboardHome()
       })
     }
@@ -68,7 +68,7 @@ const dCon = () => {
 }
 const submitCallback = () => {
   signalLightGroupInfoApi.deleteList(itemId!).then(_ => {
-    useCesium.refreshScreenEntities()
+    useCesium.refreshScreenEntities(true)
     gotoDashboardHome()
   })
 }

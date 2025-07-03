@@ -79,6 +79,7 @@ class UseDashboardCesium extends UseCesium {
       this.layerLoadingCount++;
       // 第一次图层加载完成后调用
       if (this.layerLoadingCount === 1) {
+        this.refreshScreenEntities()
       }
       if (this.layerLoadingNotification) {
         this.layerLoadingNotification.destroy()
@@ -99,7 +100,7 @@ class UseDashboardCesium extends UseCesium {
 
   protected cameraMoveEndCB() {
     super.cameraMoveEndCB();
-    this.drawSignalLightGroupsWhenMapMove()
+    this.refreshScreenEntities()
   }
 
   protected ScreenSpaceEventTypeLeftDownCB() {
@@ -374,9 +375,10 @@ class UseDashboardCesium extends UseCesium {
 
   /**
    * 刷新可视区域内的实体
+   * @param ifRefresh
    */
-  public refreshScreenEntities() {
-    this.drawSignalLightGroupsWhenMapMove(true)
+  public refreshScreenEntities(ifRefresh = false) {
+    this.drawSignalLightGroupsWhenMapMove(ifRefresh)
   }
 
   /**
