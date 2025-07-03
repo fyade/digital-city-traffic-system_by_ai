@@ -2,9 +2,9 @@
 import { nodesWithWaysInPolygonApi } from "@/api/module/dcts/spatialData.ts";
 import { CesiumLine, CesiumPoint } from "@/views/dashboard/utils/dto.ts";
 import { getLonlatFromLinestring } from "@/utils/RegularUtils.ts";
-import { UseDashboardCesium } from "@/views/dashboard/class/useDashboardCesium.ts";
+import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
 
-const useCesium = new UseDashboardCesium();
+const useCesium = useDashboardCesium;
 
 const a1 = () => {
   const coordinates = useCesium.getViewCornerCoordinates();

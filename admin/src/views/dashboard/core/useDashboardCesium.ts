@@ -1,13 +1,13 @@
-import { UseCesium } from "@/views/dashboard/class/useCesium.ts";
-import { computed, h, ref, watch } from "vue";
+import { UseCesium } from "@/views/dashboard/core/useCesium.ts";
+import { computed, h } from "vue";
 import {
+  createDiscreteApi,
   DropdownDividerOption,
   DropdownGroupOption,
   DropdownOption,
   DropdownRenderOption,
   NotificationReactive,
-  NSpin,
-  useNotification
+  NSpin
 } from "naive-ui";
 import { ContextMenuItem, LayerDto } from "@/views/dashboard/index/dto.ts";
 import router from "@/router";
@@ -21,6 +21,8 @@ import { useSysStore } from "@/store/module/sys.ts";
 const sysStore = useSysStore()
 const userStore = useUserStore();
 
+const {notification} = createDiscreteApi(['notification'])
+
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 常量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 export const ID_PREFIX_POINT = 'ID_PREFIX_POINT::::::::::'
 export const ID_PREFIX_LINE = 'ID_PREFIX_LINE::::::::::'
@@ -29,55 +31,32 @@ export const ID_PREFIX_SIGNAL_LIGHT_GROUP = 'ID_PREFIX_SIGNAL_LIGHT_GROUP:::::::
 /**
  * 大屏页面的 Cesium
  */
-export class UseDashboardCesium extends UseCesium {
+class UseDashboardCesium extends UseCesium {
   constructor({
                 container
               }: {
                 container?: string
               } = {}
   ) {
-    super({
-      container,
-      callback: () => {
-        // 获取有权限的按钮
-        const visibleButtons = sysStore.getVisibleButtons();
-        watch(visibleButtons, () => {
-          const dctsButtons = visibleButtons.get('sys:dcts');
-          if (dctsButtons) {
-            this.permissionAbleButtons.value = dctsButtons;
-          }
-        }, {
-          immediate: true
-        })
-      }
-    });
+    super({container});
   }
 
-  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 工具 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-  private readonly notification = useNotification();
-
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 事件重写 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-  protected setLayer() {
-    super.setLayer();
-    this._allLabels.value = []
-    const filter1 = this.allLayersOfBaseMap.filter(item => this.currentIdOfBaseMap[1].includes(item.id));
-    for (const f of filter1) {
-      f.func()
-      this._allLabels.value.push([f.dataType, f.fromCompany, f.fromUrl])
-    }
-    const filter2 = this.allLayersOfRoadData.filter(item => this.currentIdOfRoadData[1].includes(item.id));
-    for (const f of filter2) {
-      f.func()
-      this._allLabels.value.push([f.dataType, f.fromCompany, f.fromUrl])
-    }
+  protected init() {
+    super.init();
+
+    console.log('initinitinitinit')
+
+    this.setLayer()
   }
 
   protected globeTileLoadProgressEventCB(queuedTileCount: number) {
     super.globeTileLoadProgressEventCB(queuedTileCount);
     // 加载中
-    if (queuedTileCount > 0 && !this.layerLoading.value) {
-      this.layerLoading.value = true
-      this.layerLoadingNotification = this.notification.create({
+    if (queuedTileCount > 0 && !this.layerLoading) {
+      console.log(this.layerLoading)
+      this.layerLoading = true
+      this.layerLoadingNotification = notification.create({
         title: '提示',
         content: '图层加载中...',
         duration: 0,
@@ -97,7 +76,7 @@ export class UseDashboardCesium extends UseCesium {
       }
     }
     // 加载完成
-    if (queuedTileCount === 0 && this.layerLoading.value) {
+    if (queuedTileCount === 0 && this.layerLoading) {
       this.layerLoadingCount++;
       // 第一次图层加载完成后调用
       if (this.layerLoadingCount === 1) {
@@ -105,8 +84,8 @@ export class UseDashboardCesium extends UseCesium {
       if (this.layerLoadingNotification) {
         this.layerLoadingNotification.destroy()
       }
-      this.layerLoading.value = false
-      this.notification.success({
+      this.layerLoading = false
+      notification.success({
         title: '提示',
         content: '图层加载完成',
         duration: 3000
@@ -146,8 +125,8 @@ export class UseDashboardCesium extends UseCesium {
 
   protected ScreenSpaceEventTypeRightClickCB(m: Cesium.ScreenSpaceEventHandler.PositionedEvent) {
     super.ScreenSpaceEventTypeRightClickCB(m);
-    this.contextMenuXY.value = [m.position.x, m.position.y];
-    this.contextMenuShow.value = true
+    this.contextMenuXY = [m.position.x, m.position.y];
+    this.contextMenuShow = true
   }
 
   protected ScreenSpaceEventTypeMouseMoveCB(m: Cesium.ScreenSpaceEventHandler.MotionEvent) {
@@ -164,7 +143,7 @@ export class UseDashboardCesium extends UseCesium {
     if (!this.viewer) {
       return
     }
-    this.selectedEntityIds.value = []
+    this.selectedEntityIds = []
     const cartesian2 = new Cesium.Cartesian2(this.mouseClickPositionXY[0], this.mouseClickPositionXY[1]);
     const pickedObject = this.viewer.scene.pick(cartesian2);
     if (!pickedObject) {
@@ -173,7 +152,7 @@ export class UseDashboardCesium extends UseCesium {
     // 情况1：如果点击的是 Entity（如点、线、面）
     if (pickedObject.id instanceof Cesium.Entity) {
       const entity = pickedObject.id as Cesium.Entity;
-      this.selectedEntityIds.value = [entity.id];
+      this.selectedEntityIds = [entity.id];
     }
     // 情况2：如果点击的是 Primitive（如3D模型、自定义图元）
     else if (pickedObject.primitive instanceof Cesium.Primitive) {
@@ -187,7 +166,7 @@ export class UseDashboardCesium extends UseCesium {
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 图层及通知业务 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   // 图层是否正在加载
-  private layerLoading = ref(false)
+  private layerLoading = false
   // 图层加载次数
   private layerLoadingCount = 0
   // 右上角的 Loading 通知
@@ -243,20 +222,32 @@ export class UseDashboardCesium extends UseCesium {
       fromUrl: 'https://www.openstreetmap.org/'
     }
   ]
-  private _allLabels = ref<string[][]>([])
-  get allLabels() {
-    return this._allLabels;
+  public allLabels: string[][] = []
+
+  private setLayer() {
+    this.allLabels = []
+    const filter1 = this.allLayersOfBaseMap.filter(item => this.currentIdOfBaseMap[1].includes(item.id));
+    for (const f of filter1) {
+      f.func()
+      this.allLabels.push([f.dataType, f.fromCompany, f.fromUrl])
+    }
+    const filter2 = this.allLayersOfRoadData.filter(item => this.currentIdOfRoadData[1].includes(item.id));
+    for (const f of filter2) {
+      f.func()
+      this.allLabels.push([f.dataType, f.fromCompany, f.fromUrl])
+    }
   }
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 右键菜单业务 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   // 右键菜单的显示
-  public contextMenuShow = ref(false)
+  public contextMenuShow = false
   // 右键菜单的坐标
-  public contextMenuXY = ref([0, 0])
+  public contextMenuXY = [0, 0]
   public contextMenus: ContextMenuItem[] = [
     {
       id: 'dcts:signalLight:signalLightGroupInfo:ins',
       func: () => {
+        console.log('aaaaaaaaaaaaaaaaaaaaaaaaaa')
         router.push({name: '~fp~:signalLight:signalLightGroupInfo:ins'})
       }
     },
@@ -264,8 +255,8 @@ export class UseDashboardCesium extends UseCesium {
       id: 'dcts:signalLight:signalLightGroupInfo:upd',
       func: () => {
         let itemId = ''
-        if (this.selectedEntityIds.value[0].startsWith(ID_PREFIX_SIGNAL_LIGHT_GROUP)) {
-          itemId = this.selectedEntityIds.value[0].replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, '')
+        if (this.selectedEntityIds[0].startsWith(ID_PREFIX_SIGNAL_LIGHT_GROUP)) {
+          itemId = this.selectedEntityIds[0].replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, '')
         }
         router.push({name: '~fp~:signalLight:signalLightGroupInfo:upd', query: {id: itemId}})
       }
@@ -274,8 +265,8 @@ export class UseDashboardCesium extends UseCesium {
       id: 'dcts:signalLight:signalLightGroupInfo:del',
       func: () => {
         let itemId = ''
-        if (this.selectedEntityIds.value[0].startsWith(ID_PREFIX_SIGNAL_LIGHT_GROUP)) {
-          itemId = this.selectedEntityIds.value[0].replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, '')
+        if (this.selectedEntityIds[0].startsWith(ID_PREFIX_SIGNAL_LIGHT_GROUP)) {
+          itemId = this.selectedEntityIds[0].replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, '')
         }
         router.push({name: '~fp~:signalLight:signalLightGroupInfo:del', query: {id: itemId}})
       }
@@ -283,7 +274,7 @@ export class UseDashboardCesium extends UseCesium {
     {
       id: 'close',
       func: () => {
-        this.contextMenuShow.value = false
+        this.contextMenuShow = false
       }
     }
   ]
@@ -307,24 +298,24 @@ export class UseDashboardCesium extends UseCesium {
               {
                 label: '修改信号灯组',
                 key: 'dcts:signalLight:signalLightGroupInfo:upd',
-                show: this.contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:upd') && this.selectedEntityIds.value.length > 0,
+                show: this.contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:upd') && this.selectedEntityIds.length > 0,
               },
               {
                 label: '删除信号灯组',
                 key: 'dcts:signalLight:signalLightGroupInfo:del',
-                show: this.contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:del') && this.selectedEntityIds.value.length > 0,
+                show: this.contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:del') && this.selectedEntityIds.length > 0,
               }
             ]
           },
           {
             label: '子信号灯信息管理',
             key: 'i:dcts:signalLight:signalLightInfo',
-            show: this.contextMenuIfHasPermission('i:dcts:signalLight:signalLightInfo') && this.selectedEntityIds.value.length > 0,
+            show: this.contextMenuIfHasPermission('i:dcts:signalLight:signalLightInfo') && this.selectedEntityIds.length > 0,
             children: [
               {
                 label: '新增子信号灯',
                 key: 'dcts:signalLight:signalLightInfo:ins',
-                show: this.contextMenuIfHasPermission('dcts:signalLight:signalLightInfo:ins') && this.selectedEntityIds.value.length > 0,
+                show: this.contextMenuIfHasPermission('dcts:signalLight:signalLightInfo:ins') && this.selectedEntityIds.length > 0,
               }
             ]
           }
@@ -340,7 +331,7 @@ export class UseDashboardCesium extends UseCesium {
     ]
     return ret;
   })
-  public formPanelTitle = ref('')
+  public formPanelTitle = ''
   /**
    * 右键菜单的事件
    * @param key
@@ -348,7 +339,7 @@ export class UseDashboardCesium extends UseCesium {
    */
   public contextMenuSelect = (key: string, obj: DropdownOption) => {
     if (obj) {
-      this.formPanelTitle.value = obj.label as string
+      this.formPanelTitle = obj.label as string
     }
     const find = this.contextMenus.find(item => item.id === key);
     if (find) {
@@ -358,7 +349,7 @@ export class UseDashboardCesium extends UseCesium {
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 地图实体业务 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   // 当前选中的实体
-  private selectedEntityIds = ref<string[]>([])
+  private selectedEntityIds: string[] = []
   // 已渲染的信号灯组的id列表
   private renderedSignalLightGroupIds: string[] = []
 
@@ -387,7 +378,7 @@ export class UseDashboardCesium extends UseCesium {
         if (ifRefresh) {
           const ids = [
             ...res.map(item => item.id),
-            ...this.selectedEntityIds.value.map(item => item.replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, ''))
+            ...this.selectedEntityIds.map(item => item.replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, ''))
           ]
           for (const id of ids) {
             const d = `${ID_PREFIX_SIGNAL_LIGHT_GROUP}${id}`;
@@ -421,14 +412,18 @@ export class UseDashboardCesium extends UseCesium {
   }
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 权限相关 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-  // 有权限的按钮
-  private permissionAbleButtons = ref<string[]>([])
-
   /**
    * 右键菜单项是否有权限
    * @param perm
    */
   private contextMenuIfHasPermission(perm: string) {
-    return userStore.ifLogin && this.permissionAbleButtons.value.includes(perm)
+    const visibleButtons = sysStore.getVisibleButtons();
+    const dctsButtons = visibleButtons.get('sys:dcts');
+    if (dctsButtons) {
+      return userStore.ifLogin && dctsButtons.includes(perm)
+    }
+    return false
   }
 }
+
+export const useDashboardCesium = new UseDashboardCesium();

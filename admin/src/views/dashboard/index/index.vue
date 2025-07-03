@@ -3,7 +3,7 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 import DataLayer from "@/views/dashboard/index/dataLayer.vue";
 import DebugPanel from '@/views/dashboard/debugPanel/index.vue';
 import { useSysStore } from "@/store/module/sys.ts";
-import { UseDashboardCesium } from "@/views/dashboard/class/useDashboardCesium.ts";
+import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
 
 const sysStore = useSysStore();
 
@@ -11,11 +11,11 @@ onMounted(async () => {
   await init()
 })
 onBeforeUnmount(() => {
-  cesiumClass.value.destroy()
+  useDashboardCesium.destroy()
 })
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 变量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-const cesiumClass = ref<UseDashboardCesium>(new UseDashboardCesium());
+const cesiumClass = ref(useDashboardCesium)
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 操作 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 /**
@@ -24,10 +24,9 @@ const cesiumClass = ref<UseDashboardCesium>(new UseDashboardCesium());
 const init = async () => {
   console.info('开始加载');
 
-  const useCesium = new UseDashboardCesium({container: 'cesiumContainer'});
-  const viewer = useCesium.getViewer();
-  cesiumClass.value = useCesium;
-  if (!viewer || !cesiumClass.value) {
+  cesiumClass.value.setContainer('cesiumContainer')
+  const viewer = cesiumClass.value.getViewer();
+  if (!viewer) {
     return
   }
 
@@ -50,7 +49,6 @@ const openDebugLayerChange = () => {
 
 <template>
   <DataLayer
-      v-if="cesiumClass"
       :labels="cesiumClass.allLabels"
       @open-setting-layer-change="openSettingLayerChange"
       @open-debug-panel="openDebugLayerChange"

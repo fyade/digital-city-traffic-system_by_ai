@@ -2,7 +2,6 @@ import * as Cesium from "cesium";
 import { CesiumLine, CesiumPoint } from "@/views/dashboard/utils/dto.ts";
 import { adminConfig } from "@dcts/config";
 import { idUtils } from "@dcts/common";
-import { nextTick } from "vue";
 
 const currentConfig = adminConfig.currentConfig();
 
@@ -20,73 +19,16 @@ export class UseCesium {
 
   /**
    * @param container 容器id 若传入，则会执行初始化命令
-   * @param callback 初始化后的回调
    */
   constructor({
-                container,
-                callback
+                container
               }: {
                 container?: string
-                callback?: () => void
               } = {}
   ) {
     if (!UseCesium.instance || container) {
       if (container) {
-        this.viewer = new Cesium.Viewer(container, {
-          infoBox: false, // 属性面板
-          selectionIndicator: false, // 选择指示器
-          geocoder: false, // 搜索框
-          homeButton: false, // 主页按钮
-          sceneModePicker: false, // 场景模式选择器
-          baseLayerPicker: false, // 底图选择器
-          navigationHelpButton: false, // 帮助按钮
-          animation: false, // 动画控制器
-          timeline: false, // 时间轴
-          fullscreenButton: false, // 全屏按钮
-        });
-        (this.viewer.cesiumWidget.creditContainer as HTMLElement).style.display = "none";
-
-        // 初始化点的集合
-        this.pointCollection = this.viewer.scene.primitives.add(
-            new Cesium.PointPrimitiveCollection()
-        )
-        // 初始化线的集合
-        this.polylineCollection = this.viewer.scene.primitives.add(
-            new Cesium.PrimitiveCollection()
-        )
-
-        if (currentConfig.VITE_MODE === 'dev') {
-          this.viewer.scene.debugShowFramesPerSecond = true
-        }
-
-        this.setViewTo(this.mapCenterPosition[0], this.mapCenterPosition[1], this.cameraHeight)
-
-        // 获取默认的影像图层
-        const defaultImagery = this.viewer.imageryLayers.get(0);
-        // 移除默认图层
-        this.viewer.imageryLayers.remove(defaultImagery);
-
-
-        this.viewer.scene.globe.tileLoadProgressEvent.addEventListener(this.globeTileLoadProgressEventCB.bind(this))
-        this.viewer.camera.moveEnd.addEventListener(this.cameraMoveEndCB.bind(this))
-
-        const handler = new Cesium.ScreenSpaceEventHandler(this.viewer.canvas);
-        handler.setInputAction(this.ScreenSpaceEventTypeLeftDownCB.bind(this), Cesium.ScreenSpaceEventType.LEFT_DOWN)
-        handler.setInputAction(this.ScreenSpaceEventTypeLeftUpCB.bind(this), Cesium.ScreenSpaceEventType.LEFT_UP)
-        handler.setInputAction(this.ScreenSpaceEventTypeRightDownCB.bind(this), Cesium.ScreenSpaceEventType.RIGHT_DOWN)
-        handler.setInputAction(this.ScreenSpaceEventTypeRightUpCB.bind(this), Cesium.ScreenSpaceEventType.RIGHT_DOWN)
-        handler.setInputAction(this.ScreenSpaceEventTypeLeftClickCB.bind(this), Cesium.ScreenSpaceEventType.LEFT_CLICK)
-        handler.setInputAction(this.ScreenSpaceEventTypeRightClickCB.bind(this), Cesium.ScreenSpaceEventType.RIGHT_CLICK)
-        handler.setInputAction(this.ScreenSpaceEventTypeMouseMoveCB.bind(this), Cesium.ScreenSpaceEventType.MOUSE_MOVE)
-        handler.setInputAction(this.ScreenSpaceEventTypeWheelCB.bind(this), Cesium.ScreenSpaceEventType.WHEEL)
-
-        nextTick(() => {
-          this.setLayer()
-        })
-
-        if (callback) {
-          callback()
-        }
+        this.setContainer(container)
       }
 
       UseCesium.instance = this
@@ -96,6 +38,10 @@ export class UseCesium {
 
   public getViewer() {
     return this.viewer;
+  }
+
+  protected init() {
+    console.log('init')
   }
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 通用工具函数 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -361,10 +307,60 @@ export class UseCesium {
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 事件封装 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   /**
-   * 设置当前图层
-   * @protected
+   * 设置容器
+   * @param container
    */
-  protected setLayer() {
+  public setContainer(container: string) {
+    console.log('setContainer')
+    this.viewer = new Cesium.Viewer(container, {
+      infoBox: false, // 属性面板
+      selectionIndicator: false, // 选择指示器
+      geocoder: false, // 搜索框
+      homeButton: false, // 主页按钮
+      sceneModePicker: false, // 场景模式选择器
+      baseLayerPicker: false, // 底图选择器
+      navigationHelpButton: false, // 帮助按钮
+      animation: false, // 动画控制器
+      timeline: false, // 时间轴
+      fullscreenButton: false, // 全屏按钮
+    });
+    (this.viewer.cesiumWidget.creditContainer as HTMLElement).style.display = "none";
+
+    // 初始化点的集合
+    this.pointCollection = this.viewer.scene.primitives.add(
+        new Cesium.PointPrimitiveCollection()
+    )
+    // 初始化线的集合
+    this.polylineCollection = this.viewer.scene.primitives.add(
+        new Cesium.PrimitiveCollection()
+    )
+
+    if (currentConfig.VITE_MODE === 'dev') {
+      this.viewer.scene.debugShowFramesPerSecond = true
+    }
+
+    this.setViewTo(this.mapCenterPosition[0], this.mapCenterPosition[1], this.cameraHeight)
+
+    // 获取默认的影像图层
+    const defaultImagery = this.viewer.imageryLayers.get(0);
+    // 移除默认图层
+    this.viewer.imageryLayers.remove(defaultImagery);
+
+
+    this.viewer.scene.globe.tileLoadProgressEvent.addEventListener(this.globeTileLoadProgressEventCB.bind(this))
+    this.viewer.camera.moveEnd.addEventListener(this.cameraMoveEndCB.bind(this))
+
+    const handler = new Cesium.ScreenSpaceEventHandler(this.viewer.canvas);
+    handler.setInputAction(this.ScreenSpaceEventTypeLeftDownCB.bind(this), Cesium.ScreenSpaceEventType.LEFT_DOWN)
+    handler.setInputAction(this.ScreenSpaceEventTypeLeftUpCB.bind(this), Cesium.ScreenSpaceEventType.LEFT_UP)
+    handler.setInputAction(this.ScreenSpaceEventTypeRightDownCB.bind(this), Cesium.ScreenSpaceEventType.RIGHT_DOWN)
+    handler.setInputAction(this.ScreenSpaceEventTypeRightUpCB.bind(this), Cesium.ScreenSpaceEventType.RIGHT_DOWN)
+    handler.setInputAction(this.ScreenSpaceEventTypeLeftClickCB.bind(this), Cesium.ScreenSpaceEventType.LEFT_CLICK)
+    handler.setInputAction(this.ScreenSpaceEventTypeRightClickCB.bind(this), Cesium.ScreenSpaceEventType.RIGHT_CLICK)
+    handler.setInputAction(this.ScreenSpaceEventTypeMouseMoveCB.bind(this), Cesium.ScreenSpaceEventType.MOUSE_MOVE)
+    handler.setInputAction(this.ScreenSpaceEventTypeWheelCB.bind(this), Cesium.ScreenSpaceEventType.WHEEL)
+
+    this.init()
   }
 
   /**

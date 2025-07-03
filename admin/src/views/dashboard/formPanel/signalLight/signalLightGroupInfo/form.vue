@@ -7,10 +7,10 @@ import { SignalLightGroupInfoDto } from "@/type/module/dcts/signalLight/signalLi
 import { signalLightGroupInfoDict } from "@/dict/module/dcts/signalLight/signalLightGroupInfo.ts";
 import { signalLightGroupInfoApi } from "@/api/module/dcts/signalLight/signalLightGroupInfo.ts";
 import { useRoute } from "vue-router";
-import { UseDashboardCesium } from "@/views/dashboard/class/useDashboardCesium.ts";
+import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
 
 const route = useRoute();
-const useCesium = new UseDashboardCesium();
+const useCesium = useDashboardCesium;
 
 const ifIns = route.path.endsWith('ins')
 const ifUpd = route.path.endsWith('upd')

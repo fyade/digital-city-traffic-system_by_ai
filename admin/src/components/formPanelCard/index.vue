@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { nextTick, ref } from "vue";
 import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
-import { UseDashboardCesium } from "@/views/dashboard/class/useDashboardCesium.ts";
+import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
 
 const props = defineProps({
   title: {
@@ -25,8 +25,8 @@ const emits = defineEmits(['submitCallback']);
 
 const modalTitle = ref('')
 nextTick(() => {
-  const useCesium = new UseDashboardCesium();
-  modalTitle.value = props.title || useCesium.formPanelTitle.value
+  const useCesium = useDashboardCesium;
+  modalTitle.value = props.title || useCesium.formPanelTitle
   if (!modalTitle.value) {
     gotoDashboardHome()
   }
