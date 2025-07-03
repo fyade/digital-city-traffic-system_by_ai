@@ -52,6 +52,7 @@ class UseDashboardCesium extends UseCesium {
 
   destroy() {
     super.destroy();
+    this.layerLoadingEnd()
     useDashboardCesium = new UseDashboardCesium();
   }
 
@@ -81,25 +82,31 @@ class UseDashboardCesium extends UseCesium {
     }
     // 加载完成
     if (queuedTileCount === 0 && this.layerLoading) {
-      this.layerLoadingCount++;
-      // 第一次图层加载完成后调用
-      if (this.layerLoadingCount === 1) {
-        this.refreshScreenEntities()
-      }
-      if (this.layerLoadingNotification) {
-        this.layerLoadingNotification.destroy()
-      }
-      this.layerLoading = false
+      this.layerLoadingEnd(true)
+    }
+  }
+
+  private layerLoadingEnd(ifEnd = false) {
+    this.layerLoadingCount++;
+    // 第一次图层加载完成后调用
+    if (this.layerLoadingCount === 1) {
+      this.refreshScreenEntities()
+    }
+    if (this.layerLoadingNotification) {
+      this.layerLoadingNotification.destroy()
+    }
+    this.layerLoading = false
+    if (ifEnd) {
       notification.success({
         title: '提示',
         content: '图层加载完成',
         duration: 3000
       })
-      // 清除定时器
-      if (this.layerLoadingTimer) {
-        clearTimeout(this.layerLoadingTimer)
-        this.layerLoadingTimer = null
-      }
+    }
+    // 清除定时器
+    if (this.layerLoadingTimer) {
+      clearTimeout(this.layerLoadingTimer)
+      this.layerLoadingTimer = null
     }
   }
 
