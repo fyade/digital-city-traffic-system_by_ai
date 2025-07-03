@@ -50,6 +50,11 @@ class UseDashboardCesium extends UseCesium {
     this.setLayer()
   }
 
+  destroy() {
+    super.destroy();
+    useDashboardCesium = new UseDashboardCesium();
+  }
+
   protected globeTileLoadProgressEventCB(queuedTileCount: number) {
     super.globeTileLoadProgressEventCB(queuedTileCount);
     // 加载中
@@ -448,7 +453,7 @@ class UseDashboardCesium extends UseCesium {
   }
 }
 
-export const useDashboardCesium = new UseDashboardCesium();
+export let useDashboardCesium = new UseDashboardCesium();
 
 // 获取有权限的按钮
 watch(visibleButtons, () => {
