@@ -17,20 +17,8 @@ export class UseCesium {
   private polylineMap = new Map<string, Cesium.Primitive>()
   private geometryInstanceMap = new Map<string, Cesium.GeometryInstance>()
 
-  /**
-   * @param container 容器id 若传入，则会执行初始化命令
-   */
-  constructor({
-                container
-              }: {
-                container?: string
-              } = {}
-  ) {
-    if (!UseCesium.instance || container) {
-      if (container) {
-        this.setContainer(container)
-      }
-
+  constructor() {
+    if (!UseCesium.instance) {
       UseCesium.instance = this
     }
     return UseCesium.instance
