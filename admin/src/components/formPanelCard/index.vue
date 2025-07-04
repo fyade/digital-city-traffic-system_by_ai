@@ -19,14 +19,17 @@ const props = defineProps({
   ifDel: {
     type: Boolean,
     required: true,
+  },
+  loading: {
+    type: Boolean,
+    required: true,
   }
 });
 const emits = defineEmits(['submitCallback']);
 
 const modalTitle = ref('')
 nextTick(() => {
-  const useCesium = useDashboardCesium;
-  modalTitle.value = props.title || useCesium.formPanelTitle
+  modalTitle.value = props.title || useDashboardCesium.formPanelTitle
   if (!modalTitle.value) {
     gotoDashboardHome()
   }
@@ -61,6 +64,7 @@ const submitCallback = () => {
         content="此操作将删除选中的 1 条数据，且无法撤销，请确认是否继续？"
         positive-text="确认"
         negative-text="取消"
+        :loading="props.loading"
         :on-close="gotoDashboardHome"
         @positive-click="submitCallback"
         @negative-click="gotoDashboardHome"

@@ -45,6 +45,10 @@ class UseDashboardCesium extends UseCesium {
   protected init() {
     super.init();
 
+    if (!this.viewer) {
+      return
+    }
+
     this.cmModule.setMeModule(this.meModule);
     this.cmModule.setMiModule(this.miModule);
     this.cmModule.setPModule(this.pModule);
@@ -61,18 +65,23 @@ class UseDashboardCesium extends UseCesium {
       this.formPanelTitle = this.cmModule.formPanelTitle
     })
 
-    if (this.viewer) this.lnModule.setViewer(this.viewer)
+    this.lnModule.setViewer(this.viewer)
     this.lnModule.setSetAllLabelsCB(() => {
       this.allLabels = this.lnModule.allLabels
     })
 
-    if (this.viewer) this.meModule.setViewer(this.viewer)
+    this.meModule.setViewer(this.viewer)
     this.meModule.setRefreshContextMenuOption(this.refreshContextMenuOption)
     this.meModule.setGetViewCornerCoordinates(this.getViewCornerCoordinates)
+
+    this.miModule.setMeModule(this.meModule)
+    this.miModule.setViewer(this.viewer)
+    this.miModule.setGetMouseMovePosition(() => this.mouseMovePosition)
 
     this.pModule.setMeModule(this.meModule)
 
     this.lnModule.setLayer()
+    this.miModule.init()
   }
 
   destroy() {
@@ -159,6 +168,9 @@ class UseDashboardCesium extends UseCesium {
   protected ScreenSpaceEventTypeLeftClickCB(m: Cesium.ScreenSpaceEventHandler.PositionedEvent) {
     super.ScreenSpaceEventTypeLeftClickCB(m);
     this.cmModule.contextMenuShow = false
+    if (this.miModule.ifEditing) {
+      this.miModule.doEditHandles()
+    }
   }
 
   protected ScreenSpaceEventTypeRightClickCB(m: Cesium.ScreenSpaceEventHandler.PositionedEvent) {
@@ -169,6 +181,9 @@ class UseDashboardCesium extends UseCesium {
 
   protected ScreenSpaceEventTypeMouseMoveCB(m: Cesium.ScreenSpaceEventHandler.MotionEvent) {
     super.ScreenSpaceEventTypeMouseMoveCB(m);
+    if (this.miModule.ifEditing) {
+      this.miModule.setMovingPointPosition()
+    }
   }
 
   protected ScreenSpaceEventTypeWheelCB(m: number) {

@@ -67,13 +67,15 @@ export class ContextMenuModule {
     }
   }
 
-  // 右键菜单的坐标
+  // 右键菜单的坐标，注意，添加数据时，禁止使用数组方法
   private _contextMenuXY = [0, 0]
 
+  // 右键菜单的坐标，注意，添加数据时，禁止使用数组方法
   get contextMenuXY(): number[] {
     return this._contextMenuXY;
   }
 
+  // 右键菜单的坐标，注意，添加数据时，禁止使用数组方法
   set contextMenuXY(value: number[]) {
     this._contextMenuXY = value;
     if (this.setContextMenuXYCB) {
@@ -96,8 +98,9 @@ export class ContextMenuModule {
           return
         }
         let itemId = ''
-        if (this.meModule.selectedEntityIds[0].startsWith(ID_PREFIX_SIGNAL_LIGHT_GROUP)) {
-          itemId = this.meModule.selectedEntityIds[0].replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, '')
+        const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
+        if (seidsByGroup.signalLightGroupCount > 0) {
+          itemId = seidsByGroup.signalLightGroup[0]
         }
         router.push({name: '~fp~:signalLight:signalLightGroupInfo:upd', query: {id: itemId}})
       }
@@ -109,8 +112,9 @@ export class ContextMenuModule {
           return
         }
         let itemId = ''
-        if (this.meModule.selectedEntityIds[0].startsWith(ID_PREFIX_SIGNAL_LIGHT_GROUP)) {
-          itemId = this.meModule.selectedEntityIds[0].replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, '')
+        const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
+        if (seidsByGroup.signalLightGroupCount > 0) {
+          itemId = seidsByGroup.signalLightGroup[0]
         }
         router.push({name: '~fp~:signalLight:signalLightGroupInfo:del', query: {id: itemId}})
       }
@@ -121,7 +125,7 @@ export class ContextMenuModule {
         if (!this.miModule) {
           return
         }
-        this.miModule.editType = EDIT_TYPE_1
+        this.miModule.editType = EDIT_TYPE_1.value
         this.miModule.ifEditing = true
       }
     },
@@ -132,13 +136,15 @@ export class ContextMenuModule {
       }
     }
   ]
-  // 右键菜单项
+  // 右键菜单项，注意，添加数据时，禁止使用数组方法
   private _contextMenuOption: Array<DropdownOption | DropdownGroupOption | DropdownDividerOption | DropdownRenderOption> = []
 
+  // 右键菜单项，注意，添加数据时，禁止使用数组方法
   get contextMenuOption(): Array<DropdownOption | DropdownGroupOption | DropdownDividerOption | DropdownRenderOption> {
     return this._contextMenuOption;
   }
 
+  // 右键菜单项，注意，添加数据时，禁止使用数组方法
   set contextMenuOption(value: Array<DropdownOption | DropdownGroupOption | DropdownDividerOption | DropdownRenderOption>) {
     this._contextMenuOption = value;
     if (this.setContextMenuOptionCB) {
@@ -166,24 +172,24 @@ export class ContextMenuModule {
               {
                 label: '修改信号灯组',
                 key: 'dcts:signalLight:signalLightGroupInfo:upd',
-                show: !this.pModule || this.pModule.contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:upd', true),
+                show: !this.pModule || this.pModule.contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:upd', ID_PREFIX_SIGNAL_LIGHT_GROUP),
               },
               {
                 label: '删除信号灯组',
                 key: 'dcts:signalLight:signalLightGroupInfo:del',
-                show: !this.pModule || this.pModule.contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:del', true),
+                show: !this.pModule || this.pModule.contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:del', ID_PREFIX_SIGNAL_LIGHT_GROUP),
               }
             ]
           },
           {
             label: '子信号灯信息管理',
             key: 'i:dcts:signalLight:signalLightInfo',
-            show: !this.pModule || this.pModule.contextMenuIfHasPermission('i:dcts:signalLight:signalLightInfo', true),
+            show: !this.pModule || this.pModule.contextMenuIfHasPermission('i:dcts:signalLight:signalLightInfo', ID_PREFIX_SIGNAL_LIGHT_GROUP),
             children: [
               {
                 label: '新增子信号灯',
                 key: 'dcts:signalLight:signalLightInfo:ins',
-                show: !this.pModule || this.pModule.contextMenuIfHasPermission('dcts:signalLight:signalLightInfo:ins', true),
+                show: !this.pModule || this.pModule.contextMenuIfHasPermission('dcts:signalLight:signalLightInfo:ins', ID_PREFIX_SIGNAL_LIGHT_GROUP),
               }
             ]
           }

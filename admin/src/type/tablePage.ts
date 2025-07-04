@@ -32,11 +32,11 @@ export interface ApiConfig<T, T2 = T> {
   selectAll: (obj: { [P in keyof Omit<T2, 'id'>]?: any }) => Promise<T[]>
   selectById: (id: number | string) => Promise<T>
   selectByIds: (ids: (number | string)[]) => Promise<T[]>
-  insertOne: (obj: Omit<T2, 'id'>) => Promise<any>
-  updateOne: (obj: T2) => Promise<any>
-  insertMore: (obj: Omit<T2, 'id'>[]) => Promise<any>
-  updateMore: (obj: T2[]) => Promise<any>
-  deleteList: (...ids: (number | string)[]) => Promise<any>
+  insertOne: (obj: Omit<T2, 'id'>) => Promise<T>
+  updateOne: (obj: T2) => Promise<T>
+  insertMore: (obj: Omit<T2, 'id'>[]) => Promise<T[]>
+  updateMore: (obj: T2[]) => Promise<T[]>
+  deleteList: (...ids: (number | string)[]) => Promise<boolean>
 }
 
 export class TablePageConfig<T = {}> {

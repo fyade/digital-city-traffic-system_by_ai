@@ -26,18 +26,43 @@ export class MapEntityModule {
   }
 
 
-  // 当前选中的实体
+  // 当前选中的实体，注意，添加数据时，禁止使用数组方法
   private _selectedEntityIds: string[] = []
 
+  // 当前选中的实体，注意，添加数据时，禁止使用数组方法
   get selectedEntityIds(): string[] {
     return this._selectedEntityIds;
   }
 
+  // 当前选中的实体，注意，添加数据时，禁止使用数组方法
   set selectedEntityIds(value: string[]) {
     this._selectedEntityIds = value;
     if (this.refreshContextMenuOption) {
       this.refreshContextMenuOption()
     }
+  }
+
+  public getSelectedEntityIdsByGroup() {
+    const obj = {
+      signalLightGroup: [] as string[],
+      get signalLightGroupCount() {
+        return this.signalLightGroup.length
+      },
+      get allIds() {
+        return [
+          ...this.signalLightGroup
+        ]
+      },
+      get count() {
+        return this.allIds.length
+      }
+    }
+    for (const selectedEntityId of this.selectedEntityIds) {
+      if (selectedEntityId.startsWith(ID_PREFIX_SIGNAL_LIGHT_GROUP)) {
+        obj.signalLightGroup.push(selectedEntityId.replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, ''))
+      }
+    }
+    return obj
   }
 
   // 已渲染的信号灯组的id列表
@@ -70,9 +95,10 @@ export class MapEntityModule {
           return
         }
         if (ifRefresh) {
+          const seidsByGroup = this.getSelectedEntityIdsByGroup();
           const ids = [
             ...res.map(item => item.id),
-            ...this.selectedEntityIds.map(item => item.replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, ''))
+            ...seidsByGroup.allIds
           ]
           for (const id of ids) {
             const d = `${ID_PREFIX_SIGNAL_LIGHT_GROUP}${id}`;

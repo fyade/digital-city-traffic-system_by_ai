@@ -77,12 +77,15 @@ export class LayerNotificationModule {
       fromUrl: 'https://www.openstreetmap.org/'
     }
   ]
-  // 左下角显示的图层提供者信息
+  // 左下角显示的图层提供者信息，注意，添加数据时，禁止使用数组方法
   private _allLabels: string[][] = []
+
+  // 左下角显示的图层提供者信息，注意，添加数据时，禁止使用数组方法
   get allLabels(): string[][] {
     return this._allLabels;
   }
 
+  // 左下角显示的图层提供者信息，注意，添加数据时，禁止使用数组方法
   set allLabels(value: string[][]) {
     this._allLabels = value;
     if (this.setAllLabelsCB) {

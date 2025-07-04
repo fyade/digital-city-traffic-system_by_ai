@@ -20,9 +20,6 @@ const goAdminPanel = () => {
 const goHome = () => {
   router.push('/');
 }
-const windowOpen = (url: string) => {
-  window.open(url);
-}
 </script>
 
 <template>
@@ -30,8 +27,9 @@ const windowOpen = (url: string) => {
     <div class="footer">
       <!--<p>因瓦片调用额度限制，若地图加载异常，请切换图层或次日重试。</p>-->
       <p>v{{ dashboardConfig.currentVersion }}</p>
+      <a href="https://beian.miit.gov.cn" target="_blank"><span>苏ICP备2023025698号-1</span></a>
       <p v-for="(item, index) in props.labels" :key="index">
-        {{ item[0] }}来自<span @click="windowOpen(item[2])">{{ item[1] }}</span>
+        {{ item[0] }}来自<a :href="item[2]" target="_blank">{{ item[1] }}</a>
       </p>
       <!--<p @click="emits('openSettingLayerChange')"><span class="no-underline">设置</span></p>-->
       <p v-if="!userStore.ifLogin" @click="goToLogin"><span class="no-underline">登录</span></p>
@@ -58,16 +56,21 @@ const windowOpen = (url: string) => {
   > .footer {
     position: absolute;
     bottom: 12px;
-    left: 12px;
+    left: 8px;
     width: calc(100% - 12px * 2);
     height: 0;
     transform: translateY(-12px);
     display: flex;
-    gap: 12px;
+    gap: 4px;
     color: #fff;
     font-size: 12px;
 
-    p {
+    > * {
+      padding: 0 4px;
+    }
+
+    a, p {
+      color: inherit;
       line-height: 12px;
     }
 

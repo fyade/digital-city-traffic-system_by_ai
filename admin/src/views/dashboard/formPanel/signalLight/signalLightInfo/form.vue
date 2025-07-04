@@ -3,11 +3,13 @@ import { nextTick, ref, useTemplateRef } from "vue";
 import { FormInst, FormRules } from "naive-ui";
 import { useRoute } from "vue-router";
 import FormPanelCard from '@/components/formPanelCard/index.vue'
-import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
-import { SignalLightGroupInfoDto } from "@/type/module/dcts/signalLight/signalLightGroupInfo.ts";
-import { signalLightGroupInfoDict } from "@/dict/module/dcts/signalLight/signalLightGroupInfo.ts";
-import { signalLightGroupInfoApi } from "@/api/module/dcts/signalLight/signalLightGroupInfo.ts";
 import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
+import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
+import { SignalLightInfoDto, SignalLightInfoInsDto } from "@/type/module/dcts/signalLight/signalLightInfo.ts";
+import { signalLightInfoApi } from "@/api/module/dcts/signalLight/signalLightInfo.ts";
+import { signalLightInfoDict } from "@/dict/module/dcts/signalLight/signalLightInfo.ts";
+import { signalLightGroupChildMappingApi } from "@/api/module/dcts/signalLight/signalLightGroupChildMapping.ts";
+import { SignalLightGroupChildMappingInsDto } from "@/type/module/dcts/signalLight/signalLightGroupChildMapping.ts";
 
 const route = useRoute();
 const useCesium = useDashboardCesium;
@@ -16,6 +18,10 @@ const ifIns = route.path.endsWith('ins')
 const ifUpd = route.path.endsWith('upd')
 const ifDel = route.path.endsWith('del')
 const itemId = route.query.id as string | undefined
+const itemPid = route.query.pid as string | undefined
+if (ifIns && !itemPid) {
+  gotoDashboardHome()
+}
 if (ifUpd && !itemId) {
   gotoDashboardHome()
 }
@@ -29,7 +35,7 @@ nextTick(() => {
   }
   if (ifUpd) {
     formLoading.value = true
-    signalLightGroupInfoApi.selectById(itemId!).then(res => {
+    signalLightInfoApi.selectById(itemId!).then(res => {
       form.value = res
     }).finally(() => {
       formLoading.value = false
@@ -39,7 +45,7 @@ nextTick(() => {
 
 const formLoading = ref(false)
 const dialogFormRef = useTemplateRef<FormInst>('dialogFormRef')
-const form = ref(new SignalLightGroupInfoDto())
+const form = ref(new SignalLightInfoDto())
 const formRules: FormRules = {
   name: [{required: true, trigger: 'change'}],
   location: [{required: true, trigger: 'change'}],
@@ -52,16 +58,23 @@ const dCon = () => {
     }
     if (ifIns) {
       formLoading.value = true
-      signalLightGroupInfoApi.insertOne(form.value).then(_ => {
-        useCesium.refreshScreenEntities(true)
-        gotoDashboardHome()
+      signalLightInfoApi.insertOne(form.value).then(res => {
+        const dto = new SignalLightGroupChildMappingInsDto();
+        dto.groupId = Number(itemPid)
+        dto.childLightId = res.id
+        signalLightGroupChildMappingApi.insertOne(dto).then(_ => {
+          useCesium.refreshScreenEntities(true)
+          gotoDashboardHome()
+        }).finally(() => {
+          formLoading.value = false
+        })
       }).finally(() => {
         formLoading.value = false
       })
     }
     if (ifUpd) {
       formLoading.value = true
-      signalLightGroupInfoApi.updateOne(form.value).then(_ => {
+      signalLightInfoApi.updateOne(form.value).then(_ => {
         useCesium.refreshScreenEntities(true)
         gotoDashboardHome()
       }).finally(() => {
@@ -72,7 +85,7 @@ const dCon = () => {
 }
 const submitCallback = () => {
   formLoading.value = true
-  signalLightGroupInfoApi.deleteList(itemId!).then(_ => {
+  signalLightInfoApi.deleteList(itemId!).then(_ => {
     useCesium.refreshScreenEntities(true)
     gotoDashboardHome()
   }).finally(() => {
@@ -98,14 +111,14 @@ const submitCallback = () => {
             :model="form"
             :rules="formRules"
         >
-          <n-form-item path="name" :label="signalLightGroupInfoDict.name">
-            <n-input v-model:value="form.name" :placeholder="signalLightGroupInfoDict.name"/>
+          <n-form-item path="name" :label="signalLightInfoDict.name">
+            <n-input v-model:value="form.name" :placeholder="signalLightInfoDict.name"/>
           </n-form-item>
-          <n-form-item path="location" :label="signalLightGroupInfoDict.location">
-            <n-input v-model:value="form.location" :placeholder="signalLightGroupInfoDict.location" disabled/>
+          <n-form-item path="location" :label="signalLightInfoDict.location">
+            <n-input v-model:value="form.location" :placeholder="signalLightInfoDict.location"/>
           </n-form-item>
-          <n-form-item path="description" :label="signalLightGroupInfoDict.description">
-            <n-input v-model:value="form.description" :placeholder="signalLightGroupInfoDict.description"/>
+          <n-form-item path="description" :label="signalLightInfoDict.description">
+            <n-input v-model:value="form.description" :placeholder="signalLightInfoDict.description"/>
           </n-form-item>
           <div class="box-flex-end">
             <n-button secondary type="primary" @click="dCon">确认</n-button>
