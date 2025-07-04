@@ -46,6 +46,12 @@ export class ContextMenuModule {
     this.setContextMenuOptionCB = func
   }
 
+  private setFormPanelTitleCB: (() => void) | null = null
+
+  public setSetFormPanelTitleCB(func: () => void) {
+    this.setFormPanelTitleCB = func
+  }
+
 
   // 右键菜单的显示
   private _contextMenuShow = false
@@ -193,7 +199,19 @@ export class ContextMenuModule {
     ]
   }
 
-  public formPanelTitle = ''
+  private _formPanelTitle = ''
+
+  get formPanelTitle(): string {
+    return this._formPanelTitle;
+  }
+
+  set formPanelTitle(value: string) {
+    this._formPanelTitle = value;
+    if (this.setFormPanelTitleCB) {
+      this.setFormPanelTitleCB()
+    }
+  }
+
   /**
    * 右键菜单的事件
    * @param key

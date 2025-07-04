@@ -30,13 +30,16 @@ class UseDashboardCesium extends UseCesium {
   }
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 外部访问 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-  public readonly refreshContextMenuOption = this.cmModule.refreshContextMenuOption
+  public readonly refreshContextMenuOption = this.cmModule.refreshContextMenuOption.bind(this.cmModule)
   public contextMenuShow = this.cmModule.contextMenuShow
   public contextMenuXY = this.cmModule.contextMenuXY
   public contextMenuOption = this.cmModule.contextMenuOption
-  public readonly contextMenuSelect = this.cmModule.contextMenuSelect
+  public readonly contextMenuSelect = this.cmModule.contextMenuSelect.bind(this.cmModule)
+  public formPanelTitle = this.cmModule.formPanelTitle
 
   public allLabels = this.lnModule.allLabels
+
+  public readonly refreshScreenEntities = this.meModule.refreshScreenEntities.bind(this.meModule)
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 事件覆盖 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   protected init() {
@@ -54,6 +57,9 @@ class UseDashboardCesium extends UseCesium {
     this.cmModule.setSetContextMenuOptionCB(() => {
       this.contextMenuOption = this.cmModule.contextMenuOption
     })
+    this.cmModule.setSetFormPanelTitleCB(() => {
+      this.formPanelTitle = this.cmModule.formPanelTitle
+    })
 
     if (this.viewer) this.lnModule.setViewer(this.viewer)
     this.lnModule.setSetAllLabelsCB(() => {
@@ -61,8 +67,8 @@ class UseDashboardCesium extends UseCesium {
     })
 
     if (this.viewer) this.meModule.setViewer(this.viewer)
-    this.meModule.setRefreshContextMenuOption(this.cmModule.refreshContextMenuOption.bind(this))
-    this.meModule.setGetViewCornerCoordinates(this.getViewCornerCoordinates.bind(this))
+    this.meModule.setRefreshContextMenuOption(this.refreshContextMenuOption)
+    this.meModule.setGetViewCornerCoordinates(this.getViewCornerCoordinates)
 
     this.pModule.setMeModule(this.meModule)
 
@@ -109,7 +115,7 @@ class UseDashboardCesium extends UseCesium {
     this.lnModule.layerLoadingCount++;
     // 第一次图层加载完成后调用
     if (this.lnModule.layerLoadingCount === 1) {
-      this.meModule.refreshScreenEntities()
+      this.refreshScreenEntities()
     }
     if (this.lnModule.layerLoadingNotification) {
       this.lnModule.layerLoadingNotification.destroy()
@@ -131,7 +137,7 @@ class UseDashboardCesium extends UseCesium {
 
   protected cameraMoveEndCB() {
     super.cameraMoveEndCB();
-    this.meModule.refreshScreenEntities()
+    this.refreshScreenEntities()
   }
 
   protected ScreenSpaceEventTypeLeftDownCB() {
