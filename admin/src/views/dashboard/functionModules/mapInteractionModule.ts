@@ -1,4 +1,4 @@
-import { EDIT_TYPE_1 } from "@/views/dashboard/functionModules/constant.ts";
+import { EDIT_TYPE_1, ID_PREFIX_SIGNAL_LIGHT_GROUP } from "@/views/dashboard/functionModules/constant.ts";
 import * as Cesium from "cesium";
 import router from "@/router";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
@@ -92,9 +92,9 @@ export class MapInteractionModule {
           return
         }
         let pid = ''
-        const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
-        if (seidsByGroup.signalLightGroupCount > 0) {
-          pid = seidsByGroup.signalLightGroup[0]
+        const hseids = this.meModule.getHistorySelectedEntityIds();
+        if (hseids) {
+          pid = hseids.data[0].replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, '')
         }
         router.push({name: '~fp~:signalLight:signalLightInfo:ins', query: {pid: pid}})
       }

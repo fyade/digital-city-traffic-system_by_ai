@@ -86,12 +86,13 @@ class UseDashboardCesium extends UseCesium {
 
   destroy() {
     super.destroy();
-    this.layerLoadingEnd()
-    useDashboardCesium = createDashboardCesium()
+    this.layerLoadingEnd().finally(() => {
+      useDashboardCesium = createDashboardCesium()
+    })
   }
 
-  protected globeTileLoadProgressEventCB(queuedTileCount: number) {
-    super.globeTileLoadProgressEventCB(queuedTileCount);
+  protected async globeTileLoadProgressEventCB(queuedTileCount: number) {
+    await super.globeTileLoadProgressEventCB(queuedTileCount);
     // 加载中
     if (queuedTileCount > 0 && !this.lnModule.layerLoading) {
       this.lnModule.layerLoading = true
@@ -116,21 +117,23 @@ class UseDashboardCesium extends UseCesium {
     }
     // 加载完成
     if (queuedTileCount === 0 && this.lnModule.layerLoading) {
-      this.layerLoadingEnd(true)
+      await this.layerLoadingEnd(true)
     }
   }
 
-  private layerLoadingEnd(ifEnd = false) {
+  private async layerLoadingEnd(ifLoadEnd = false) {
     this.lnModule.layerLoadingCount++;
     // 第一次图层加载完成后调用
-    if (this.lnModule.layerLoadingCount === 1) {
-      this.refreshScreenEntities()
+    if (ifLoadEnd) {
+      if (this.lnModule.layerLoadingCount === 1) {
+        await this.refreshScreenEntities()
+      }
     }
     if (this.lnModule.layerLoadingNotification) {
       this.lnModule.layerLoadingNotification.destroy()
     }
     this.lnModule.layerLoading = false
-    if (ifEnd) {
+    if (ifLoadEnd) {
       notification.success({
         title: '提示',
         content: '图层加载完成',
@@ -144,9 +147,9 @@ class UseDashboardCesium extends UseCesium {
     }
   }
 
-  protected cameraMoveEndCB() {
-    super.cameraMoveEndCB();
-    this.refreshScreenEntities()
+  protected async cameraMoveEndCB() {
+    await super.cameraMoveEndCB();
+    await this.refreshScreenEntities()
   }
 
   protected ScreenSpaceEventTypeLeftDownCB() {
@@ -196,24 +199,27 @@ class UseDashboardCesium extends UseCesium {
     if (!this.viewer) {
       return
     }
-    this.meModule.selectedEntityIds = []
+    let ifHasObj = false
     const cartesian2 = new Cesium.Cartesian2(this.mouseClickPositionXY[0], this.mouseClickPositionXY[1]);
     const pickedObject = this.viewer.scene.pick(cartesian2);
-    if (!pickedObject) {
-      return;
-    }
     // 情况1：如果点击的是 Entity（如点、线、面）
-    if (pickedObject.id instanceof Cesium.Entity) {
+    if (pickedObject && pickedObject.id instanceof Cesium.Entity) {
+      ifHasObj = true
       const entity = pickedObject.id as Cesium.Entity;
       this.meModule.selectedEntityIds = [entity.id];
     }
     // 情况2：如果点击的是 Primitive（如3D模型、自定义图元）
-    else if (pickedObject.primitive instanceof Cesium.Primitive) {
+    else if (pickedObject && pickedObject.primitive instanceof Cesium.Primitive) {
+      ifHasObj = true
       const primitive = pickedObject.primitive;
     }
     // 情况3：如果点击的是3D Tiles（如倾斜摄影、BIM模型）
-    else if (pickedObject.tileset instanceof Cesium.Cesium3DTileset) {
+    else if (pickedObject && pickedObject.tileset instanceof Cesium.Cesium3DTileset) {
+      ifHasObj = true
       const tileset = pickedObject.tileset;
+    }
+    if (!ifHasObj) {
+      this.meModule.selectedEntityIds = []
     }
   }
 }

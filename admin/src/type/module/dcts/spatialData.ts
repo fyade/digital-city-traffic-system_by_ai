@@ -1,3 +1,7 @@
+import { SignalLightGroupInfoDto } from "@/type/module/dcts/signalLight/signalLightGroupInfo.ts";
+import { SignalLightInfoDto } from "@/type/module/dcts/signalLight/signalLightInfo.ts";
+import { SignalLightGroupChildMappingDto } from "@/type/module/dcts/signalLight/signalLightGroupChildMapping.ts";
+
 class PolygonPointDto {
   lon!: number;
   lat!: number;
@@ -15,5 +19,12 @@ export class NodesWithWaysInPolygonVo {
 
 export class SignalLightGroupsInPolygonDto {
   version!: string
+  ifChild!: boolean
   points!: PolygonPointDto[]
+}
+
+export class SignalLightGroupsInPolygonVo {
+  signalLightGroupInfos!: SignalLightGroupInfoDto[]
+  signalLightGroupChildMappings!: SignalLightGroupChildMappingDto[]
+  signalLightInfos!: SignalLightInfoDto[]
 }

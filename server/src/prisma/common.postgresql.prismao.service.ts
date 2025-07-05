@@ -5,7 +5,7 @@ import {
 } from "../module/module/main/sys-util/code-generation/codeGeneration";
 import { baseUtils, objectUtils } from "@dcts/common";
 import { base } from "../util/base";
-import { GenSqlDto } from "./custom.dto";
+import { GenSqlDto, publicSqlSelectKey } from "./custom.dto";
 import { toCamelCase, toSnakeCase } from "@dcts/common/dist/util/base-utils";
 import { Injectable } from "@nestjs/common";
 
@@ -172,8 +172,8 @@ export class CommonPostgresqlPrismaoService {
 
     const notInsertKeys = ['createTime', 'updateTime'];
     const notSampleSelParam = {
-      createTime: ' to_char(create_time, \'YYYY-MM-DD"T"HH24:MI:SS"Z"\') ',
-      updateTime: ' to_char(update_time, \'YYYY-MM-DD"T"HH24:MI:SS"Z"\') '
+      createTime: publicSqlSelectKey.kvs.createTime,
+      updateTime: publicSqlSelectKey.kvs.updateTime
     }
 
     const sql_select_keys = !dto.clas ? '' : Object.keys(dto.clas)
@@ -188,7 +188,7 @@ export class CommonPostgresqlPrismaoService {
     if (this._ifSel(dto.type)) {
       sql += ` select `;
       if (dto.type === 'selCount') {
-        sql += ` count(*) as count `
+        sql += ` count(*) as "count" `
       } else {
         sql += sql_select_keys;
       }

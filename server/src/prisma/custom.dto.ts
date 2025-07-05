@@ -24,3 +24,20 @@ export class GenSqlDto<T> {
   pageNum?: number
   pageSize?: number
 }
+
+export const publicSqlSelectKey = {
+  kvs: {
+    createRole: ' create_role ',
+    updateRole: ' update_role ',
+    createBy: ' create_by ',
+    updateBy: ' update_by ',
+    createTime: ' to_char(create_time, \'YYYY-MM-DD"T"HH24:MI:SS"Z"\') ',
+    updateTime: ' to_char(update_time, \'YYYY-MM-DD"T"HH24:MI:SS"Z"\') ',
+    deleted: ' deleted ',
+  },
+  get toString() {
+    return Object.keys(this.kvs)
+        .map(key => ` ${this.kvs[key]} as "${key}" `)
+        .join(', ')
+  }
+}

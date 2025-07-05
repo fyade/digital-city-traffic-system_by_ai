@@ -1,7 +1,11 @@
 import { ContextMenuItem } from "@/views/dashboard/index/dto.ts";
 import router from "@/router";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
-import { EDIT_TYPE_1, ID_PREFIX_SIGNAL_LIGHT_GROUP } from "@/views/dashboard/functionModules/constant.ts";
+import {
+  EDIT_TYPE_1,
+  ID_PREFIX_SIGNAL_LIGHT,
+  ID_PREFIX_SIGNAL_LIGHT_GROUP
+} from "@/views/dashboard/functionModules/constant.ts";
 import { MapInteractionModule } from "@/views/dashboard/functionModules/mapInteractionModule.ts";
 import { DropdownDividerOption, DropdownGroupOption, DropdownOption, DropdownRenderOption } from "naive-ui";
 import { PermissionModule } from "@/views/dashboard/functionModules/permissionModule.ts";
@@ -85,6 +89,7 @@ export class ContextMenuModule {
 
   // 右键菜单对应的操作
   public contextMenus: ContextMenuItem[] = [
+    // 信号灯组
     {
       id: 'dcts:signalLight:signalLightGroupInfo:ins',
       func: () => {
@@ -99,8 +104,8 @@ export class ContextMenuModule {
         }
         let itemId = ''
         const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
-        if (seidsByGroup.signalLightGroupCount > 0) {
-          itemId = seidsByGroup.signalLightGroup[0]
+        if (seidsByGroup.signalLightGroupInfoCount > 0) {
+          itemId = seidsByGroup.signalLightGroupInfo[0]
         }
         router.push({name: '~fp~:signalLight:signalLightGroupInfo:upd', query: {id: itemId}})
       }
@@ -113,12 +118,13 @@ export class ContextMenuModule {
         }
         let itemId = ''
         const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
-        if (seidsByGroup.signalLightGroupCount > 0) {
-          itemId = seidsByGroup.signalLightGroup[0]
+        if (seidsByGroup.signalLightGroupInfoCount > 0) {
+          itemId = seidsByGroup.signalLightGroupInfo[0]
         }
         router.push({name: '~fp~:signalLight:signalLightGroupInfo:del', query: {id: itemId}})
       }
     },
+    // 子信号灯
     {
       id: 'dcts:signalLight:signalLightInfo:ins',
       func: () => {
@@ -127,6 +133,34 @@ export class ContextMenuModule {
         }
         this.miModule.editType = EDIT_TYPE_1.value
         this.miModule.ifEditing = true
+      }
+    },
+    {
+      id: 'dcts:signalLight:signalLightInfo:upd',
+      func: () => {
+        if (!this.meModule) {
+          return
+        }
+        let itemId = ''
+        const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
+        if (seidsByGroup.signalLightInfoCount > 0) {
+          itemId = seidsByGroup.signalLightInfo[0]
+        }
+        router.push({name: '~fp~:signalLight:signalLightInfo:upd', query: {id: itemId}})
+      }
+    },
+    {
+      id: 'dcts:signalLight:signalLightInfo:del',
+      func: () => {
+        if (!this.meModule) {
+          return
+        }
+        let itemId = ''
+        const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
+        if (seidsByGroup.signalLightInfoCount > 0) {
+          itemId = seidsByGroup.signalLightInfo[0]
+        }
+        router.push({name: '~fp~:signalLight:signalLightInfo:del', query: {id: itemId}})
       }
     },
     {
@@ -157,39 +191,49 @@ export class ContextMenuModule {
       {
         label: '信号灯管理',
         key: 'i:dcts:signalLight',
-        show: !this.pModule || this.pModule.contextMenuIfHasPermission('i:dcts:signalLight'),
+        show: !this.pModule || this.pModule.cmihp('i:dcts:signalLight'),
         children: [
           {
             label: '信号灯组信息管理',
             key: 'i:dcts:signalLight:signalLightGroupInfo',
-            show: !this.pModule || this.pModule.contextMenuIfHasPermission('i:dcts:signalLight:signalLightGroupInfo'),
+            show: !this.pModule || this.pModule.cmihp('i:dcts:signalLight:signalLightGroupInfo', [], [ID_PREFIX_SIGNAL_LIGHT]),
             children: [
               {
                 label: '新增信号灯组',
                 key: 'dcts:signalLight:signalLightGroupInfo:ins',
-                show: !this.pModule || this.pModule.contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:ins'),
+                show: !this.pModule || this.pModule.cmihp('dcts:signalLight:signalLightGroupInfo:ins', [], [ID_PREFIX_SIGNAL_LIGHT_GROUP, ID_PREFIX_SIGNAL_LIGHT]),
               },
               {
                 label: '修改信号灯组',
                 key: 'dcts:signalLight:signalLightGroupInfo:upd',
-                show: !this.pModule || this.pModule.contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:upd', ID_PREFIX_SIGNAL_LIGHT_GROUP),
+                show: !this.pModule || this.pModule.cmihp('dcts:signalLight:signalLightGroupInfo:upd', [ID_PREFIX_SIGNAL_LIGHT_GROUP]),
               },
               {
                 label: '删除信号灯组',
                 key: 'dcts:signalLight:signalLightGroupInfo:del',
-                show: !this.pModule || this.pModule.contextMenuIfHasPermission('dcts:signalLight:signalLightGroupInfo:del', ID_PREFIX_SIGNAL_LIGHT_GROUP),
+                show: !this.pModule || this.pModule.cmihp('dcts:signalLight:signalLightGroupInfo:del', [ID_PREFIX_SIGNAL_LIGHT_GROUP]),
               }
             ]
           },
           {
             label: '子信号灯信息管理',
             key: 'i:dcts:signalLight:signalLightInfo',
-            show: !this.pModule || this.pModule.contextMenuIfHasPermission('i:dcts:signalLight:signalLightInfo', ID_PREFIX_SIGNAL_LIGHT_GROUP),
+            show: !this.pModule || this.pModule.cmihp('i:dcts:signalLight:signalLightInfo', [ID_PREFIX_SIGNAL_LIGHT_GROUP, ID_PREFIX_SIGNAL_LIGHT]),
             children: [
               {
                 label: '新增子信号灯',
                 key: 'dcts:signalLight:signalLightInfo:ins',
-                show: !this.pModule || this.pModule.contextMenuIfHasPermission('dcts:signalLight:signalLightInfo:ins', ID_PREFIX_SIGNAL_LIGHT_GROUP),
+                show: !this.pModule || this.pModule.cmihp('dcts:signalLight:signalLightInfo:ins', [ID_PREFIX_SIGNAL_LIGHT_GROUP]),
+              },
+              {
+                label: '修改子信号灯',
+                key: 'dcts:signalLight:signalLightInfo:upd',
+                show: !this.pModule || this.pModule.cmihp('dcts:signalLight:signalLightInfo:upd', [ID_PREFIX_SIGNAL_LIGHT])
+              },
+              {
+                label: '删除子信号灯',
+                key: 'dcts:signalLight:signalLightInfo:del',
+                show: !this.pModule || this.pModule.cmihp('dcts:signalLight:signalLightInfo:del', [ID_PREFIX_SIGNAL_LIGHT])
               }
             ]
           }

@@ -1,7 +1,7 @@
 import { getCurrentConfig } from "../index.js";
 import { configProd } from "./public-prod.config.js";
 
-export const currentVersion = '0.5.3';
+export const currentVersion = '0.5.4';
 
 export const currentConfig = () => {
   return getCurrentConfig(config) as unknown as typeof config.dev

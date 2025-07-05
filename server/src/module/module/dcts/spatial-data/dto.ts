@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { ArrayMinSize, IsArray, IsIn, IsNotEmpty, IsNumber, ValidateNested } from "class-validator";
+import { ArrayMinSize, IsArray, IsBoolean, IsIn, IsNotEmpty, IsNumber, ValidateNested } from "class-validator";
 
 class PolygonPointDto {
   @ApiProperty({description: '经度', required: true})
@@ -36,6 +36,11 @@ export class SignalLightGroupsInPolygonDto {
   @IsNotEmpty({message: '参数版本不能为空'})
   @IsIn(['1.0'], {message: '参数版本值不在允许的值中'})
   version: string;
+
+  @ApiProperty({description: '是否需要一并返回子信号灯', required: true})
+  @IsNotEmpty({message: '是否需要一并返回子信号灯不能为空'})
+  @IsBoolean()
+  ifChild: boolean;
 
   @ApiProperty({description: '多边形', required: true, type: [PolygonPointDto]})
   @IsNotEmpty({message: '多边形不能为空'})

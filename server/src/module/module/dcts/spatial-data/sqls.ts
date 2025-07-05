@@ -1,4 +1,6 @@
 import { NodesWithWaysInPolygonDto, SignalLightGroupsInPolygonDto } from "./dto";
+import { base } from "../../../../util/base";
+import { publicSqlSelectKey } from "../../../../prisma/custom.dto";
 
 export function nodesWithWaysInPolygon(dto: NodesWithWaysInPolygonDto) {
   // 点数组转为字符串
@@ -20,7 +22,7 @@ export function nodesWithWaysInPolygon(dto: NodesWithWaysInPolygonDto) {
              name,
              highway,
              motorcar,
-             st_astext(way) as way
+             st_astext(way) as "way"
           ${publicSql};
   `
   // 查询所有节点
@@ -44,7 +46,7 @@ export function nodesWithWaysInPolygon(dto: NodesWithWaysInPolygonDto) {
                                             n.lat,
                                             n.lon,
                                             n.tags,
-                                            count(DISTINCT r.osm_id) as road_count
+                                            count(DISTINCT r.osm_id) as "road_count"
                                      from nodes_in_polygon n
                                               join motor_vehicle_roads r on st_dwithin(n.geom, r.way, 0.00001)
                                      group by n.id, n.lat, n.lon, n.tags
@@ -63,20 +65,39 @@ export function signalLightGroupsInPolygon(dto: SignalLightGroupsInPolygonDto) {
       .map(item => `${item.lon} ${item.lat}`)
       .join(', ');
   const sql = `
-    SELECT id,
-           name,
-           concat(st_x(location)::text, ',', st_y(location)::text) as location,
-           description,
-           create_role,
-           update_role,
-           create_by,
-           update_by,
-           create_time,
-           update_time,
-           deleted
-    FROM signal_light_group_info
-    WHERE ST_Within(location, ST_SetSRID(ST_GeomFromText('POLYGON((${pointsstring}))'), 4326))
-      AND deleted = 'N';
+      select id                                                      as "id",
+             name                                                    as "name",
+             concat(st_x(location)::text, ',', st_y(location)::text) as "location",
+             description                                             as "description",
+             ${publicSqlSelectKey.toString}
+      FROM signal_light_group_info
+      WHERE deleted = '${base.N}'
+        AND ST_Within(location, ST_SetSRID(ST_GeomFromText('POLYGON((${pointsstring}))'), 4326));
   `
   return sql
+}
+
+export function signalLightGroupsInPolygon2(ids: number[]) {
+  return `
+      select id             as "id",
+             group_id       as "groupId",
+             child_light_id as "childLightId",
+             ${publicSqlSelectKey.toString}
+      from signal_light_group_child_mapping
+      where deleted = '${base.N}'
+        and group_id in (${ids.join(', ')});
+  `
+}
+
+export function signalLightGroupsInPolygon3(ids: number[]) {
+  return `
+      select id                                                      as "id",
+             name                                                    as "name",
+             concat(st_x(location)::text, ',', st_y(location)::text) as "location",
+             description                                             as "description",
+             ${publicSqlSelectKey.toString}
+      from signal_light_info
+      where deleted = '${base.N}'
+        and id in (${ids.join(', ')});
+  `
 }

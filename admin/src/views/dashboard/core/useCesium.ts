@@ -354,14 +354,14 @@ export class UseCesium {
    * @param queuedTileCount
    * @protected
    */
-  protected globeTileLoadProgressEventCB(queuedTileCount: number) {
+  protected async globeTileLoadProgressEventCB(queuedTileCount: number) {
   }
 
   /**
    * 相机移动结束事件
    * @protected
    */
-  protected cameraMoveEndCB() {
+  protected async cameraMoveEndCB() {
     const centerLonLat1 = this.centerLonLat();
     if (centerLonLat1) {
       this.mapCenterPosition[0] = centerLonLat1.lon

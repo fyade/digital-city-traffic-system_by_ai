@@ -1,7 +1,7 @@
 import { useSysStore } from "@/store/module/sys.ts";
 import { useUserStore } from "@/store/module/user.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
-import { ID_PREFIX_SIGNAL_LIGHT_GROUP } from "@/views/dashboard/functionModules/constant.ts";
+import { ID_PREFIX_SIGNAL_LIGHT, ID_PREFIX_SIGNAL_LIGHT_GROUP } from "@/views/dashboard/functionModules/constant.ts";
 
 const sysStore = useSysStore()
 const userStore = useUserStore();
@@ -22,20 +22,37 @@ export class PermissionModule {
   /**
    * 右键菜单项是否有权限
    * @param perm 菜单所需权限
-   * @param ifNeedEntity 基于何种实体
+   * @param basedOn 基于何种实体
+   * @param notBasedOn 不可基于何种实体
    */
-  public contextMenuIfHasPermission(perm: string, ifNeedEntity = '') {
+  private contextMenuIfHasPermission(perm: string, basedOn: string[] = [], notBasedOn: string[] = []) {
     const dctsButtons = visibleButtons.get('sys:dcts');
     if (dctsButtons) {
       let entityPermission = true
       if (this.meModule) {
         const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
-        if (ifNeedEntity === ID_PREFIX_SIGNAL_LIGHT_GROUP) {
-          entityPermission = seidsByGroup.signalLightGroupCount > 0
+        if (basedOn.length > 0) {
+          entityPermission = false
+          if (basedOn.includes(ID_PREFIX_SIGNAL_LIGHT_GROUP) && seidsByGroup.signalLightGroupInfoCount > 0) {
+            entityPermission = true
+          }
+          if (basedOn.includes(ID_PREFIX_SIGNAL_LIGHT) && seidsByGroup.signalLightInfoCount > 0) {
+            entityPermission = true
+          }
+        }
+        if (notBasedOn.length > 0) {
+          if (notBasedOn.includes(ID_PREFIX_SIGNAL_LIGHT_GROUP) && seidsByGroup.signalLightGroupInfoCount > 0) {
+            entityPermission = false
+          }
+          if (notBasedOn.includes(ID_PREFIX_SIGNAL_LIGHT) && seidsByGroup.signalLightInfoCount > 0) {
+            entityPermission = false
+          }
         }
       }
       return userStore.ifLogin && dctsButtons.includes(perm) && entityPermission
     }
     return false
   }
+
+  public cmihp = this.contextMenuIfHasPermission
 }

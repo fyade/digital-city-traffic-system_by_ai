@@ -115,7 +115,7 @@ const submitCallback = () => {
             <n-input v-model:value="form.name" :placeholder="signalLightInfoDict.name"/>
           </n-form-item>
           <n-form-item path="location" :label="signalLightInfoDict.location">
-            <n-input v-model:value="form.location" :placeholder="signalLightInfoDict.location"/>
+            <n-input v-model:value="form.location" :placeholder="signalLightInfoDict.location" disabled/>
           </n-form-item>
           <n-form-item path="description" :label="signalLightInfoDict.description">
             <n-input v-model:value="form.description" :placeholder="signalLightInfoDict.description"/>
