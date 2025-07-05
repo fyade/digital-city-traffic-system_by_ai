@@ -4,7 +4,7 @@ import { useUserStore } from "@/store/module/user.ts";
 import { useSysStore } from "@/store/module/sys.ts";
 import { allLoginRoles } from "@/utils/base.ts";
 import { getVerificationCode } from "@/api/module/main/sysManage/userLogin.ts";
-import { adminConfig } from "@dcts/config";
+import { publicConfig } from "@dcts/config";
 
 const userStore = useUserStore();
 const sysStore = useSysStore();
@@ -40,7 +40,7 @@ refreshVerificationCode()
 
 <template>
   <div class="el">
-    <p class="title">{{ adminConfig.APP_NAME }}</p>
+    <p class="title">{{ publicConfig.APP_NAME }}</p>
     <el-form
         :model="form"
         label-width="80px"

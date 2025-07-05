@@ -4,9 +4,10 @@ import { SpatialDataService } from "./spatial-data.service";
 import { Authorize } from "../../../../decorator/authorize.decorator";
 import { R } from "../../../../common/R";
 import { NodesWithWaysInPolygonDto, SignalLightGroupsInPolygonDto } from "./dto";
+import { publicConfig } from "@dcts/config";
 
 @Controller('/dcts/spatial-data')
-@ApiTags('数字孪生城市交通管理系统/空间数据')
+@ApiTags(`${publicConfig.APP_NAME}/空间数据`)
 @ApiBearerAuth()
 @UsePipes(new ValidationPipe({transform: true}))
 export class SpatialDataController {

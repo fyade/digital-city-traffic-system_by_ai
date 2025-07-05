@@ -4,9 +4,10 @@ import { JunctionPositionService } from './junction-position.service';
 import { Authorize } from '../../../../../decorator/authorize.decorator';
 import { R } from '../../../../../common/R';
 import { JunctionPositionSelListDto, JunctionPositionSelAllDto, JunctionPositionInsOneDto, JunctionPositionUpdOneDto, JunctionPositionInsMoreDto, JunctionPositionUpdMoreDto } from './dto';
+import { publicConfig } from "@dcts/config";
 
 @Controller('/dcts/junction/junction-position')
-@ApiTags('数字孪生城市交通管理系统/路口管理/路口位置')
+@ApiTags(`${publicConfig.APP_NAME}/路口管理/路口位置`)
 @ApiBearerAuth()
 @UsePipes(new ValidationPipe({ transform: true }))
 export class JunctionPositionController {

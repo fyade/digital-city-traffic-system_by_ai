@@ -4,9 +4,10 @@ import { SignalLightGroupChildMappingService } from './signal-light-group-child-
 import { Authorize } from '../../../../../decorator/authorize.decorator';
 import { R } from '../../../../../common/R';
 import { SignalLightGroupChildMappingSelListDto, SignalLightGroupChildMappingSelAllDto, SignalLightGroupChildMappingInsOneDto, SignalLightGroupChildMappingUpdOneDto, SignalLightGroupChildMappingInsMoreDto, SignalLightGroupChildMappingUpdMoreDto } from './dto';
+import { publicConfig } from "@dcts/config";
 
 @Controller('/dcts/signal-light/signal-light-group-child-mapping')
-@ApiTags('数字孪生城市交通管理系统/信号灯管理/信号灯组-子信号灯对应')
+@ApiTags(`${publicConfig.APP_NAME}/信号灯管理/信号灯组-子信号灯对应`)
 @ApiBearerAuth()
 @UsePipes(new ValidationPipe({ transform: true }))
 export class SignalLightGroupChildMappingController {

@@ -9,7 +9,7 @@ import ElementPlus from 'element-plus'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import 'virtual:svg-icons-register'
 import 'element-plus/dist/index.css'
-import { adminConfig } from '@dcts/config'
+import { publicConfig } from '@dcts/config'
 import 'cesium/Build/Cesium/Widgets/widgets.css'
 import naive from "naive-ui";
 
@@ -19,7 +19,7 @@ import './loaded/singleInputNoEnterSubmit.ts'
 // @ts-ignore
 window.CESIUM_BASE_URL = '/'
 
-document.title = adminConfig.APP_NAME
+document.title = publicConfig.APP_NAME
 
 const app = createApp(App)
 const pinia = createPinia()

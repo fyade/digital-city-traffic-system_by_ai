@@ -319,7 +319,7 @@ const {
       <!--<el-table-column fixed prop="id" :label="sysDict.id" width="180"/>-->
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
-      <el-table-column prop="name" :label="sysDict.name" width="120"/>
+      <el-table-column prop="name" :label="sysDict.name" width="240"/>
       <el-table-column prop="perms" :label="sysDict.perms" width="120"/>
       <el-table-column prop="orderNum" :label="sysDict.orderNum" width="120"/>
       <el-table-column prop="path" :label="sysDict.path" width="120"/>

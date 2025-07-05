@@ -4,9 +4,10 @@ import { SignalLightInfoService } from './signal-light-info.service';
 import { Authorize } from '../../../../../decorator/authorize.decorator';
 import { R } from '../../../../../common/R';
 import { SignalLightInfoSelListDto, SignalLightInfoSelAllDto, SignalLightInfoInsOneDto, SignalLightInfoUpdOneDto, SignalLightInfoInsMoreDto, SignalLightInfoUpdMoreDto } from './dto';
+import { publicConfig } from "@dcts/config";
 
 @Controller('/dcts/signal-light/signal-light-info')
-@ApiTags('数字孪生城市交通管理系统/信号灯管理/子信号灯信息')
+@ApiTags(`${publicConfig.APP_NAME}/信号灯管理/子信号灯信息`)
 @ApiBearerAuth()
 @UsePipes(new ValidationPipe({ transform: true }))
 export class SignalLightInfoController {
