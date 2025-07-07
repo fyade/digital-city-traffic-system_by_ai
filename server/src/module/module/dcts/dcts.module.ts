@@ -7,6 +7,7 @@ import { SignalLightInfoModule } from './signal-light/signal-light-info/signal-l
 import { SignalLightGroupChildMappingModule } from './signal-light/signal-light-group-child-mapping/signal-light-group-child-mapping.module';
 import { SignalLightStrategyTypeModule } from './signal-light-strategy/signal-light-strategy-type/signal-light-strategy-type.module';
 import { SignalLightStrategyScheduleModule } from './signal-light-strategy/signal-light-strategy-schedule/signal-light-strategy-schedule.module';
+import { SignalLightGroupStrategyTypeMappingModule } from './signal-light-strategy/signal-light-group-strategy-type-mapping/signal-light-group-strategy-type-mapping.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { SignalLightStrategyScheduleModule } from './signal-light-strategy/signa
     SignalLightInfoModule,
     SignalLightGroupChildMappingModule,
     SignalLightStrategyTypeModule,
-    SignalLightStrategyScheduleModule
+    SignalLightStrategyScheduleModule,
+    SignalLightGroupStrategyTypeMappingModule
   ]
 })
 export class DctsModule {

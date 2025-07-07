@@ -38,12 +38,12 @@ getRouters()
           <n-icon class="icon" @click="gotoDashboardHome">
             <ArrowBarToRight/>
           </n-icon>
-          <span>管理员面板</span>
+          <span>管理端面板</span>
         </div>
       </template>
       <Layout
           v-loading="adminPanelLoading"
-          element-loading-text="管理员面板加载中..."
+          element-loading-text="管理端面板加载中..."
           :admin-panel-loading="adminPanelLoading"
       />
     </n-drawer-content>

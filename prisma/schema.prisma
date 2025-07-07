@@ -208,7 +208,7 @@ model sys_menu {
   type                      String                     @db.VarChar(2)
   path                      String                     @db.VarChar(100)
   parent_id                 Int                        @db.Int
-  component                 String                     @db.VarChar(60)
+  component                 String                     @db.VarChar(200)
   icon                      String                     @db.VarChar(30)
   order_num                 Int                        @db.Int
   if_link                   String                     @db.Char(1)

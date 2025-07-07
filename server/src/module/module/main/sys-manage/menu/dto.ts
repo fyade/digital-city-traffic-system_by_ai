@@ -155,7 +155,7 @@ export class MenuInsOneDto {
 
   @ApiProperty({ description: '组件路径', required: true })
   @IsNotEmpty({ message: '组件路径不能为空' })
-  @MaxLength(60, { message: '组件路径不能超过60个字符' })
+  @MaxLength(200, { message: '组件路径不能超过200个字符' })
   component: string;
 
   @ApiProperty({ description: '图标', required: true })

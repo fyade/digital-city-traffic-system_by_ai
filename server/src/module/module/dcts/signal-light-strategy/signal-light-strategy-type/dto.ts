@@ -10,6 +10,8 @@ export class SignalLightStrategyTypeDto extends BaseDto {
   name: string;
 
   description: string;
+
+  strategyType: string;
 }
 
 export class SignalLightStrategyTypeSelListDto extends PageDto {
@@ -18,6 +20,9 @@ export class SignalLightStrategyTypeSelListDto extends PageDto {
 
   @ApiProperty({ description: '策略类型描述', required: false })
   description: string;
+
+  @ApiProperty({ description: '策略类型', required: false })
+  strategyType: string;
 }
 
 export class SignalLightStrategyTypeSelAllDto {
@@ -26,6 +31,9 @@ export class SignalLightStrategyTypeSelAllDto {
 
   @ApiProperty({ description: '策略类型描述', required: false })
   description: string;
+
+  @ApiProperty({ description: '策略类型', required: false })
+  strategyType: string;
 }
 
 export class SignalLightStrategyTypeInsOneDto {
@@ -36,6 +44,10 @@ export class SignalLightStrategyTypeInsOneDto {
   @ApiProperty({ description: '策略类型描述', required: true })
   @IsNotEmpty({ message: '策略类型描述不能为空' })
   description: string;
+
+  @ApiProperty({ description: '策略类型', required: true })
+  @IsNotEmpty({ message: '策略类型不能为空' })
+  strategyType: string;
 }
 
 export class SignalLightStrategyTypeUpdOneDto extends SignalLightStrategyTypeInsOneDto {

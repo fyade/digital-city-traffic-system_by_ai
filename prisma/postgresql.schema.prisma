@@ -454,3 +454,17 @@ model signal_light_strategy_schedule {
   deleted                    String                     @default("N") @dbPostgresql.Char(1)
   signal_light_strategy_type signal_light_strategy_type @relation(fields: [type_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "signal_light_strategy_scheduling_signal_light_strategy_type_id_")
 }
+
+// 信号灯组-信号灯策略类型关联表
+model signal_light_group_strategy_type_mapping {
+  id               Int      @id @default(autoincrement())
+  group_id         Int
+  strategy_type_id Int
+  create_role      String   @dbPostgresql.VarChar(30)
+  update_role      String   @dbPostgresql.VarChar(30)
+  create_by        String   @dbPostgresql.VarChar(10)
+  update_by        String   @dbPostgresql.VarChar(10)
+  create_time      DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time      DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted          String   @default("N") @dbPostgresql.Char(1)
+}

@@ -5,4 +5,5 @@ export const signalLightStrategyTypeDict: { [P in keyof SignalLightStrategyTypeD
   ...publicDict,
   name: '策略类型名',
   description: '策略类型描述',
+  strategyType: '策略类型',
 }

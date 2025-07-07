@@ -34,7 +34,7 @@ const goHome = () => {
       <!--<p @click="emits('openSettingLayerChange')"><span class="no-underline">设置</span></p>-->
       <p v-if="!userStore.ifLogin" @click="goToLogin"><span class="no-underline">登录</span></p>
       <p v-if="userStore.ifLogin" @click="userStore.logOut(false)"><span class="no-underline">退出登录</span></p>
-      <p v-if="userStore.ifLogin" @click="goAdminPanel"><span class="no-underline">管理员面板</span></p>
+      <p v-if="userStore.ifLogin" @click="goAdminPanel"><span class="no-underline">管理端面板</span></p>
       <p v-if="userStore.ifLogin" @click="goHome"><span class="no-underline">前往管理端</span></p>
       <p v-if="userStore.ifLogin" @click="emits('openDebugPanel')"><span class="no-underline">调试面板</span></p>
     </div>

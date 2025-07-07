@@ -3,6 +3,8 @@
 -- 信号灯策略类型表、信号灯策略调度表(主要关注日期、时间)，这两个表为一对多关系
 -- 信号灯组-信号灯策略类型关联表、子信号灯-信号灯策略调度关联表
 -- 信号灯策略参数表(主要关注信号灯颜色、时长)、信号灯策略调度-信号灯策略参数对应表
+-- 信号灯组-信号灯策略关联修改日志表
+-- 策略执行日志表
 
 -- 信号灯策略类型表
 create table public.signal_light_strategy_type
@@ -46,5 +48,20 @@ alter table public.signal_light_strategy_scheduling
 alter table public.signal_light_strategy_schedule
     add constraint signal_light_strategy_scheduling_signal_light_strategy_type_id_fk
         foreign key (type_id) references public.signal_light_strategy_type;
+
+-- 信号灯组-信号灯策略类型关联表
+create table public.signal_light_group_strategy_type_mapping
+(
+    id               serial PRIMARY KEY,
+    group_id         INT                      NOT NULL,
+    strategy_type_id INT                      NOT NULL,
+    create_role      VARCHAR(30)              NOT NULL,
+    update_role      VARCHAR(30)              NOT NULL,
+    create_by        VARCHAR(10)              NOT NULL,
+    update_by        VARCHAR(10)              NOT NULL,
+    create_time      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_time      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted          CHAR(1)                  NOT NULL DEFAULT 'N'
+);
 
 -- ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== =====
