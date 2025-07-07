@@ -420,3 +420,37 @@ model signal_light_group_info {
 
   @@index([location], map: "idx_signal_light_group_info_location", type: Gist)
 }
+
+// 信号灯策略类型表
+model signal_light_strategy_type {
+  id                             Int                              @id @default(autoincrement())
+  name                           String                           @dbPostgresql.VarChar(100)
+  description                    String                           @dbPostgresql.VarChar(100)
+  create_role                    String                           @dbPostgresql.VarChar(30)
+  update_role                    String                           @dbPostgresql.VarChar(30)
+  create_by                      String                           @dbPostgresql.VarChar(10)
+  update_by                      String                           @dbPostgresql.VarChar(10)
+  create_time                    DateTime                         @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time                    DateTime                         @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted                        String                           @default("N") @dbPostgresql.Char(1)
+  strategy_type                  String                           @dbPostgresql.VarChar(100)
+  signal_light_strategy_schedule signal_light_strategy_schedule[]
+}
+
+// 信号灯策略调度表
+model signal_light_strategy_schedule {
+  id                         Int                        @id(map: "signal_light_strategy_scheduling_pkey") @default(autoincrement())
+  type_id                    Int
+  schedule_type              String                     @dbPostgresql.VarChar(30)
+  start_time                 DateTime                   @dbPostgresql.Timestamptz(6)
+  end_time                   DateTime                   @dbPostgresql.Timestamptz(6)
+  cron_expression            String                     @dbPostgresql.VarChar(30)
+  create_role                String                     @dbPostgresql.VarChar(30)
+  update_role                String                     @dbPostgresql.VarChar(30)
+  create_by                  String                     @dbPostgresql.VarChar(10)
+  update_by                  String                     @dbPostgresql.VarChar(10)
+  create_time                DateTime                   @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time                DateTime                   @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted                    String                     @default("N") @dbPostgresql.Char(1)
+  signal_light_strategy_type signal_light_strategy_type @relation(fields: [type_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "signal_light_strategy_scheduling_signal_light_strategy_type_id_")
+}

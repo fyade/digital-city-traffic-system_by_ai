@@ -69,7 +69,7 @@ export class SignalLightGroupInfoService {
       selfDefineSelKey: {
         location: 'concat(st_x(location)::text, \',\', st_y(location)::text)'
       },
-      selIds: ids
+      selIds: ids,
     });
     const res = await this.pgprismao.$queryRawUnsafe(sqls[0]);
     return R.ok(res);
@@ -83,7 +83,7 @@ export class SignalLightGroupInfoService {
       selfDefineSelKey: {
         location: 'concat(st_x(location)::text, \',\', st_y(location)::text)'
       },
-      selIds: [id]
+      selIds: [id],
     });
     const ress = await this.pgprismao.$queryRawUnsafe(sqls[0]);
     const res = ress[0];

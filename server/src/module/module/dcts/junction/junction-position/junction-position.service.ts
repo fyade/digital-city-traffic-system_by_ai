@@ -69,7 +69,7 @@ export class JunctionPositionService {
       selfDefineSelKey: {
         geom: 'concat(st_x(geom)::text, \',\', st_y(geom)::text)'
       },
-      selIds: ids
+      selIds: ids,
     });
     const res = await this.pgprismao.$queryRawUnsafe(sqls[0]);
     return R.ok(res);
@@ -83,7 +83,7 @@ export class JunctionPositionService {
       selfDefineSelKey: {
         geom: 'concat(st_x(geom)::text, \',\', st_y(geom)::text)'
       },
-      selIds: [id]
+      selIds: [id],
     });
     const ress = await this.pgprismao.$queryRawUnsafe(sqls[0]);
     const res = ress[0];
