@@ -1,6 +1,10 @@
 import request from "@/api/request.ts";
 import { ApiConfig } from "@/type/tablePage.ts";
-import { SignalLightGroupStrategyTypeMappingDto, SignalLightGroupStrategyTypeMappingUpdDto } from "@/type/module/dcts/signalLightStrategy/signalLightGroupStrategyTypeMapping.ts";
+import {
+  SignalLightGroupStrategyTypeMappingDto,
+  SignalLightGroupStrategyTypeMappingInsDto,
+  SignalLightGroupStrategyTypeMappingUpdDto
+} from "@/type/module/dcts/signalLightStrategy/signalLightGroupStrategyTypeMapping.ts";
 
 export const signalLightGroupStrategyTypeMappingApi: ApiConfig<SignalLightGroupStrategyTypeMappingDto, SignalLightGroupStrategyTypeMappingUpdDto> = {
   /**
@@ -86,5 +90,13 @@ export const signalLightGroupStrategyTypeMappingApi: ApiConfig<SignalLightGroupS
     url: '/dcts/signal-light-strategy/signal-light-group-strategy-type-mapping',
     method: 'DELETE',
     data: ids
+  })
+}
+
+export function signalLightGroupStrategyTypeMappingInsV2(obj: SignalLightGroupStrategyTypeMappingInsDto) {
+  return request({
+    url: '/dcts/signal-light-strategy/signal-light-group-strategy-type-mapping/v2',
+    method: 'POST',
+    data: obj
   })
 }

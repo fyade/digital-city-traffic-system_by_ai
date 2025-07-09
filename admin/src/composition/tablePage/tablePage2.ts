@@ -11,7 +11,7 @@ import { objectUtils } from "@dcts/common";
 
 const exportIgnoreKeys = ['createRole', 'updateRole', 'createBy', 'updateBy', 'createTime', 'updateTime', 'deleted']
 const importIgnoreKeys = ['id', ...exportIgnoreKeys]
-export const funcTablePage = <T extends { id: number | string }, T2 = T>({
+export const funcTablePage = <T extends { id: string | number }, T2 = T>({
                                                                            state,
                                                                            dFormRules = {},
                                                                            config = new TablePageConfig(),
@@ -174,7 +174,7 @@ export const funcTablePage = <T extends { id: number | string }, T2 = T>({
    * 删除
    * @param ids
    */
-  const delData = (...ids: (number | string)[]) => {
+  const delData = (...ids: (string | number)[]) => {
     tableLoadingRef.value = true
     config.beforeDeleteCallback && config.beforeDeleteCallback()
     api.deleteList(...ids).then(res => {
@@ -310,7 +310,7 @@ export const funcTablePage = <T extends { id: number | string }, T2 = T>({
   const gDel = ({
                   delids = []
                 }: {
-                  delids?: (number | string)[]
+                  delids?: (string | number)[]
                 } = {}
   ) => {
     if (multipleSelection.value.length === 0) {
@@ -326,7 +326,7 @@ export const funcTablePage = <T extends { id: number | string }, T2 = T>({
           draggable: true
         }
     ).then(() => {
-      const arr: (number | string)[] = multipleSelection.value.map(item => item.id)
+      const arr: (string | number)[] = multipleSelection.value.map(item => item.id)
       delData(...arr)
     }).catch(() => {
     })
@@ -428,7 +428,7 @@ export const funcTablePage = <T extends { id: number | string }, T2 = T>({
     filterFormVisible.value = !filterFormVisible.value
   }
   // 查看
-  const tView = (id: number | string) => {
+  const tView = (id: string | number) => {
     api.selectById(id).then(res => {
       const keys = Object.keys(state.dialogForm as object) as (keyof T)[];
       ElMessageBox.alert(
@@ -463,7 +463,7 @@ export const funcTablePage = <T extends { id: number | string }, T2 = T>({
     })
   }
   // 修改
-  const tUpd = async (id: number | string, ifMore?: boolean) => {
+  const tUpd = async (id: string | number, ifMore?: boolean) => {
     dialogType.value = final.upd
     dialogType.label = '修改'
     dialogVisible.value = true
@@ -520,7 +520,7 @@ export const funcTablePage = <T extends { id: number | string }, T2 = T>({
     })
   }
   // 删除
-  const tDel = (id: number | string) => {
+  const tDel = (id: string | number) => {
     ElMessageBox.confirm(
         `此操作将删除选中的 1 条数据，且无法撤销，请确认是否继续？`,
         '警告',

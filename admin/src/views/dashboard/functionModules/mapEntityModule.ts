@@ -2,11 +2,18 @@ import * as Cesium from "cesium";
 import { signalLightGroupsInPolygonApi } from "@/api/module/dcts/spatialData.ts";
 import { ID_PREFIX_SIGNAL_LIGHT, ID_PREFIX_SIGNAL_LIGHT_GROUP } from "@/views/dashboard/functionModules/constant.ts";
 import signalLight1Svg from "@/assets/images2/signal-light-1.png";
+import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 
 /**
  * 地图实体
  */
 export class MapEntityModule {
+  private vdModule: VersionDataModule | null = null
+
+  public setVdModule(vdModule: VersionDataModule) {
+    this.vdModule = vdModule;
+  }
+
   private viewer: Cesium.Viewer | null = null
 
   public setViewer(viewer: Cesium.Viewer) {
@@ -26,36 +33,6 @@ export class MapEntityModule {
   }
 
 
-  // 曾经选择的实体
-  private _history_selectedEntityIds: { index: number, timestamp: number, data: string[] }[] = []
-  get history_selectedEntityIds() {
-    return this._history_selectedEntityIds
-  }
-
-  private setHistorySelectedEntityIds(value: string[]) {
-    const index = this._history_selectedEntityIds.length === 0 ? 0 : (this._history_selectedEntityIds[this._history_selectedEntityIds.length - 1].index + 1);
-    const oldd = JSON.parse(JSON.stringify(this._history_selectedEntityIds));
-    this._history_selectedEntityIds = [
-      ...oldd,
-      {
-        index: index,
-        timestamp: new Date().getTime(),
-        data: value
-      }
-    ]
-    if (this._history_selectedEntityIds.length > 100) {
-      this._history_selectedEntityIds.splice(0, 1)
-    }
-  }
-
-  // 获取上一个选中的实体
-  public getHistorySelectedEntityIds() {
-    if (this.history_selectedEntityIds.length < 2) {
-      return null
-    }
-    return this.history_selectedEntityIds[this.history_selectedEntityIds.length - 1 - 1]
-  }
-
   // 当前选中的实体，注意，添加数据时，禁止使用数组方法
   private _selectedEntityIds: string[] = []
 
@@ -67,7 +44,9 @@ export class MapEntityModule {
   // 当前选中的实体，注意，添加数据时，禁止使用数组方法
   set selectedEntityIds(value: string[]) {
     this._selectedEntityIds = value;
-    this.setHistorySelectedEntityIds(value);
+    if (this.vdModule) {
+      this.vdModule.setHistorySelectedEntityIds(value);
+    }
     if (this.refreshContextMenuOption) {
       this.refreshContextMenuOption()
     }
@@ -136,6 +115,9 @@ export class MapEntityModule {
       ifChild: true,
       points: viewCornerCoordinates
     })
+    if (this.vdModule) {
+      this.vdModule.setHistorySignalLightGroupsInPolygonVo(res)
+    }
     const seidsByGroup = this.getSelectedEntityIdsByGroup();
     // 信号灯组
     if (ifRefresh) {
@@ -143,6 +125,13 @@ export class MapEntityModule {
         ...res.signalLightGroupInfos.map(item => item.id),
         ...seidsByGroup.signalLightGroupInfo
       ]
+      if (this.vdModule) {
+        const hslgip = this.vdModule.getHistorySignalLightGroupsInPolygonVo();
+        if (hslgip) {
+          const _ids = hslgip.data.signalLightGroupInfos.map(item => item.id);
+          ids.push(..._ids)
+        }
+      }
       for (const id of ids) {
         const d = `${ID_PREFIX_SIGNAL_LIGHT_GROUP}${id}`;
         const index = this.renderedItemIds.indexOf(d);
@@ -176,6 +165,13 @@ export class MapEntityModule {
         ...res.signalLightInfos.map(item => item.id),
         ...seidsByGroup.signalLightInfo
       ]
+      if (this.vdModule) {
+        const hslgip = this.vdModule.getHistorySignalLightGroupsInPolygonVo();
+        if (hslgip) {
+          const _ids = hslgip.data.signalLightInfos.map(item => item.id);
+          ids.push(..._ids)
+        }
+      }
       for (const id of ids) {
         const d = `${ID_PREFIX_SIGNAL_LIGHT}${id}`;
         const index = this.renderedItemIds.indexOf(d);

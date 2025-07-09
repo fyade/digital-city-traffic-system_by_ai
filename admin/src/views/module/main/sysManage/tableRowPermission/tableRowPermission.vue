@@ -40,7 +40,7 @@ const config = new TablePageConfig<MenuDto<String>>({
   getDataOnMounted: false,
   bulkOperation: true,
   selectParam: {
-    type: JSON.stringify({in: {value: [MenuTypeEnum.T_Inter]}}),
+    type: {in: {value: [MenuTypeEnum.T_Inter]}},
   },
   selectListCallback: () => {
     selectTableRowPermissions()
@@ -109,9 +109,9 @@ const selectTableRowPermissions = () => {
   loading1.value = true;
   trps.value = tableData.value.map(_ => ([]))
   tableRowPermissionApi.selectAll({
-    permissionId: JSON.stringify({in: {type: 'number', value: tableData.value.map(item => item.id)}}),
+    permissionId: {in: {type: 'number', value: tableData.value.map(item => item.id)}},
     actionType: props.selectActionType,
-    actionId: props.selectActionId
+    actionId: `${props.selectActionId}`
   }).then(res => {
     allTRPs.value = res
     trps2 = tableData.value.map(item => {

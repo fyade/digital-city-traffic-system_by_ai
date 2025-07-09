@@ -53,7 +53,7 @@ const config = new TablePageConfig<MenuDto<String>>({
   pageQuery: false,
   bulkOperation: true,
   selectParam: {
-    type: JSON.stringify({in: {value: [MenuTypeEnum.T_MENU, MenuTypeEnum.T_COMP]}}),
+    type: {in: {value: [MenuTypeEnum.T_MENU, MenuTypeEnum.T_COMP]}},
     sysId: final.DEFAULT_PARENT_ID,
   },
   selectListCallback: () => {
@@ -144,7 +144,7 @@ const configInter = new TablePageConfig<MenuDto<string>>({
   pageQuery: false,
   bulkOperation: true,
   selectParam: {
-    type: JSON.stringify({in: {value: [MenuTypeEnum.T_IS]}}),
+    type: {in: {value: [MenuTypeEnum.T_IS]}},
     sysId: final.DEFAULT_PARENT_ID,
   },
   selectListCallback: () => {
@@ -400,7 +400,7 @@ const configI2 = new TablePageConfig<MenuDto<string>>({
   getDataOnMounted: false,
   bulkOperation: true,
   selectParam: {
-    type: JSON.stringify({in: {value: [MenuTypeEnum.T_Inter]}}),
+    type: {in: {value: [MenuTypeEnum.T_Inter]}},
     parentId: selectInterGroup.id,
     sysId: final.DEFAULT_PARENT_ID,
   },

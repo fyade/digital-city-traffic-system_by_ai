@@ -5,8 +5,8 @@ import { useRoute } from "vue-router";
 import FormPanelCard from '@/components/formPanelCard/index.vue'
 import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
 import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
-import { SignalLightInfoDto, SignalLightInfoInsDto } from "@/type/module/dcts/signalLight/signalLightInfo.ts";
-import { signalLightInfoApi } from "@/api/module/dcts/signalLight/signalLightInfo.ts";
+import { SignalLightInfoDto } from "@/type/module/dcts/signalLight/signalLightInfo.ts";
+import { signalLightInfoApi, signalLightInfoDelV2 } from "@/api/module/dcts/signalLight/signalLightInfo.ts";
 import { signalLightInfoDict } from "@/dict/module/dcts/signalLight/signalLightInfo.ts";
 import { signalLightGroupChildMappingApi } from "@/api/module/dcts/signalLight/signalLightGroupChildMapping.ts";
 import { SignalLightGroupChildMappingInsDto } from "@/type/module/dcts/signalLight/signalLightGroupChildMapping.ts";
@@ -29,7 +29,7 @@ if (ifDel && !itemId) {
   gotoDashboardHome()
 }
 
-nextTick(() => {
+const init = () => {
   if (ifIns) {
     form.value.location = `${useCesium.mouseClickPosition[0]},${useCesium.mouseClickPosition[1]}`
   }
@@ -41,7 +41,7 @@ nextTick(() => {
       formLoading.value = false
     })
   }
-})
+}
 
 const formLoading = ref(false)
 const dialogFormRef = useTemplateRef<FormInst>('dialogFormRef')
@@ -85,7 +85,7 @@ const dCon = () => {
 }
 const submitCallback = () => {
   formLoading.value = true
-  signalLightInfoApi.deleteList(itemId!).then(_ => {
+  signalLightInfoDelV2(Number(itemId)).then(_ => {
     useCesium.refreshScreenEntities(true)
     gotoDashboardHome()
   }).finally(() => {
@@ -101,6 +101,7 @@ const submitCallback = () => {
       :if-del="ifDel"
       :loading="formLoading"
       @submit-callback="submitCallback"
+      :run-init="init"
   >
     <template v-if="ifIns || ifUpd">
       <n-spin :show="formLoading">

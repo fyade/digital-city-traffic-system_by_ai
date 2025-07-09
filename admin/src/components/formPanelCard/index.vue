@@ -2,6 +2,7 @@
 import { nextTick, ref } from "vue";
 import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
 import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
+import { CONFIG } from "@/utils/base.ts";
 
 const props = defineProps({
   title: {
@@ -23,6 +24,13 @@ const props = defineProps({
   loading: {
     type: Boolean,
     required: true,
+  },
+  wider: {
+    type: Boolean,
+    default: false,
+  },
+  runInit: {
+    type: Function
   }
 });
 const emits = defineEmits(['submitCallback']);
@@ -32,6 +40,8 @@ nextTick(() => {
   modalTitle.value = props.title || useDashboardCesium.formPanelTitle
   if (!modalTitle.value) {
     gotoDashboardHome()
+  } else {
+    props?.runInit()
   }
 })
 
@@ -47,6 +57,9 @@ const submitCallback = () => {
         preset="dialog"
         :show-icon="false"
         :on-close="gotoDashboardHome"
+        :style="{
+          width: props.wider ? CONFIG.dialog_width_wider : ''
+        }"
     >
       <!--:on-esc="onClose"-->
       <!--:on-mask-click="onClose"-->

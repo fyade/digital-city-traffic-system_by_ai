@@ -18,8 +18,8 @@ export class GenSqlDto<T> {
   datas?: Partial<T>[]
   selfDefineSelKey?: { [P in keyof T]?: string }
   selfDefineInsUpdKey?: { [P in keyof T]?: (str: string) => string }
-  selIds?: (number | string)[]
-  delIds?: (number | string)[]
+  selIds?: (string | number)[]
+  delIds?: (string | number)[]
   selParam?: { [P in keyof T]?: T[P] }
   pageNum?: number
   pageSize?: number

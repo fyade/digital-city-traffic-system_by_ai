@@ -8,12 +8,26 @@ import { LayerNotificationModule } from "@/views/dashboard/functionModules/layer
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
 import { MapInteractionModule } from "@/views/dashboard/functionModules/mapInteractionModule.ts";
 import { PermissionModule } from "@/views/dashboard/functionModules/permissionModule.ts";
+import { SignalLightModule } from "@/views/dashboard/functionModules/signalLightModule.ts";
+import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
+import { adminConfig } from "@dcts/config";
+
+const currentConfig = adminConfig.currentConfig()
 
 const sysStore = useSysStore()
 
 const visibleButtons = sysStore.getVisibleButtons();
 
-const {notification} = createDiscreteApi(['notification'])
+const {
+  notification
+} = createDiscreteApi(
+    ['notification'],
+    {
+      notificationProviderProps: {
+        scrollable: false
+      }
+    }
+)
 
 /**
  * 大屏页面的 Cesium
@@ -25,6 +39,8 @@ class UseDashboardCesium extends UseCesium {
       private readonly meModule: MapEntityModule,
       private readonly miModule: MapInteractionModule,
       private readonly pModule: PermissionModule,
+      private readonly slModule: SignalLightModule,
+      private readonly vdModule: VersionDataModule,
   ) {
     super();
   }
@@ -70,17 +86,21 @@ class UseDashboardCesium extends UseCesium {
       this.allLabels = this.lnModule.allLabels
     })
 
+    this.meModule.setVdModule(this.vdModule)
     this.meModule.setViewer(this.viewer)
     this.meModule.setRefreshContextMenuOption(this.refreshContextMenuOption)
     this.meModule.setGetViewCornerCoordinates(this.getViewCornerCoordinates)
 
     this.miModule.setMeModule(this.meModule)
+    this.miModule.setVdModule(this.vdModule)
     this.miModule.setViewer(this.viewer)
     this.miModule.setGetMouseMovePosition(() => this.mouseMovePosition)
 
     this.pModule.setMeModule(this.meModule)
 
-    this.lnModule.setLayer()
+    this.slModule.setViewer(this.viewer)
+
+    this.lnModule.init()
     this.miModule.init()
   }
 
@@ -195,6 +215,9 @@ class UseDashboardCesium extends UseCesium {
 
   protected ScreenSpaceEventTypeClickCB() {
     super.ScreenSpaceEventTypeClickCB();
+    if (currentConfig.VITE_MODE === 'dev') {
+      console.log(this.mouseClickPosition)
+    }
     // 拾取该位置的物体
     if (!this.viewer) {
       return
@@ -230,12 +253,16 @@ export function createDashboardCesium() {
   const meModule = new MapEntityModule();
   const miModule = new MapInteractionModule();
   const pModule = new PermissionModule();
+  const slModule = new SignalLightModule();
+  const vdModule = new VersionDataModule();
   return new UseDashboardCesium(
       cmModule,
       lmModule,
       meModule,
       miModule,
       pModule,
+      slModule,
+      vdModule,
   );
 }
 

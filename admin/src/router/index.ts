@@ -145,6 +145,57 @@ export const routes: RouteRecordRaw[] = [
                 ]
               },
               {
+                path: 'signal-light-strategy',
+                name: '~fp~:signalLightStrategy',
+                component: () => import('@/views/dashboard/formPanel/signalLightStrategy/index.vue'),
+                children: [
+                  {
+                    path: 'signal-light-group-strategy-type-mapping',
+                    name: '~fp~:signalLightStrategy:signalLightGroupStrategyTypeMapping',
+                    component: () => import('@/views/dashboard/formPanel/signalLightStrategy/signalLightGroupStrategyTypeMapping/index.vue'),
+                    children: [
+                      {
+                        path: 'ins',
+                        name: '~fp~:signalLightStrategy:signalLightGroupStrategyTypeMapping:ins',
+                        component: () => import('@/views/dashboard/formPanel/signalLightStrategy/signalLightGroupStrategyTypeMapping/form.vue')
+                      },
+                      {
+                        path: 'upd',
+                        name: '~fp~:signalLightStrategy:signalLightGroupStrategyTypeMapping:upd',
+                        component: () => import('@/views/dashboard/formPanel/signalLightStrategy/signalLightGroupStrategyTypeMapping/form.vue')
+                      },
+                      {
+                        path: 'del',
+                        name: '~fp~:signalLightStrategy:signalLightGroupStrategyTypeMapping:del',
+                        component: () => import('@/views/dashboard/formPanel/signalLightStrategy/signalLightGroupStrategyTypeMapping/form.vue')
+                      }
+                    ]
+                  },
+                  {
+                    path: 'signal-light-child-strategy-schedule-mapping',
+                    name: '~fp~:signalLightStrategy:signalLightChildStrategyScheduleMapping',
+                    component: () => import('@/views/dashboard/formPanel/signalLightStrategy/signalLightChildStrategyScheduleMapping/index.vue'),
+                    children: [
+                      {
+                        path: 'ins',
+                        name: '~fp~:signalLightStrategy:signalLightChildStrategyScheduleMapping:ins',
+                        component: () => import('@/views/dashboard/formPanel/signalLightStrategy/signalLightChildStrategyScheduleMapping/form.vue')
+                      },
+                      {
+                        path: 'upd',
+                        name: '~fp~:signalLightStrategy:signalLightChildStrategyScheduleMapping:upd',
+                        component: () => import('@/views/dashboard/formPanel/signalLightStrategy/signalLightChildStrategyScheduleMapping/form.vue')
+                      },
+                      {
+                        path: 'del',
+                        name: '~fp~:signalLightStrategy:signalLightChildStrategyScheduleMapping:del',
+                        component: () => import('@/views/dashboard/formPanel/signalLightStrategy/signalLightChildStrategyScheduleMapping/form.vue')
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
                 path: ':pathMatch(.*)*',
                 redirect: '/dashboard'
               }

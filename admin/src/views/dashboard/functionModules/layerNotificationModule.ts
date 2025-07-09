@@ -20,6 +20,10 @@ export class LayerNotificationModule {
   }
 
 
+  public init() {
+    this.setLayer()
+  }
+
   // 图层是否正在加载
   public layerLoading = false
   // 图层加载次数
@@ -93,7 +97,7 @@ export class LayerNotificationModule {
     }
   }
 
-  public setLayer() {
+  private setLayer() {
     this.allLabels = []
     const filter1 = this.allLayersOfBaseMap.filter(item => this.currentIdOfBaseMap[1].includes(item.id));
     for (const f of filter1) {

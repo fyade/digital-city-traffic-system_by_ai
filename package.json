@@ -77,6 +77,8 @@
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.30.1",
     "@typescript-eslint/parser": "^8.30.1",
+    "@vicons/fa": "^0.13.0",
+    "@vicons/ionicons4": "^0.13.0",
     "@vicons/tabler": "^0.13.0",
     "@vitejs/plugin-vue": "^5.2.3",
     "cross-env": "^7.0.3",

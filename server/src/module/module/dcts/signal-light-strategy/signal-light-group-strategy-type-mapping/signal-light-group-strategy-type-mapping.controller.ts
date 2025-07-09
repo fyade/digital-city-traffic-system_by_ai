@@ -138,4 +138,16 @@ export class SignalLightGroupStrategyTypeMappingController {
   async delSignalLightGroupStrategyTypeMapping(@Body() ids: number[]): Promise<R> {
     return this.signalLightGroupStrategyTypeMappingService.delSignalLightGroupStrategyTypeMapping(ids);
   }
+
+  @Post('/v2')
+  @ApiOperation({
+    summary: '新增信号灯组-信号灯策略类型关联v2',
+  })
+  @Authorize({
+    permission: 'dcts:signalLightStrategy:signalLightGroupStrategyTypeMapping:insv2',
+    label: '新增信号灯组-信号灯策略类型关联v2',
+  })
+  async insSignalLightGroupStrategyTypeMappingV2(@Body() dto: SignalLightGroupStrategyTypeMappingInsOneDto): Promise<R> {
+    return this.signalLightGroupStrategyTypeMappingService.insSignalLightGroupStrategyTypeMappingV2(dto);
+  }
 }

@@ -18,6 +18,10 @@ export function nodesWithWaysInPolygonApi(data: NodesWithWaysInPolygonDto) {
   })
 }
 
+/**
+ * 查询多边形内的所有信号灯组
+ * @param data
+ */
 export function signalLightGroupsInPolygonApi(data: SignalLightGroupsInPolygonDto) {
   return request<SignalLightGroupsInPolygonVo>({
     url: '/dcts/spatial-data/signal-light-groups-in-polygon',

@@ -28,15 +28,31 @@ export class PageDto {
 }
 
 export interface ApiConfig<T, T2 = T> {
-  selectList: (obj: { [P in keyof Omit<T2, 'id'>]?: any } & { [P in keyof PageDto]: PageDto[P] }) => Promise<PageVo<T>>
-  selectAll: (obj: { [P in keyof Omit<T2, 'id'>]?: any }) => Promise<T[]>
-  selectById: (id: number | string) => Promise<T>
-  selectByIds: (ids: (number | string)[]) => Promise<T[]>
+  selectList: (obj: { [P in keyof Omit<T2, 'id'>]?: (T2[P] | SelectParamObj) } & { [P in keyof PageDto]: PageDto[P] }) => Promise<PageVo<T>>
+  selectAll: (obj: { [P in keyof Omit<T2, 'id'>]?: (T2[P] | SelectParamObj) }) => Promise<T[]>
+  selectById: (id: string | number) => Promise<T>
+  selectByIds: (ids: (string | number)[]) => Promise<T[]>
   insertOne: (obj: Omit<T2, 'id'>) => Promise<T>
   updateOne: (obj: T2) => Promise<T>
   insertMore: (obj: Omit<T2, 'id'>[]) => Promise<T[]>
   updateMore: (obj: T2[]) => Promise<T[]>
-  deleteList: (...ids: (number | string)[]) => Promise<boolean>
+  deleteList: (...ids: (string | number)[]) => Promise<boolean>
+}
+
+// 查询参数的类型为 object 时的格式
+class SelectParamObj {
+  in?: SelectParamObjIn;
+  between?: SelectParamObjBetween;
+}
+
+class SelectParamObjIn {
+  type?: string;
+  value!: (string | number | Date | null)[];
+}
+
+class SelectParamObjBetween {
+  type?: string;
+  value!: (string | number | Date | null)[];
 }
 
 export class TablePageConfig<T = {}> {
@@ -105,7 +121,7 @@ export class TablePageConfig<T = {}> {
                 activeTabMoreInsFinishCallback = null,
                 activeTabMoreDelCallback = null,
               }: {
-                selectParam?: Partial<T>
+                selectParam?: { [P in keyof Omit<T, 'id'>]?: (T[P] | SelectParamObj) }
                 insUpdParam?: Partial<T>
                 getDataOnMounted?: boolean
                 pageQuery?: boolean

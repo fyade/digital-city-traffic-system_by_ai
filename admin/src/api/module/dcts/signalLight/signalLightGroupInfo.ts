@@ -88,3 +88,11 @@ export const signalLightGroupInfoApi: ApiConfig<SignalLightGroupInfoDto, SignalL
     data: ids
   })
 }
+
+export function signalLightGroupInfoDelV2(...ids: number[]) {
+  return request({
+    url: '/dcts/signal-light/signal-light-group-info/v2',
+    method: 'DELETE',
+    data: ids
+  })
+}

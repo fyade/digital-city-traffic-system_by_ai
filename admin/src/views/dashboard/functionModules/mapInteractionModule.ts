@@ -2,6 +2,7 @@ import { EDIT_TYPE_1, ID_PREFIX_SIGNAL_LIGHT_GROUP } from "@/views/dashboard/fun
 import * as Cesium from "cesium";
 import router from "@/router";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
+import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 
 /**
  * 地图交互
@@ -12,6 +13,13 @@ export class MapInteractionModule {
   public setMeModule(meModule: MapEntityModule) {
     this.meModule = meModule;
   }
+
+  private vdModule: VersionDataModule | null = null
+
+  public setVdModule(vdModule: VersionDataModule) {
+    this.vdModule = vdModule;
+  }
+
   private viewer: Cesium.Viewer | null = null
 
   public setViewer(viewer: Cesium.Viewer) {
@@ -88,11 +96,11 @@ export class MapInteractionModule {
         if (!this.getMouseMovePosition) {
           return
         }
-        if (!this.meModule) {
+        if (!this.vdModule) {
           return
         }
         let pid = ''
-        const hseids = this.meModule.getHistorySelectedEntityIds();
+        const hseids = this.vdModule.getHistorySelectedEntityIds();
         if (hseids) {
           pid = hseids.data[0].replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, '')
         }

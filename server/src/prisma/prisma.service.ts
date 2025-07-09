@@ -444,7 +444,7 @@ export class PrismaService {
    * @param selKeys
    * @param ifUseSelfData
    */
-  async findById<T>(model: string, id: number | string, {
+  async findById<T>(model: string, id: string | number, {
                       selKeys = [],
                       ifUseSelfData = false,
                     }: {

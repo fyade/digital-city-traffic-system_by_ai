@@ -15,11 +15,12 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { SignalLightStrategyScheduleDto, SignalLightStrategyScheduleUpdDto } from "@/type/module/dcts/signalLightStrategy/signalLightStrategySchedule.ts";
 import { signalLightStrategyScheduleApi } from "@/api/module/dcts/signalLightStrategy/signalLightStrategySchedule.ts";
 import { signalLightStrategyScheduleDict } from "@/dict/module/dcts/signalLightStrategy/signalLightStrategySchedule.ts";
+import { timeUtils } from "@dcts/common";
 
 const state = reactive<State2<SignalLightStrategyScheduleDto, SignalLightStrategyScheduleUpdDto>>({
   dialogForm: {
     id: -1,
-    typeId: '',
+    typeId: -1,
     scheduleType: '',
     startTime: '',
     endTime: '',
@@ -130,12 +131,14 @@ const {
         <el-row>
           <el-col :span="12">
             <el-form-item :label="signalLightStrategyScheduleDict.startTime" prop="startTime">
-              <el-input v-model="state.dialogForm.startTime" :placeholder="signalLightStrategyScheduleDict.startTime"/>
+              <!--<el-input v-model="state.dialogForm.startTime" :placeholder="signalLightStrategyScheduleDict.startTime"/>-->
+              <el-date-picker v-model="state.dialogForm.startTime" type="datetime"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item :label="signalLightStrategyScheduleDict.endTime" prop="endTime">
-              <el-input v-model="state.dialogForm.endTime" :placeholder="signalLightStrategyScheduleDict.endTime"/>
+              <!--<el-input v-model="state.dialogForm.endTime" :placeholder="signalLightStrategyScheduleDict.endTime"/>-->
+              <el-date-picker v-model="state.dialogForm.endTime" type="datetime"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -206,7 +209,8 @@ const {
             </template>
             <template #default="{$index}">
               <div :class="state.dialogForms_error?.[`${$index}-startTime`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].startTime" :placeholder="signalLightStrategyScheduleDict.startTime"/>
+                <!--<el-input v-model="state.dialogForms[$index].startTime" :placeholder="signalLightStrategyScheduleDict.startTime"/>-->
+                <el-date-picker v-model="state.dialogForms[$index].startTime" type="datetime"/>
               </div>
             </template>
           </el-table-column>
@@ -216,7 +220,8 @@ const {
             </template>
             <template #default="{$index}">
               <div :class="state.dialogForms_error?.[`${$index}-endTime`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].endTime" :placeholder="signalLightStrategyScheduleDict.endTime"/>
+                <!--<el-input v-model="state.dialogForms[$index].endTime" :placeholder="signalLightStrategyScheduleDict.endTime"/>-->
+                <el-date-picker v-model="state.dialogForms[$index].endTime" type="datetime"/>
               </div>
             </template>
           </el-table-column>
@@ -298,10 +303,18 @@ const {
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
       <el-table-column prop="typeId" :label="signalLightStrategyScheduleDict.typeId" width="120"/>
-      <el-table-column prop="scheduleType" :label="signalLightStrategyScheduleDict.scheduleType" width="120"/>
-      <el-table-column prop="startTime" :label="signalLightStrategyScheduleDict.startTime" width="120"/>
-      <el-table-column prop="endTime" :label="signalLightStrategyScheduleDict.endTime" width="120"/>
-      <el-table-column prop="cronExpression" :label="signalLightStrategyScheduleDict.cronExpression" width="120"/>
+      <el-table-column prop="scheduleType" :label="signalLightStrategyScheduleDict.scheduleType" width="180"/>
+      <el-table-column prop="startTime" :label="signalLightStrategyScheduleDict.startTime" width="180">
+        <template #default="{row}">
+          {{ timeUtils.formatDate(new Date(row.startTime)) }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="endTime" :label="signalLightStrategyScheduleDict.endTime" width="180">
+        <template #default="{row}">
+          {{ timeUtils.formatDate(new Date(row.endTime)) }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="cronExpression" :label="signalLightStrategyScheduleDict.cronExpression" width="180"/>
       <!--在此上方添加表格列-->
       <!--<el-table-column prop="createRole" :label="signalLightStrategyScheduleDict.createRole" width="120"/>-->
       <!--<el-table-column prop="updateRole" :label="signalLightStrategyScheduleDict.updateRole" width="120"/>-->

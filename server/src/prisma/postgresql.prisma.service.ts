@@ -17,6 +17,13 @@ export class PostgresqlPrismaService extends PrismaService {
       private readonly pgprismao: PostgresqlPrismaoService,
   ) {
     super(authService, bcs, prismao, winston);
+    this.pgprismao.getOrigin().$use(async (params, next) => {
+      const result = await next(params);
+      if (params.model && ['findMany', 'findFirst', 'create', 'update'].includes(params.action)) {
+        return JSON.parse(JSON.stringify(result));
+      }
+      return result;
+    })
   }
 
   protected getModel(model: string) {

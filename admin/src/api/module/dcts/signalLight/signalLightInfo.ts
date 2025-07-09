@@ -88,3 +88,11 @@ export const signalLightInfoApi: ApiConfig<SignalLightInfoDto, SignalLightInfoUp
     data: ids
   })
 }
+
+export function signalLightInfoDelV2(...ids: number[]) {
+  return request({
+    url: '/dcts/signal-light/signal-light-info/v2',
+    method: 'DELETE',
+    data: ids
+  })
+}

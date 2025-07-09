@@ -35,7 +35,7 @@ const config = new TablePageConfig<MenuDto<String>>({
   getDataOnMounted: false,
   bulkOperation: true,
   selectParam: {
-    type: JSON.stringify({ in: { value: [MenuTypeEnum.T_IS] } }),
+    type: { in: { value: [MenuTypeEnum.T_IS] } },
     sysId: final.DEFAULT_PARENT_ID,
   },
 })

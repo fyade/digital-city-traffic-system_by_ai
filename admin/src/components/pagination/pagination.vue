@@ -39,9 +39,9 @@ const handleCurrentChange = (val: number) => {
       class="my-pagination"
       :current-page="props.pageNum"
       :page-size="props.pageSize"
-      layout="total, sizes, prev, pager, next, jumper"
       :total="total"
       :page-sizes="[5, 10, 20, 30, 40, 50, 100]"
+      layout="total, sizes, prev, pager, next, jumper"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
   />

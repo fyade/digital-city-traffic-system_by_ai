@@ -6,7 +6,7 @@ import FormPanelCard from '@/components/formPanelCard/index.vue'
 import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
 import { SignalLightGroupInfoDto } from "@/type/module/dcts/signalLight/signalLightGroupInfo.ts";
 import { signalLightGroupInfoDict } from "@/dict/module/dcts/signalLight/signalLightGroupInfo.ts";
-import { signalLightGroupInfoApi } from "@/api/module/dcts/signalLight/signalLightGroupInfo.ts";
+import { signalLightGroupInfoApi, signalLightGroupInfoDelV2 } from "@/api/module/dcts/signalLight/signalLightGroupInfo.ts";
 import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
 
 const route = useRoute();
@@ -23,7 +23,7 @@ if (ifDel && !itemId) {
   gotoDashboardHome()
 }
 
-nextTick(() => {
+const init = () => {
   if (ifIns) {
     form.value.location = `${useCesium.mouseClickPosition[0]},${useCesium.mouseClickPosition[1]}`
   }
@@ -35,7 +35,7 @@ nextTick(() => {
       formLoading.value = false
     })
   }
-})
+}
 
 const formLoading = ref(false)
 const dialogFormRef = useTemplateRef<FormInst>('dialogFormRef')
@@ -72,7 +72,7 @@ const dCon = () => {
 }
 const submitCallback = () => {
   formLoading.value = true
-  signalLightGroupInfoApi.deleteList(itemId!).then(_ => {
+  signalLightGroupInfoDelV2(Number(itemId)).then(_ => {
     useCesium.refreshScreenEntities(true)
     gotoDashboardHome()
   }).finally(() => {
@@ -88,6 +88,7 @@ const submitCallback = () => {
       :if-del="ifDel"
       :loading="formLoading"
       @submit-callback="submitCallback"
+      :run-init="init"
   >
     <template v-if="ifIns || ifUpd">
       <n-spin :show="formLoading">

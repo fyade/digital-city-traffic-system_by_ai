@@ -4,8 +4,8 @@ import { JunctionPositionDto, JunctionPositionSelListDto, JunctionPositionSelAll
 import { BaseContextService } from '../../../../base-context/base-context.service';
 import { CommonPostgresqlPrismaoService } from "../../../../../prisma/common.postgresql.prismao.service";
 import { PostgresqlPrismaoService } from "../../../../../prisma/postgresql.prismao.service";
-import { PageVo } from "../../../../../common/vo/PageVo";
 import { CountSqlReturnDto } from "../../../../../util/base";
+import { PageVo } from "../../../../../common/vo/PageVo";
 
 @Injectable()
 export class JunctionPositionService {
@@ -62,7 +62,7 @@ export class JunctionPositionService {
 
   async selOnesJunctionPosition(ids: number[]): Promise<R> {
     ids = Object.values(ids).map(Number);
-    const sqls = this.cpgprismao.genSql({
+    const sqls = this.cpgprismao.genSql<JunctionPositionDto>({
       type: 'selByIds',
       tblName: 'manual_junctions',
       clas: new JunctionPositionDto(),
@@ -76,7 +76,7 @@ export class JunctionPositionService {
   }
 
   async selOneJunctionPosition(id: number): Promise<R> {
-    const sqls = this.cpgprismao.genSql({
+    const sqls = this.cpgprismao.genSql<JunctionPositionDto>({
       type: 'selById',
       tblName: 'manual_junctions',
       clas: new JunctionPositionDto(),

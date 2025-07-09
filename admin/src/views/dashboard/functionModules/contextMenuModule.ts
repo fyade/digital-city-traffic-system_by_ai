@@ -111,7 +111,7 @@ export class ContextMenuModule {
       }
     },
     {
-      id: 'dcts:signalLight:signalLightGroupInfo:del',
+      id: 'dcts:signalLight:signalLightGroupInfo:delv2',
       func: () => {
         if (!this.meModule) {
           return
@@ -150,7 +150,7 @@ export class ContextMenuModule {
       }
     },
     {
-      id: 'dcts:signalLight:signalLightInfo:del',
+      id: 'dcts:signalLight:signalLightInfo:delv2',
       func: () => {
         if (!this.meModule) {
           return
@@ -161,6 +161,34 @@ export class ContextMenuModule {
           itemId = seidsByGroup.signalLightInfo[0]
         }
         router.push({name: '~fp~:signalLight:signalLightInfo:del', query: {id: itemId}})
+      }
+    },
+    {
+      id: 'dcts:signalLightStrategy:signalLightGroupStrategyTypeMapping:insv2',
+      func: () => {
+        if (!this.meModule) {
+          return
+        }
+        let itemId = ''
+        const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
+        if (seidsByGroup.signalLightGroupInfoCount > 0) {
+          itemId = seidsByGroup.signalLightGroupInfo[0]
+        }
+        router.push({name: '~fp~:signalLightStrategy:signalLightGroupStrategyTypeMapping:ins', query: {slgid: itemId}})
+      }
+    },
+    {
+      id: 'dcts:signalLightStrategy:signalLightChildStrategyScheduleMapping:insv2',
+      func: () => {
+        if (!this.meModule) {
+          return
+        }
+        let itemId = ''
+        const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
+        if (seidsByGroup.signalLightInfoCount > 0) {
+          itemId = seidsByGroup.signalLightInfo[0]
+        }
+        router.push({name: '~fp~:signalLightStrategy:signalLightChildStrategyScheduleMapping:ins', query: {clid: itemId}})
       }
     },
     {
@@ -210,8 +238,8 @@ export class ContextMenuModule {
               },
               {
                 label: '删除信号灯组',
-                key: 'dcts:signalLight:signalLightGroupInfo:del',
-                show: !this.pModule || this.pModule.cmihp('dcts:signalLight:signalLightGroupInfo:del', [ID_PREFIX_SIGNAL_LIGHT_GROUP]),
+                key: 'dcts:signalLight:signalLightGroupInfo:delv2',
+                show: !this.pModule || this.pModule.cmihp('dcts:signalLight:signalLightGroupInfo:delv2', [ID_PREFIX_SIGNAL_LIGHT_GROUP]),
               }
             ]
           },
@@ -232,8 +260,39 @@ export class ContextMenuModule {
               },
               {
                 label: '删除子信号灯',
-                key: 'dcts:signalLight:signalLightInfo:del',
-                show: !this.pModule || this.pModule.cmihp('dcts:signalLight:signalLightInfo:del', [ID_PREFIX_SIGNAL_LIGHT])
+                key: 'dcts:signalLight:signalLightInfo:delv2',
+                show: !this.pModule || this.pModule.cmihp('dcts:signalLight:signalLightInfo:delv2', [ID_PREFIX_SIGNAL_LIGHT])
+              }
+            ]
+          }
+        ]
+      },
+      {
+        label: '信号灯策略管理',
+        key: 'i:dcts:signalLightStrategy',
+        show: !this.pModule || this.pModule.cmihp('i:dcts:signalLightStrategy', [ID_PREFIX_SIGNAL_LIGHT_GROUP, ID_PREFIX_SIGNAL_LIGHT]),
+        children: [
+          {
+            label: '信号灯组-策略类型关联管理',
+            key: 'i:dcts:signalLightStrategy:signalLightGroupStrategyTypeMapping',
+            show: !this.pModule || this.pModule.cmihp('i:dcts:signalLightStrategy:signalLightGroupStrategyTypeMapping', [ID_PREFIX_SIGNAL_LIGHT_GROUP]),
+            children: [
+              {
+                label: '新增/修改关联',
+                key: 'dcts:signalLightStrategy:signalLightGroupStrategyTypeMapping:insv2',
+                show: !this.pModule || this.pModule.cmihp('dcts:signalLightStrategy:signalLightGroupStrategyTypeMapping:insv2', [ID_PREFIX_SIGNAL_LIGHT_GROUP]),
+              }
+            ]
+          },
+          {
+            label: '子信号灯-策略调度关联管理',
+            key: 'i:dcts:signalLightStrategy:signalLightChildStrategyScheduleMapping',
+            show: !this.pModule || this.pModule.cmihp('i:dcts:signalLightStrategy:signalLightChildStrategyScheduleMapping', [ID_PREFIX_SIGNAL_LIGHT]),
+            children: [
+              {
+                label: '新增/修改关联',
+                key: 'dcts:signalLightStrategy:signalLightChildStrategyScheduleMapping:insv2',
+                show: !this.pModule || this.pModule.cmihp('dcts:signalLightStrategy:signalLightChildStrategyScheduleMapping:insv2', [ID_PREFIX_SIGNAL_LIGHT]),
               }
             ]
           }

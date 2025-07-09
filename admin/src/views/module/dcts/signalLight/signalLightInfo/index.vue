@@ -261,9 +261,9 @@ const {
       <!--<el-table-column fixed prop="id" :label="signalLightInfoDict.id" width="180"/>-->
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
-      <el-table-column prop="name" :label="signalLightInfoDict.name" width="120"/>
+      <el-table-column prop="name" :label="signalLightInfoDict.name" width="240"/>
       <el-table-column prop="location" :label="signalLightInfoDict.location" width="240"/>
-      <el-table-column prop="description" :label="signalLightInfoDict.description" width="120"/>
+      <el-table-column prop="description" :label="signalLightInfoDict.description" width="240"/>
       <!--在此上方添加表格列-->
       <!--<el-table-column prop="createRole" :label="signalLightInfoDict.createRole" width="120"/>-->
       <!--<el-table-column prop="updateRole" :label="signalLightInfoDict.updateRole" width="120"/>-->

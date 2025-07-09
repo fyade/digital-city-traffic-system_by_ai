@@ -139,4 +139,20 @@ export class SignalLightGroupInfoController {
   async delSignalLightGroupInfo(@Body() ids: number[]): Promise<R> {
     return this.signalLightGroupInfoService.delSignalLightGroupInfo(ids);
   }
+
+  @Delete('/v2')
+  @ApiOperation({
+    summary: '删除信号灯组信息v2',
+  })
+  @ApiBody({
+    isArray: true,
+    type: Number,
+  })
+  @Authorize({
+    permission: 'dcts:signalLight:signalLightGroupInfo:delv2',
+    label: '删除信号灯组信息v2',
+  })
+  async delSignalLightGroupInfoV2(@Body() ids: number[]): Promise<R> {
+    return this.signalLightGroupInfoService.delSignalLightGroupInfoV2(ids);
+  }
 }

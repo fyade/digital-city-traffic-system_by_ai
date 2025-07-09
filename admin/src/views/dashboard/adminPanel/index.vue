@@ -35,9 +35,9 @@ getRouters()
     <n-drawer-content>
       <template #header>
         <div class="title-row">
-          <n-icon class="icon" @click="gotoDashboardHome">
+          <NIcon class="icon" @click="gotoDashboardHome">
             <ArrowBarToRight/>
-          </n-icon>
+          </NIcon>
           <span>管理端面板</span>
         </div>
       </template>

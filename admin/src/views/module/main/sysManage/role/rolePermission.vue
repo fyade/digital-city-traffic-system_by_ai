@@ -64,7 +64,7 @@ const config = new TablePageConfig<MenuDto<string>>({
   bulkOperation: true,
   pageQuery: false,
   selectParam: {
-    type: JSON.stringify({in: {value: [MenuTypeEnum.T_MENU, MenuTypeEnum.T_COMP]}}),
+    type: {in: {value: [MenuTypeEnum.T_MENU, MenuTypeEnum.T_COMP]}},
     sysId: final.DEFAULT_PARENT_ID,
   },
   selectListCallback: () => {
@@ -145,7 +145,7 @@ const handleCheckChange = (
 const loadNode = (node: Node, resolve: (data: (MenuDto & {leaf?: boolean, disabled?: boolean})[]) => void) => {
   menuApi.selectAll({
     parentId: node.level === 0 ? final.DEFAULT_PARENT_ID : node.data.id,
-    type: JSON.stringify({in: {value: [MenuTypeEnum.T_IS, MenuTypeEnum.T_Inter]}}),
+    type: {in: {value: [MenuTypeEnum.T_IS, MenuTypeEnum.T_Inter]}},
     sysId: selectSys.value || final.DEFAULT_PARENT_ID,
   }).then((res: MenuDto[]) => {
     resolve(res.map(item => ({...item, leaf: item.type === MenuTypeEnum.T_Inter })))

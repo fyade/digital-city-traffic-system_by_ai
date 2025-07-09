@@ -63,6 +63,7 @@ declare module 'vue' {
     IconSelect: typeof import('./../src/components/iconSelect/iconSelect.vue')['default']
     ImageCrop: typeof import('./../src/components/imageCrop/imageCrop.vue')['default']
     Pagination: typeof import('./../src/components/pagination/pagination.vue')['default']
+    Pagination2: typeof import('./../src/components/pagination/pagination2.vue')['default']
     RightClickMenu: typeof import('./../src/components/rightClickMenu/rightClickMenu.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

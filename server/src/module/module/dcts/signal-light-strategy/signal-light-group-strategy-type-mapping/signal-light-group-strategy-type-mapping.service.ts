@@ -3,10 +3,14 @@ import { R } from '../../../../../common/R';
 import { SignalLightGroupStrategyTypeMappingDto, SignalLightGroupStrategyTypeMappingSelListDto, SignalLightGroupStrategyTypeMappingSelAllDto, SignalLightGroupStrategyTypeMappingInsOneDto, SignalLightGroupStrategyTypeMappingUpdOneDto } from './dto';
 import { BaseContextService } from '../../../../base-context/base-context.service';
 import { PostgresqlPrismaService } from "../../../../../prisma/postgresql.prisma.service";
+import { CommonPostgresqlPrismaoService } from "../../../../../prisma/common.postgresql.prismao.service";
+import { PostgresqlPrismaoService } from "../../../../../prisma/postgresql.prismao.service";
 
 @Injectable()
 export class SignalLightGroupStrategyTypeMappingService {
   constructor(
+      private readonly cpgprismao: CommonPostgresqlPrismaoService,
+      private readonly pgprismao: PostgresqlPrismaoService,
       private readonly pgprisma: PostgresqlPrismaService,
       private readonly bcs: BaseContextService,
   ) {
@@ -64,6 +68,54 @@ export class SignalLightGroupStrategyTypeMappingService {
 
   async delSignalLightGroupStrategyTypeMapping(ids: number[]): Promise<R> {
     const res = await this.pgprisma.deleteById<SignalLightGroupStrategyTypeMappingDto>('signal_light_group_strategy_type_mapping', ids);
+    return R.ok(res);
+  }
+
+  async insSignalLightGroupStrategyTypeMappingV2(dto: SignalLightGroupStrategyTypeMappingInsOneDto): Promise<R> {
+    // 删除已有的信号灯组-信号灯策略类型关联
+    const a = await this.pgprismao.getOrigin().signal_light_group_strategy_type_mapping.findMany({
+      where: {
+        group_id: dto.groupId,
+        ...this.cpgprismao.defaultSelArg().where
+      }
+    });
+    if (a.length > 0) {
+      const defaultDelArg = this.cpgprismao.defaultDelArg();
+      await this.pgprismao.getOrigin().signal_light_group_strategy_type_mapping.updateMany({
+        data: {
+          ...defaultDelArg.data
+        },
+        where: {
+          id: {
+            in: a.map(item => item.id)
+          },
+          ...defaultDelArg.where
+        },
+      })
+      // 删除子信号灯-信号灯策略调度关联
+      const groupIds = a.map(item => item.group_id);
+      const slgcms = await this.pgprismao.getOrigin().signal_light_group_child_mapping.findMany({
+        where: {
+          group_id: {
+            in: groupIds
+          },
+          ...this.cpgprismao.defaultSelArg().where
+        }
+      });
+      const childLightIds = slgcms.map(item => item.child_light_id);
+      await this.pgprismao.getOrigin().signal_light_child_strategy_schedule_mapping.updateMany({
+        data: {
+          ...defaultDelArg.data
+        },
+        where: {
+          child_light_id: {
+            in: childLightIds
+          },
+          ...defaultDelArg.where
+        }
+      })
+    }
+    const res = await this.pgprisma.create<SignalLightGroupStrategyTypeMappingDto>('signal_light_group_strategy_type_mapping', dto);
     return R.ok(res);
   }
 }

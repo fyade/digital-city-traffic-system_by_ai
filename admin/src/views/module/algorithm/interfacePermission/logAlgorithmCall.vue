@@ -52,7 +52,7 @@ const dFormRules: FormRules = {
   callIp: [{required: true, trigger: 'change'}],
   ifSuccess: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig({
+const config = new TablePageConfig<LogAlgorithmCallDto>({
   bulkOperation: true,
   selectParam: {
     userGroupPermissionId: props.selectUGPId,
@@ -60,9 +60,6 @@ const config = new TablePageConfig({
       between: {
         type: 'date',
         value: [null, null]
-      } as {
-        type: string
-        value: [null, null] | [Date, Date]
       }
     }
   },
@@ -172,17 +169,23 @@ const shortcuts = [
 ]
 const datePickerValueChange = (value: Date[]) => {
   if (value) {
-    config!.selectParam!.createTime!.between!.value[0] = value[0]
-    config!.selectParam!.createTime!.between!.value[1] = value[1]
+    if (config.selectParam.createTime && 'between' in config.selectParam.createTime && config.selectParam.createTime.between) {
+      config.selectParam.createTime.between.value[0] = value[0]
+      config.selectParam.createTime.between.value[1] = value[1]
+    }
   } else {
-    config!.selectParam!.createTime!.between!.value[0] = null
-    config!.selectParam!.createTime!.between!.value[1] = null
+    if (config.selectParam.createTime && 'between' in config.selectParam.createTime && config.selectParam.createTime.between) {
+      config.selectParam.createTime.between.value[0] = null
+      config.selectParam.createTime.between.value[1] = null
+    }
   }
 }
 const fCan2 = () => {
   datePickerValue.value = ''
-  config!.selectParam!.createTime!.between!.value[0] = null
-  config!.selectParam!.createTime!.between!.value[1] = null
+  if (config.selectParam.createTime && 'between' in config.selectParam.createTime && config.selectParam.createTime.between) {
+    config.selectParam.createTime.between.value[0] = null
+    config.selectParam.createTime.between.value[1] = null
+  }
   fCan()
 }
 </script>

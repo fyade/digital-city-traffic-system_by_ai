@@ -290,7 +290,7 @@ export class UseCesium {
   // 相机高度
   public cameraHeight = 10000
   // 地图中心点位置[经度、纬度]
-  public mapCenterPosition: [number, number] = [118.92844631852402, 32.12752744546319]
+  public mapCenterPosition: [number, number] = [118.92269000122111, 32.10650387256775]
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 事件封装 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   /**

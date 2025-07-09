@@ -4,8 +4,8 @@ import { SignalLightGroupInfoDto, SignalLightGroupInfoSelListDto, SignalLightGro
 import { BaseContextService } from '../../../../base-context/base-context.service';
 import { CommonPostgresqlPrismaoService } from "../../../../../prisma/common.postgresql.prismao.service";
 import { PostgresqlPrismaoService } from "../../../../../prisma/postgresql.prismao.service";
-import { PageVo } from "../../../../../common/vo/PageVo";
 import { CountSqlReturnDto } from "../../../../../util/base";
+import { PageVo } from "../../../../../common/vo/PageVo";
 
 @Injectable()
 export class SignalLightGroupInfoService {
@@ -175,6 +175,50 @@ export class SignalLightGroupInfoService {
       delIds: ids,
     });
     await this.pgprismao.$queryRawUnsafe(sqls[0]);
+    return R.ok(true);
+  }
+
+  async delSignalLightGroupInfoV2(ids: number[]): Promise<R> {
+    // 删除信号灯组
+    const sqls = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
+      type: 'del',
+      tblName: 'signal_light_group_info',
+      delIds: ids,
+    });
+    await this.pgprismao.$queryRawUnsafe(sqls[0]);
+    // 删除子信号灯、信号灯组-子信号灯对应关联
+    const defaultSelArg = this.cpgprismao.defaultSelArg();
+    const defaultDelArg = this.cpgprismao.defaultDelArg();
+    const slgcms = await this.pgprismao.getOrigin().signal_light_group_child_mapping.findMany({
+      where: {
+        group_id: {
+          in: ids
+        },
+        ...defaultSelArg.where
+      }
+    });
+    await this.pgprismao.getOrigin().signal_light_group_child_mapping.updateMany({
+      data: {
+        ...defaultDelArg.data
+      },
+      where: {
+        id: {
+          in: slgcms.map(item => item.id)
+        },
+        ...defaultDelArg.where
+      }
+    })
+    await this.pgprismao.getOrigin().signal_light_info.updateMany({
+      data: {
+        ...defaultDelArg.data
+      },
+      where: {
+        id: {
+          in: slgcms.map(item => item.child_light_id)
+        },
+        ...defaultDelArg.where
+      }
+    })
     return R.ok(true);
   }
 }
