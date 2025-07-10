@@ -41,7 +41,9 @@ nextTick(() => {
   if (!modalTitle.value) {
     gotoDashboardHome()
   } else {
-    props?.runInit()
+    if (props.runInit) {
+      props.runInit()
+    }
   }
 })
 

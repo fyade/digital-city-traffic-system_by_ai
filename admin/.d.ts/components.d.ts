@@ -70,7 +70,7 @@ declare module 'vue' {
     SvgIcon: typeof import('./../src/components/svgIcon/svgIcon.vue')['default']
     Tooltip: typeof import('./../src/components/tooltip/tooltip.vue')['default']
   }
-  export interface ComponentCustomProperties {
+  export interface GlobalDirectives {
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }
