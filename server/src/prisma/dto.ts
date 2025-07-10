@@ -15,19 +15,19 @@ export class SelectParamObj {
   between: SelectParamObjBetween;
 
   constructor({
-                in: _in = new SelectParamObjIn(),
-                between = new SelectParamObjBetween(),
+                in: _in,
+                between,
               }: {
                 in?: SelectParamObjIn
                 between?: SelectParamObjBetween
               } = {},
   ) {
-    if (_in.value && _in.value.length > 0) {
+    if (_in && _in.value) {
       this.in = new SelectParamObjIn(_in);
     } else {
       delete this.in;
     }
-    if (between.value && between.value.length > 0) {
+    if (between && between.value) {
       this.between = new SelectParamObjBetween(between);
     } else {
       delete this.between;

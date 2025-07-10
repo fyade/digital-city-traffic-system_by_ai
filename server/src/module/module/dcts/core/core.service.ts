@@ -22,7 +22,6 @@ export class CoreService implements OnModuleInit {
   }
 
   private async runCoreSchedule() {
-    console.log('aaaaaaaaaaa', new Date())
     return true
   }
 }
