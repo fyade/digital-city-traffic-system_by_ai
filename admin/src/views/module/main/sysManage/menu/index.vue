@@ -290,18 +290,18 @@ const tableData3 = computed(() => {
 })
 
 // 表格的展开
-const expandRowKeys = ref<string[]>([])
-const expandRowKeys2 = ref<string[]>([])
+const expandRowKeys = ref<number[]>([])
+const expandRowKeys2 = ref<number[]>([])
 const expendAll = () => {
   if (expandRowKeys.value.length === 0) {
-    expandRowKeys.value = objectUtils.arrNoRepeat(tableData.value.map(item => item.parentId)).filter(item => item !== final.DEFAULT_PARENT_ID).map(_ => `${_}`)
+    expandRowKeys.value = objectUtils.arrNoRepeat(tableData.value.map(item => item.parentId)).filter(item => item !== final.DEFAULT_PARENT_ID)
   } else {
     expandRowKeys.value = []
   }
 }
 const expendAll2 = () => {
   if (expandRowKeys2.value.length === 0) {
-    expandRowKeys2.value = objectUtils.arrNoRepeat(tableDataInter.value.map(item => item.parentId)).filter(item => item !== final.DEFAULT_PARENT_ID).map(_ => `${_}`)
+    expandRowKeys2.value = objectUtils.arrNoRepeat(tableDataInter.value.map(item => item.parentId)).filter(item => item !== final.DEFAULT_PARENT_ID)
   } else {
     expandRowKeys2.value = []
   }

@@ -15,6 +15,9 @@ export class ScheduleService implements OnModuleInit {
     private readonly winston: WinstonService,
   ) {}
 
+  /**
+   * 仅供框架调用，禁止外部调用
+   */
   async onModuleInit() {
     await this.init();
   }

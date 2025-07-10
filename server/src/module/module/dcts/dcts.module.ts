@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { CoreModule } from './core/core.module';
 import { JunctionPositionModule } from './junction/junction-position/junction-position.module';
 import { JunctionConnectionModule } from './junction/junction-connection/junction-connection.module';
 import { SpatialDataModule } from './spatial-data/spatial-data.module';
@@ -9,9 +10,11 @@ import { SignalLightStrategyTypeModule } from './signal-light-strategy/signal-li
 import { SignalLightStrategyScheduleModule } from './signal-light-strategy/signal-light-strategy-schedule/signal-light-strategy-schedule.module';
 import { SignalLightGroupStrategyTypeMappingModule } from './signal-light-strategy/signal-light-group-strategy-type-mapping/signal-light-group-strategy-type-mapping.module';
 import { SignalLightChildStrategyScheduleMappingModule } from './signal-light-strategy/signal-light-child-strategy-schedule-mapping/signal-light-child-strategy-schedule-mapping.module';
+import { SignalLightStrategyTypeStrategyScheduleMappingModule } from './signal-light-strategy/signal-light-strategy-type-strategy-schedule-mapping/signal-light-strategy-type-strategy-schedule-mapping.module';
 
 @Module({
   imports: [
+    CoreModule,
     JunctionPositionModule,
     JunctionConnectionModule,
     SpatialDataModule,
@@ -21,7 +24,8 @@ import { SignalLightChildStrategyScheduleMappingModule } from './signal-light-st
     SignalLightStrategyTypeModule,
     SignalLightStrategyScheduleModule,
     SignalLightGroupStrategyTypeMappingModule,
-    SignalLightChildStrategyScheduleMappingModule
+    SignalLightChildStrategyScheduleMappingModule,
+    SignalLightStrategyTypeStrategyScheduleMappingModule
   ]
 })
 export class DctsModule {

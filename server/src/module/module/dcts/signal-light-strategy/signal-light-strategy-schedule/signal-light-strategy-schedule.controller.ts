@@ -4,9 +4,10 @@ import { SignalLightStrategyScheduleService } from './signal-light-strategy-sche
 import { Authorize } from '../../../../../decorator/authorize.decorator';
 import { R } from '../../../../../common/R';
 import { SignalLightStrategyScheduleSelListDto, SignalLightStrategyScheduleSelAllDto, SignalLightStrategyScheduleInsOneDto, SignalLightStrategyScheduleUpdOneDto, SignalLightStrategyScheduleInsMoreDto, SignalLightStrategyScheduleUpdMoreDto } from './dto';
+import { publicConfig } from "@dcts/config";
 
 @Controller('/dcts/signal-light-strategy/signal-light-strategy-schedule')
-@ApiTags('数智交通全域调度系统/信号灯策略管理/信号灯策略调度')
+@ApiTags(`${publicConfig.APP_NAME}/信号灯策略管理/信号灯策略调度`)
 @ApiBearerAuth()
 @UsePipes(new ValidationPipe({ transform: true }))
 export class SignalLightStrategyScheduleController {

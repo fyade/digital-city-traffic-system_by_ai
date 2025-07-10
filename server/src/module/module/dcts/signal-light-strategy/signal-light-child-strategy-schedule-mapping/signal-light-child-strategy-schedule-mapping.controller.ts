@@ -4,9 +4,10 @@ import { SignalLightChildStrategyScheduleMappingService } from './signal-light-c
 import { Authorize } from '../../../../../decorator/authorize.decorator';
 import { R } from '../../../../../common/R';
 import { SignalLightChildStrategyScheduleMappingSelListDto, SignalLightChildStrategyScheduleMappingSelAllDto, SignalLightChildStrategyScheduleMappingInsOneDto, SignalLightChildStrategyScheduleMappingUpdOneDto, SignalLightChildStrategyScheduleMappingInsMoreDto, SignalLightChildStrategyScheduleMappingUpdMoreDto } from './dto';
+import { publicConfig } from "@dcts/config";
 
 @Controller('/dcts/signal-light-strategy/signal-light-child-strategy-schedule-mapping')
-@ApiTags('数智交通全域调度系统/信号灯策略管理/子信号灯-信号灯策略调度关联')
+@ApiTags(`${publicConfig.APP_NAME}/信号灯策略管理/子信号灯-信号灯策略调度关联`)
 @ApiBearerAuth()
 @UsePipes(new ValidationPipe({ transform: true }))
 export class SignalLightChildStrategyScheduleMappingController {

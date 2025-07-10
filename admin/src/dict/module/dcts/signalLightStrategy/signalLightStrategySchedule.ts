@@ -3,7 +3,8 @@ import { SignalLightStrategyScheduleDto } from "@/type/module/dcts/signalLightSt
 
 export const signalLightStrategyScheduleDict: { [P in keyof SignalLightStrategyScheduleDto]: string } = {
   ...publicDict,
-  typeId: '信号灯策略类型id',
+  name: '信号灯策略调度名',
+  description: '信号灯策略调度描述',
   scheduleType: '调度类型',
   startTime: '开始时间',
   endTime: '结束时间',

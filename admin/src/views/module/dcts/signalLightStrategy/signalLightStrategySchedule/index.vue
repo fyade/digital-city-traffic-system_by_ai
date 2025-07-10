@@ -20,7 +20,8 @@ import { timeUtils } from "@dcts/common";
 const state = reactive<State2<SignalLightStrategyScheduleDto, SignalLightStrategyScheduleUpdDto>>({
   dialogForm: {
     id: -1,
-    typeId: -1,
+    name: '',
+    description: '',
     scheduleType: '',
     startTime: '',
     endTime: '',
@@ -31,7 +32,8 @@ const state = reactive<State2<SignalLightStrategyScheduleDto, SignalLightStrateg
   filterForm: {},
 })
 const dFormRules: FormRules = {
-  typeId: [{required: true, trigger: 'change'}],
+  name: [{required: true, trigger: 'change'}],
+  description: [{required: true, trigger: 'change'}],
   scheduleType: [{required: true, trigger: 'change'}],
   startTime: [{required: true, trigger: 'change'}],
   endTime: [{required: true, trigger: 'change'}],
@@ -118,31 +120,36 @@ const {
         <!--在此下方添加表单项-->
         <el-row>
           <el-col :span="12">
-            <el-form-item :label="signalLightStrategyScheduleDict.typeId" prop="typeId">
-              <el-input-number v-model="state.dialogForm.typeId" controls-position="right"/>
+            <el-form-item :label="signalLightStrategyScheduleDict.name" prop="name">
+              <el-input v-model="state.dialogForm.name" :placeholder="signalLightStrategyScheduleDict.name"/>
             </el-form-item>
           </el-col>
+          <el-col :span="12">
+            <el-form-item :label="signalLightStrategyScheduleDict.description" prop="description">
+              <el-input v-model="state.dialogForm.description" :placeholder="signalLightStrategyScheduleDict.description"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12">
             <el-form-item :label="signalLightStrategyScheduleDict.scheduleType" prop="scheduleType">
               <el-input v-model="state.dialogForm.scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType"/>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="12">
             <el-form-item :label="signalLightStrategyScheduleDict.startTime" prop="startTime">
               <!--<el-input v-model="state.dialogForm.startTime" :placeholder="signalLightStrategyScheduleDict.startTime"/>-->
               <el-date-picker v-model="state.dialogForm.startTime" type="datetime"/>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12">
             <el-form-item :label="signalLightStrategyScheduleDict.endTime" prop="endTime">
               <!--<el-input v-model="state.dialogForm.endTime" :placeholder="signalLightStrategyScheduleDict.endTime"/>-->
               <el-date-picker v-model="state.dialogForm.endTime" type="datetime"/>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="12">
             <el-form-item :label="signalLightStrategyScheduleDict.cronExpression" prop="cronExpression">
               <el-input v-model="state.dialogForm.cronExpression" :placeholder="signalLightStrategyScheduleDict.cronExpression"/>
@@ -183,13 +190,23 @@ const {
             </template>
           </el-table-column>
           <!--在此下方添加表格列-->
-          <el-table-column prop="typeId" :label="signalLightStrategyScheduleDict.typeId" width="300">
+          <el-table-column prop="name" :label="signalLightStrategyScheduleDict.name" width="300">
             <template #header>
-              <span :class="ifRequired('typeId')?'tp-table-header-required':''">{{ signalLightStrategyScheduleDict.typeId }}</span>
+              <span :class="ifRequired('name')?'tp-table-header-required':''">{{ signalLightStrategyScheduleDict.name }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-typeId`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input-number v-model="state.dialogForms[$index].typeId" controls-position="right"/>
+              <div :class="state.dialogForms_error?.[`${$index}-name`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-input v-model="state.dialogForms[$index].name" :placeholder="signalLightStrategyScheduleDict.name"/>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="description" :label="signalLightStrategyScheduleDict.description" width="300">
+            <template #header>
+              <span :class="ifRequired('description')?'tp-table-header-required':''">{{ signalLightStrategyScheduleDict.description }}</span>
+            </template>
+            <template #default="{$index}">
+              <div :class="state.dialogForms_error?.[`${$index}-description`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-input v-model="state.dialogForms[$index].description" :placeholder="signalLightStrategyScheduleDict.description"/>
               </div>
             </template>
           </el-table-column>
@@ -302,7 +319,8 @@ const {
       <!--<el-table-column fixed prop="id" :label="signalLightStrategyScheduleDict.id" width="180"/>-->
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
-      <el-table-column prop="typeId" :label="signalLightStrategyScheduleDict.typeId" width="120"/>
+      <el-table-column prop="name" :label="signalLightStrategyScheduleDict.name" width="180"/>
+      <el-table-column prop="description" :label="signalLightStrategyScheduleDict.description" width="180"/>
       <el-table-column prop="scheduleType" :label="signalLightStrategyScheduleDict.scheduleType" width="180"/>
       <el-table-column prop="startTime" :label="signalLightStrategyScheduleDict.startTime" width="180">
         <template #default="{row}">

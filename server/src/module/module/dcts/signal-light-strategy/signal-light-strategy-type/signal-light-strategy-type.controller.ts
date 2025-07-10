@@ -4,9 +4,10 @@ import { SignalLightStrategyTypeService } from './signal-light-strategy-type.ser
 import { Authorize } from '../../../../../decorator/authorize.decorator';
 import { R } from '../../../../../common/R';
 import { SignalLightStrategyTypeSelListDto, SignalLightStrategyTypeSelAllDto, SignalLightStrategyTypeInsOneDto, SignalLightStrategyTypeUpdOneDto, SignalLightStrategyTypeInsMoreDto, SignalLightStrategyTypeUpdMoreDto } from './dto';
+import { publicConfig } from "@dcts/config";
 
 @Controller('/dcts/signal-light-strategy/signal-light-strategy-type')
-@ApiTags('数智交通全域调度系统/信号灯策略管理/信号灯策略类型')
+@ApiTags(`${publicConfig.APP_NAME}/信号灯策略管理/信号灯策略类型`)
 @ApiBearerAuth()
 @UsePipes(new ValidationPipe({ transform: true }))
 export class SignalLightStrategyTypeController {

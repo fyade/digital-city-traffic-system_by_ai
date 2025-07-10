@@ -48,6 +48,7 @@ export class SignalLightInfoSelAllDto {
 export class SignalLightInfoInsOneDto {
   @ApiProperty({ description: '子信号灯名', required: true })
   @IsNotEmpty({ message: '子信号灯名不能为空' })
+  @MaxLength(100, { message: '子信号灯名不能超过100个字符' })
   name: string;
 
   @ApiProperty({ description: '位置', required: true })
@@ -57,6 +58,7 @@ export class SignalLightInfoInsOneDto {
 
   @ApiProperty({ description: '描述', required: true })
   @IsNotEmpty({ message: '描述不能为空' })
+  @MaxLength(100, { message: '描述不能超过100个字符' })
   description: string;
 }
 

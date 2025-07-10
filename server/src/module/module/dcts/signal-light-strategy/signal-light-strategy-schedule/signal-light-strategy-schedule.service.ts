@@ -11,8 +11,7 @@ export class SignalLightStrategyScheduleService {
       private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('signal_light_strategy_schedule', {
-      notNullKeys: ['typeId', 'scheduleType', 'startTime', 'endTime', 'cronExpression'],
-      numberKeys: ['typeId'],
+      notNullKeys: ['name', 'description', 'scheduleType', 'startTime', 'endTime', 'cronExpression'],
     });
   }
 

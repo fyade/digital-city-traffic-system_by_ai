@@ -1,6 +1,6 @@
 import { UseCesium } from "@/views/dashboard/core/useCesium.ts";
 import { h, watch } from "vue";
-import { createDiscreteApi, NSpin } from "naive-ui";
+import { NSpin } from "naive-ui";
 import * as Cesium from "cesium";
 import { useSysStore } from "@/store/module/sys.ts";
 import { ContextMenuModule } from "@/views/dashboard/functionModules/contextMenuModule.ts";
@@ -11,23 +11,13 @@ import { PermissionModule } from "@/views/dashboard/functionModules/permissionMo
 import { SignalLightModule } from "@/views/dashboard/functionModules/signalLightModule.ts";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 import { adminConfig } from "@dcts/config";
+import { NNotification } from "@/utils/naiveUtils.ts";
 
 const currentConfig = adminConfig.currentConfig()
 
 const sysStore = useSysStore()
 
 const visibleButtons = sysStore.getVisibleButtons();
-
-const {
-  notification
-} = createDiscreteApi(
-    ['notification'],
-    {
-      notificationProviderProps: {
-        scrollable: false
-      }
-    }
-)
 
 /**
  * 大屏页面的 Cesium
@@ -116,7 +106,7 @@ class UseDashboardCesium extends UseCesium {
     // 加载中
     if (queuedTileCount > 0 && !this.lnModule.layerLoading) {
       this.lnModule.layerLoading = true
-      this.lnModule.layerLoadingNotification = notification.create({
+      this.lnModule.layerLoadingNotification = NNotification.create({
         title: '提示',
         content: '图层加载中...',
         duration: 0,
@@ -154,7 +144,7 @@ class UseDashboardCesium extends UseCesium {
     }
     this.lnModule.layerLoading = false
     if (ifLoadEnd) {
-      notification.success({
+      NNotification.success({
         title: '提示',
         content: '图层加载完成',
         duration: 3000

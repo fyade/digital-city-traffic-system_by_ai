@@ -5,6 +5,7 @@ import { useSysStore } from "@/store/module/sys.ts";
 import { AxiosRes } from "@/type/asiox.ts";
 import { adminConfig } from '@dcts/config'
 import { goToLogin } from "@/utils/baseUtils.ts";
+import { NDialog, NMessage } from "@/utils/naiveUtils.ts";
 
 const env = adminConfig.currentConfig();
 export const baseURL = env.VITE_API_PREFIX
@@ -35,21 +36,18 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   async response => {
     if (response.data.code && response.data.code !== 200) {
-      ElMessage.error(response.data.msg)
+      messageError(response.data.msg)
       return Promise.reject(response)
     }
     return Promise.resolve(response)
   },
   async error => {
     if (error.response.data.code === 401) {
-      // ElMessage.error('登录已过期，请重新登录。')
+      // messageError('登录已过期，请重新登录。')
       if (status401) {
         return;
       }
-      ElMessageBox.alert(
-        '登录已过期，请重新登录。',
-        '警告',
-      ).finally(() => {
+      messageBoxWarning('登录已过期，请重新登录。').finally(() => {
         useUserStore().removeToken()
         goToLogin()
       })
@@ -57,7 +55,7 @@ request.interceptors.response.use(
     } else {
       let msg = error.response.data.msg
       if (!msg) msg = '系统繁忙，请稍后再试。'
-      ElMessage.error(msg)
+      messageError(msg)
     }
     return Promise.reject(error.response)
   }
@@ -107,6 +105,34 @@ export async function request2<T = any>(param: AxiosRequestConfig, {
       } else if (errLevel === 2) {
         reject(err?.data?.msg)
       }
+    }
+  })
+}
+
+function messageError(msg: string) {
+  if (location.pathname.startsWith('/dashboard/') || location.pathname === '/dashboard') {
+    NMessage.error(msg)
+  } else {
+    ElMessage.error(msg)
+  }
+}
+
+function messageBoxWarning(msg: string) {
+  return new Promise((resolve, reject) => {
+    if (location.pathname.startsWith('/dashboard/') || location.pathname === '/dashboard') {
+      NDialog.warning({
+        title: '警告',
+        content: msg,
+        positiveText: '确定',
+        closeOnEsc: false,
+        maskClosable: false,
+        onPositiveClick: () => resolve(null),
+        onClose: () => reject(null)
+      })
+    } else {
+      ElMessageBox.alert(msg, '警告')
+          .then(() => resolve(null))
+          .catch(() => reject(null))
     }
   })
 }

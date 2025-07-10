@@ -6,12 +6,12 @@ import { State2, TablePageConfig } from "@/type/tablePage.ts";
 import { DataTableColumns, NButton, NIcon } from "naive-ui";
 import { HandPointLeft } from '@vicons/fa'
 import { MdRefresh, MdSearch } from '@vicons/ionicons4'
-import {
-  SignalLightStrategyScheduleDto,
-  SignalLightStrategyScheduleUpdDto
-} from "@/type/module/dcts/signalLightStrategy/signalLightStrategySchedule.ts";
+import { SignalLightStrategyScheduleDto, SignalLightStrategyScheduleUpdDto } from "@/type/module/dcts/signalLightStrategy/signalLightStrategySchedule.ts";
 import { signalLightStrategyScheduleApi } from "@/api/module/dcts/signalLightStrategy/signalLightStrategySchedule.ts";
 import { signalLightStrategyScheduleDict } from "@/dict/module/dcts/signalLightStrategy/signalLightStrategySchedule.ts";
+import { SignalLightStrategyTypeStrategyScheduleMappingDto, SignalLightStrategyTypeStrategyScheduleMappingUpdDto } from "@/type/module/dcts/signalLightStrategy/signalLightStrategyTypeStrategyScheduleMapping.ts";
+import { signalLightStrategyTypeStrategyScheduleMappingApi } from "@/api/module/dcts/signalLightStrategy/signalLightStrategyTypeStrategyScheduleMapping.ts";
+import { signalLightStrategyTypeStrategyScheduleMappingDict } from "@/dict/module/dcts/signalLightStrategy/signalLightStrategyTypeStrategyScheduleMapping.ts";
 
 const props = defineProps({
   selectStrategyTypeId: {
@@ -24,7 +24,8 @@ const emits = defineEmits(['selectRow']);
 const state = reactive<State2<SignalLightStrategyScheduleDto, SignalLightStrategyScheduleUpdDto>>({
   dialogForm: {
     id: -1,
-    typeId: -1,
+    name: '',
+    description: '',
     scheduleType: '',
     startTime: '',
     endTime: '',
@@ -32,15 +33,21 @@ const state = reactive<State2<SignalLightStrategyScheduleDto, SignalLightStrateg
   },
   dialogForms: [],
   dialogForms_error: {},
-  filterForm: {},
+  filterForm: {
+    name: '',
+    description: '',
+    scheduleType: '',
+  },
 })
 const config = new TablePageConfig<SignalLightStrategyScheduleDto>({
+  getDataOnMounted: false,
   selectParam: {
-    typeId: props.selectStrategyTypeId
+    id: {in: {value: []}}
   }
 })
 const columns: DataTableColumns<SignalLightStrategyScheduleDto> = [
-  {title: signalLightStrategyScheduleDict.typeId, key: 'typeId'},
+  {title: signalLightStrategyScheduleDict.name, key: 'name'},
+  {title: signalLightStrategyScheduleDict.description, key: 'description'},
   {title: signalLightStrategyScheduleDict.scheduleType, key: 'scheduleType'},
   {title: signalLightStrategyScheduleDict.startTime, key: 'startTime'},
   {title: signalLightStrategyScheduleDict.endTime, key: 'endTime'},
@@ -82,6 +89,34 @@ const {
   api: signalLightStrategyScheduleApi,
   dict: signalLightStrategyScheduleDict,
 })
+
+const stateSlstscm = reactive<State2<SignalLightStrategyTypeStrategyScheduleMappingDto, SignalLightStrategyTypeStrategyScheduleMappingUpdDto>>({
+  dialogForm: new SignalLightStrategyTypeStrategyScheduleMappingUpdDto(),
+  dialogForms: [],
+  dialogForms_error: {},
+  filterForm: {},
+})
+const configSlstscm = new TablePageConfig<SignalLightStrategyTypeStrategyScheduleMappingDto>({
+  selectParam: {
+    strategyTypeId: props.selectStrategyTypeId
+  },
+  pageQuery: false,
+  selectListCallback: () => {
+    if (config.selectParam.id && typeof config.selectParam.id === 'object' && config.selectParam.id.in) {
+      config.selectParam.id.in.value = tableDataSlstscm.value.map(item => item.strategyScheduleId)
+    }
+    refresh()
+  }
+})
+const {
+  tableData : tableDataSlstscm
+} = funcTablePageDashBoard<SignalLightStrategyTypeStrategyScheduleMappingDto, SignalLightStrategyTypeStrategyScheduleMappingUpdDto>({
+  state: stateSlstscm,
+  dFormRules: {},
+  config: configSlstscm,
+  api: signalLightStrategyTypeStrategyScheduleMappingApi,
+  dict: signalLightStrategyTypeStrategyScheduleMappingDict,
+})
 </script>
 
 <template>
@@ -96,9 +131,14 @@ const {
         @keyup.enter="fEnter"
     >
       <!--在此下方添加表单项-->
+      <n-form-item :label="signalLightStrategyScheduleDict.name" path="name">
+        <n-input v-model:value="state.filterForm.name" :placeholder="signalLightStrategyScheduleDict.name"/>
+      </n-form-item>
+      <n-form-item :label="signalLightStrategyScheduleDict.description" path="description">
+        <n-input v-model:value="state.filterForm.description" :placeholder="signalLightStrategyScheduleDict.description"/>
+      </n-form-item>
       <n-form-item :label="signalLightStrategyScheduleDict.scheduleType" path="scheduleType">
-        <n-input v-model:value="state.filterForm.scheduleType"
-                 :placeholder="signalLightStrategyScheduleDict.scheduleType"/>
+        <n-input v-model:value="state.filterForm.scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType"/>
       </n-form-item>
       <!--在此上方添加表单项-->
       <n-form-item>

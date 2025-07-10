@@ -121,7 +121,7 @@ export class TablePageConfig<T = {}> {
                 activeTabMoreInsFinishCallback = null,
                 activeTabMoreDelCallback = null,
               }: {
-                selectParam?: { [P in keyof Omit<T, 'id'>]?: (T[P] | SelectParamObj) }
+                selectParam?: { [P in keyof T]?: (T[P] | SelectParamObj) }
                 insUpdParam?: Partial<T>
                 getDataOnMounted?: boolean
                 pageQuery?: boolean

@@ -2,7 +2,8 @@ import { BaseClass, PageDto } from "@/type/tablePage.ts";
 
 export class SignalLightStrategyScheduleDto extends BaseClass {
   id!: number;
-  typeId!: number;
+  name!: string;
+  description!: string;
   scheduleType!: string;
   startTime!: string;
   endTime!: string;
@@ -16,7 +17,8 @@ export class SignalLightStrategyScheduleSelAllDto {
 }
 
 export class SignalLightStrategyScheduleInsDto {
-  typeId!: number;
+  name!: string;
+  description!: string;
   scheduleType!: string;
   startTime!: string;
   endTime!: string;

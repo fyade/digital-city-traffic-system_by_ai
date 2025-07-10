@@ -39,14 +39,17 @@ export class SignalLightStrategyTypeSelAllDto {
 export class SignalLightStrategyTypeInsOneDto {
   @ApiProperty({ description: '策略类型名', required: true })
   @IsNotEmpty({ message: '策略类型名不能为空' })
+  @MaxLength(100, { message: '策略类型名不能超过100个字符' })
   name: string;
 
   @ApiProperty({ description: '策略类型描述', required: true })
   @IsNotEmpty({ message: '策略类型描述不能为空' })
+  @MaxLength(100, { message: '策略类型描述不能超过100个字符' })
   description: string;
 
   @ApiProperty({ description: '策略类型', required: true })
   @IsNotEmpty({ message: '策略类型不能为空' })
+  @MaxLength(100, { message: '策略类型不能超过100个字符' })
   strategyType: string;
 }
 
