@@ -52,7 +52,7 @@ export class PrismaService {
   ): Promise<RowPermissionRet> {
     const rowPermissionRet = new RowPermissionRet();
     const userData = this.bcs.getUserData();
-    const permissionData = await this.prismao.getOrigin().sys_menu.findFirst({
+    const permissionData = await this.prismao.sys_menu.findFirst({
       where: {
         perms: userData.perms,
         type: 'mb',
@@ -69,7 +69,7 @@ export class PrismaService {
     }
     // 用户的角色/部门
     const { allRoleIds, allDeptIds } = await this.authService.rolesAndDeptsOfUser(userData.userId, userData.loginRole);
-    const trpsRole = await this.prismao.getOrigin().sys_table_row_permission.findMany({
+    const trpsRole = await this.prismao.sys_table_row_permission.findMany({
       where: {
         action_type: UTDPTypeEnum.T_ROLE,
         action_id: {
@@ -79,7 +79,7 @@ export class PrismaService {
         ...this.prismao.defaultSelArg().where,
       },
     });
-    const trpsDept = await this.prismao.getOrigin().sys_table_row_permission.findMany({
+    const trpsDept = await this.prismao.sys_table_row_permission.findMany({
       where: {
         action_type: UTDPTypeEnum.T_DEPT,
         action_id: {
@@ -108,7 +108,7 @@ export class PrismaService {
   }
 
   protected getModel(model: string) {
-    const modelInstance = this.prismao.getOrigin()[model];
+    const modelInstance = this.prismao[model];
     if (!modelInstance) {
       throw new UnknownException(this.bcs.getUserData().reqId);
     }
@@ -320,13 +320,25 @@ export class PrismaService {
       take: this.getSkipAndTakeFromPNS(pageNum, pageSize).take,
     };
     if (typeof orderBy === 'boolean' && orderBy) {
-      arg['orderBy'] = {
-        order_num: 'asc',
-      };
+      arg['orderBy'] = [
+        {
+          order_num: 'asc',
+        },
+        {
+          create_time: 'desc',
+        }
+      ];
     } else if (orderBy) {
-      arg['orderBy'] = {
-        [baseUtils.toSnakeCase(Object.keys(orderBy)[0])]: Object.values(orderBy)[0],
-      };
+      arg['orderBy'] = [
+          ...Object.keys(orderBy).map((_, index) => {
+          return {
+            [baseUtils.toSnakeCase(Object.keys(orderBy)[index])]: Object.values(orderBy)[index],
+          }
+        }),
+        {
+          create_time: 'desc',
+        }
+      ];
     } else {
       arg['orderBy'] = {
         create_time: 'desc',

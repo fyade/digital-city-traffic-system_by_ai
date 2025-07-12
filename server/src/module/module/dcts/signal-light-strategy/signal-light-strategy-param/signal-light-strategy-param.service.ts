@@ -1,0 +1,69 @@
+import { Injectable } from '@nestjs/common';
+import { R } from '../../../../../common/R';
+import { SignalLightStrategyParamDto, SignalLightStrategyParamSelListDto, SignalLightStrategyParamSelAllDto, SignalLightStrategyParamInsOneDto, SignalLightStrategyParamUpdOneDto } from './dto';
+import { BaseContextService } from '../../../../base-context/base-context.service';
+import { PostgresqlPrismaService } from "../../../../../prisma/postgresql.prisma.service";
+
+@Injectable()
+export class SignalLightStrategyParamService {
+  constructor(
+      private readonly pgprisma: PostgresqlPrismaService,
+      private readonly bcs: BaseContextService,
+  ) {
+    this.bcs.setFieldSelectParam('signal_light_strategy_param', {
+      notNullKeys: ['redDuration', 'yellowDuration', 'greenDuration', 'ifDisabled', 'orderNum'],
+      numberKeys: ['redDuration', 'yellowDuration', 'greenDuration', 'orderNum'],
+    });
+  }
+
+  async selSignalLightStrategyParam(dto: SignalLightStrategyParamSelListDto): Promise<R> {
+    const res = await this.pgprisma.findPage<SignalLightStrategyParamDto, SignalLightStrategyParamSelListDto>('signal_light_strategy_param', {
+      data: dto,
+      orderBy: true,
+    });
+    return R.ok(res);
+  }
+
+  async selAllSignalLightStrategyParam(dto: SignalLightStrategyParamSelAllDto): Promise<R> {
+    const res = await this.pgprisma.findAll<SignalLightStrategyParamDto>('signal_light_strategy_param', {
+      data: dto,
+      orderBy: true,
+    });
+    return R.ok(res);
+  }
+
+  async selOnesSignalLightStrategyParam(ids: number[]): Promise<R> {
+    const res = await this.pgprisma.findByIds<SignalLightStrategyParamDto>('signal_light_strategy_param', Object.values(ids).map(n => Number(n)));
+    return R.ok(res);
+  }
+
+  async selOneSignalLightStrategyParam(id: number): Promise<R> {
+    const res = await this.pgprisma.findById<SignalLightStrategyParamDto>('signal_light_strategy_param', Number(id));
+    return R.ok(res);
+  }
+
+  async insSignalLightStrategyParam(dto: SignalLightStrategyParamInsOneDto): Promise<R> {
+    const res = await this.pgprisma.create<SignalLightStrategyParamDto>('signal_light_strategy_param', dto);
+    return R.ok(res);
+  }
+
+  async insSignalLightStrategyParams(dtos: SignalLightStrategyParamInsOneDto[]): Promise<R> {
+    const res = await this.pgprisma.createMany<SignalLightStrategyParamDto>('signal_light_strategy_param', dtos);
+    return R.ok(res);
+  }
+
+  async updSignalLightStrategyParam(dto: SignalLightStrategyParamUpdOneDto): Promise<R> {
+    const res = await this.pgprisma.updateById<SignalLightStrategyParamDto>('signal_light_strategy_param', dto);
+    return R.ok(res);
+  }
+
+  async updSignalLightStrategyParams(dtos: SignalLightStrategyParamUpdOneDto[]): Promise<R> {
+    const res = await this.pgprisma.updateMany<SignalLightStrategyParamDto>('signal_light_strategy_param', dtos);
+    return R.ok(res);
+  }
+
+  async delSignalLightStrategyParam(ids: number[]): Promise<R> {
+    const res = await this.pgprisma.deleteById<SignalLightStrategyParamDto>('signal_light_strategy_param', ids);
+    return R.ok(res);
+  }
+}

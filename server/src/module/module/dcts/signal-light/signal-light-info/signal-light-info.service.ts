@@ -188,7 +188,7 @@ export class SignalLightInfoService {
     await this.pgprismao.$queryRawUnsafe(sqls[0]);
     // 删除信号灯组-子信号灯对应关联
     const defaultDelArg = this.cpgprismao.defaultDelArg();
-    await this.pgprismao.getOrigin().signal_light_group_child_mapping.updateMany({
+    await this.pgprismao.signal_light_group_child_mapping.updateMany({
       data: {
         ...defaultDelArg.data
       },

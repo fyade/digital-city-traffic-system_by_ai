@@ -259,7 +259,7 @@ export class UserService {
   }
 
   async regist(dto: RegistDto): Promise<R> {
-    const sysConfigs = await this.prismao.getOrigin().sys_config.findMany({
+    const sysConfigs = await this.prismao.sys_config.findMany({
       where: {
         ...this.prismao.defaultSelArg().where
       }

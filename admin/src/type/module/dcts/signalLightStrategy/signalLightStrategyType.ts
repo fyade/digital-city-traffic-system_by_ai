@@ -5,6 +5,9 @@ export class SignalLightStrategyTypeDto extends BaseClass {
   name!: string;
   description!: string;
   strategyType!: string;
+  ifDisabled!: string;
+  orderNum!: number;
+  remark!: string;
 }
 
 export class SignalLightStrategyTypeSelDto extends PageDto {
@@ -17,6 +20,9 @@ export class SignalLightStrategyTypeInsDto {
   name!: string;
   description!: string;
   strategyType!: string;
+  ifDisabled!: string;
+  orderNum!: number;
+  remark!: string;
 }
 
 export class SignalLightStrategyTypeUpdDto extends SignalLightStrategyTypeInsDto {

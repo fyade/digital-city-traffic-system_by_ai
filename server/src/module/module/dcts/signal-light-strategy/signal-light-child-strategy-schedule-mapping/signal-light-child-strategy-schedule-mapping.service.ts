@@ -74,7 +74,7 @@ export class SignalLightChildStrategyScheduleMappingService {
 
   async insSignalLightChildStrategyScheduleMappingV2(dto: SignalLightChildStrategyScheduleMappingInsOneDto): Promise<R> {
     // 删除已有的子信号灯-信号灯策略调度关联
-    const a = await this.pgprismao.getOrigin().signal_light_child_strategy_schedule_mapping.findMany({
+    const a = await this.pgprismao.signal_light_child_strategy_schedule_mapping.findMany({
       where: {
         child_light_id: dto.childLightId,
         ...this.cpgprismao.defaultDelArg().where
@@ -82,7 +82,7 @@ export class SignalLightChildStrategyScheduleMappingService {
     })
     if (a.length > 0) {
       const defaultDelArg = this.cpgprismao.defaultDelArg();
-      await this.pgprismao.getOrigin().signal_light_child_strategy_schedule_mapping.updateMany({
+      await this.pgprismao.signal_light_child_strategy_schedule_mapping.updateMany({
         data: {
           ...defaultDelArg.data
         },

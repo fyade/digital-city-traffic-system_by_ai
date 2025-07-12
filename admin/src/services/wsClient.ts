@@ -2,6 +2,7 @@ import { io, Socket } from 'socket.io-client'
 import { adminConfig } from "@dcts/config";
 import { useUserStore } from "@/store/module/user.ts";
 import { idUtils, timeUtils } from "@dcts/common";
+import { NMessage } from "@/utils/naiveUtils.ts";
 
 const currentConfig = adminConfig.currentConfig();
 
@@ -39,6 +40,7 @@ export class WsClient {
         return;
       }
       this.socket.on('connect', () => {
+        NMessage.success('WS连接成功。')
         if (!this.socket) {
           return;
         }
@@ -48,9 +50,11 @@ export class WsClient {
         await this.runEvent(parse)
       });
       this.socket.on('disconnect', () => {
+        NMessage.error('WS连接断开。')
         this.socket = null
       });
       this.socket.on('connect_error', (err) => {
+        NMessage.error('WS连接发生错误。')
         console.error('WS错误', err);
       })
       WsClient.instance = this

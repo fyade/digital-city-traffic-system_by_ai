@@ -103,7 +103,7 @@ export class AppService {
 
   async getAllAuthApis2(): Promise<R> {
     const hdData = await this.getAllAuthApis();
-    const dbData = await this.prismao.getOrigin().sys_menu.findMany({
+    const dbData = await this.prismao.sys_menu.findMany({
       where: {
         ...this.prismao.defaultSelArg().where,
       }

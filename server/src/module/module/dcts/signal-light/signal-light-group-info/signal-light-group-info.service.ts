@@ -189,7 +189,7 @@ export class SignalLightGroupInfoService {
     // 删除子信号灯、信号灯组-子信号灯对应关联
     const defaultSelArg = this.cpgprismao.defaultSelArg();
     const defaultDelArg = this.cpgprismao.defaultDelArg();
-    const slgcms = await this.pgprismao.getOrigin().signal_light_group_child_mapping.findMany({
+    const slgcms = await this.pgprismao.signal_light_group_child_mapping.findMany({
       where: {
         group_id: {
           in: ids
@@ -197,7 +197,7 @@ export class SignalLightGroupInfoService {
         ...defaultSelArg.where
       }
     });
-    await this.pgprismao.getOrigin().signal_light_group_child_mapping.updateMany({
+    await this.pgprismao.signal_light_group_child_mapping.updateMany({
       data: {
         ...defaultDelArg.data
       },
@@ -208,7 +208,7 @@ export class SignalLightGroupInfoService {
         ...defaultDelArg.where
       }
     })
-    await this.pgprismao.getOrigin().signal_light_info.updateMany({
+    await this.pgprismao.signal_light_info.updateMany({
       data: {
         ...defaultDelArg.data
       },

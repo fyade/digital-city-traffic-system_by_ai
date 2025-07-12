@@ -27,10 +27,6 @@ export class PostgresqlPrismaoService extends PrismaClient {
     });
   }
 
-  public getOrigin() {
-    return this as unknown as PrismaClient;
-  }
-
   private serializeBigInt(obj: any): any {
     if (obj === null || obj === undefined) return obj;
 

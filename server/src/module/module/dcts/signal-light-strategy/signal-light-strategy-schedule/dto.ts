@@ -18,6 +18,12 @@ export class SignalLightStrategyScheduleDto extends BaseDto {
   endTime: string;
 
   cronExpression: string;
+
+  ifDisabled: string;
+
+  orderNum: number;
+
+  remark: string;
 }
 
 export class SignalLightStrategyScheduleSelListDto extends PageDto {
@@ -38,6 +44,15 @@ export class SignalLightStrategyScheduleSelListDto extends PageDto {
 
   @ApiProperty({ description: 'cron表达式', required: false })
   cronExpression: string;
+
+  @ApiProperty({ description: '是否禁用', required: false })
+  ifDisabled: string;
+
+  @ApiProperty({ description: '顺序', required: false })
+  orderNum: number;
+
+  @ApiProperty({ description: '备注', required: false })
+  remark: string;
 }
 
 export class SignalLightStrategyScheduleSelAllDto {
@@ -58,6 +73,15 @@ export class SignalLightStrategyScheduleSelAllDto {
 
   @ApiProperty({ description: 'cron表达式', required: false })
   cronExpression: string;
+
+  @ApiProperty({ description: '是否禁用', required: false })
+  ifDisabled: string;
+
+  @ApiProperty({ description: '顺序', required: false })
+  orderNum: number;
+
+  @ApiProperty({ description: '备注', required: false })
+  remark: string;
 }
 
 export class SignalLightStrategyScheduleInsOneDto {
@@ -88,6 +112,18 @@ export class SignalLightStrategyScheduleInsOneDto {
   @IsNotEmpty({ message: 'cron表达式不能为空' })
   @MaxLength(30, { message: 'cron表达式不能超过30个字符' })
   cronExpression: string;
+
+  @ApiProperty({ description: '是否禁用', required: true })
+  @IsNotEmpty({ message: '是否禁用不能为空' })
+  ifDisabled: string;
+
+  @ApiProperty({ description: '顺序', required: true })
+  @Type(() => Number)
+  @IsNotEmpty({ message: '顺序不能为空' })
+  orderNum: number;
+
+  @ApiProperty({ description: '备注', required: false })
+  remark: string;
 }
 
 export class SignalLightStrategyScheduleUpdOneDto extends SignalLightStrategyScheduleInsOneDto {

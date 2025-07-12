@@ -8,6 +8,9 @@ export class SignalLightStrategyScheduleDto extends BaseClass {
   startTime!: string;
   endTime!: string;
   cronExpression!: string;
+  ifDisabled!: string;
+  orderNum!: number;
+  remark!: string;
 }
 
 export class SignalLightStrategyScheduleSelDto extends PageDto {
@@ -23,6 +26,9 @@ export class SignalLightStrategyScheduleInsDto {
   startTime!: string;
   endTime!: string;
   cronExpression!: string;
+  ifDisabled!: string;
+  orderNum!: number;
+  remark!: string;
 }
 
 export class SignalLightStrategyScheduleUpdDto extends SignalLightStrategyScheduleInsDto {

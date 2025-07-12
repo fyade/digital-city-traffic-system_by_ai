@@ -30,7 +30,7 @@ export class AuthService {
    * @param apiKey
    */
   async getUserIdByApiKey(apiKey: string) {
-    const data = await this.prismao.getOrigin().sys_user_api_key.findMany({
+    const data = await this.prismao.sys_user_api_key.findMany({
       where: {
         api_key: apiKey,
         ...this.prismao.defaultSelArg().where
@@ -63,7 +63,7 @@ export class AuthService {
       return s === base.Y;
     }
     if (loginRole === 'admin') {
-      const admintop = await this.prismao.getOrigin().sys_admin_top.findFirst({
+      const admintop = await this.prismao.sys_admin_top.findFirst({
         where: {
           user_id: userId,
           ...this.prismao.defaultSelArg().where,
@@ -105,7 +105,7 @@ export class AuthService {
     if (ifPublicInterfaceInCache) {
       return ifPublicInterfaceInCache === base.Y;
     }
-    const raw = await this.prismao.getOrigin().sys_menu.findMany({
+    const raw = await this.prismao.sys_menu.findMany({
       where: {
         perms: permission,
         if_public: base.Y,
@@ -131,13 +131,13 @@ export class AuthService {
       ips.push(...parse);
     } else {
       // 接口是否存在
-      const menus = await this.prismao.getOrigin().sys_menu.findMany({
+      const menus = await this.prismao.sys_menu.findMany({
         where: {
           if_disabled: base.N,
           type: MenuTypeEnum.T_IS,
           id: {
             in: (
-              await this.prismao.getOrigin().sys_menu.findMany({
+              await this.prismao.sys_menu.findMany({
                 where: {
                   if_disabled: base.N,
                   type: MenuTypeEnum.T_Inter,
@@ -156,7 +156,7 @@ export class AuthService {
       if (menus.length === 0) {
         return true;
       }
-      const ips__ = await this.prismao.getOrigin().sys_menu_ip_white_list.findMany({
+      const ips__ = await this.prismao.sys_menu_ip_white_list.findMany({
         where: {
           type: MenuTypeEnum.T_IS,
           menu_id: {
@@ -208,7 +208,7 @@ export class AuthService {
     const sysPublicSelectParam = { if_disabled: base.N };
     const ifTopAdmin = await this.hasTopAdminPermission(loginRole, userId);
     if (ifTopAdmin) {
-      const userSyss_ = await this.prismao.getOrigin().sys_sys.findMany({
+      const userSyss_ = await this.prismao.sys_sys.findMany({
         where: {
           ...sysPublicSelectParam,
           ...this.prismao.defaultSelArg().where,
@@ -222,7 +222,7 @@ export class AuthService {
       return retarr;
     }
     const { allRoleIds, allDeptIds } = await this.rolesAndDeptsOfUser(userId, loginRole);
-    const allSysIdsOfRole = await this.prismao.getOrigin().sys_role_sys.findMany({
+    const allSysIdsOfRole = await this.prismao.sys_role_sys.findMany({
       select: {
         sys_id: true,
       },
@@ -233,7 +233,7 @@ export class AuthService {
         ...this.prismao.defaultSelArg().where,
       },
     });
-    const allSysIdsOfDept = await this.prismao.getOrigin().sys_dept_sys.findMany({
+    const allSysIdsOfDept = await this.prismao.sys_dept_sys.findMany({
       select: {
         sys_id: true,
       },
@@ -244,7 +244,7 @@ export class AuthService {
         ...this.prismao.defaultSelArg().where,
       },
     });
-    const userSyss_ = await this.prismao.getOrigin().sys_sys.findMany({
+    const userSyss_ = await this.prismao.sys_sys.findMany({
       where: {
         id: {
           in: [...allSysIdsOfRole.map((item) => item.sys_id), ...allSysIdsOfDept.map((item) => item.sys_id)],
@@ -293,7 +293,7 @@ export class AuthService {
     };
     const ifTopAdmin = await this.hasTopAdminPermission(loginRole, userId);
     if (ifTopAdmin) {
-      const userPermissions_ = await this.prismao.getOrigin().sys_menu.findMany({
+      const userPermissions_ = await this.prismao.sys_menu.findMany({
         where: {
           ...menuPublicSelectParam,
           ...this.prismao.defaultSelArg().where,
@@ -307,7 +307,7 @@ export class AuthService {
       return retarr;
     }
     const { allRoleIds, allDeptIds } = await this.rolesAndDeptsOfUser(userId, loginRole);
-    const allPermissionIdsOfRole = await this.prismao.getOrigin().sys_role_permission.findMany({
+    const allPermissionIdsOfRole = await this.prismao.sys_role_permission.findMany({
       select: {
         permission_id: true,
       },
@@ -318,7 +318,7 @@ export class AuthService {
         ...this.prismao.defaultSelArg().where,
       },
     });
-    const allPermissionIdsOfDept = await this.prismao.getOrigin().sys_dept_permission.findMany({
+    const allPermissionIdsOfDept = await this.prismao.sys_dept_permission.findMany({
       select: {
         permission_id: true,
       },
@@ -329,7 +329,7 @@ export class AuthService {
         ...this.prismao.defaultSelArg().where,
       },
     });
-    const userPermissions_ = await this.prismao.getOrigin().sys_menu.findMany({
+    const userPermissions_ = await this.prismao.sys_menu.findMany({
       where: {
         id: {
           in: [
@@ -354,7 +354,7 @@ export class AuthService {
    * @param permission
    */
   async permissionIfDisabled(permission: string) {
-    const newVar = await this.prismao.getOrigin().sys_menu.findMany({
+    const newVar = await this.prismao.sys_menu.findMany({
       where: {
         perms: permission,
         if_disabled: base.Y,
@@ -377,13 +377,13 @@ export class AuthService {
       const parse = JSON.parse(s) as MenuThrottleDto[];
       menuThrottles.push(...parse);
     } else {
-      const menus = await this.prismao.getOrigin().sys_menu.findMany({
+      const menus = await this.prismao.sys_menu.findMany({
         where: {
           if_disabled: base.N,
           type: MenuTypeEnum.T_IS,
           id: {
             in: (
-              await this.prismao.getOrigin().sys_menu.findMany({
+              await this.prismao.sys_menu.findMany({
                 where: {
                   if_disabled: base.N,
                   type: MenuTypeEnum.T_Inter,
@@ -402,7 +402,7 @@ export class AuthService {
       if (menus.length === 0) {
         return true;
       }
-      const menuThrottles_ = await this.prismao.getOrigin().sys_menu_throttle.findMany({
+      const menuThrottles_ = await this.prismao.sys_menu_throttle.findMany({
         where: {
           menu_id: {
             in: menus.map((item) => item.id),
@@ -420,7 +420,7 @@ export class AuthService {
     }
     menuThrottles.sort((a, b) => b.ttl - a.ttl);
     const now = timeUtils.timestamp();
-    const logs = await this.prismao.getOrigin().log_operation.findMany({
+    const logs = await this.prismao.log_operation.findMany({
       where: {
         call_ip: ipInfo.ip,
         perms: permission,
@@ -449,7 +449,7 @@ export class AuthService {
    * @param controledUserId
    */
   async ifAdminUserUpdNotAdminUser(controlUserId: string, controledUserId: string) {
-    const topAdminUser = await this.prismao.getOrigin().sys_admin_top.findMany({
+    const topAdminUser = await this.prismao.sys_admin_top.findMany({
       where: {
         user_id: {
           in: [controlUserId, controledUserId],
@@ -493,13 +493,13 @@ export class AuthService {
         this.winston.error(e);
       }
     }
-    const interfg = await this.prismao.getOrigin().sys_interface_group.findMany({
+    const interfg = await this.prismao.sys_interface_group.findMany({
       where: {
         perms: ppermission,
         ...this.prismao.defaultSelArg().where,
       },
     });
-    const interf = await this.prismao.getOrigin().sys_interface.findMany({
+    const interf = await this.prismao.sys_interface.findMany({
       where: {
         perms: permission,
         if_disabled: base.N,
@@ -509,7 +509,7 @@ export class AuthService {
     if (interfg.length === 0 || interf.length === 0) {
       throw new Exception('算法组或算法不存在。');
     }
-    const interfgf = await this.prismao.getOrigin().sys_interface_interface_group.findMany({
+    const interfgf = await this.prismao.sys_interface_interface_group.findMany({
       where: {
         interface_id: interf[0].id,
         interface_group_id: interfg[0].id,
@@ -733,14 +733,14 @@ export class AuthService {
     const allRoleIds = [...allRoleIds1.map((item) => item.role_id)];
     const allDeptIds = [...allDeptIds1.map((item) => item.dept_id)];
     if (loginRole === 'admin') {
-      const sutdps_ = await this.prismao.getOrigin().sys_user_table_default_permission.findMany({
+      const sutdps_ = await this.prismao.sys_user_table_default_permission.findMany({
         where: {
           table_name: 'sys_user',
           ...this.prismao.defaultSelArg().where,
         },
       });
       const sutdps = baseUtils.objToCamelCase<UserTableDefaultPermissionDto[]>(sutdps_);
-      const allRoleIds2 = await this.prismao.getOrigin().sys_role.findMany({
+      const allRoleIds2 = await this.prismao.sys_role.findMany({
         where: {
           ...(ifAdmin ? { if_admin: base.Y } : {}),
           if_disabled: base.N,
@@ -750,7 +750,7 @@ export class AuthService {
           ...this.prismao.defaultSelArg().where,
         },
       });
-      const allDeptIds2 = await this.prismao.getOrigin().sys_dept.findMany({
+      const allDeptIds2 = await this.prismao.sys_dept.findMany({
         where: {
           ...(ifAdmin ? { if_admin: base.Y } : {}),
           if_disabled: base.N,
@@ -764,14 +764,14 @@ export class AuthService {
       allDeptIds.push(...allDeptIds2.map((item) => item.id));
     }
     if (loginRole === 'visitor') {
-      const sutdps_ = await this.prismao.getOrigin().sys_user_table_default_permission.findMany({
+      const sutdps_ = await this.prismao.sys_user_table_default_permission.findMany({
         where: {
           table_name: 'sys_user_visitor',
           ...this.prismao.defaultSelArg().where,
         },
       });
       const sutdps = baseUtils.objToCamelCase<UserTableDefaultPermissionDto[]>(sutdps_);
-      const allRoleIds2 = await this.prismao.getOrigin().sys_role.findMany({
+      const allRoleIds2 = await this.prismao.sys_role.findMany({
         where: {
           ...(ifAdmin ? { if_admin: base.Y } : {}),
           if_disabled: base.N,
@@ -781,7 +781,7 @@ export class AuthService {
           ...this.prismao.defaultSelArg().where,
         },
       });
-      const allDeptIds2 = await this.prismao.getOrigin().sys_dept.findMany({
+      const allDeptIds2 = await this.prismao.sys_dept.findMany({
         where: {
           ...(ifAdmin ? { if_admin: base.Y } : {}),
           if_disabled: base.N,
@@ -902,7 +902,7 @@ export class AuthService {
       createTime: new Date(),
     },
   ) {
-    await this.prismao.getOrigin().log_operation.create({
+    await this.prismao.log_operation.create({
       data: {
         req_id: reqId,
         call_ip: request.ip,
@@ -946,7 +946,7 @@ export class AuthService {
     ifSuccess: string,
     remark: string,
   ) {
-    await this.prismao.getOrigin().log_algorithm_call.create({
+    await this.prismao.log_algorithm_call.create({
       data: {
         user_group_permission_id: userGroupPermissionId,
         pperms: pperms,

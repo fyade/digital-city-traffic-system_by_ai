@@ -13,7 +13,7 @@ export class LogOperationWsConsumer extends WorkerHost {
 
   async process(job: Job<LogOperationWsQueueJobDataDto>) {
     const data = job.data;
-    await this.prismao.getOrigin().log_operation_ws.create({
+    await this.prismao.log_operation_ws.create({
       data: {
         socket_id: data.socketId,
         call_ip: data.callIp,

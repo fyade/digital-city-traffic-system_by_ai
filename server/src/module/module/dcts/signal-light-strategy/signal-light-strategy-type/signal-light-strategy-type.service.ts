@@ -11,14 +11,15 @@ export class SignalLightStrategyTypeService {
       private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('signal_light_strategy_type', {
-      notNullKeys: ['name', 'description', 'strategyType'],
+      notNullKeys: ['name', 'description', 'strategyType', 'ifDisabled', 'orderNum'],
+      numberKeys: ['orderNum'],
     });
   }
 
   async selSignalLightStrategyType(dto: SignalLightStrategyTypeSelListDto): Promise<R> {
     const res = await this.pgprisma.findPage<SignalLightStrategyTypeDto, SignalLightStrategyTypeSelListDto>('signal_light_strategy_type', {
       data: dto,
-      orderBy: false,
+      orderBy: true,
     });
     return R.ok(res);
   }
@@ -26,7 +27,7 @@ export class SignalLightStrategyTypeService {
   async selAllSignalLightStrategyType(dto: SignalLightStrategyTypeSelAllDto): Promise<R> {
     const res = await this.pgprisma.findAll<SignalLightStrategyTypeDto>('signal_light_strategy_type', {
       data: dto,
-      orderBy: false,
+      orderBy: true,
     });
     return R.ok(res);
   }

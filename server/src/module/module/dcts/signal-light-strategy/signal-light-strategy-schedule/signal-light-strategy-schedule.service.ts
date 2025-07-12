@@ -11,14 +11,15 @@ export class SignalLightStrategyScheduleService {
       private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('signal_light_strategy_schedule', {
-      notNullKeys: ['name', 'description', 'scheduleType', 'startTime', 'endTime', 'cronExpression'],
+      notNullKeys: ['name', 'description', 'scheduleType', 'startTime', 'endTime', 'cronExpression', 'ifDisabled', 'orderNum'],
+      numberKeys: ['orderNum'],
     });
   }
 
   async selSignalLightStrategySchedule(dto: SignalLightStrategyScheduleSelListDto): Promise<R> {
     const res = await this.pgprisma.findPage<SignalLightStrategyScheduleDto, SignalLightStrategyScheduleSelListDto>('signal_light_strategy_schedule', {
       data: dto,
-      orderBy: false,
+      orderBy: true,
     });
     return R.ok(res);
   }
@@ -26,7 +27,7 @@ export class SignalLightStrategyScheduleService {
   async selAllSignalLightStrategySchedule(dto: SignalLightStrategyScheduleSelAllDto): Promise<R> {
     const res = await this.pgprisma.findAll<SignalLightStrategyScheduleDto>('signal_light_strategy_schedule', {
       data: dto,
-      orderBy: false,
+      orderBy: true,
     });
     return R.ok(res);
   }

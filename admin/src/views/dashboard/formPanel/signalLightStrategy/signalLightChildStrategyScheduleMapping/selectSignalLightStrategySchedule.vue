@@ -12,6 +12,7 @@ import { signalLightStrategyScheduleDict } from "@/dict/module/dcts/signalLightS
 import { SignalLightStrategyTypeStrategyScheduleMappingDto, SignalLightStrategyTypeStrategyScheduleMappingUpdDto } from "@/type/module/dcts/signalLightStrategy/signalLightStrategyTypeStrategyScheduleMapping.ts";
 import { signalLightStrategyTypeStrategyScheduleMappingApi } from "@/api/module/dcts/signalLightStrategy/signalLightStrategyTypeStrategyScheduleMapping.ts";
 import { signalLightStrategyTypeStrategyScheduleMappingDict } from "@/dict/module/dcts/signalLightStrategy/signalLightStrategyTypeStrategyScheduleMapping.ts";
+import { final } from "@/utils/base.ts";
 
 const props = defineProps({
   selectStrategyTypeId: {
@@ -30,6 +31,9 @@ const state = reactive<State2<SignalLightStrategyScheduleDto, SignalLightStrateg
     startTime: '',
     endTime: '',
     cronExpression: '',
+    ifDisabled: final.N,
+    orderNum: final.DEFAULT_ORDER_NUM,
+    remark: '',
   },
   dialogForms: [],
   dialogForms_error: {},
@@ -52,6 +56,9 @@ const columns: DataTableColumns<SignalLightStrategyScheduleDto> = [
   {title: signalLightStrategyScheduleDict.startTime, key: 'startTime'},
   {title: signalLightStrategyScheduleDict.endTime, key: 'endTime'},
   {title: signalLightStrategyScheduleDict.cronExpression, key: 'cronExpression'},
+  {title: signalLightStrategyScheduleDict.ifDisabled, key: 'ifDisabled'},
+  {title: signalLightStrategyScheduleDict.orderNum, key: 'orderNum'},
+  {title: signalLightStrategyScheduleDict.remark, key: 'remark'},
   {
     title: '操作',
     key: 'operation',

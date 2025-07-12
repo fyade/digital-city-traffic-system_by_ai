@@ -3,6 +3,7 @@ import { h, watch } from "vue";
 import { NSpin } from "naive-ui";
 import * as Cesium from "cesium";
 import { useSysStore } from "@/store/module/sys.ts";
+import { WsClient } from "@/services/wsClient.ts";
 import { ContextMenuModule } from "@/views/dashboard/functionModules/contextMenuModule.ts";
 import { LayerNotificationModule } from "@/views/dashboard/functionModules/layerNotificationModule.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
@@ -24,6 +25,7 @@ const visibleButtons = sysStore.getVisibleButtons();
  */
 class UseDashboardCesium extends UseCesium {
   constructor(
+      private readonly wsClient: WsClient,
       private readonly cmModule: ContextMenuModule,
       private readonly lnModule: LayerNotificationModule,
       private readonly meModule: MapEntityModule,
@@ -33,6 +35,10 @@ class UseDashboardCesium extends UseCesium {
       private readonly vdModule: VersionDataModule,
   ) {
     super();
+    wsClient.sendMsg('test:test', 'hello!')
+    wsClient.addEventListener('test:test2', async data => {
+      console.log('data', data)
+    })
   }
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 外部访问 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -238,6 +244,7 @@ class UseDashboardCesium extends UseCesium {
 }
 
 export function createDashboardCesium() {
+  const wsClient = new WsClient();
   const cmModule = new ContextMenuModule();
   const lmModule = new LayerNotificationModule();
   const meModule = new MapEntityModule();
@@ -246,6 +253,7 @@ export function createDashboardCesium() {
   const slModule = new SignalLightModule();
   const vdModule = new VersionDataModule();
   return new UseDashboardCesium(
+      wsClient,
       cmModule,
       lmModule,
       meModule,

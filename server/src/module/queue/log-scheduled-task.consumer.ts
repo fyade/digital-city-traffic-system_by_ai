@@ -13,7 +13,7 @@ export class LogScheduledTaskConsumer extends WorkerHost {
 
   async process(job: Job<LogScheduledTaskQueueJobDataDto>) {
     const data = job.data;
-    await this.prismao.getOrigin().log_scheduled_task.create({
+    await this.prismao.log_scheduled_task.create({
       data: {
         task_target: data.taskTarget,
         operate_type: data.operateType,

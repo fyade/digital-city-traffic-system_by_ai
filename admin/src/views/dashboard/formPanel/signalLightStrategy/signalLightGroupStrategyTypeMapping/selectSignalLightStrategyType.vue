@@ -9,6 +9,7 @@ import { MdRefresh, MdSearch } from '@vicons/ionicons4'
 import { SignalLightStrategyTypeDto, SignalLightStrategyTypeUpdDto } from "@/type/module/dcts/signalLightStrategy/signalLightStrategyType.ts";
 import { signalLightStrategyTypeApi } from "@/api/module/dcts/signalLightStrategy/signalLightStrategyType.ts";
 import { signalLightStrategyTypeDict } from "@/dict/module/dcts/signalLightStrategy/signalLightStrategyType.ts";
+import { final } from "@/utils/base.ts";
 
 const emits = defineEmits(['selectRow']);
 
@@ -18,6 +19,9 @@ const state = reactive<State2<SignalLightStrategyTypeDto, SignalLightStrategyTyp
     name: '',
     description: '',
     strategyType: '',
+    ifDisabled: final.N,
+    orderNum: final.DEFAULT_ORDER_NUM,
+    remark: '',
   },
   dialogForms: [],
   dialogForms_error: {},
@@ -30,6 +34,9 @@ const columns: DataTableColumns<SignalLightStrategyTypeDto> = [
   {title: signalLightStrategyTypeDict.name, key: 'name'},
   {title: signalLightStrategyTypeDict.description, key: 'description'},
   {title: signalLightStrategyTypeDict.strategyType, key: 'strategyType'},
+  {title: signalLightStrategyTypeDict.ifDisabled, key: 'ifDisabled'},
+  {title: signalLightStrategyTypeDict.orderNum, key: 'orderNum'},
+  {title: signalLightStrategyTypeDict.remark, key: 'remark'},
   {
     title: '操作',
     key: 'operation',

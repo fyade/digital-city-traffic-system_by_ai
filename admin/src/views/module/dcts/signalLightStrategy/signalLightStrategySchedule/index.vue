@@ -26,6 +26,9 @@ const state = reactive<State2<SignalLightStrategyScheduleDto, SignalLightStrateg
     startTime: '',
     endTime: '',
     cronExpression: '',
+    ifDisabled: final.N,
+    orderNum: final.DEFAULT_ORDER_NUM,
+    remark: '',
   },
   dialogForms: [],
   dialogForms_error: {},
@@ -38,6 +41,8 @@ const dFormRules: FormRules = {
   startTime: [{required: true, trigger: 'change'}],
   endTime: [{required: true, trigger: 'change'}],
   cronExpression: [{required: true, trigger: 'change'}],
+  ifDisabled: [{required: true, trigger: 'change'}],
+  orderNum: [{required: true, trigger: 'change'}],
 }
 const config = new TablePageConfig({
   bulkOperation: true,
@@ -156,6 +161,28 @@ const {
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item :label="signalLightStrategyScheduleDict.ifDisabled" prop="ifDisabled">
+              <el-radio-group v-model="state.dialogForm.ifDisabled">
+                <el-radio :value="final.Y">是</el-radio>
+                <el-radio :value="final.N">否</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="signalLightStrategyScheduleDict.orderNum" prop="orderNum">
+              <el-input-number v-model="state.dialogForm.orderNum" controls-position="right"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item :label="signalLightStrategyScheduleDict.remark" prop="remark">
+              <el-input type="textarea" v-model="state.dialogForm.remark" :placeholder="signalLightStrategyScheduleDict.remark"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <!--在此上方添加表单项-->
         <!--<el-form-item :label="signalLightStrategyScheduleDict.orderNum" prop='orderNum'>-->
         <!--  <el-input-number v-model="state.dialogForm.orderNum" controls-position="right"/>-->
@@ -252,6 +279,36 @@ const {
               </div>
             </template>
           </el-table-column>
+          <el-table-column prop="ifDisabled" :label="signalLightStrategyScheduleDict.ifDisabled" width="70">
+            <template #header>
+              <span :class="ifRequired('ifDisabled')?'tp-table-header-required':''">{{ signalLightStrategyScheduleDict.ifDisabled }}</span>
+            </template>
+            <template #default="{$index}">
+              <div :class="state.dialogForms_error?.[`${$index}-ifDisabled`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-checkbox v-model="state.dialogForms[$index].ifDisabled" :true-value="final.Y" :false-value="final.N"/>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="orderNum" :label="signalLightStrategyScheduleDict.orderNum" width="300">
+            <template #header>
+              <span :class="ifRequired('orderNum')?'tp-table-header-required':''">{{ signalLightStrategyScheduleDict.orderNum }}</span>
+            </template>
+            <template #default="{$index}">
+              <div :class="state.dialogForms_error?.[`${$index}-orderNum`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-input-number v-model="state.dialogForms[$index].orderNum" controls-position="right"/>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="remark" :label="signalLightStrategyScheduleDict.remark" width="300">
+            <template #header>
+              <span :class="ifRequired('remark')?'tp-table-header-required':''">{{ signalLightStrategyScheduleDict.remark }}</span>
+            </template>
+            <template #default="{$index}">
+              <div :class="state.dialogForms_error?.[`${$index}-remark`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-input type="textarea" v-model="state.dialogForms[$index].remark" :placeholder="signalLightStrategyScheduleDict.remark"/>
+              </div>
+            </template>
+          </el-table-column>
           <!--在此上方添加表格列-->
           <el-table-column fixed="right" label="操作" min-width="120">
             <template v-if="dialogType.value===final.ins" #default="{$index}">
@@ -333,6 +390,9 @@ const {
         </template>
       </el-table-column>
       <el-table-column prop="cronExpression" :label="signalLightStrategyScheduleDict.cronExpression" width="180"/>
+      <el-table-column prop="ifDisabled" :label="signalLightStrategyScheduleDict.ifDisabled" width="120"/>
+      <el-table-column prop="orderNum" :label="signalLightStrategyScheduleDict.orderNum" width="120"/>
+      <el-table-column prop="remark" :label="signalLightStrategyScheduleDict.remark" width="120"/>
       <!--在此上方添加表格列-->
       <!--<el-table-column prop="createRole" :label="signalLightStrategyScheduleDict.createRole" width="120"/>-->
       <!--<el-table-column prop="updateRole" :label="signalLightStrategyScheduleDict.updateRole" width="120"/>-->

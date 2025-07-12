@@ -6,7 +6,7 @@ export class PrismaParam {
   };
   skip!: number;
   take!: number;
-  orderBy?: Record<string, string>;
+  orderBy?: Record<string, string> | Record<string, string>[];
 }
 
 // 查询参数的类型为 object 时的格式

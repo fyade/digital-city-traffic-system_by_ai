@@ -23,7 +23,7 @@ export class ScheduleService implements OnModuleInit {
   }
 
   private async init() {
-    const tasks = await this.prismao.getOrigin().sys_scheduled_task.findMany({
+    const tasks = await this.prismao.sys_scheduled_task.findMany({
       where: {
         ...this.prismao.defaultSelArg().where,
       },

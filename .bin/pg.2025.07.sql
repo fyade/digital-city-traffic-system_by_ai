@@ -97,6 +97,7 @@ alter table public.signal_light_strategy_schedule
 drop
 column type_id;
 
+-- 信号灯策略类型-信号灯策略调度关联表
 create table public.signal_light_strategy_type_strategy_schedule_mapping
 (
     id                   serial PRIMARY KEY,
@@ -110,5 +111,71 @@ create table public.signal_light_strategy_type_strategy_schedule_mapping
     update_time          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted              CHAR(1)                  NOT NULL DEFAULT 'N'
 );
+
+-- ===== ===== ===== ===== ===== ===== 2025.07.11 ===== ===== ===== ===== ===== =====
+
+-- 信号灯策略参数表
+create table public.signal_light_strategy_param
+(
+    id              serial PRIMARY KEY,
+    red_duration    int                      not null,
+    yellow_duration int                      not null,
+    green_duration  int                      not null,
+    create_role     VARCHAR(30)              NOT NULL,
+    update_role     VARCHAR(30)              NOT NULL,
+    create_by       VARCHAR(10)              NOT NULL,
+    update_by       VARCHAR(10)              NOT NULL,
+    create_time     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_time     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted         CHAR(1)                  NOT NULL DEFAULT 'N'
+);
+
+-- 信号灯策略调度-信号灯策略参数关联表
+create table public.signal_light_strategy_schedule_strategy_param_mapping
+(
+    id                   serial PRIMARY KEY,
+    strategy_schedule_id INT                      NOT NULL,
+    strategy_param_id    INT                      NOT NULL,
+    create_role          VARCHAR(30)              NOT NULL,
+    update_role          VARCHAR(30)              NOT NULL,
+    create_by            VARCHAR(10)              NOT NULL,
+    update_by            VARCHAR(10)              NOT NULL,
+    create_time          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_time          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted              CHAR(1)                  NOT NULL DEFAULT 'N'
+);
+
+alter table public.signal_light_strategy_type
+    add if_disabled char(1);
+alter table public.signal_light_strategy_type
+    add order_num int;
+alter table public.signal_light_strategy_type
+    add remark varchar(300);
+alter table public.signal_light_strategy_type
+    alter column if_disabled set not null;
+alter table public.signal_light_strategy_type
+    alter column order_num set not null;
+
+alter table public.signal_light_strategy_schedule
+    add if_disabled char(1);
+alter table public.signal_light_strategy_schedule
+    add order_num int;
+alter table public.signal_light_strategy_schedule
+    add remark varchar(300);
+alter table public.signal_light_strategy_schedule
+    alter column if_disabled set not null;
+alter table public.signal_light_strategy_schedule
+    alter column order_num set not null;
+
+alter table public.signal_light_strategy_param
+    add if_disabled char(1);
+alter table public.signal_light_strategy_param
+    add order_num int;
+alter table public.signal_light_strategy_param
+    add remark varchar(300);
+alter table public.signal_light_strategy_param
+    alter column if_disabled set not null;
+alter table public.signal_light_strategy_param
+    alter column order_num set not null;
 
 -- ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== =====

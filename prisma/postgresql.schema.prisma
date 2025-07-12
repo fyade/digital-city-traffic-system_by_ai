@@ -434,6 +434,9 @@ model signal_light_strategy_type {
   update_time   DateTime @default(now()) @dbPostgresql.Timestamptz(6)
   deleted       String   @default("N") @dbPostgresql.Char(1)
   strategy_type String   @dbPostgresql.VarChar(100)
+  if_disabled   String   @dbPostgresql.Char(1)
+  order_num     Int
+  remark        String?  @dbPostgresql.VarChar(300)
 }
 
 // 信号灯策略调度表
@@ -452,6 +455,9 @@ model signal_light_strategy_schedule {
   deleted         String   @default("N") @dbPostgresql.Char(1)
   name            String   @dbPostgresql.VarChar(100)
   description     String   @dbPostgresql.VarChar(100)
+  if_disabled     String   @dbPostgresql.Char(1)
+  order_num       Int
+  remark          String?  @dbPostgresql.VarChar(300)
 }
 
 // 信号灯组-信号灯策略类型关联表
@@ -487,6 +493,38 @@ model signal_light_strategy_type_strategy_schedule_mapping {
   id                   Int      @id @default(autoincrement())
   strategy_type_id     Int
   strategy_schedule_id Int
+  create_role          String   @dbPostgresql.VarChar(30)
+  update_role          String   @dbPostgresql.VarChar(30)
+  create_by            String   @dbPostgresql.VarChar(10)
+  update_by            String   @dbPostgresql.VarChar(10)
+  create_time          DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time          DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted              String   @default("N") @dbPostgresql.Char(1)
+}
+
+// 信号灯策略参数表
+model signal_light_strategy_param {
+  id              Int      @id @default(autoincrement())
+  red_duration    Int
+  yellow_duration Int
+  green_duration  Int
+  create_role     String   @dbPostgresql.VarChar(30)
+  update_role     String   @dbPostgresql.VarChar(30)
+  create_by       String   @dbPostgresql.VarChar(10)
+  update_by       String   @dbPostgresql.VarChar(10)
+  create_time     DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time     DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted         String   @default("N") @dbPostgresql.Char(1)
+  if_disabled     String   @dbPostgresql.Char(1)
+  order_num       Int
+  remark          String?  @dbPostgresql.VarChar(300)
+}
+
+// 信号灯策略调度-信号灯策略参数关联表
+model signal_light_strategy_schedule_strategy_param_mapping {
+  id                   Int      @id @default(autoincrement())
+  strategy_schedule_id Int
+  strategy_param_id    Int
   create_role          String   @dbPostgresql.VarChar(30)
   update_role          String   @dbPostgresql.VarChar(30)
   create_by            String   @dbPostgresql.VarChar(10)

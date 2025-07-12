@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: 'dcts:signalLightStrategy:signalLightStrategyType'
+  name: 'dcts:signalLightStrategy:signalLightStrategyParam'
 }
 </script>
 
@@ -12,16 +12,16 @@ import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
 import { FormRules } from "element-plus";
 import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-plus/icons-vue";
-import { SignalLightStrategyTypeDto, SignalLightStrategyTypeUpdDto } from "@/type/module/dcts/signalLightStrategy/signalLightStrategyType.ts";
-import { signalLightStrategyTypeApi } from "@/api/module/dcts/signalLightStrategy/signalLightStrategyType.ts";
-import { signalLightStrategyTypeDict } from "@/dict/module/dcts/signalLightStrategy/signalLightStrategyType.ts";
+import { SignalLightStrategyParamDto, SignalLightStrategyParamUpdDto } from "@/type/module/dcts/signalLightStrategy/signalLightStrategyParam.ts";
+import { signalLightStrategyParamApi } from "@/api/module/dcts/signalLightStrategy/signalLightStrategyParam.ts";
+import { signalLightStrategyParamDict } from "@/dict/module/dcts/signalLightStrategy/signalLightStrategyParam.ts";
 
-const state = reactive<State2<SignalLightStrategyTypeDto, SignalLightStrategyTypeUpdDto>>({
+const state = reactive<State2<SignalLightStrategyParamDto, SignalLightStrategyParamUpdDto>>({
   dialogForm: {
     id: -1,
-    name: '',
-    description: '',
-    strategyType: '',
+    redDuration: 0,
+    yellowDuration: 0,
+    greenDuration: 0,
     ifDisabled: final.N,
     orderNum: final.DEFAULT_ORDER_NUM,
     remark: '',
@@ -31,9 +31,9 @@ const state = reactive<State2<SignalLightStrategyTypeDto, SignalLightStrategyTyp
   filterForm: {},
 })
 const dFormRules: FormRules = {
-  name: [{required: true, trigger: 'change'}],
-  description: [{required: true, trigger: 'change'}],
-  strategyType: [{required: true, trigger: 'change'}],
+  redDuration: [{required: true, trigger: 'change'}],
+  yellowDuration: [{required: true, trigger: 'change'}],
+  greenDuration: [{required: true, trigger: 'change'}],
   ifDisabled: [{required: true, trigger: 'change'}],
   orderNum: [{required: true, trigger: 'change'}],
 }
@@ -78,12 +78,12 @@ const {
   dfIns,
   dfDel,
   ifRequired,
-} = funcTablePage<SignalLightStrategyTypeDto, SignalLightStrategyTypeUpdDto>({
+} = funcTablePage<SignalLightStrategyParamDto, SignalLightStrategyParamUpdDto>({
   state,
   dFormRules,
   config,
-  api: signalLightStrategyTypeApi,
-  dict: signalLightStrategyTypeDict,
+  api: signalLightStrategyParamApi,
+  dict: signalLightStrategyParamDict,
 })
 </script>
 
@@ -112,30 +112,30 @@ const {
         <!--  <el-col :span="12"></el-col>-->
         <!--  <el-col :span="12"></el-col>-->
         <!--</el-row>-->
-        <el-form-item v-if="dialogType.value!==final.ins" :label="signalLightStrategyTypeDict.id" prop="id">
+        <el-form-item v-if="dialogType.value!==final.ins" :label="signalLightStrategyParamDict.id" prop="id">
           <span>{{ state.dialogForm.id }}</span>
         </el-form-item>
         <!--在此下方添加表单项-->
         <el-row>
           <el-col :span="12">
-            <el-form-item :label="signalLightStrategyTypeDict.name" prop="name">
-              <el-input v-model="state.dialogForm.name" :placeholder="signalLightStrategyTypeDict.name"/>
+            <el-form-item :label="signalLightStrategyParamDict.redDuration" prop="redDuration">
+              <el-input-number v-model="state.dialogForm.redDuration" controls-position="right"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item :label="signalLightStrategyTypeDict.description" prop="description">
-              <el-input v-model="state.dialogForm.description" :placeholder="signalLightStrategyTypeDict.description"/>
+            <el-form-item :label="signalLightStrategyParamDict.yellowDuration" prop="yellowDuration">
+              <el-input-number v-model="state.dialogForm.yellowDuration" controls-position="right"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item :label="signalLightStrategyTypeDict.strategyType" prop="strategyType">
-              <el-input v-model="state.dialogForm.strategyType" :placeholder="signalLightStrategyTypeDict.strategyType"/>
+            <el-form-item :label="signalLightStrategyParamDict.greenDuration" prop="greenDuration">
+              <el-input-number v-model="state.dialogForm.greenDuration" controls-position="right"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item :label="signalLightStrategyTypeDict.ifDisabled" prop="ifDisabled">
+            <el-form-item :label="signalLightStrategyParamDict.ifDisabled" prop="ifDisabled">
               <el-radio-group v-model="state.dialogForm.ifDisabled">
                 <el-radio :value="final.Y">是</el-radio>
                 <el-radio :value="final.N">否</el-radio>
@@ -145,32 +145,32 @@ const {
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item :label="signalLightStrategyTypeDict.orderNum" prop="orderNum">
+            <el-form-item :label="signalLightStrategyParamDict.orderNum" prop="orderNum">
               <el-input-number v-model="state.dialogForm.orderNum" controls-position="right"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item :label="signalLightStrategyTypeDict.remark" prop="remark">
-              <el-input type="textarea" v-model="state.dialogForm.remark" :placeholder="signalLightStrategyTypeDict.remark"/>
+            <el-form-item :label="signalLightStrategyParamDict.remark" prop="remark">
+              <el-input type="textarea" v-model="state.dialogForm.remark" :placeholder="signalLightStrategyParamDict.remark"/>
             </el-form-item>
           </el-col>
         </el-row>
         <!--在此上方添加表单项-->
-        <!--<el-form-item :label="signalLightStrategyTypeDict.orderNum" prop='orderNum'>-->
+        <!--<el-form-item :label="signalLightStrategyParamDict.orderNum" prop='orderNum'>-->
         <!--  <el-input-number v-model="state.dialogForm.orderNum" controls-position="right"/>-->
         <!--</el-form-item>-->
-        <!--<el-form-item :label="signalLightStrategyTypeDict.ifDefault" prop='ifDefault'>-->
+        <!--<el-form-item :label="signalLightStrategyParamDict.ifDefault" prop='ifDefault'>-->
         <!--  <el-switch v-model="state.dialogForm.ifDefault" :active-value='final.Y' :inactive-value='final.N'/>-->
         <!--</el-form-item>-->
-        <!--<el-form-item :label="signalLightStrategyTypeDict.ifDisabled" prop='ifDisabled'>-->
+        <!--<el-form-item :label="signalLightStrategyParamDict.ifDisabled" prop='ifDisabled'>-->
         <!--  <el-radio-group v-model="state.dialogForm.ifDisabled">-->
         <!--    <el-radio :value="final.Y">是</el-radio>-->
         <!--    <el-radio :value="final.N">否</el-radio>-->
         <!--  </el-radio-group>-->
         <!--</el-form-item>-->
-        <!--<el-form-item :label="signalLightStrategyTypeDict.ifDisabled" prop="ifDisabled">-->
+        <!--<el-form-item :label="signalLightStrategyParamDict.ifDisabled" prop="ifDisabled">-->
         <!--  <el-switch v-model="state.dialogForm.ifDisabled" :active-value="final.N" :inactive-value="final.Y"/>-->
         <!--</el-form-item>-->
         <!--上方几个酌情使用-->
@@ -191,39 +191,39 @@ const {
             </template>
           </el-table-column>
           <!--在此下方添加表格列-->
-          <el-table-column prop="name" :label="signalLightStrategyTypeDict.name" width="300">
+          <el-table-column prop="redDuration" :label="signalLightStrategyParamDict.redDuration" width="300">
             <template #header>
-              <span :class="ifRequired('name')?'tp-table-header-required':''">{{ signalLightStrategyTypeDict.name }}</span>
+              <span :class="ifRequired('redDuration')?'tp-table-header-required':''">{{ signalLightStrategyParamDict.redDuration }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-name`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].name" :placeholder="signalLightStrategyTypeDict.name"/>
+              <div :class="state.dialogForms_error?.[`${$index}-redDuration`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-input-number v-model="state.dialogForms[$index].redDuration" controls-position="right"/>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="description" :label="signalLightStrategyTypeDict.description" width="300">
+          <el-table-column prop="yellowDuration" :label="signalLightStrategyParamDict.yellowDuration" width="300">
             <template #header>
-              <span :class="ifRequired('description')?'tp-table-header-required':''">{{ signalLightStrategyTypeDict.description }}</span>
+              <span :class="ifRequired('yellowDuration')?'tp-table-header-required':''">{{ signalLightStrategyParamDict.yellowDuration }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-description`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].description" :placeholder="signalLightStrategyTypeDict.description"/>
+              <div :class="state.dialogForms_error?.[`${$index}-yellowDuration`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-input-number v-model="state.dialogForms[$index].yellowDuration" controls-position="right"/>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="strategyType" :label="signalLightStrategyTypeDict.strategyType" width="300">
+          <el-table-column prop="greenDuration" :label="signalLightStrategyParamDict.greenDuration" width="300">
             <template #header>
-              <span :class="ifRequired('strategyType')?'tp-table-header-required':''">{{ signalLightStrategyTypeDict.strategyType }}</span>
+              <span :class="ifRequired('greenDuration')?'tp-table-header-required':''">{{ signalLightStrategyParamDict.greenDuration }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-strategyType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].strategyType" :placeholder="signalLightStrategyTypeDict.strategyType"/>
+              <div :class="state.dialogForms_error?.[`${$index}-greenDuration`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-input-number v-model="state.dialogForms[$index].greenDuration" controls-position="right"/>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="ifDisabled" :label="signalLightStrategyTypeDict.ifDisabled" width="70">
+          <el-table-column prop="ifDisabled" :label="signalLightStrategyParamDict.ifDisabled" width="70">
             <template #header>
-              <span :class="ifRequired('ifDisabled')?'tp-table-header-required':''">{{ signalLightStrategyTypeDict.ifDisabled }}</span>
+              <span :class="ifRequired('ifDisabled')?'tp-table-header-required':''">{{ signalLightStrategyParamDict.ifDisabled }}</span>
             </template>
             <template #default="{$index}">
               <div :class="state.dialogForms_error?.[`${$index}-ifDisabled`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
@@ -231,9 +231,9 @@ const {
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="orderNum" :label="signalLightStrategyTypeDict.orderNum" width="300">
+          <el-table-column prop="orderNum" :label="signalLightStrategyParamDict.orderNum" width="300">
             <template #header>
-              <span :class="ifRequired('orderNum')?'tp-table-header-required':''">{{ signalLightStrategyTypeDict.orderNum }}</span>
+              <span :class="ifRequired('orderNum')?'tp-table-header-required':''">{{ signalLightStrategyParamDict.orderNum }}</span>
             </template>
             <template #default="{$index}">
               <div :class="state.dialogForms_error?.[`${$index}-orderNum`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
@@ -241,13 +241,13 @@ const {
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="remark" :label="signalLightStrategyTypeDict.remark" width="300">
+          <el-table-column prop="remark" :label="signalLightStrategyParamDict.remark" width="300">
             <template #header>
-              <span :class="ifRequired('remark')?'tp-table-header-required':''">{{ signalLightStrategyTypeDict.remark }}</span>
+              <span :class="ifRequired('remark')?'tp-table-header-required':''">{{ signalLightStrategyParamDict.remark }}</span>
             </template>
             <template #default="{$index}">
               <div :class="state.dialogForms_error?.[`${$index}-remark`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input type="textarea" v-model="state.dialogForms[$index].remark" :placeholder="signalLightStrategyTypeDict.remark"/>
+                <el-input type="textarea" v-model="state.dialogForms[$index].remark" :placeholder="signalLightStrategyParamDict.remark"/>
               </div>
             </template>
           </el-table-column>
@@ -281,8 +281,8 @@ const {
         @keyup.enter="fEnter"
     >
       <!--在此下方添加表单项-->
-      <!--<el-form-item :label="signalLightStrategyTypeDict." prop="">-->
-      <!--  <el-input v-model="state.filterForm." :placeholder="signalLightStrategyTypeDict."/>-->
+      <!--<el-form-item :label="signalLightStrategyParamDict." prop="">-->
+      <!--  <el-input v-model="state.filterForm." :placeholder="signalLightStrategyParamDict."/>-->
       <!--</el-form-item>-->
       <!--在此上方添加表单项-->
       <el-form-item>
@@ -315,23 +315,23 @@ const {
         @selection-change="handleSelectionChange"
     >
       <el-table-column fixed type="selection" width="55"/>
-      <!--<el-table-column fixed prop="id" :label="signalLightStrategyTypeDict.id" width="180"/>-->
+      <!--<el-table-column fixed prop="id" :label="signalLightStrategyParamDict.id" width="180"/>-->
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
-      <el-table-column prop="name" :label="signalLightStrategyTypeDict.name" width="180"/>
-      <el-table-column prop="description" :label="signalLightStrategyTypeDict.description" width="240"/>
-      <el-table-column prop="strategyType" :label="signalLightStrategyTypeDict.strategyType" width="120"/>
-      <el-table-column prop="ifDisabled" :label="signalLightStrategyTypeDict.ifDisabled" width="120"/>
-      <el-table-column prop="orderNum" :label="signalLightStrategyTypeDict.orderNum" width="120"/>
-      <el-table-column prop="remark" :label="signalLightStrategyTypeDict.remark" width="120"/>
+      <el-table-column prop="redDuration" :label="signalLightStrategyParamDict.redDuration" width="120"/>
+      <el-table-column prop="yellowDuration" :label="signalLightStrategyParamDict.yellowDuration" width="120"/>
+      <el-table-column prop="greenDuration" :label="signalLightStrategyParamDict.greenDuration" width="120"/>
+      <el-table-column prop="ifDisabled" :label="signalLightStrategyParamDict.ifDisabled" width="120"/>
+      <el-table-column prop="orderNum" :label="signalLightStrategyParamDict.orderNum" width="120"/>
+      <el-table-column prop="remark" :label="signalLightStrategyParamDict.remark" width="120"/>
       <!--在此上方添加表格列-->
-      <!--<el-table-column prop="createRole" :label="signalLightStrategyTypeDict.createRole" width="120"/>-->
-      <!--<el-table-column prop="updateRole" :label="signalLightStrategyTypeDict.updateRole" width="120"/>-->
-      <!--<el-table-column prop="createBy" :label="signalLightStrategyTypeDict.createBy" width="120"/>-->
-      <!--<el-table-column prop="updateBy" :label="signalLightStrategyTypeDict.updateBy" width="120"/>-->
-      <!--<el-table-column prop="createTime" :label="signalLightStrategyTypeDict.createTime" width="220"/>-->
-      <!--<el-table-column prop="updateTime" :label="signalLightStrategyTypeDict.updateTime" width="220"/>-->
-      <!--<el-table-column prop="deleted" :label="signalLightStrategyTypeDict.deleted" width="60"/>-->
+      <!--<el-table-column prop="createRole" :label="signalLightStrategyParamDict.createRole" width="120"/>-->
+      <!--<el-table-column prop="updateRole" :label="signalLightStrategyParamDict.updateRole" width="120"/>-->
+      <!--<el-table-column prop="createBy" :label="signalLightStrategyParamDict.createBy" width="120"/>-->
+      <!--<el-table-column prop="updateBy" :label="signalLightStrategyParamDict.updateBy" width="120"/>-->
+      <!--<el-table-column prop="createTime" :label="signalLightStrategyParamDict.createTime" width="220"/>-->
+      <!--<el-table-column prop="updateTime" :label="signalLightStrategyParamDict.updateTime" width="220"/>-->
+      <!--<el-table-column prop="deleted" :label="signalLightStrategyParamDict.deleted" width="60"/>-->
       <!--上方几个酌情使用-->
       <el-table-column fixed="right" label="操作" min-width="140">
         <template #default="{row}">

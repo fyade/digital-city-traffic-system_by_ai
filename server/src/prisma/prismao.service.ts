@@ -33,10 +33,6 @@ export class PrismaoService extends PrismaClient {
     });
   }
 
-  public getOrigin() {
-    return this as unknown as PrismaClient;
-  }
-
   protected getUserId() {
     return this.bcs.getUserData().userId || '???';
   }
