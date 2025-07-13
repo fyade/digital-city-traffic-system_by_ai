@@ -5,7 +5,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { CONFIG, final } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
@@ -16,6 +16,7 @@ import { SignalLightStrategyScheduleDto, SignalLightStrategyScheduleUpdDto } fro
 import { signalLightStrategyScheduleApi } from "@/api/module/dcts/signalLightStrategy/signalLightStrategySchedule.ts";
 import { signalLightStrategyScheduleDict } from "@/dict/module/dcts/signalLightStrategy/signalLightStrategySchedule.ts";
 import { timeUtils } from "@dcts/common";
+import StrategyParamOfStrategySchedule from "@/views/module/dcts/signalLightStrategy/signalLightStrategySchedule/strategyParamOfStrategySchedule.vue";
 
 const state = reactive<State2<SignalLightStrategyScheduleDto, SignalLightStrategyScheduleUpdDto>>({
   dialogForm: {
@@ -32,7 +33,12 @@ const state = reactive<State2<SignalLightStrategyScheduleDto, SignalLightStrateg
   },
   dialogForms: [],
   dialogForms_error: {},
-  filterForm: {},
+  filterForm: {
+    name: '',
+    description: '',
+    scheduleType: '',
+    ifDisabled: '',
+  },
 })
 const dFormRules: FormRules = {
   name: [{required: true, trigger: 'change'}],
@@ -92,9 +98,29 @@ const {
   api: signalLightStrategyScheduleApi,
   dict: signalLightStrategyScheduleDict,
 })
+
+const visible = ref(false)
+const selectStrategySchedule = ref<SignalLightStrategyScheduleDto>(new SignalLightStrategyScheduleDto())
+const manageSonData = (row: SignalLightStrategyScheduleDto) => {
+  selectStrategySchedule.value = row
+  visible.value = true
+}
 </script>
 
 <template>
+  <el-dialog
+      :width="CONFIG.dialog_width_wider"
+      v-model="visible"
+      title="策略参数管理"
+      draggable
+      append-to-body
+      destroy-on-close
+  >
+    <StrategyParamOfStrategySchedule
+        :strategy-schedule="selectStrategySchedule"
+    />
+  </el-dialog>
+
   <!--弹窗-->
   <el-dialog
       :width="activeTabName===final.more ? CONFIG.dialog_width_wider : CONFIG.dialog_width"
@@ -339,9 +365,22 @@ const {
         @keyup.enter="fEnter"
     >
       <!--在此下方添加表单项-->
-      <!--<el-form-item :label="signalLightStrategyScheduleDict." prop="">-->
-      <!--  <el-input v-model="state.filterForm." :placeholder="signalLightStrategyScheduleDict."/>-->
-      <!--</el-form-item>-->
+      <el-form-item :label="signalLightStrategyScheduleDict.name" prop="name">
+        <el-input v-model="state.filterForm.name" :placeholder="signalLightStrategyScheduleDict.name"/>
+      </el-form-item>
+      <el-form-item :label="signalLightStrategyScheduleDict.description" prop="description">
+        <el-input v-model="state.filterForm.description" :placeholder="signalLightStrategyScheduleDict.description"/>
+      </el-form-item>
+      <el-form-item :label="signalLightStrategyScheduleDict.scheduleType" prop="scheduleType">
+        <el-input v-model="state.filterForm.scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType"/>
+      </el-form-item>
+      <el-form-item :label="signalLightStrategyScheduleDict.ifDisabled" prop="ifDisabled">
+        <!--<el-input v-model="state.filterForm.ifDisabled" :placeholder="signalLightStrategyScheduleDict.ifDisabled"/>-->
+        <el-select v-model="state.filterForm.ifDisabled" :placeholder="signalLightStrategyScheduleDict.ifDisabled" clearable filterable>
+          <el-option label="是" :value="final.Y"/>
+          <el-option label="否" :value="final.N"/>
+        </el-select>
+      </el-form-item>
       <!--在此上方添加表单项-->
       <el-form-item>
         <el-button type="primary" @click="fCon">筛选</el-button>
@@ -390,7 +429,12 @@ const {
         </template>
       </el-table-column>
       <el-table-column prop="cronExpression" :label="signalLightStrategyScheduleDict.cronExpression" width="180"/>
-      <el-table-column prop="ifDisabled" :label="signalLightStrategyScheduleDict.ifDisabled" width="120"/>
+      <el-table-column prop="ifDisabled" :label="signalLightStrategyScheduleDict.ifDisabled" width="120">
+        <template #default="{row}">
+          <el-tag v-if="row.ifDisabled===final.Y" type="info">是</el-tag>
+          <el-tag v-else type="success">否</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="orderNum" :label="signalLightStrategyScheduleDict.orderNum" width="120"/>
       <el-table-column prop="remark" :label="signalLightStrategyScheduleDict.remark" width="120"/>
       <!--在此上方添加表格列-->
@@ -405,6 +449,7 @@ const {
       <el-table-column fixed="right" label="操作" min-width="140">
         <template #default="{row}">
           <div class="zs-table-data-operate-button-row">
+            <el-button link type="primary" size="small" :icon="Edit" @click="manageSonData(row)">策略参数管理</el-button>
             <el-button link type="primary" size="small" :icon="Edit" @click="tUpd(row.id)">修改</el-button>
             <el-button link type="danger" size="small" :icon="Delete" @click="tDel(row.id)">删除</el-button>
           </div>

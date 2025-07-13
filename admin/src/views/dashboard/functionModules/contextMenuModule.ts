@@ -1,5 +1,4 @@
 import { ContextMenuItem } from "@/views/dashboard/index/dto.ts";
-import router from "@/router";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
 import {
   EDIT_TYPE_1,
@@ -9,6 +8,7 @@ import {
 import { MapInteractionModule } from "@/views/dashboard/functionModules/mapInteractionModule.ts";
 import { DropdownDividerOption, DropdownGroupOption, DropdownOption, DropdownRenderOption } from "naive-ui";
 import { PermissionModule } from "@/views/dashboard/functionModules/permissionModule.ts";
+import { routerPushByName } from "@/utils/RouterUtils.ts";
 
 /**
  * 右键菜单
@@ -93,7 +93,7 @@ export class ContextMenuModule {
     {
       id: 'dcts:signalLight:signalLightGroupInfo:ins',
       func: () => {
-        router.push({name: '~fp~:signalLight:signalLightGroupInfo:ins'})
+        routerPushByName('~fp~:signalLight:signalLightGroupInfo:ins')
       }
     },
     {
@@ -107,7 +107,7 @@ export class ContextMenuModule {
         if (seidsByGroup.signalLightGroupInfoCount > 0) {
           itemId = seidsByGroup.signalLightGroupInfo[0]
         }
-        router.push({name: '~fp~:signalLight:signalLightGroupInfo:upd', query: {id: itemId}})
+        routerPushByName('~fp~:signalLight:signalLightGroupInfo:upd', {id: itemId})
       }
     },
     {
@@ -121,7 +121,7 @@ export class ContextMenuModule {
         if (seidsByGroup.signalLightGroupInfoCount > 0) {
           itemId = seidsByGroup.signalLightGroupInfo[0]
         }
-        router.push({name: '~fp~:signalLight:signalLightGroupInfo:del', query: {id: itemId}})
+        routerPushByName('~fp~:signalLight:signalLightGroupInfo:del', {id: itemId})
       }
     },
     // 子信号灯
@@ -146,7 +146,7 @@ export class ContextMenuModule {
         if (seidsByGroup.signalLightInfoCount > 0) {
           itemId = seidsByGroup.signalLightInfo[0]
         }
-        router.push({name: '~fp~:signalLight:signalLightInfo:upd', query: {id: itemId}})
+        routerPushByName('~fp~:signalLight:signalLightInfo:upd', {id: itemId})
       }
     },
     {
@@ -160,7 +160,7 @@ export class ContextMenuModule {
         if (seidsByGroup.signalLightInfoCount > 0) {
           itemId = seidsByGroup.signalLightInfo[0]
         }
-        router.push({name: '~fp~:signalLight:signalLightInfo:del', query: {id: itemId}})
+        routerPushByName('~fp~:signalLight:signalLightInfo:del', {id: itemId})
       }
     },
     {
@@ -174,7 +174,7 @@ export class ContextMenuModule {
         if (seidsByGroup.signalLightGroupInfoCount > 0) {
           itemId = seidsByGroup.signalLightGroupInfo[0]
         }
-        router.push({name: '~fp~:signalLightStrategy:signalLightGroupStrategyTypeMapping:ins', query: {slgid: itemId}})
+        routerPushByName('~fp~:signalLightStrategy:signalLightGroupStrategyTypeMapping:ins', {slgid: itemId})
       }
     },
     {
@@ -188,7 +188,7 @@ export class ContextMenuModule {
         if (seidsByGroup.signalLightInfoCount > 0) {
           itemId = seidsByGroup.signalLightInfo[0]
         }
-        router.push({name: '~fp~:signalLightStrategy:signalLightChildStrategyScheduleMapping:ins', query: {clid: itemId}})
+        routerPushByName('~fp~:signalLightStrategy:signalLightChildStrategyScheduleMapping:ins', {clid: itemId})
       }
     },
     {

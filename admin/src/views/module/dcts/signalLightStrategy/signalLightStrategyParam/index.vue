@@ -28,7 +28,9 @@ const state = reactive<State2<SignalLightStrategyParamDto, SignalLightStrategyPa
   },
   dialogForms: [],
   dialogForms_error: {},
-  filterForm: {},
+  filterForm: {
+    ifDisabled: '',
+  },
 })
 const dFormRules: FormRules = {
   redDuration: [{required: true, trigger: 'change'}],
@@ -281,9 +283,13 @@ const {
         @keyup.enter="fEnter"
     >
       <!--在此下方添加表单项-->
-      <!--<el-form-item :label="signalLightStrategyParamDict." prop="">-->
-      <!--  <el-input v-model="state.filterForm." :placeholder="signalLightStrategyParamDict."/>-->
-      <!--</el-form-item>-->
+      <el-form-item :label="signalLightStrategyParamDict.ifDisabled" prop="ifDisabled">
+        <!--<el-input v-model="state.filterForm.ifDisabled" :placeholder="signalLightStrategyParamDict.ifDisabled"/>-->
+        <el-select v-model="state.filterForm.ifDisabled" :placeholder="signalLightStrategyParamDict.ifDisabled" clearable filterable>
+          <el-option label="是" :value="final.Y"/>
+          <el-option label="否" :value="final.N"/>
+        </el-select>
+      </el-form-item>
       <!--在此上方添加表单项-->
       <el-form-item>
         <el-button type="primary" @click="fCon">筛选</el-button>
@@ -321,7 +327,12 @@ const {
       <el-table-column prop="redDuration" :label="signalLightStrategyParamDict.redDuration" width="120"/>
       <el-table-column prop="yellowDuration" :label="signalLightStrategyParamDict.yellowDuration" width="120"/>
       <el-table-column prop="greenDuration" :label="signalLightStrategyParamDict.greenDuration" width="120"/>
-      <el-table-column prop="ifDisabled" :label="signalLightStrategyParamDict.ifDisabled" width="120"/>
+      <el-table-column prop="ifDisabled" :label="signalLightStrategyParamDict.ifDisabled" width="120">
+        <template #default="{row}">
+          <el-tag v-if="row.ifDisabled===final.Y" type="info">是</el-tag>
+          <el-tag v-else type="success">否</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="orderNum" :label="signalLightStrategyParamDict.orderNum" width="120"/>
       <el-table-column prop="remark" :label="signalLightStrategyParamDict.remark" width="120"/>
       <!--在此上方添加表格列-->

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { h, reactive } from "vue";
+import { h, PropType, reactive, ref } from "vue";
 import Pagination2 from "@/components/pagination/pagination2.vue";
 import { funcTablePageDashBoard } from "@/composition/tablePage/tablePageDashBoard2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
@@ -13,9 +13,15 @@ import { SignalLightStrategyTypeStrategyScheduleMappingDto, SignalLightStrategyT
 import { signalLightStrategyTypeStrategyScheduleMappingApi } from "@/api/module/dcts/signalLightStrategy/signalLightStrategyTypeStrategyScheduleMapping.ts";
 import { signalLightStrategyTypeStrategyScheduleMappingDict } from "@/dict/module/dcts/signalLightStrategy/signalLightStrategyTypeStrategyScheduleMapping.ts";
 import { final } from "@/utils/base.ts";
+import { SignalLightChildStrategyScheduleMappingDto, SignalLightChildStrategyScheduleMappingInsDto } from "@/type/module/dcts/signalLightStrategy/signalLightChildStrategyScheduleMapping.ts";
+import { signalLightChildStrategyScheduleMappingApi } from "@/api/module/dcts/signalLightStrategy/signalLightChildStrategyScheduleMapping.ts";
 
 const props = defineProps({
   selectStrategyTypeId: {
+    type: Array as PropType<number[]>,
+    required: true
+  },
+  childId: {
     type: Number,
     required: true
   }
@@ -47,6 +53,9 @@ const config = new TablePageConfig<SignalLightStrategyScheduleDto>({
   getDataOnMounted: false,
   selectParam: {
     id: {in: {value: []}}
+  },
+  selectListCallback: () => {
+    getMappingData()
   }
 })
 const columns: DataTableColumns<SignalLightStrategyScheduleDto> = [
@@ -59,16 +68,31 @@ const columns: DataTableColumns<SignalLightStrategyScheduleDto> = [
   {title: signalLightStrategyScheduleDict.ifDisabled, key: 'ifDisabled'},
   {title: signalLightStrategyScheduleDict.orderNum, key: 'orderNum'},
   {title: signalLightStrategyScheduleDict.remark, key: 'remark'},
+  // {
+  //   title: '操作',
+  //   key: 'operation',
+  //   render(row) {
+  //     return h(NButton, {
+  //       text: true,
+  //       onClick: () => emits('selectRow', row)
+  //     }, {
+  //       default: '选择',
+  //       icon: h(NIcon, null, h(HandPointLeft))
+  //     })
+  //   }
+  // }
   {
     title: '操作',
     key: 'operation',
     render(row) {
       return h(NButton, {
         text: true,
-        onClick: () => emits('selectRow', row)
+        type: tableLoading2.value ? 'default' : !childScheduleMappingSSId.value.includes(row.id) ? 'primary' : 'error',
+        loading: tableLoading2.value,
+        onClick: () => selectRow2(!childScheduleMappingSSId.value.includes(row.id), row)
       }, {
-        default: '选择',
-        icon: h(NIcon, null, h(HandPointLeft))
+        default: () => tableLoading2.value ? '加载中' : !childScheduleMappingSSId.value.includes(row.id) ? '绑定' : '解绑',
+        icon: () => h(NIcon, null, {default: () => h(HandPointLeft)})
       })
     }
   }
@@ -105,7 +129,7 @@ const stateSlstscm = reactive<State2<SignalLightStrategyTypeStrategyScheduleMapp
 })
 const configSlstscm = new TablePageConfig<SignalLightStrategyTypeStrategyScheduleMappingDto>({
   selectParam: {
-    strategyTypeId: props.selectStrategyTypeId
+    strategyTypeId: {in: {value: props.selectStrategyTypeId}}
   },
   pageQuery: false,
   selectListCallback: () => {
@@ -116,7 +140,7 @@ const configSlstscm = new TablePageConfig<SignalLightStrategyTypeStrategySchedul
   }
 })
 const {
-  tableData : tableDataSlstscm
+  tableData: tableDataSlstscm
 } = funcTablePageDashBoard<SignalLightStrategyTypeStrategyScheduleMappingDto, SignalLightStrategyTypeStrategyScheduleMappingUpdDto>({
   state: stateSlstscm,
   dFormRules: {},
@@ -124,6 +148,49 @@ const {
   api: signalLightStrategyTypeStrategyScheduleMappingApi,
   dict: signalLightStrategyTypeStrategyScheduleMappingDict,
 })
+
+const tableLoading2 = ref(false)
+const childScheduleMapping = ref<SignalLightChildStrategyScheduleMappingDto[]>([])
+const childScheduleMappingSSId = ref<number[]>([])
+const getMappingData = () => {
+  tableLoading2.value = true
+  childScheduleMapping.value = []
+  childScheduleMappingSSId.value = []
+  signalLightChildStrategyScheduleMappingApi.selectAll({
+    childLightId: props.childId,
+    strategyScheduleId: {in: {value: tableData.value.map(item => item.id)}}
+  }).then((res) => {
+    childScheduleMapping.value = res
+    childScheduleMappingSSId.value = res.map(item => item.strategyScheduleId)
+  }).finally(() => {
+    tableLoading2.value = false
+  })
+}
+
+const selectRow2 = (ifBd: boolean, row: SignalLightStrategyScheduleDto) => {
+  if (ifBd) {
+    tableLoading2.value = true
+    const dto = new SignalLightChildStrategyScheduleMappingInsDto()
+    dto.childLightId = props.childId
+    dto.strategyScheduleId = row.id
+    signalLightChildStrategyScheduleMappingApi.insertOne(dto).then(res => {
+      getMappingData()
+    }).catch(() => {
+      tableLoading2.value = false
+    })
+  } else {
+    const find = childScheduleMapping.value.find(item => item.childLightId === props.childId && item.strategyScheduleId === row.id)
+    if (!find) {
+      return
+    }
+    tableLoading2.value = true
+    signalLightChildStrategyScheduleMappingApi.deleteList(find.id).then(res => {
+      getMappingData()
+    }).catch(() => {
+      tableLoading2.value = false
+    })
+  }
+}
 </script>
 
 <template>

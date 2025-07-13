@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { h, reactive } from "vue";
+import { h, reactive, ref } from "vue";
 import Pagination2 from "@/components/pagination/pagination2.vue";
 import { funcTablePageDashBoard } from "@/composition/tablePage/tablePageDashBoard2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
@@ -10,8 +10,16 @@ import { SignalLightStrategyTypeDto, SignalLightStrategyTypeUpdDto } from "@/typ
 import { signalLightStrategyTypeApi } from "@/api/module/dcts/signalLightStrategy/signalLightStrategyType.ts";
 import { signalLightStrategyTypeDict } from "@/dict/module/dcts/signalLightStrategy/signalLightStrategyType.ts";
 import { final } from "@/utils/base.ts";
+import { signalLightGroupStrategyTypeMappingApi } from "@/api/module/dcts/signalLightStrategy/signalLightGroupStrategyTypeMapping.ts";
+import { SignalLightGroupStrategyTypeMappingDto, SignalLightGroupStrategyTypeMappingInsDto } from "@/type/module/dcts/signalLightStrategy/signalLightGroupStrategyTypeMapping.ts";
 
 const emits = defineEmits(['selectRow']);
+const props = defineProps({
+  groupId: {
+    type: Number,
+    required: true,
+  }
+})
 
 const state = reactive<State2<SignalLightStrategyTypeDto, SignalLightStrategyTypeUpdDto>>({
   dialogForm: {
@@ -29,7 +37,11 @@ const state = reactive<State2<SignalLightStrategyTypeDto, SignalLightStrategyTyp
     name: '',
   },
 })
-const config = new TablePageConfig()
+const config = new TablePageConfig<SignalLightStrategyTypeDto>({
+  selectListCallback: () => {
+    getMappingData()
+  }
+})
 const columns: DataTableColumns<SignalLightStrategyTypeDto> = [
   {title: signalLightStrategyTypeDict.name, key: 'name'},
   {title: signalLightStrategyTypeDict.description, key: 'description'},
@@ -37,16 +49,31 @@ const columns: DataTableColumns<SignalLightStrategyTypeDto> = [
   {title: signalLightStrategyTypeDict.ifDisabled, key: 'ifDisabled'},
   {title: signalLightStrategyTypeDict.orderNum, key: 'orderNum'},
   {title: signalLightStrategyTypeDict.remark, key: 'remark'},
+  // {
+  //   title: '操作',
+  //   key: 'operation',
+  //   render(row) {
+  //     return h(NButton, {
+  //       text: true,
+  //       onClick: () => emits('selectRow', row)
+  //     }, {
+  //       default: '选择',
+  //       icon: h(NIcon, null, h(HandPointLeft))
+  //     })
+  //   }
+  // }
   {
     title: '操作',
     key: 'operation',
     render(row) {
       return h(NButton, {
         text: true,
-        onClick: () => emits('selectRow', row)
+        type: tableLoading2.value ? 'default' : !groupTypeMappingSTId.value.includes(row.id) ? 'primary' : 'error',
+        loading: tableLoading2.value,
+        onClick: () => selectRow2(!groupTypeMappingSTId.value.includes(row.id), row)
       }, {
-        default: '选择',
-        icon: h(NIcon, null, h(HandPointLeft))
+        default: () => tableLoading2.value ? '加载中' : !groupTypeMappingSTId.value.includes(row.id) ? '绑定' : '解绑',
+        icon: () => h(NIcon, null, {default: () => h(HandPointLeft)})
       })
     }
   }
@@ -74,6 +101,49 @@ const {
   api: signalLightStrategyTypeApi,
   dict: signalLightStrategyTypeDict
 });
+
+const tableLoading2 = ref(false)
+const groupTypeMapping = ref<SignalLightGroupStrategyTypeMappingDto[]>([])
+const groupTypeMappingSTId = ref<number[]>([])
+const getMappingData = () => {
+  tableLoading2.value = true
+  groupTypeMapping.value = []
+  groupTypeMappingSTId.value = []
+  signalLightGroupStrategyTypeMappingApi.selectAll({
+    groupId: props.groupId,
+    strategyTypeId: {in: {value: tableData.value.map(item => item.id)}}
+  }).then(res => {
+    groupTypeMapping.value = res
+    groupTypeMappingSTId.value = res.map(item => item.strategyTypeId)
+  }).finally(() => {
+    tableLoading2.value = false
+  })
+}
+
+const selectRow2 = (ifBd: boolean, row: SignalLightStrategyTypeDto) => {
+  if (ifBd) {
+    tableLoading2.value = true
+    const dto = new SignalLightGroupStrategyTypeMappingInsDto();
+    dto.groupId = props.groupId
+    dto.strategyTypeId = row.id
+    signalLightGroupStrategyTypeMappingApi.insertOne(dto).then(res => {
+      getMappingData()
+    }).catch(() => {
+      tableLoading2.value = false
+    })
+  } else {
+    const find = groupTypeMapping.value.find(item => item.groupId === props.groupId && item.strategyTypeId === row.id);
+    if (!find) {
+      return
+    }
+    tableLoading2.value = true
+    signalLightGroupStrategyTypeMappingApi.deleteList(find.id).then(res => {
+      getMappingData()
+    }).catch(() => {
+      tableLoading2.value = false
+    })
+  }
+}
 </script>
 
 <template>

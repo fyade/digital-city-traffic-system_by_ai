@@ -6,10 +6,7 @@ import FormPanelCard from '@/components/formPanelCard/index.vue'
 import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
 import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
 import { SignalLightGroupStrategyTypeMappingDto, SignalLightGroupStrategyTypeMappingInsDto } from "@/type/module/dcts/signalLightStrategy/signalLightGroupStrategyTypeMapping.ts";
-import {
-  signalLightGroupStrategyTypeMappingApi,
-  signalLightGroupStrategyTypeMappingInsV2
-} from "@/api/module/dcts/signalLightStrategy/signalLightGroupStrategyTypeMapping.ts";
+import { signalLightGroupStrategyTypeMappingApi, signalLightGroupStrategyTypeMappingInsV2 } from "@/api/module/dcts/signalLightStrategy/signalLightGroupStrategyTypeMapping.ts";
 import SelectSignalLightStrategyType from "@/views/dashboard/formPanel/signalLightStrategy/signalLightGroupStrategyTypeMapping/selectSignalLightStrategyType.vue";
 import { SignalLightStrategyTypeDto } from "@/type/module/dcts/signalLightStrategy/signalLightStrategyType.ts";
 
@@ -71,6 +68,7 @@ const selectRow = (row: SignalLightStrategyTypeDto) => {
     <template v-if="ifIns || ifUpd">
       <n-spin :show="formLoading">
         <SelectSignalLightStrategyType
+            :group-id="Number(itemSlgid)"
             @select-row="selectRow"
         />
       </n-spin>

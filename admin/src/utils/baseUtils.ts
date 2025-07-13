@@ -2,7 +2,7 @@ import { deepClone } from "@/utils/ObjectUtils.ts";
 import { final } from "@/utils/base.ts";
 
 export function goToLogin() {
-  window.location.href = `/login?redirect=${window.location.pathname}`
+  location.href = `/login?redirect=${location.pathname}`
 }
 
 type Arr2ToDiguiObjI2<T> = T[]

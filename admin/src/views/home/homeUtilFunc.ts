@@ -131,12 +131,3 @@ export const goToSystem = async (
   }
   return
 }
-
-export function routerPush(perm: string) {
-  const allMenus2 = routerStore.allMenus2
-  const find = allMenus2.find((item) => item.name === perm);
-  if (find) {
-    routerStore.addMenu(find);
-    router.push(find.path)
-  }
-}

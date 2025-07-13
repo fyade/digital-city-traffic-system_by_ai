@@ -1,11 +1,11 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { useUserStore } from "@/store/module/user.ts";
-import { ElMessage, ElMessageBox } from "element-plus";
 import { useSysStore } from "@/store/module/sys.ts";
 import { AxiosRes } from "@/type/asiox.ts";
 import { adminConfig } from '@dcts/config'
 import { goToLogin } from "@/utils/baseUtils.ts";
-import { NDialog, NMessage } from "@/utils/naiveUtils.ts";
+import { baseUtils } from "@dcts/common";
+import { messageBoxWarning, messageError } from "@/utils/MessageUtils.ts";
 
 const env = adminConfig.currentConfig();
 export const baseURL = env.VITE_API_PREFIX
@@ -35,6 +35,7 @@ request.interceptors.request.use(
 )
 request.interceptors.response.use(
   async response => {
+    await baseUtils.sleep(0)
     if (response.data.code && response.data.code !== 200) {
       messageError(response.data.msg)
       return Promise.reject(response)
@@ -105,34 +106,6 @@ export async function request2<T = any>(param: AxiosRequestConfig, {
       } else if (errLevel === 2) {
         reject(err?.data?.msg)
       }
-    }
-  })
-}
-
-function messageError(msg: string) {
-  if (location.pathname.startsWith('/dashboard/') || location.pathname === '/dashboard') {
-    NMessage.error(msg)
-  } else {
-    ElMessage.error(msg)
-  }
-}
-
-function messageBoxWarning(msg: string) {
-  return new Promise((resolve, reject) => {
-    if (location.pathname.startsWith('/dashboard/') || location.pathname === '/dashboard') {
-      NDialog.warning({
-        title: '警告',
-        content: msg,
-        positiveText: '确定',
-        closeOnEsc: false,
-        maskClosable: false,
-        onPositiveClick: () => resolve(null),
-        onClose: () => reject(null)
-      })
-    } else {
-      ElMessageBox.alert(msg, '警告')
-          .then(() => resolve(null))
-          .catch(() => reject(null))
     }
   })
 }

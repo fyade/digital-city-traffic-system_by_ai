@@ -1,4 +1,4 @@
-import { RouteRecordNormalized, useRouter } from "vue-router";
+import { RouteRecordNormalized } from "vue-router";
 import { getPages, getSystems } from "@/api/common/sys.ts";
 import { MenuDto } from "@/type/module/main/sysManage/menu.ts";
 import { MenuTypeEnum } from "@/utils/base.ts";

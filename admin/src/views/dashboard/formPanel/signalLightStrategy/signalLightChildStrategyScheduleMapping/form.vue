@@ -6,18 +6,11 @@ import FormPanelCard from '@/components/formPanelCard/index.vue'
 import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
 import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
 import { signalLightGroupChildMappingApi } from "@/api/module/dcts/signalLight/signalLightGroupChildMapping.ts";
-import {
-  signalLightGroupStrategyTypeMappingApi
-} from "@/api/module/dcts/signalLightStrategy/signalLightGroupStrategyTypeMapping.ts";
-import SelectSignalLightStrategySchedule
-  from "@/views/dashboard/formPanel/signalLightStrategy/signalLightChildStrategyScheduleMapping/selectSignalLightStrategySchedule.vue";
+import { signalLightGroupStrategyTypeMappingApi } from "@/api/module/dcts/signalLightStrategy/signalLightGroupStrategyTypeMapping.ts";
+import SelectSignalLightStrategySchedule from "@/views/dashboard/formPanel/signalLightStrategy/signalLightChildStrategyScheduleMapping/selectSignalLightStrategySchedule.vue";
 import { SignalLightStrategyScheduleDto } from "@/type/module/dcts/signalLightStrategy/signalLightStrategySchedule.ts";
-import {
-  SignalLightChildStrategyScheduleMappingInsDto
-} from "@/type/module/dcts/signalLightStrategy/signalLightChildStrategyScheduleMapping.ts";
-import {
-  signalLightChildStrategyScheduleMappingInsV2
-} from "@/api/module/dcts/signalLightStrategy/signalLightChildStrategyScheduleMapping.ts";
+import { SignalLightChildStrategyScheduleMappingInsDto } from "@/type/module/dcts/signalLightStrategy/signalLightChildStrategyScheduleMapping.ts";
+import { signalLightChildStrategyScheduleMappingInsV2 } from "@/api/module/dcts/signalLightStrategy/signalLightChildStrategyScheduleMapping.ts";
 
 const route = useRoute();
 const useCesium = useDashboardCesium;
@@ -44,7 +37,7 @@ const init = () => {
 }
 
 const formLoading = ref(false)
-const parentStrategyTypeId = ref(0)
+const parentStrategyTypeId = ref<number[]>([])
 const visible2 = ref(false)
 
 const qzjc = async () => {
@@ -58,7 +51,7 @@ const qzjc = async () => {
     gotoDashboardHome()
     return
   }
-  parentStrategyTypeId.value = slgstms[0].strategyTypeId;
+  parentStrategyTypeId.value = slgstms.map(item => item.strategyTypeId);
   visible2.value = true
 }
 
@@ -92,6 +85,7 @@ const selectRow = (row: SignalLightStrategyScheduleDto) => {
         <SelectSignalLightStrategySchedule
             v-if="visible2"
             :select-strategy-type-id="parentStrategyTypeId"
+            :child-id="Number(itemClid)"
             @select-row="selectRow"
         />
       </n-spin>

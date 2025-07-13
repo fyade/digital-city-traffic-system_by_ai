@@ -45,6 +45,14 @@ export function mysqlLengthFromRowRemark(str: string): string | null {
   }
 }
 
+/**
+ * 路由路径是否以:参数匹配结尾
+ * @param str
+ */
+export function ifRouterEndsWithParam(str: string) {
+  return /\/:[0-9a-zA-Z]+/.test(str);
+}
+
 // ===== ===== ===== ===== ===== ===== 以下为 dcts 专用 ===== ===== ===== ===== ===== =====
 export function getLonlatFromLinestring(str: string): { lon: number, lat: number }[] {
   const match = str.match(/[0-9., ]+/);

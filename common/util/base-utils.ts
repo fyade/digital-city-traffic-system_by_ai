@@ -16,7 +16,13 @@ export function typeOf(param: any) {
  * @param ms
  */
 export function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise(resolve => {
+    if (ms === 0) {
+      resolve()
+    } else {
+      setTimeout(resolve, ms)
+    }
+  });
 }
 
 /**

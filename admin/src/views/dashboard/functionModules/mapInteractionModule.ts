@@ -1,8 +1,8 @@
 import { EDIT_TYPE_1, ID_PREFIX_SIGNAL_LIGHT_GROUP } from "@/views/dashboard/functionModules/constant.ts";
 import * as Cesium from "cesium";
-import router from "@/router";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
+import { routerPushByName } from "@/utils/RouterUtils.ts";
 
 /**
  * 地图交互
@@ -104,7 +104,7 @@ export class MapInteractionModule {
         if (hseids) {
           pid = hseids.data[0].replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, '')
         }
-        router.push({name: '~fp~:signalLight:signalLightInfo:ins', query: {pid: pid}})
+        routerPushByName('~fp~:signalLight:signalLightInfo:ins', {pid: pid})
       }
     }
   ]
