@@ -445,7 +445,7 @@ ${`}`}
 `;
   const hd2 =
 `${`import { Injectable } from '@nestjs/common';`}
-${`import { PrismaService } from '../../../../${isBusiness?'../':''}prisma/prisma.service';`}
+${`import { MysqlPrismaService } from '../../../../${isBusiness?'../':''}prisma/mysql.prisma.service';`}
 ${`import { R } from '../../../../${isBusiness?'../':''}common/R';`}
 ${`import { ${moduleName2}Dto, ${moduleName2}SelListDto, ${moduleName2}SelAllDto, ${moduleName2}InsOneDto, ${moduleName2}UpdOneDto } from './dto';`}
 ${`import { BaseContextService } from '../../../${isBusiness?'../':''}base-context/base-context.service';`}
@@ -453,54 +453,54 @@ ${``}
 ${`@Injectable()`}
 ${`export class ${moduleName2}Service {`}
 ${`  constructor(`}
-${`    private readonly prisma: PrismaService,`}
+${`    private readonly mysqlPrisma: MysqlPrismaService,`}
 ${`    private readonly bcs: BaseContextService,`}
 ${`  ) {`}
 ${`    this.bcs.setFieldSelectParam('${table.tableName}'${hd2_prismaConfig._});`}
 ${`  }`}
 ${``}
 ${`  async sel${moduleName2}(dto: ${moduleName2}SelListDto): Promise<R> {`}
-${`    const res = await this.prisma.findPage<${moduleName2}Dto, ${moduleName2}SelListDto>('${table.tableName}'${hd2_prismaConfig.selListParam});`}
+${`    const res = await this.mysqlPrisma.findPage<${moduleName2}Dto, ${moduleName2}SelListDto>('${table.tableName}'${hd2_prismaConfig.selListParam});`}
 ${`    return R.ok(res);`}
 ${`  }`}
 ${``}
 ${`  async selAll${moduleName2}(dto: ${moduleName2}SelAllDto): Promise<R> {`}
-${`    const res = await this.prisma.findAll<${moduleName2}Dto>('${table.tableName}'${hd2_prismaConfig.selAllParam});`}
+${`    const res = await this.mysqlPrisma.findAll<${moduleName2}Dto>('${table.tableName}'${hd2_prismaConfig.selAllParam});`}
 ${`    return R.ok(res);`}
 ${`  }`}
 ${``}
 ${`  async selOnes${moduleName2}(ids: number[]): Promise<R> {`}
-${`    const res = await this.prisma.findByIds<${moduleName2}Dto>('${table.tableName}', Object.values(ids).map(n => Number(n))${hd2_prismaConfig.selOnesParam});`}
+${`    const res = await this.mysqlPrisma.findByIds<${moduleName2}Dto>('${table.tableName}', Object.values(ids).map(n => Number(n))${hd2_prismaConfig.selOnesParam});`}
 ${`    return R.ok(res);`}
 ${`  }`}
 ${``}
 ${`  async selOne${moduleName2}(id: number): Promise<R> {`}
-${`    const res = await this.prisma.findById<${moduleName2}Dto>('${table.tableName}', Number(id)${hd2_prismaConfig.selOneParam});`}
+${`    const res = await this.mysqlPrisma.findById<${moduleName2}Dto>('${table.tableName}', Number(id)${hd2_prismaConfig.selOneParam});`}
 ${`    return R.ok(res);`}
 ${`  }`}
 ${``}
 ${`  async ins${moduleName2}(dto: ${moduleName2}InsOneDto): Promise<R> {`}
-${`    const res = await this.prisma.create<${moduleName2}Dto>('${table.tableName}', dto${hd2_prismaConfig.insParam});`}
+${`    const res = await this.mysqlPrisma.create<${moduleName2}Dto>('${table.tableName}', dto${hd2_prismaConfig.insParam});`}
 ${`    return R.ok(res);`}
 ${`  }`}
 ${``}
 ${`  async ins${moduleName2}s(dtos: ${moduleName2}InsOneDto[]): Promise<R> {`}
-${`    const res = await this.prisma.createMany<${moduleName2}Dto>('${table.tableName}', dtos${hd2_prismaConfig.inssParam});`}
+${`    const res = await this.mysqlPrisma.createMany<${moduleName2}Dto>('${table.tableName}', dtos${hd2_prismaConfig.inssParam});`}
 ${`    return R.ok(res);`}
 ${`  }`}
 ${``}
 ${`  async upd${moduleName2}(dto: ${moduleName2}UpdOneDto): Promise<R> {`}
-${`    const res = await this.prisma.updateById<${moduleName2}Dto>('${table.tableName}', dto${hd2_prismaConfig.updParam});`}
+${`    const res = await this.mysqlPrisma.updateById<${moduleName2}Dto>('${table.tableName}', dto${hd2_prismaConfig.updParam});`}
 ${`    return R.ok(res);`}
 ${`  }`}
 ${``}
 ${`  async upd${moduleName2}s(dtos: ${moduleName2}UpdOneDto[]): Promise<R> {`}
-${`    const res = await this.prisma.updateMany<${moduleName2}Dto>('${table.tableName}', dtos${hd2_prismaConfig.updsParam});`}
+${`    const res = await this.mysqlPrisma.updateMany<${moduleName2}Dto>('${table.tableName}', dtos${hd2_prismaConfig.updsParam});`}
 ${`    return R.ok(res);`}
 ${`  }`}
 ${``}
 ${`  async del${moduleName2}(ids: number[]): Promise<R> {`}
-${`    const res = await this.prisma.deleteById<${moduleName2}Dto>('${table.tableName}', ids);`}
+${`    const res = await this.mysqlPrisma.deleteById<${moduleName2}Dto>('${table.tableName}', ids);`}
 ${`    return R.ok(res);`}
 ${`  }`}
 ${`}`}

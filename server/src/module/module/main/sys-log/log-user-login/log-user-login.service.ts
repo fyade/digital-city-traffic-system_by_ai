@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../../../prisma/prisma.service';
+import { MysqlPrismaService } from '../../../../../prisma/mysql.prisma.service';
 import { R } from '../../../../../common/R';
 import { LogUserLoginDto, LogUserLoginSelListDto, LogUserLoginSelAllDto, LogUserLoginInsOneDto, LogUserLoginUpdOneDto } from './dto';
 import { BaseContextService } from '../../../../base-context/base-context.service';
@@ -7,7 +7,7 @@ import { BaseContextService } from '../../../../base-context/base-context.servic
 @Injectable()
 export class LogUserLoginService {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly mysqlPrisma: MysqlPrismaService,
     private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('log_user_login', {
@@ -23,7 +23,7 @@ export class LogUserLoginService {
   }
 
   async selLogUserLogin(dto: LogUserLoginSelListDto): Promise<R> {
-    const res = await this.prisma.findPage<LogUserLoginDto, LogUserLoginSelListDto>('log_user_login', {
+    const res = await this.mysqlPrisma.findPage<LogUserLoginDto, LogUserLoginSelListDto>('log_user_login', {
       data: dto,
       orderBy: false,
     });
@@ -38,7 +38,7 @@ export class LogUserLoginService {
                              range?: object
                            } = {},
   ): Promise<R<LogUserLoginDto[]>> {
-    const res = await this.prisma.findAll<LogUserLoginDto>('log_user_login', {
+    const res = await this.mysqlPrisma.findAll<LogUserLoginDto>('log_user_login', {
       data: dto,
       orderBy,
       range,
@@ -47,37 +47,37 @@ export class LogUserLoginService {
   }
 
   async selOnesLogUserLogin(ids: number[]): Promise<R> {
-    const res = await this.prisma.findByIds<LogUserLoginDto>('log_user_login', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<LogUserLoginDto>('log_user_login', Object.values(ids).map(n => Number(n)));
     return R.ok(res);
   }
 
   async selOneLogUserLogin(id: number): Promise<R> {
-    const res = await this.prisma.findById<LogUserLoginDto>('log_user_login', Number(id));
+    const res = await this.mysqlPrisma.findById<LogUserLoginDto>('log_user_login', Number(id));
     return R.ok(res);
   }
 
   async insLogUserLogin(dto: LogUserLoginInsOneDto): Promise<R> {
-    const res = await this.prisma.create<LogUserLoginDto>('log_user_login', dto);
+    const res = await this.mysqlPrisma.create<LogUserLoginDto>('log_user_login', dto);
     return R.ok(res);
   }
 
   async insLogUserLogins(dtos: LogUserLoginInsOneDto[]): Promise<R> {
-    const res = await this.prisma.createMany<LogUserLoginDto>('log_user_login', dtos);
+    const res = await this.mysqlPrisma.createMany<LogUserLoginDto>('log_user_login', dtos);
     return R.ok(res);
   }
 
   async updLogUserLogin(dto: LogUserLoginUpdOneDto): Promise<R> {
-    const res = await this.prisma.updateById<LogUserLoginDto>('log_user_login', dto);
+    const res = await this.mysqlPrisma.updateById<LogUserLoginDto>('log_user_login', dto);
     return R.ok(res);
   }
 
   async updLogUserLogins(dtos: LogUserLoginUpdOneDto[]): Promise<R> {
-    const res = await this.prisma.updateMany<LogUserLoginDto>('log_user_login', dtos);
+    const res = await this.mysqlPrisma.updateMany<LogUserLoginDto>('log_user_login', dtos);
     return R.ok(res);
   }
 
   async delLogUserLogin(ids: number[]): Promise<R> {
-    const res = await this.prisma.deleteById<LogUserLoginDto>('log_user_login', ids);
+    const res = await this.mysqlPrisma.deleteById<LogUserLoginDto>('log_user_login', ids);
     return R.ok(res);
   }
 }

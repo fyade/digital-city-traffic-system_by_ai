@@ -1,16 +1,18 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { PrismaoService } from '../../prisma/prismao.service';
 import { CronJob } from 'cron';
 import { QueueoService } from '../queue/queueo.service';
 import { base } from '../../util/base';
 import { WinstonService } from '../winston/winston.service';
+import { MysqlPrismaoService } from "../../prisma/mysql.prismao.service";
+import { PrismaoService } from "../../prisma/prismao.service";
 
 @Injectable()
 export class ScheduleService implements OnModuleInit {
   constructor(
     private readonly schedulerRegistry: SchedulerRegistry,
     private readonly prismao: PrismaoService,
+    private readonly mysqlPrismao: MysqlPrismaoService,
     private readonly queueo: QueueoService,
     private readonly winston: WinstonService,
   ) {}
@@ -23,7 +25,7 @@ export class ScheduleService implements OnModuleInit {
   }
 
   private async init() {
-    const tasks = await this.prismao.sys_scheduled_task.findMany({
+    const tasks = await this.mysqlPrismao.sys_scheduled_task.findMany({
       where: {
         ...this.prismao.defaultSelArg().where,
       },

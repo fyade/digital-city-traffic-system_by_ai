@@ -7,7 +7,7 @@ import { PostgresqlPrismaService } from "../../../../../prisma/postgresql.prisma
 @Injectable()
 export class SignalLightStrategyParamService {
   constructor(
-      private readonly pgprisma: PostgresqlPrismaService,
+      private readonly pgsqlPrisma: PostgresqlPrismaService,
       private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('signal_light_strategy_param', {
@@ -17,7 +17,7 @@ export class SignalLightStrategyParamService {
   }
 
   async selSignalLightStrategyParam(dto: SignalLightStrategyParamSelListDto): Promise<R> {
-    const res = await this.pgprisma.findPage<SignalLightStrategyParamDto, SignalLightStrategyParamSelListDto>('signal_light_strategy_param', {
+    const res = await this.pgsqlPrisma.findPage<SignalLightStrategyParamDto, SignalLightStrategyParamSelListDto>('signal_light_strategy_param', {
       data: dto,
       orderBy: true,
     });
@@ -25,7 +25,7 @@ export class SignalLightStrategyParamService {
   }
 
   async selAllSignalLightStrategyParam(dto: SignalLightStrategyParamSelAllDto): Promise<R> {
-    const res = await this.pgprisma.findAll<SignalLightStrategyParamDto>('signal_light_strategy_param', {
+    const res = await this.pgsqlPrisma.findAll<SignalLightStrategyParamDto>('signal_light_strategy_param', {
       data: dto,
       orderBy: true,
     });
@@ -33,37 +33,37 @@ export class SignalLightStrategyParamService {
   }
 
   async selOnesSignalLightStrategyParam(ids: number[]): Promise<R> {
-    const res = await this.pgprisma.findByIds<SignalLightStrategyParamDto>('signal_light_strategy_param', Object.values(ids).map(n => Number(n)));
+    const res = await this.pgsqlPrisma.findByIds<SignalLightStrategyParamDto>('signal_light_strategy_param', Object.values(ids).map(n => Number(n)));
     return R.ok(res);
   }
 
   async selOneSignalLightStrategyParam(id: number): Promise<R> {
-    const res = await this.pgprisma.findById<SignalLightStrategyParamDto>('signal_light_strategy_param', Number(id));
+    const res = await this.pgsqlPrisma.findById<SignalLightStrategyParamDto>('signal_light_strategy_param', Number(id));
     return R.ok(res);
   }
 
   async insSignalLightStrategyParam(dto: SignalLightStrategyParamInsOneDto): Promise<R> {
-    const res = await this.pgprisma.create<SignalLightStrategyParamDto>('signal_light_strategy_param', dto);
+    const res = await this.pgsqlPrisma.create<SignalLightStrategyParamDto>('signal_light_strategy_param', dto);
     return R.ok(res);
   }
 
   async insSignalLightStrategyParams(dtos: SignalLightStrategyParamInsOneDto[]): Promise<R> {
-    const res = await this.pgprisma.createMany<SignalLightStrategyParamDto>('signal_light_strategy_param', dtos);
+    const res = await this.pgsqlPrisma.createMany<SignalLightStrategyParamDto>('signal_light_strategy_param', dtos);
     return R.ok(res);
   }
 
   async updSignalLightStrategyParam(dto: SignalLightStrategyParamUpdOneDto): Promise<R> {
-    const res = await this.pgprisma.updateById<SignalLightStrategyParamDto>('signal_light_strategy_param', dto);
+    const res = await this.pgsqlPrisma.updateById<SignalLightStrategyParamDto>('signal_light_strategy_param', dto);
     return R.ok(res);
   }
 
   async updSignalLightStrategyParams(dtos: SignalLightStrategyParamUpdOneDto[]): Promise<R> {
-    const res = await this.pgprisma.updateMany<SignalLightStrategyParamDto>('signal_light_strategy_param', dtos);
+    const res = await this.pgsqlPrisma.updateMany<SignalLightStrategyParamDto>('signal_light_strategy_param', dtos);
     return R.ok(res);
   }
 
   async delSignalLightStrategyParam(ids: number[]): Promise<R> {
-    const res = await this.pgprisma.deleteById<SignalLightStrategyParamDto>('signal_light_strategy_param', ids);
+    const res = await this.pgsqlPrisma.deleteById<SignalLightStrategyParamDto>('signal_light_strategy_param', ids);
     return R.ok(res);
   }
 }

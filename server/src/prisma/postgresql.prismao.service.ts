@@ -25,6 +25,13 @@ export class PostgresqlPrismaoService extends PrismaClient {
       }
       return this.serializeBigInt(result);
     });
+    super.$use(async (params, next) => {
+      const result = await next(params);
+      if (params.model && ['findMany', 'findFirst', 'create', 'update'].includes(params.action)) {
+        return JSON.parse(JSON.stringify(result));
+      }
+      return result;
+    })
   }
 
   private serializeBigInt(obj: any): any {

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../../../prisma/prisma.service';
+import { MysqlPrismaService } from '../../../../../prisma/mysql.prisma.service';
 import { R } from '../../../../../common/R';
 import { SysDto, SysSelListDto, SysSelAllDto, SysInsOneDto, SysUpdOneDto } from './dto';
 import { BaseContextService } from '../../../../base-context/base-context.service';
@@ -7,7 +7,7 @@ import { BaseContextService } from '../../../../base-context/base-context.servic
 @Injectable()
 export class SysService {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly mysqlPrisma: MysqlPrismaService,
     private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('sys_sys', {
@@ -17,7 +17,7 @@ export class SysService {
   }
 
   async selSys(dto: SysSelListDto): Promise<R> {
-    const res = await this.prisma.findPage<SysDto, SysSelListDto>('sys_sys', {
+    const res = await this.mysqlPrisma.findPage<SysDto, SysSelListDto>('sys_sys', {
       data: dto,
       orderBy: true,
     });
@@ -25,7 +25,7 @@ export class SysService {
   }
 
   async selAllSys(dto: SysSelAllDto): Promise<R> {
-    const res = await this.prisma.findAll<SysDto>('sys_sys', {
+    const res = await this.mysqlPrisma.findAll<SysDto>('sys_sys', {
       data: dto,
       orderBy: true,
     });
@@ -33,37 +33,37 @@ export class SysService {
   }
 
   async selOnesSys(ids: number[]): Promise<R> {
-    const res = await this.prisma.findByIds<SysDto>('sys_sys', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<SysDto>('sys_sys', Object.values(ids).map(n => Number(n)));
     return R.ok(res);
   }
 
   async selOneSys(id: number): Promise<R> {
-    const res = await this.prisma.findById<SysDto>('sys_sys', Number(id));
+    const res = await this.mysqlPrisma.findById<SysDto>('sys_sys', Number(id));
     return R.ok(res);
   }
 
   async insSys(dto: SysInsOneDto): Promise<R> {
-    const res = await this.prisma.create<SysDto>('sys_sys', dto);
+    const res = await this.mysqlPrisma.create<SysDto>('sys_sys', dto);
     return R.ok(res);
   }
 
   async insSyss(dtos: SysInsOneDto[]): Promise<R> {
-    const res = await this.prisma.createMany<SysDto>('sys_sys', dtos);
+    const res = await this.mysqlPrisma.createMany<SysDto>('sys_sys', dtos);
     return R.ok(res);
   }
 
   async updSys(dto: SysUpdOneDto): Promise<R> {
-    const res = await this.prisma.updateById<SysDto>('sys_sys', dto);
+    const res = await this.mysqlPrisma.updateById<SysDto>('sys_sys', dto);
     return R.ok(res);
   }
 
   async updSyss(dtos: SysUpdOneDto[]): Promise<R> {
-    const res = await this.prisma.updateMany<SysDto>('sys_sys', dtos);
+    const res = await this.mysqlPrisma.updateMany<SysDto>('sys_sys', dtos);
     return R.ok(res);
   }
 
   async delSys(ids: number[]): Promise<R> {
-    const res = await this.prisma.deleteById<SysDto>('sys_sys', ids);
+    const res = await this.mysqlPrisma.deleteById<SysDto>('sys_sys', ids);
     return R.ok(res);
   }
 }

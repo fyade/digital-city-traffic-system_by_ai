@@ -3,154 +3,20 @@ import {
   baseInterfaceColumns,
   baseInterfaceColumns2
 } from "../module/module/main/sys-util/code-generation/codeGeneration";
-import { baseUtils, objectUtils } from "@dcts/common";
+import { objectUtils } from "@dcts/common";
 import { base } from "../util/base";
 import { GenSqlDto, publicSqlSelectKey } from "./custom.dto";
 import { toCamelCase, toSnakeCase } from "@dcts/common/dist/util/base-utils";
 import { Injectable } from "@nestjs/common";
+import { PrismaoService } from "./prismao.service";
 
 @Injectable()
 export class CommonPostgresqlPrismaoService {
   constructor(
+      private readonly prismao: PrismaoService,
       private readonly bcs: BaseContextService,
   ) {
   }
-
-  protected getUserId() {
-    return this.bcs.getUserData().userId || '???';
-  }
-
-  protected getLoginRole() {
-    return this.bcs.getUserData().loginRole || '???';
-  }
-
-  defaultSelArg = ({
-                     selKeys = [],
-                     ifDeleted = true,
-                     ifUseSelfData = false,
-                   }: {
-                     selKeys?: string[],
-                     ifDeleted?: boolean,
-                     ifUseSelfData?: boolean,
-                   } = {},
-  ) => {
-    const retObj = {
-      ...(selKeys.length > 0 ? {
-        select: [...selKeys, ...baseInterfaceColumns2].reduce((o, a) => ({
-          ...o,
-          [baseUtils.toSnakeCase(a)]: true,
-        }), {}),
-      } : {}),
-      where: {},
-    };
-    if (ifUseSelfData) {
-      retObj.where['create_role'] = this.getLoginRole();
-      retObj.where['create_by'] = this.getUserId();
-    }
-    if (ifDeleted) retObj.where['deleted'] = base.N;
-    return retObj;
-  };
-  defaultInsArg = ({
-                     ifCreateRole = true,
-                     ifUpdateRole = true,
-                     ifCreateBy = true,
-                     ifUpdateBy = true,
-                     ifCreateTime = true,
-                     ifUpdateTime = true,
-                     ifDeleted = true,
-                   }: {
-                     ifCreateRole?: boolean,
-                     ifUpdateRole?: boolean,
-                     ifCreateBy?: boolean,
-                     ifUpdateBy?: boolean,
-                     ifCreateTime?: boolean,
-                     ifUpdateTime?: boolean,
-                     ifDeleted?: boolean,
-                   } = {},
-  ) => {
-    const userid = this.getUserId();
-    const time1 = new Date();
-    const retObj = {
-      data: {
-        create_role: this.getLoginRole(),
-        update_role: this.getLoginRole(),
-        create_by: userid,
-        update_by: userid,
-        create_time: time1,
-        update_time: time1,
-        deleted: base.N,
-      },
-    };
-    if (!ifCreateRole) delete retObj.data.create_role;
-    if (!ifUpdateRole) delete retObj.data.update_role;
-    if (!ifCreateBy) delete retObj.data.create_by;
-    if (!ifUpdateBy) delete retObj.data.update_by;
-    if (!ifCreateTime) delete retObj.data.create_time;
-    if (!ifUpdateTime) delete retObj.data.update_time;
-    if (!ifDeleted) delete retObj.data.deleted;
-    return retObj;
-  };
-  defaultUpdArg = ({
-                     ifUpdateRole = true,
-                     ifUpdateBy = true,
-                     ifUpdateTime = true,
-                     ifDeleted = true,
-                     ifUseSelfData = false,
-                   }: {
-                     ifUpdateRole?: boolean,
-                     ifUpdateBy?: boolean,
-                     ifUpdateTime?: boolean,
-                     ifDeleted?: boolean,
-                     ifUseSelfData?: boolean,
-                   } = {},
-  ) => {
-    const retObj = {
-      where: {
-        create_role: this.getLoginRole(),
-        create_by: this.getUserId(),
-        deleted: base.N,
-      },
-      data: {
-        update_role: this.getLoginRole(),
-        update_by: this.getUserId(),
-        update_time: new Date(),
-      },
-    };
-    if (!ifUpdateRole) delete retObj.data.update_role;
-    if (!ifUpdateBy) delete retObj.data.update_by;
-    if (!ifUpdateTime) delete retObj.data.update_time;
-    if (!ifDeleted) delete retObj.where.deleted;
-    if (!ifUseSelfData) {
-      delete retObj.where.create_role;
-      delete retObj.where.create_by;
-    }
-    return retObj;
-  };
-  defaultDelArg = ({
-                     ifUseSelfData = false,
-                   }: {
-                     ifUseSelfData?: boolean
-                   } = {},
-  ) => {
-    const retObj = {
-      where: {
-        create_role: this.getLoginRole(),
-        create_by: this.getUserId(),
-        deleted: base.N,
-      },
-      data: {
-        update_role: this.getLoginRole(),
-        update_by: this.getUserId(),
-        update_time: new Date(),
-        deleted: base.Y,
-      },
-    };
-    if (!ifUseSelfData) {
-      delete retObj.where.create_role;
-      delete retObj.where.create_by;
-    }
-    return retObj;
-  };
 
   /**
    * 生成sql
@@ -210,7 +76,7 @@ export class CommonPostgresqlPrismaoService {
     const _sqlsOfInsUpd: string[] = [];
     if (this._ifSel(dto.type)) {
       // 查询条件
-      const defaultSelArg1 = this.defaultSelArg({ifDeleted: fieldSelectParam.ifDeleted});
+      const defaultSelArg1 = this.prismao.defaultSelArg({ifDeleted: fieldSelectParam.ifDeleted});
       sql += ` where `
       for (const key of Object.keys(defaultSelArg1.where)) {
         sql += ` ${key} = '${defaultSelArg1.where[key]}' `
@@ -228,7 +94,7 @@ export class CommonPostgresqlPrismaoService {
       }
     } else if (this._ifIns(dto.type)) {
       // 插入数据的拼接
-      const defaultInsArg1 = this.defaultInsArg({
+      const defaultInsArg1 = this.prismao.defaultInsArg({
         ifCreateRole: fieldSelectParam.ifCreateRole,
         ifUpdateRole: fieldSelectParam.ifUpdateRole,
         ifCreateBy: fieldSelectParam.ifCreateBy,
@@ -280,7 +146,7 @@ export class CommonPostgresqlPrismaoService {
       }
     } else if (this._ifUpd(dto.type)) {
       // 修改数据的拼接
-      const defaultUpdArg1 = this.defaultUpdArg({
+      const defaultUpdArg1 = this.prismao.defaultUpdArg({
         ifUpdateRole: fieldSelectParam.ifUpdateRole,
         ifUpdateBy: fieldSelectParam.ifUpdateBy,
         ifUpdateTime: fieldSelectParam.ifUpdateTime,

@@ -3,7 +3,7 @@ import { R } from '../../../../../common/R';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { NonSupportException } from '../../../../../exception/non-support.exception';
-import { PrismaService } from '../../../../../prisma/prisma.service';
+import { MysqlPrismaService } from '../../../../../prisma/mysql.prisma.service';
 import { codeGeneration } from './codeGeneration';
 import { CodeGenTableDto } from '../code-gen-table/dto';
 import { CodeGenColumnDto } from '../code-gen-column/dto';
@@ -18,7 +18,7 @@ import {
 
 @Injectable()
 export class CodeGenerationService {
-  constructor(private readonly prisma: PrismaService) {
+  constructor(private readonly mysqlPrisma: MysqlPrismaService) {
   }
 
   async getDatabaseInfo(): Promise<R> {
@@ -80,12 +80,12 @@ export class CodeGenerationService {
   }
 
   async genCode(id: number): Promise<R> {
-    const table = await this.prisma.findById<CodeGenTableDto>('sys_code_gen_table', Number(id));
-    const columns = await this.prisma.findAll<CodeGenColumnDto>('sys_code_gen_column', {
+    const table = await this.mysqlPrisma.findById<CodeGenTableDto>('sys_code_gen_table', Number(id));
+    const columns = await this.mysqlPrisma.findAll<CodeGenColumnDto>('sys_code_gen_column', {
       data: {tableId: Number(id)},
       orderBy: true,
     });
-    const sys = await this.prisma.findById<SysDto>('sys_sys', table.sysId);
+    const sys = await this.mysqlPrisma.findById<SysDto>('sys_sys', table.sysId);
     const cgRes = codeGeneration({table, columns, sys});
     return R.ok({
       table,

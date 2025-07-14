@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../../../prisma/prisma.service';
+import { MysqlPrismaService } from '../../../../../prisma/mysql.prisma.service';
 // import { serverConfig, tencentSmsConfig } from '@dcts/config';
 // import * as tencentcloud from 'tencentcloud-sdk-nodejs';
 import { R } from '../../../../../common/R';
@@ -17,7 +17,7 @@ export class SmsService {
   // });
 
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly mysqlPrisma: MysqlPrismaService,
     private readonly winston: WinstonService,
   ) {
     // this.env = serverConfig.currentConfig();

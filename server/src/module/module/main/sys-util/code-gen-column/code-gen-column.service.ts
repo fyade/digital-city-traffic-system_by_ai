@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../../../prisma/prisma.service';
+import { MysqlPrismaService } from '../../../../../prisma/mysql.prisma.service';
 import { R } from '../../../../../common/R';
 import { CodeGenColumnDto, CodeGenColumnSelListDto, CodeGenColumnSelAllDto, CodeGenColumnInsOneDto, CodeGenColumnUpdOneDto } from './dto';
 import { BaseContextService } from '../../../../base-context/base-context.service';
@@ -7,7 +7,7 @@ import { BaseContextService } from '../../../../base-context/base-context.servic
 @Injectable()
 export class CodeGenColumnService {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly mysqlPrisma: MysqlPrismaService,
     private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('sys_code_gen_column', {
@@ -17,7 +17,7 @@ export class CodeGenColumnService {
   }
 
   async selCodeGenColumn(dto: CodeGenColumnSelListDto): Promise<R> {
-    const res = await this.prisma.findPage<CodeGenColumnDto, CodeGenColumnSelListDto>('sys_code_gen_column', {
+    const res = await this.mysqlPrisma.findPage<CodeGenColumnDto, CodeGenColumnSelListDto>('sys_code_gen_column', {
       data: dto,
       orderBy: true,
     });
@@ -25,7 +25,7 @@ export class CodeGenColumnService {
   }
 
   async selAllCodeGenColumn(dto: CodeGenColumnSelAllDto): Promise<R> {
-    const res = await this.prisma.findAll<CodeGenColumnDto>('sys_code_gen_column', {
+    const res = await this.mysqlPrisma.findAll<CodeGenColumnDto>('sys_code_gen_column', {
       data: dto,
       orderBy: true,
     });
@@ -33,37 +33,37 @@ export class CodeGenColumnService {
   }
 
   async selOnesCodeGenColumn(ids: number[]): Promise<R> {
-    const res = await this.prisma.findByIds<CodeGenColumnDto>('sys_code_gen_column', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<CodeGenColumnDto>('sys_code_gen_column', Object.values(ids).map(n => Number(n)));
     return R.ok(res);
   }
 
   async selOneCodeGenColumn(id: number): Promise<R> {
-    const res = await this.prisma.findById<CodeGenColumnDto>('sys_code_gen_column', Number(id));
+    const res = await this.mysqlPrisma.findById<CodeGenColumnDto>('sys_code_gen_column', Number(id));
     return R.ok(res);
   }
 
   async insCodeGenColumn(dto: CodeGenColumnInsOneDto): Promise<R> {
-    const res = await this.prisma.create<CodeGenColumnDto>('sys_code_gen_column', dto);
+    const res = await this.mysqlPrisma.create<CodeGenColumnDto>('sys_code_gen_column', dto);
     return R.ok(res);
   }
 
   async insCodeGenColumns(dtos: CodeGenColumnInsOneDto[]): Promise<R> {
-    const res = await this.prisma.createMany<CodeGenColumnDto>('sys_code_gen_column', dtos);
+    const res = await this.mysqlPrisma.createMany<CodeGenColumnDto>('sys_code_gen_column', dtos);
     return R.ok(res);
   }
 
   async updCodeGenColumn(dto: CodeGenColumnUpdOneDto): Promise<R> {
-    const res = await this.prisma.updateById<CodeGenColumnDto>('sys_code_gen_column', dto);
+    const res = await this.mysqlPrisma.updateById<CodeGenColumnDto>('sys_code_gen_column', dto);
     return R.ok(res);
   }
 
   async updCodeGenColumns(dtos: CodeGenColumnUpdOneDto[]): Promise<R> {
-    const res = await this.prisma.updateMany<CodeGenColumnDto>('sys_code_gen_column', dtos);
+    const res = await this.mysqlPrisma.updateMany<CodeGenColumnDto>('sys_code_gen_column', dtos);
     return R.ok(res);
   }
 
   async delCodeGenColumn(ids: number[]): Promise<R> {
-    const res = await this.prisma.deleteById<CodeGenColumnDto>('sys_code_gen_column', ids);
+    const res = await this.mysqlPrisma.deleteById<CodeGenColumnDto>('sys_code_gen_column', ids);
     return R.ok(res);
   }
 }

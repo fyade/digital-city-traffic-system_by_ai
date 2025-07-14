@@ -5,13 +5,13 @@ import { AuthService } from './module/auth/auth.service';
 import { getAllFiles } from './util/FileUtils';
 import { MenuTypeEnum } from './util/base';
 import { BaseContextService } from './module/base-context/base-context.service';
-import { CacheTokenService } from './module/cache/cache.token.service';
-import { PrismaoService } from "./prisma/prismao.service";
 import { serverConfig } from "@dcts/config";
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { REGEX_MAIN_APP_1_match, REGEX_MAIN_APP_2_match, REGEX_MAIN_APP_3_match } from "./util/RegularUtils";
 import { WinstonService } from "./module/winston/winston.service";
+import { MysqlPrismaoService } from "./prisma/mysql.prismao.service";
+import { PrismaoService } from "./prisma/prismao.service";
 
 const si = require("systeminformation");
 
@@ -22,8 +22,8 @@ export class AppService {
   constructor(
     private readonly authService: AuthService,
     private readonly bcs: BaseContextService,
-    private readonly cacheTokenService: CacheTokenService,
     private readonly prismao: PrismaoService,
+    private readonly mysqlPrismao: MysqlPrismaoService,
     private readonly winston: WinstonService,
   ) {
     this.cpuUsageMSDefault = 100; // CPU 利用率默认时间段
@@ -103,7 +103,7 @@ export class AppService {
 
   async getAllAuthApis2(): Promise<R> {
     const hdData = await this.getAllAuthApis();
-    const dbData = await this.prismao.sys_menu.findMany({
+    const dbData = await this.mysqlPrismao.sys_menu.findMany({
       where: {
         ...this.prismao.defaultSelArg().where,
       }

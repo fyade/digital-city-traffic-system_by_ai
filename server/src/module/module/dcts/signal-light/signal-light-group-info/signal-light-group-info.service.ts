@@ -6,12 +6,14 @@ import { CommonPostgresqlPrismaoService } from "../../../../../prisma/common.pos
 import { PostgresqlPrismaoService } from "../../../../../prisma/postgresql.prismao.service";
 import { CountSqlReturnDto } from "../../../../../util/base";
 import { PageVo } from "../../../../../common/vo/PageVo";
+import { PrismaoService } from "../../../../../prisma/prismao.service";
 
 @Injectable()
 export class SignalLightGroupInfoService {
   constructor(
-      private readonly cpgprismao: CommonPostgresqlPrismaoService,
-      private readonly pgprismao: PostgresqlPrismaoService,
+      private readonly prismao: PrismaoService,
+      private readonly cPgsqlPrismao: CommonPostgresqlPrismaoService,
+      private readonly pgsqlPrismao: PostgresqlPrismaoService,
       private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('signal_light_group_info', {
@@ -24,7 +26,7 @@ export class SignalLightGroupInfoService {
     const pageSize = dto.pageSize;
     delete dto.pageNum;
     delete dto.pageSize;
-    const sqls = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
+    const sqls = this.cPgsqlPrismao.genSql<SignalLightGroupInfoDto>({
       type: 'selList',
       tblName: 'signal_light_group_info',
       clas: new SignalLightGroupInfoDto(),
@@ -35,19 +37,19 @@ export class SignalLightGroupInfoService {
       pageNum: pageNum,
       pageSize: pageSize,
     });
-    const datas: SignalLightGroupInfoDto[] = await this.pgprismao.$queryRawUnsafe(sqls[0]);
-    const sqls2 = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
+    const datas: SignalLightGroupInfoDto[] = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const sqls2 = this.cPgsqlPrismao.genSql<SignalLightGroupInfoDto>({
       type: 'selCount',
       tblName: 'signal_light_group_info',
       selParam: dto,
     });
-    const total: CountSqlReturnDto = await this.pgprismao.$queryRawUnsafe(sqls2[0]);
+    const total: CountSqlReturnDto = await this.pgsqlPrismao.$queryRawUnsafe(sqls2[0]);
     const pageVo = new PageVo<SignalLightGroupInfoDto>(pageNum, pageSize, total[0].count, datas);
     return R.ok(pageVo);
   }
 
   async selAllSignalLightGroupInfo(dto: SignalLightGroupInfoSelAllDto): Promise<R> {
-    const sqls = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
+    const sqls = this.cPgsqlPrismao.genSql<SignalLightGroupInfoDto>({
       type: 'selAll',
       tblName: 'signal_light_group_info',
       clas: new SignalLightGroupInfoDto(),
@@ -56,13 +58,13 @@ export class SignalLightGroupInfoService {
       },
       selParam: dto,
     });
-    const datas = await this.pgprismao.$queryRawUnsafe(sqls[0]);
+    const datas = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
     return R.ok(datas);
   }
 
   async selOnesSignalLightGroupInfo(ids: number[]): Promise<R> {
     ids = Object.values(ids).map(Number);
-    const sqls = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
+    const sqls = this.cPgsqlPrismao.genSql<SignalLightGroupInfoDto>({
       type: 'selByIds',
       tblName: 'signal_light_group_info',
       clas: new SignalLightGroupInfoDto(),
@@ -71,12 +73,12 @@ export class SignalLightGroupInfoService {
       },
       selIds: ids,
     });
-    const res = await this.pgprismao.$queryRawUnsafe(sqls[0]);
+    const res = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
     return R.ok(res);
   }
 
   async selOneSignalLightGroupInfo(id: number): Promise<R> {
-    const sqls = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
+    const sqls = this.cPgsqlPrismao.genSql<SignalLightGroupInfoDto>({
       type: 'selById',
       tblName: 'signal_light_group_info',
       clas: new SignalLightGroupInfoDto(),
@@ -85,13 +87,13 @@ export class SignalLightGroupInfoService {
       },
       selIds: [id],
     });
-    const ress = await this.pgprismao.$queryRawUnsafe(sqls[0]);
+    const ress = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
     const res = ress[0];
     return R.ok(res);
   }
 
   async insSignalLightGroupInfo(dto: SignalLightGroupInfoInsOneDto): Promise<R> {
-    const sqls = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
+    const sqls = this.cPgsqlPrismao.genSql<SignalLightGroupInfoDto>({
       type: 'ins',
       tblName: 'signal_light_group_info',
       clas: new SignalLightGroupInfoDto(),
@@ -103,13 +105,13 @@ export class SignalLightGroupInfoService {
         location: value => `st_setsrid(st_makepoint(${value.split(',')[0]}, ${value.split(',')[1]}), 4326)`
       }
     });
-    const ress = await this.pgprismao.$queryRawUnsafe(sqls[0]);
+    const ress = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
     const res = ress[0];
     return R.ok(res);
   }
 
   async insSignalLightGroupInfos(dtos: SignalLightGroupInfoInsOneDto[]): Promise<R> {
-    const sqls = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
+    const sqls = this.cPgsqlPrismao.genSql<SignalLightGroupInfoDto>({
       type: 'ins',
       tblName: 'signal_light_group_info',
       clas: new SignalLightGroupInfoDto(),
@@ -123,14 +125,14 @@ export class SignalLightGroupInfoService {
     });
     const res = [];
     for (const sql of sqls) {
-      const newVar = await this.pgprismao.$queryRawUnsafe(sql);
+      const newVar = await this.pgsqlPrismao.$queryRawUnsafe(sql);
       res.push(newVar[0]);
     }
     return R.ok(res);
   }
 
   async updSignalLightGroupInfo(dto: SignalLightGroupInfoUpdOneDto): Promise<R> {
-    const sqls = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
+    const sqls = this.cPgsqlPrismao.genSql<SignalLightGroupInfoDto>({
       type: 'upd',
       tblName: 'signal_light_group_info',
       clas: new SignalLightGroupInfoDto(),
@@ -142,13 +144,13 @@ export class SignalLightGroupInfoService {
         location: value => `st_setsrid(st_makepoint(${value.split(',')[0]}, ${value.split(',')[1]}), 4326)`
       }
     });
-    const ress = await this.pgprismao.$queryRawUnsafe(sqls[0]);
+    const ress = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
     const res = ress[0];
     return R.ok(res);
   }
 
   async updSignalLightGroupInfos(dtos: SignalLightGroupInfoUpdOneDto[]): Promise<R> {
-    const sqls = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
+    const sqls = this.cPgsqlPrismao.genSql<SignalLightGroupInfoDto>({
       type: 'upd',
       tblName: 'signal_light_group_info',
       clas: new SignalLightGroupInfoDto(),
@@ -162,34 +164,34 @@ export class SignalLightGroupInfoService {
     });
     const res = [];
     for (const sql of sqls) {
-      const newVar = await this.pgprismao.$queryRawUnsafe(sql);
+      const newVar = await this.pgsqlPrismao.$queryRawUnsafe(sql);
       res.push(newVar[0]);
     }
     return R.ok(res);
   }
 
   async delSignalLightGroupInfo(ids: number[]): Promise<R> {
-    const sqls = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
+    const sqls = this.cPgsqlPrismao.genSql<SignalLightGroupInfoDto>({
       type: 'del',
       tblName: 'signal_light_group_info',
       delIds: ids,
     });
-    await this.pgprismao.$queryRawUnsafe(sqls[0]);
+    await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
     return R.ok(true);
   }
 
   async delSignalLightGroupInfoV2(ids: number[]): Promise<R> {
     // 删除信号灯组
-    const sqls = this.cpgprismao.genSql<SignalLightGroupInfoDto>({
+    const sqls = this.cPgsqlPrismao.genSql<SignalLightGroupInfoDto>({
       type: 'del',
       tblName: 'signal_light_group_info',
       delIds: ids,
     });
-    await this.pgprismao.$queryRawUnsafe(sqls[0]);
+    await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
     // 删除子信号灯、信号灯组-子信号灯对应关联
-    const defaultSelArg = this.cpgprismao.defaultSelArg();
-    const defaultDelArg = this.cpgprismao.defaultDelArg();
-    const slgcms = await this.pgprismao.signal_light_group_child_mapping.findMany({
+    const defaultSelArg = this.prismao.defaultSelArg();
+    const defaultDelArg = this.prismao.defaultDelArg();
+    const slgcms = await this.pgsqlPrismao.signal_light_group_child_mapping.findMany({
       where: {
         group_id: {
           in: ids
@@ -197,7 +199,7 @@ export class SignalLightGroupInfoService {
         ...defaultSelArg.where
       }
     });
-    await this.pgprismao.signal_light_group_child_mapping.updateMany({
+    await this.pgsqlPrismao.signal_light_group_child_mapping.updateMany({
       data: {
         ...defaultDelArg.data
       },
@@ -208,7 +210,7 @@ export class SignalLightGroupInfoService {
         ...defaultDelArg.where
       }
     })
-    await this.pgprismao.signal_light_info.updateMany({
+    await this.pgsqlPrismao.signal_light_info.updateMany({
       data: {
         ...defaultDelArg.data
       },

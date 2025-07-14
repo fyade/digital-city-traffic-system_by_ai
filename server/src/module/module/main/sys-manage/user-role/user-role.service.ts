@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../../../prisma/prisma.service';
+import { MysqlPrismaService } from '../../../../../prisma/mysql.prisma.service';
 import { R } from '../../../../../common/R';
 import { UserPermissionDeniedException } from '../../../../../exception/user-permission-denied.exception';
 import { AuthService } from '../../../../auth/auth.service';
@@ -10,7 +10,7 @@ import { BaseContextService } from '../../../../base-context/base-context.servic
 @Injectable()
 export class UserRoleService {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly mysqlPrisma: MysqlPrismaService,
     private readonly authService: AuthService,
     private readonly cachePermissionService: CachePermissionService,
     private readonly bcs: BaseContextService,
@@ -23,7 +23,7 @@ export class UserRoleService {
   }
 
   async selUserRole(dto: UserRoleSelListDto): Promise<R> {
-    const res = await this.prisma.findPage<UserRoleDto, UserRoleSelListDto>('sys_user_role', {
+    const res = await this.mysqlPrisma.findPage<UserRoleDto, UserRoleSelListDto>('sys_user_role', {
       data: dto,
       orderBy: false,
     });
@@ -31,7 +31,7 @@ export class UserRoleService {
   }
 
   async selAllUserRole(dto: UserRoleSelAllDto): Promise<R> {
-    const res = await this.prisma.findAll<UserRoleDto>('sys_user_role', {
+    const res = await this.mysqlPrisma.findAll<UserRoleDto>('sys_user_role', {
       data: dto,
       orderBy: false,
     });
@@ -39,7 +39,7 @@ export class UserRoleService {
   }
 
   async selOneUserRole(id: number): Promise<R> {
-    const one = await this.prisma.findById<UserRoleDto>('sys_user_role', Number(id));
+    const one = await this.mysqlPrisma.findById<UserRoleDto>('sys_user_role', Number(id));
     return R.ok(one);
   }
 
@@ -47,20 +47,20 @@ export class UserRoleService {
     if (!await this.authService.ifAdminUserUpdNotAdminUser(this.bcs.getUserData().userId, dto.userId)) {
       throw new UserPermissionDeniedException();
     }
-    const allRoles = await this.prisma.findAll<UserRoleUpdOneDto>('sys_user_role', { data: { userId: dto.userId } });
+    const allRoles = await this.mysqlPrisma.findAll<UserRoleUpdOneDto>('sys_user_role', { data: { userId: dto.userId } });
     const allRoleIds = allRoles.map(item => item.roleId);
     const addRoles = dto.roleId.filter(id => allRoleIds.indexOf(id) === -1);
     const delRoleIds = allRoleIds.filter(id => dto.roleId.indexOf(id) === -1);
     const delIds = allRoles.filter(item => delRoleIds.indexOf(item.roleId) > -1).map(item => item.id);
-    await this.prisma.deleteById('sys_user_role', delIds);
-    await this.prisma.createMany('sys_user_role', addRoles.map(item => ({ userId: dto.userId, roleId: item, loginRole: dto.loginRole })));
+    await this.mysqlPrisma.deleteById('sys_user_role', delIds);
+    await this.mysqlPrisma.createMany('sys_user_role', addRoles.map(item => ({ userId: dto.userId, roleId: item, loginRole: dto.loginRole })));
     await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(true);
   }
 
   async updUserRoleRU(dto: UserRoleUpdManyRUDto): Promise<R> {
     const data = [];
-    const allUsersOfThisRole = await this.prisma.findAll<UserRoleDto>('sys_user_role', {
+    const allUsersOfThisRole = await this.mysqlPrisma.findAll<UserRoleDto>('sys_user_role', {
       data: { roleId: dto.roleId },
     });
     const allUserIdsOfThisRole = allUsersOfThisRole.map(item => item.userId);
@@ -76,13 +76,13 @@ export class UserRoleService {
         loginRole: dto.loginRole,
       });
     }
-    await this.prisma.createMany('sys_user_role', data);
+    await this.mysqlPrisma.createMany('sys_user_role', data);
     await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(true);
   }
 
   async delUserRole(ids: number[]): Promise<R> {
-    const res = await this.prisma.deleteById<UserRoleDto>('sys_user_role', ids);
+    const res = await this.mysqlPrisma.deleteById<UserRoleDto>('sys_user_role', ids);
     await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(res);
   }

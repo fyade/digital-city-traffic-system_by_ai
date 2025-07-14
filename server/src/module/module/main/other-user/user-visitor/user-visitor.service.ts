@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../../../prisma/prisma.service';
+import { MysqlPrismaService } from '../../../../../prisma/mysql.prisma.service';
 import { R } from '../../../../../common/R';
 import { UserVisitorDto, UserVisitorSelListDto, AdminNewUserVisitorDto, ResetUserVisitorPsdDto } from './dto';
 import { base } from '../../../../../util/base';
@@ -16,7 +16,7 @@ import { encryptUtils, idUtils } from '@dcts/common'
 @Injectable()
 export class UserVisitorService {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly mysqlPrisma: MysqlPrismaService,
     private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('sys_user_visitor', {
@@ -27,7 +27,7 @@ export class UserVisitorService {
   async selUserVisitor(dto: UserVisitorSelListDto): Promise<R> {
     const ifWithRole = dto.ifWithRole;
     delete dto.ifWithRole;
-    const res = await this.prisma.findPage<UserVisitorDto, UserVisitorSelListDto>('sys_user_visitor', {
+    const res = await this.mysqlPrisma.findPage<UserVisitorDto, UserVisitorSelListDto>('sys_user_visitor', {
       data: dto,
       orderBy: false,
     });
@@ -39,7 +39,7 @@ export class UserVisitorService {
     }
     const res2 = [];
     const userIds = res.list.map(item => item.id);
-    const allUserRolesOfThoseUsers = await this.prisma.findAll<UserRoleDto>('sys_user_role', {
+    const allUserRolesOfThoseUsers = await this.mysqlPrisma.findAll<UserRoleDto>('sys_user_role', {
       data: {
         userId: {
           in: {
@@ -50,7 +50,7 @@ export class UserVisitorService {
       },
     });
     const allRoleIdsOfThoseUsers = allUserRolesOfThoseUsers.map(item => item.roleId);
-    const allRolesOfThoseUsers = await this.prisma.findAll<RoleDto>('sys_role', {
+    const allRolesOfThoseUsers = await this.mysqlPrisma.findAll<RoleDto>('sys_role', {
       data: {
         id: {
           in: {
@@ -59,7 +59,7 @@ export class UserVisitorService {
         },
       },
     });
-    const allUserDeptsOfThoseUsers = await this.prisma.findAll<UserDeptDto>('sys_user_dept', {
+    const allUserDeptsOfThoseUsers = await this.mysqlPrisma.findAll<UserDeptDto>('sys_user_dept', {
       data: {
         userId: {
           in: {
@@ -70,7 +70,7 @@ export class UserVisitorService {
       },
     });
     const allUserDeptIdsOfThoseUsers = allUserDeptsOfThoseUsers.map(item => item.deptId);
-    const allDeptsOfThoseUsers = await this.prisma.findAll<DeptDto>('sys_dept', {
+    const allDeptsOfThoseUsers = await this.mysqlPrisma.findAll<DeptDto>('sys_dept', {
       data: {
         id: {
           in: {
@@ -79,7 +79,7 @@ export class UserVisitorService {
         },
       },
     });
-    const allUserUserGroupsOfThoseUsers = await this.prisma.findAll<UserUserGroupDto>('sys_user_user_group', {
+    const allUserUserGroupsOfThoseUsers = await this.mysqlPrisma.findAll<UserUserGroupDto>('sys_user_user_group', {
       data: {
         userId: {
           in: {
@@ -90,7 +90,7 @@ export class UserVisitorService {
       },
     });
     const allUserUserGroupIdsOfThoseUsers = allUserUserGroupsOfThoseUsers.map(item => item.userGroupId);
-    const allUserGroupsOfThoseUsers = await this.prisma.findAll<UserGroupDto>('sys_user_group', {
+    const allUserGroupsOfThoseUsers = await this.mysqlPrisma.findAll<UserGroupDto>('sys_user_group', {
       data: {
         id: {
           in: {
@@ -120,11 +120,11 @@ export class UserVisitorService {
   }
 
   async insUserVisitor(dto: AdminNewUserVisitorDto): Promise<R> {
-    const userVisitor = await this.prisma.findFirst<UserVisitorDto>('sys_user_visitor', { username: dto.username });
+    const userVisitor = await this.mysqlPrisma.findFirst<UserVisitorDto>('sys_user_visitor', { username: dto.username });
     if (userVisitor) {
       throw new Exception('用户名已存在。');
     }
-    await this.prisma.create('sys_user_visitor', {
+    await this.mysqlPrisma.create('sys_user_visitor', {
       ...dto,
       password: await encryptUtils.hashPassword(dto.password),
       id: idUtils.genId(10, false),
@@ -133,7 +133,7 @@ export class UserVisitorService {
   }
 
   async adminResetUserVisitorPsd(dto: ResetUserVisitorPsdDto): Promise<R> {
-    await this.prisma.updateById('sys_user_visitor', { ...dto, password: await encryptUtils.hashPassword(dto.password) });
+    await this.mysqlPrisma.updateById('sys_user_visitor', { ...dto, password: await encryptUtils.hashPassword(dto.password) });
     return R.ok(true);
   }
 }

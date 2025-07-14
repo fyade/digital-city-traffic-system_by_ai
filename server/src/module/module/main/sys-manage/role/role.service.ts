@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../../../prisma/prisma.service';
+import { MysqlPrismaService } from '../../../../../prisma/mysql.prisma.service';
 import { R } from '../../../../../common/R';
 import { RoleDto, RoleSelListDto, RoleSelAllDto, RoleInsOneDto, RoleUpdOneDto } from './dto';
 import { CachePermissionService } from '../../../../cache/cache.permission.service';
@@ -8,7 +8,7 @@ import { BaseContextService } from '../../../../base-context/base-context.servic
 @Injectable()
 export class RoleService {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly mysqlPrisma: MysqlPrismaService,
     private readonly bcs: BaseContextService,
     private readonly cachePermissionService: CachePermissionService,
   ) {
@@ -19,7 +19,7 @@ export class RoleService {
   }
 
   async selRole(dto: RoleSelListDto): Promise<R> {
-    const res = await this.prisma.findPage<RoleDto, RoleSelListDto>('sys_role', {
+    const res = await this.mysqlPrisma.findPage<RoleDto, RoleSelListDto>('sys_role', {
       data: dto,
       orderBy: true,
     });
@@ -27,7 +27,7 @@ export class RoleService {
   }
 
   async selAllRole(dto: RoleSelAllDto): Promise<R> {
-    const res = await this.prisma.findAll<RoleDto>('sys_role', {
+    const res = await this.mysqlPrisma.findAll<RoleDto>('sys_role', {
       data: dto,
       orderBy: true,
     });
@@ -35,39 +35,39 @@ export class RoleService {
   }
 
   async selOnesRole(ids: number[]): Promise<R> {
-    const res = await this.prisma.findByIds<RoleDto>('sys_role', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<RoleDto>('sys_role', Object.values(ids).map(n => Number(n)));
     return R.ok(res);
   }
 
   async selOneRole(id: number): Promise<R> {
-    const res = await this.prisma.findById<RoleDto>('sys_role', Number(id));
+    const res = await this.mysqlPrisma.findById<RoleDto>('sys_role', Number(id));
     return R.ok(res);
   }
 
   async insRole(dto: RoleInsOneDto): Promise<R> {
-    const res = await this.prisma.create<RoleDto>('sys_role', dto);
+    const res = await this.mysqlPrisma.create<RoleDto>('sys_role', dto);
     return R.ok(res);
   }
 
   async insRoles(dtos: RoleInsOneDto[]): Promise<R> {
-    const res = await this.prisma.createMany<RoleDto>('sys_role', dtos);
+    const res = await this.mysqlPrisma.createMany<RoleDto>('sys_role', dtos);
     return R.ok(res);
   }
 
   async updRole(dto: RoleUpdOneDto): Promise<R> {
-    const res = await this.prisma.updateById<RoleDto>('sys_role', dto);
+    const res = await this.mysqlPrisma.updateById<RoleDto>('sys_role', dto);
     await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(res);
   }
 
   async updRoles(dtos: RoleUpdOneDto[]): Promise<R> {
-    const res = await this.prisma.updateMany<RoleDto>('sys_role', dtos);
+    const res = await this.mysqlPrisma.updateMany<RoleDto>('sys_role', dtos);
     await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(res);
   }
 
   async delRole(ids: number[]): Promise<R> {
-    const res = await this.prisma.deleteById<RoleDto>('sys_role', ids);
+    const res = await this.mysqlPrisma.deleteById<RoleDto>('sys_role', ids);
     await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(res);
   }

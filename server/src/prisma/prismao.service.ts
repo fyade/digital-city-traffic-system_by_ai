@@ -1,75 +1,33 @@
-import { base } from '../util/base';
-import { Injectable } from '@nestjs/common';
-import { BaseContextService } from '../module/base-context/base-context.service';
-import { baseInterfaceColumns2 } from '../module/module/main/sys-util/code-generation/codeGeneration';
-import { PrismaClient, Prisma } from '@dcts/prisma-generated/client'
-import { serverConfig } from "@dcts/config";
+import { Injectable } from "@nestjs/common";
+import { BaseContextService } from "../module/base-context/base-context.service";
+import { baseInterfaceColumns2 } from "../module/module/main/sys-util/code-generation/codeGeneration";
 import { baseUtils } from "@dcts/common";
-
-const env = serverConfig.currentConfig();
+import { base } from "../util/base";
 
 @Injectable()
-export class PrismaoService extends PrismaClient {
+export class PrismaoService {
   constructor(
-    private readonly bcs: BaseContextService,
+      protected readonly bcs: BaseContextService,
   ) {
-    super({
-      datasources: {
-        db: {
-          url: serverConfig.getMysqlUrlFromEnv(env),
-        },
-      },
-      log: (env.prismaLogLevel && baseUtils.typeOf(env.prismaLogLevel) === 'array') ? (env.prismaLogLevel as Prisma.PrismaClientOptions['log']) : [],
-    });
-    // 使用中间件对查询结果中的 Bigint 类型进行序列化
-    super.$use(async (params, next) => {
-      const t1 = Date.now();
-      const result = await next(params);
-      const t2 = Date.now();
-      if (env.ifLogSQLExecutionTime) {
-        console.info(`Query ${params.model}.${params.action} took ${t2 - t1}ms`);
-      }
-      return this.serialize(result);
-    });
   }
 
-  protected getUserId() {
+  private getUserId() {
     return this.bcs.getUserData().userId || '???';
   }
 
-  protected getLoginRole() {
+  private getLoginRole() {
     return this.bcs.getUserData().loginRole || '???';
   }
 
-  private serialize(obj) {
-    if (baseUtils.typeOf(obj) === 'bigint') {
-      return parseInt(`${obj}`);
-    } else if (baseUtils.typeOf(obj) === 'object') {
-      return JSON.parse(
-        JSON.stringify(obj, (key, value) => {
-          if (baseUtils.typeOf(value) === 'bigint') {
-            return parseInt(`${value}`);
-          }
-          return value;
-        }),
-      );
-    } else if (baseUtils.typeOf(obj) === 'array') {
-      return obj.map(item => {
-        return this.serialize(item);
-      });
-    }
-    return obj;
-  }
-
-  defaultSelArg = ({
-                     selKeys = [],
-                     ifDeleted = true,
-                     ifUseSelfData = false,
-                   }: {
-                     selKeys?: string[],
-                     ifDeleted?: boolean,
-                     ifUseSelfData?: boolean,
-                   } = {},
+  public defaultSelArg = ({
+                            selKeys = [],
+                            ifDeleted = true,
+                            ifUseSelfData = false,
+                          }: {
+                            selKeys?: string[],
+                            ifDeleted?: boolean,
+                            ifUseSelfData?: boolean,
+                          } = {},
   ) => {
     const retObj = {
       ...(selKeys.length > 0 ? {
@@ -87,23 +45,24 @@ export class PrismaoService extends PrismaClient {
     if (ifDeleted) retObj.where['deleted'] = base.N;
     return retObj;
   };
-  defaultInsArg = ({
-                     ifCreateRole = true,
-                     ifUpdateRole = true,
-                     ifCreateBy = true,
-                     ifUpdateBy = true,
-                     ifCreateTime = true,
-                     ifUpdateTime = true,
-                     ifDeleted = true,
-                   }: {
-                     ifCreateRole?: boolean,
-                     ifUpdateRole?: boolean,
-                     ifCreateBy?: boolean,
-                     ifUpdateBy?: boolean,
-                     ifCreateTime?: boolean,
-                     ifUpdateTime?: boolean,
-                     ifDeleted?: boolean,
-                   } = {},
+
+  public defaultInsArg = ({
+                            ifCreateRole = true,
+                            ifUpdateRole = true,
+                            ifCreateBy = true,
+                            ifUpdateBy = true,
+                            ifCreateTime = true,
+                            ifUpdateTime = true,
+                            ifDeleted = true,
+                          }: {
+                            ifCreateRole?: boolean,
+                            ifUpdateRole?: boolean,
+                            ifCreateBy?: boolean,
+                            ifUpdateBy?: boolean,
+                            ifCreateTime?: boolean,
+                            ifUpdateTime?: boolean,
+                            ifDeleted?: boolean,
+                          } = {},
   ) => {
     const userid = this.getUserId();
     const time1 = new Date();
@@ -127,19 +86,20 @@ export class PrismaoService extends PrismaClient {
     if (!ifDeleted) delete retObj.data.deleted;
     return retObj;
   };
-  defaultUpdArg = ({
-                     ifUpdateRole = true,
-                     ifUpdateBy = true,
-                     ifUpdateTime = true,
-                     ifDeleted = true,
-                     ifUseSelfData = false,
-                   }: {
-                     ifUpdateRole?: boolean,
-                     ifUpdateBy?: boolean,
-                     ifUpdateTime?: boolean,
-                     ifDeleted?: boolean,
-                     ifUseSelfData?: boolean,
-                   } = {},
+
+  public defaultUpdArg = ({
+                            ifUpdateRole = true,
+                            ifUpdateBy = true,
+                            ifUpdateTime = true,
+                            ifDeleted = true,
+                            ifUseSelfData = false,
+                          }: {
+                            ifUpdateRole?: boolean,
+                            ifUpdateBy?: boolean,
+                            ifUpdateTime?: boolean,
+                            ifDeleted?: boolean,
+                            ifUseSelfData?: boolean,
+                          } = {},
   ) => {
     const retObj = {
       where: {
@@ -163,11 +123,12 @@ export class PrismaoService extends PrismaClient {
     }
     return retObj;
   };
-  defaultDelArg = ({
-                     ifUseSelfData = false,
-                   }: {
-                     ifUseSelfData?: boolean
-                   } = {},
+
+  public defaultDelArg = ({
+                            ifUseSelfData = false,
+                          }: {
+                            ifUseSelfData?: boolean
+                          } = {},
   ) => {
     const retObj = {
       where: {

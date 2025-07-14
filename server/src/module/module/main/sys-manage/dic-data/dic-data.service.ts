@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../../../prisma/prisma.service';
+import { MysqlPrismaService } from '../../../../../prisma/mysql.prisma.service';
 import { R } from '../../../../../common/R';
 import { DicDataDto, DicDataSelListDto, DicDataSelAllDto, DicDataInsOneDto, DicDataUpdOneDto } from './dto';
 import { base } from '../../../../../util/base';
@@ -10,7 +10,7 @@ import { CommonService } from "../../../../common/common.service";
 @Injectable()
 export class DicDataService {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly mysqlPrisma: MysqlPrismaService,
     private readonly bcs: BaseContextService,
     private readonly commonService: CommonService,
   ) {
@@ -26,7 +26,7 @@ export class DicDataService {
   }
 
   async selDicData(dto: DicDataSelListDto): Promise<R> {
-    const res = await this.prisma.findPage<DicDataDto, DicDataSelListDto>('sys_dic_data', {
+    const res = await this.mysqlPrisma.findPage<DicDataDto, DicDataSelListDto>('sys_dic_data', {
       data: dto,
       orderBy: true,
     });
@@ -34,7 +34,7 @@ export class DicDataService {
   }
 
   async selAllDicData(dto: DicDataSelAllDto): Promise<R<DicDataDto[]>> {
-    const res = await this.prisma.findAll<DicDataDto>('sys_dic_data', {
+    const res = await this.mysqlPrisma.findAll<DicDataDto>('sys_dic_data', {
       data: dto,
       orderBy: true,
     });
@@ -42,12 +42,12 @@ export class DicDataService {
   }
 
   async selOnesDicData(ids: number[]): Promise<R> {
-    const res = await this.prisma.findByIds<DicDataDto>('sys_dic_data', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<DicDataDto>('sys_dic_data', Object.values(ids).map(n => Number(n)));
     return R.ok(res);
   }
 
   async selOneDicData(id: number): Promise<R> {
-    const res = await this.prisma.findById<DicDataDto>('sys_dic_data', Number(id));
+    const res = await this.mysqlPrisma.findById<DicDataDto>('sys_dic_data', Number(id));
     return R.ok(res);
   }
 
@@ -62,7 +62,7 @@ export class DicDataService {
         await this.updDicDatas(upds);
       }
     }
-    const res = await this.prisma.create<DicDataDto>('sys_dic_data', dto);
+    const res = await this.mysqlPrisma.create<DicDataDto>('sys_dic_data', dto);
     return R.ok(res);
   }
 
@@ -81,7 +81,7 @@ export class DicDataService {
         await this.updDicDatas(upds);
       }
     }
-    const res = await this.prisma.createMany<DicDataDto>('sys_dic_data', dtos);
+    const res = await this.mysqlPrisma.createMany<DicDataDto>('sys_dic_data', dtos);
     return R.ok(res);
   }
 
@@ -96,7 +96,7 @@ export class DicDataService {
         await this.updDicDatas(upds);
       }
     }
-    const res = await this.prisma.updateById<DicDataDto>('sys_dic_data', dto);
+    const res = await this.mysqlPrisma.updateById<DicDataDto>('sys_dic_data', dto);
     return R.ok(res);
   }
 
@@ -115,12 +115,12 @@ export class DicDataService {
         await this.updDicDatas(upds);
       }
     }
-    const res = await this.prisma.updateMany<DicDataDto>('sys_dic_data', dtos);
+    const res = await this.mysqlPrisma.updateMany<DicDataDto>('sys_dic_data', dtos);
     return R.ok(res);
   }
 
   async delDicData(ids: number[]): Promise<R> {
-    const res = await this.prisma.deleteById<DicDataDto>('sys_dic_data', ids);
+    const res = await this.mysqlPrisma.deleteById<DicDataDto>('sys_dic_data', ids);
     return R.ok(res);
   }
 }

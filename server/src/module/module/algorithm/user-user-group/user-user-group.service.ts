@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../../prisma/prisma.service';
+import { MysqlPrismaService } from '../../../../prisma/mysql.prisma.service';
 import { R } from '../../../../common/R';
 import { UserUserGroupDto, UserUserGroupSelListDto, UserUserGroupSelAllDto, UserUserGroupInsOneDto, UserUserGroupUpdOneDto, UserUserGroupUpdUUGDtp, UserUserGroupUpdUGUDtp } from './dto';
 import { AuthService } from '../../../auth/auth.service';
@@ -9,7 +9,7 @@ import { BaseContextService } from '../../../base-context/base-context.service';
 @Injectable()
 export class UserUserGroupService {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly mysqlPrisma: MysqlPrismaService,
     private readonly authService: AuthService,
     private readonly bcs: BaseContextService,
   ) {
@@ -21,7 +21,7 @@ export class UserUserGroupService {
   }
 
   async selUserUserGroup(dto: UserUserGroupSelListDto): Promise<R> {
-    const res = await this.prisma.findPage<UserUserGroupDto, UserUserGroupSelListDto>('sys_user_user_group', {
+    const res = await this.mysqlPrisma.findPage<UserUserGroupDto, UserUserGroupSelListDto>('sys_user_user_group', {
       data: dto,
       orderBy: false,
     });
@@ -29,7 +29,7 @@ export class UserUserGroupService {
   }
 
   async selAllUserUserGroup(dto: UserUserGroupSelAllDto): Promise<R> {
-    const res = await this.prisma.findAll<UserUserGroupDto>('sys_user_user_group', {
+    const res = await this.mysqlPrisma.findAll<UserUserGroupDto>('sys_user_user_group', {
       data: dto,
       orderBy: false,
     });
@@ -37,12 +37,12 @@ export class UserUserGroupService {
   }
 
   async selOnesUserUserGroup(ids: number[]): Promise<R> {
-    const res = await this.prisma.findByIds<UserUserGroupDto>('sys_user_user_group', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<UserUserGroupDto>('sys_user_user_group', Object.values(ids).map(n => Number(n)));
     return R.ok(res);
   }
 
   async selOneUserUserGroup(id: number): Promise<R> {
-    const res = await this.prisma.findById<UserUserGroupDto>('sys_user_user_group', Number(id));
+    const res = await this.mysqlPrisma.findById<UserUserGroupDto>('sys_user_user_group', Number(id));
     return R.ok(res);
   }
 
@@ -50,13 +50,13 @@ export class UserUserGroupService {
     if (!await this.authService.ifAdminUserUpdNotAdminUser(this.bcs.getUserData().userId, dto.userId)) {
       throw new UserPermissionDeniedException();
     }
-    const allUserGroups = await this.prisma.findAll<UserUserGroupDto>('sys_user_user_group', { data: { userId: dto.userId } });
+    const allUserGroups = await this.mysqlPrisma.findAll<UserUserGroupDto>('sys_user_user_group', { data: { userId: dto.userId } });
     const allUserGroupIds = allUserGroups.map(item => item.id);
     const addUserGroups = dto.userGroupId.filter(id => allUserGroupIds.indexOf(id) === -1);
     const delUserGroupIds = allUserGroupIds.filter(id => dto.userGroupId.indexOf(id) === -1);
     const delUserGroups = allUserGroups.filter(item => delUserGroupIds.indexOf(item.userGroupId) > -1).map(item => item.id);
-    await this.prisma.deleteById('sys_user_user_group', delUserGroupIds);
-    await this.prisma.createMany('sys_user_user_group', addUserGroups.map(item => ({
+    await this.mysqlPrisma.deleteById('sys_user_user_group', delUserGroupIds);
+    await this.mysqlPrisma.createMany('sys_user_user_group', addUserGroups.map(item => ({
       userId: dto.userId,
       userGroupId: item,
       loginRole: dto.loginRole
@@ -66,7 +66,7 @@ export class UserUserGroupService {
 
   async updUserUserGroupUGU(dto: UserUserGroupUpdUGUDtp): Promise<R> {
     const data = [];
-    const allUsersOfThisUserGroup = await this.prisma.findAll<UserUserGroupDto>('sys_user_user_group', {
+    const allUsersOfThisUserGroup = await this.mysqlPrisma.findAll<UserUserGroupDto>('sys_user_user_group', {
       data: { userGroupId: dto.userGroupId },
     });
     const allUserIdsOfThisUserGroup = allUsersOfThisUserGroup.map(item => item.userId);
@@ -82,12 +82,12 @@ export class UserUserGroupService {
         loginRole: dto.loginRole
       });
     }
-    await this.prisma.createMany('sys_user_user_group', data);
+    await this.mysqlPrisma.createMany('sys_user_user_group', data);
     return R.ok(true);
   }
 
   async delUserUserGroup(ids: number[]): Promise<R> {
-    const res = await this.prisma.deleteById<UserUserGroupDto>('sys_user_user_group', ids);
+    const res = await this.mysqlPrisma.deleteById<UserUserGroupDto>('sys_user_user_group', ids);
     return R.ok(res);
   }
 }

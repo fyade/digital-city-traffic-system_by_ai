@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { UnknownException } from '../exception/unknown.exception';
 import { PageDto } from '../common/dto/PageDto';
 import { PageVo } from '../common/vo/PageVo';
 import { deepClone } from '../util/ObjectUtils';
 import { PrismaParam, SelectParamObj } from './dto';
-import { PrismaoService } from './prismao.service';
+import { PrismaoService } from "./prismao.service";
 import { AuthService } from '../module/auth/auth.service';
 import { BaseContextService } from '../module/base-context/base-context.service';
-import { UTDPTypeEnum } from '../util/base';
-import { baseUtils, objectUtils } from "@dcts/common";
 import { WinstonService } from "../module/winston/winston.service";
+import { base, UTDPTypeEnum } from '../util/base';
+import { baseUtils, objectUtils } from "@dcts/common";
 
 enum RowPermissionEnum {
   all = 'all',
@@ -29,90 +28,95 @@ class RowPermissionRet {
 @Injectable()
 export class PrismaService {
   constructor(
-    protected readonly authService: AuthService,
-    protected readonly bcs: BaseContextService,
-    protected readonly prismao: PrismaoService,
-    protected readonly winston: WinstonService,
+      protected readonly prismao: PrismaoService,
+      protected readonly authService: AuthService,
+      protected readonly bcs: BaseContextService,
+      protected readonly winston: WinstonService,
   ) {
   }
 
-  /**
-   * 数据表行级别权限控制
-   * @param model
-   * @param arg
-   * @private
-   */
-  private async tableRowPermission<T>({
-                                        model,
-                                        arg,
-                                      }: {
-                                        model: string,
-                                        arg: PrismaParam
-                                      },
-  ): Promise<RowPermissionRet> {
-    const rowPermissionRet = new RowPermissionRet();
-    const userData = this.bcs.getUserData();
-    const permissionData = await this.prismao.sys_menu.findFirst({
-      where: {
-        perms: userData.perms,
-        type: 'mb',
-        ...this.prismao.defaultSelArg().where,
-      },
-    });
-    if (!permissionData) {
-      this.winston.error(`不存在的权限：${userData.perms}`);
-      throw new UnknownException(userData.reqId);
-    }
-    const ifTopAdmin = userData.topAdmin;
-    if (ifTopAdmin) {
-      rowPermissionRet.types.push(RowPermissionEnum.all);
-    }
-    // 用户的角色/部门
-    const { allRoleIds, allDeptIds } = await this.authService.rolesAndDeptsOfUser(userData.userId, userData.loginRole);
-    const trpsRole = await this.prismao.sys_table_row_permission.findMany({
-      where: {
-        action_type: UTDPTypeEnum.T_ROLE,
-        action_id: {
-          in: allRoleIds.map(_ => `${_}`),
-        },
-        permission_id: permissionData.id,
-        ...this.prismao.defaultSelArg().where,
-      },
-    });
-    const trpsDept = await this.prismao.sys_table_row_permission.findMany({
-      where: {
-        action_type: UTDPTypeEnum.T_DEPT,
-        action_id: {
-          in: allDeptIds.map(_ => `${_}`),
-        },
-        permission_id: permissionData.id,
-        ...this.prismao.defaultSelArg().where,
-      },
-    });
-    const trps = [...trpsRole, ...trpsDept];
-    if (trps.length === 0) {
-      rowPermissionRet.types.push(RowPermissionEnum.all);
-    }
-    const dataTypes = trps.map(item => item.data_type);
-    if (dataTypes.includes('ALL')) {
-      rowPermissionRet.types.push(RowPermissionEnum.all);
-    }
-    if (dataTypes.includes('SELF_DEPT')) {}
-    if (dataTypes.includes('DEPT_ONE_SON')) {}
-    if (dataTypes.includes('DEPT_ALL_SON')) {}
-    if (dataTypes.includes('SELF_ROLE')) {}
-    if (dataTypes.includes('SELF')) {
-      rowPermissionRet.types.push(RowPermissionEnum.self);
-    }
-    return rowPermissionRet;
-  }
+  // /**
+  //  * 数据表行级别权限控制
+  //  * @param model
+  //  * @param arg
+  //  * @private
+  //  */
+  // private async tableRowPermission<T>({
+  //                                       model,
+  //                                       arg,
+  //                                     }: {
+  //                                       model: string,
+  //                                       arg: PrismaParam
+  //                                     },
+  // ): Promise<RowPermissionRet> {
+  //   const rowPermissionRet = new RowPermissionRet();
+  //   const userData = this.bcs.getUserData();
+  //   const permissionData = await this.mysqlPrismao.sys_menu.findFirst({
+  //     where: {
+  //       perms: userData.perms,
+  //       type: 'mb',
+  //       ...this.defaultSelArg().where,
+  //     },
+  //   });
+  //   if (!permissionData) {
+  //     this.winston.error(`不存在的权限：${userData.perms}`);
+  //     throw new UnknownException(userData.reqId);
+  //   }
+  //   const ifTopAdmin = userData.topAdmin;
+  //   if (ifTopAdmin) {
+  //     rowPermissionRet.types.push(RowPermissionEnum.all);
+  //   }
+  //   // 用户的角色/部门
+  //   const {allRoleIds, allDeptIds} = await this.authService.rolesAndDeptsOfUser(userData.userId, userData.loginRole);
+  //   const trpsRole = await this.mysqlPrismao.sys_table_row_permission.findMany({
+  //     where: {
+  //       action_type: UTDPTypeEnum.T_ROLE,
+  //       action_id: {
+  //         in: allRoleIds.map(_ => `${_}`),
+  //       },
+  //       permission_id: permissionData.id,
+  //       ...this.defaultSelArg().where,
+  //     },
+  //   });
+  //   const trpsDept = await this.mysqlPrismao.sys_table_row_permission.findMany({
+  //     where: {
+  //       action_type: UTDPTypeEnum.T_DEPT,
+  //       action_id: {
+  //         in: allDeptIds.map(_ => `${_}`),
+  //       },
+  //       permission_id: permissionData.id,
+  //       ...this.defaultSelArg().where,
+  //     },
+  //   });
+  //   const trps = [...trpsRole, ...trpsDept];
+  //   if (trps.length === 0) {
+  //     rowPermissionRet.types.push(RowPermissionEnum.all);
+  //   }
+  //   const dataTypes = trps.map(item => item.data_type);
+  //   if (dataTypes.includes('ALL')) {
+  //     rowPermissionRet.types.push(RowPermissionEnum.all);
+  //   }
+  //   if (dataTypes.includes('SELF_DEPT')) {
+  //   }
+  //   if (dataTypes.includes('DEPT_ONE_SON')) {
+  //   }
+  //   if (dataTypes.includes('DEPT_ALL_SON')) {
+  //   }
+  //   if (dataTypes.includes('SELF_ROLE')) {
+  //   }
+  //   if (dataTypes.includes('SELF')) {
+  //     rowPermissionRet.types.push(RowPermissionEnum.self);
+  //   }
+  //   return rowPermissionRet;
+  // }
 
-  protected getModel(model: string) {
-    const modelInstance = this.prismao[model];
-    if (!modelInstance) {
-      throw new UnknownException(this.bcs.getUserData().reqId);
-    }
-    return modelInstance;
+  protected getModel(model: string): any {
+    // const modelInstance = this.getOrigin()[model];
+    // if (!modelInstance) {
+    //   throw new UnknownException(this.bcs.getUserData().reqId);
+    // }
+    // return modelInstance;
+    return null;
   }
 
   private genSelParams<T, P = object>({
@@ -138,7 +142,7 @@ export class PrismaService {
                                       } = {},
   ) {
     const data_ = baseUtils.objToSnakeCase(data as object);
-    const publicData = this.prismao.defaultSelArg({ selKeys, ifDeleted, ifUseSelfData }).where;
+    const publicData = this.prismao.defaultSelArg({selKeys, ifDeleted, ifUseSelfData}).where;
     const ret = {
       AND: [
         ...Object.keys(publicData).reduce((obj, item) => [
@@ -163,7 +167,7 @@ export class PrismaService {
           };
           // 如果这个字段接收到的是对象类型
           if (baseUtils.typeOf(datum) === 'object') {
-            const items = { [item]: {} };
+            const items = {[item]: {}};
             const datum_ = new SelectParamObj(datum as unknown as SelectParamObj);
             for (const itm of Object.keys(datum_)) {
               // 如果指定为数值类型
@@ -172,10 +176,10 @@ export class PrismaService {
                   case 'array':
                     items[item][itm] = datum_[itm].value.map(n => Number(n));
                     break;
-                  // case 'object':
-                  //   items[item][itm] = Object.keys(datum_[itm].value)
-                  //     .reduce((obj, key) => ({ ...obj, [key]: Number(datum_[itm].value[key]) }), {});
-                  //   break;
+                    // case 'object':
+                    //   items[item][itm] = Object.keys(datum_[itm].value)
+                    //     .reduce((obj, key) => ({ ...obj, [key]: Number(datum_[itm].value[key]) }), {});
+                    //   break;
                   case 'string':
                     items[item][itm] = Number(datum_[itm].value);
                     break;
@@ -190,10 +194,10 @@ export class PrismaService {
                   case 'array':
                     items[item][itm] = datum_[itm].value.map((n) => new Date(n));
                     break;
-                  // case 'object':
-                  //   items[item][itm] = Object.keys(datum_[itm].value)
-                  //     .reduce((obj, key) => ({ ...obj, [key]: Number(datum_[itm].value[key]) }), {});
-                  //   break;
+                    // case 'object':
+                    //   items[item][itm] = Object.keys(datum_[itm].value)
+                    //     .reduce((obj, key) => ({ ...obj, [key]: Number(datum_[itm].value[key]) }), {});
+                    //   break;
                   case 'string':
                     items[item][itm] = new Date(datum_[itm].value);
                     break;
@@ -227,19 +231,19 @@ export class PrismaService {
           } else {
             // 数字
             if (baseUtils.toSnakeCases(numberKeys).includes(item)) {
-              obj2.OR.push({ [item]: Number(datum) });
+              obj2.OR.push({[item]: Number(datum)});
             }
             // 字符串完整匹配
             else if (baseUtils.toSnakeCases(completeMatchingKeys).includes(item) && !!datum) {
-              obj2.OR.push({ [item]: `${datum}` });
+              obj2.OR.push({[item]: `${datum}`});
             }
             // 字符串模糊匹配
             else {
-              obj2.OR.push({ [item]: { contains: `${datum}` } });
+              obj2.OR.push({[item]: {contains: `${datum}`}});
             }
             // 可以为空
             if (!baseUtils.toSnakeCases(notNullKeys).includes(item)) {
-              obj2.OR.push({ [item]: null });
+              obj2.OR.push({[item]: null});
             }
           }
           if (obj2.OR.length > 0) {
@@ -282,19 +286,19 @@ export class PrismaService {
    * @param selKeys
    * @param ifUseSelfData
    */
-  async findPage<T, P extends PageDto>(model: string, {
-                                         data,
-                                         orderBy,
-                                         range = {},
-                                         selKeys = [],
-                                         ifUseSelfData = false,
-                                       }: {
-                                         data?: P,
-                                         orderBy?: boolean | object,
-                                         range?: object,
-                                         selKeys?: string[],
-                                         ifUseSelfData?: boolean,
-                                       } = {},
+  public async findPage<T, P extends PageDto>(model: string, {
+                                                data,
+                                                orderBy,
+                                                range = {},
+                                                selKeys = [],
+                                                ifUseSelfData = false,
+                                              }: {
+                                                data?: P,
+                                                orderBy?: boolean | object,
+                                                range?: object,
+                                                selKeys?: string[],
+                                                ifUseSelfData?: boolean,
+                                              } = {},
   ): Promise<PageVo<T>> {
     const pageNum = Number(data.pageNum);
     const pageSize = Number(data.pageSize);
@@ -302,7 +306,7 @@ export class PrismaService {
     delete data2.pageNum;
     delete data2.pageSize;
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
-    const publicData = this.prismao.defaultSelArg({ selKeys, ifDeleted: fieldSelectParam.ifDeleted, ifUseSelfData });
+    const publicData = this.prismao.defaultSelArg({selKeys, ifDeleted: fieldSelectParam.ifDeleted, ifUseSelfData});
     const arg: PrismaParam = {
       where: this.genSelParams<T, P>({
         data: data2,
@@ -315,7 +319,7 @@ export class PrismaService {
         ifDeleted: fieldSelectParam.ifDeleted,
         ifUseSelfData,
       }),
-      ...(publicData.select ? { select: publicData.select } : {}),
+      ...(publicData.select ? {select: publicData.select} : {}),
       skip: this.getSkipAndTakeFromPNS(pageNum, pageSize).skip,
       take: this.getSkipAndTakeFromPNS(pageNum, pageSize).take,
     };
@@ -330,7 +334,7 @@ export class PrismaService {
       ];
     } else if (orderBy) {
       arg['orderBy'] = [
-          ...Object.keys(orderBy).map((_, index) => {
+        ...Object.keys(orderBy).map((_, index) => {
           return {
             [baseUtils.toSnakeCase(Object.keys(orderBy)[index])]: Object.values(orderBy)[index],
           }
@@ -372,22 +376,22 @@ export class PrismaService {
    * @param selKeys
    * @param ifUseSelfData
    */
-  async findAll<T, P = object>(model: string, {
-                                 data,
-                                 orderBy,
-                                 range = {},
-                                 selKeys = [],
-                                 ifUseSelfData = false,
-                               }: {
-                                 data?: P,
-                                 orderBy?: boolean | object,
-                                 range?: object,
-                                 selKeys?: string[],
-                                 ifUseSelfData?: boolean,
-                               } = {},
+  public async findAll<T, P = object>(model: string, {
+                                        data,
+                                        orderBy,
+                                        range = {},
+                                        selKeys = [],
+                                        ifUseSelfData = false,
+                                      }: {
+                                        data?: P,
+                                        orderBy?: boolean | object,
+                                        range?: object,
+                                        selKeys?: string[],
+                                        ifUseSelfData?: boolean,
+                                      } = {},
   ): Promise<T[]> {
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
-    const publicData = this.prismao.defaultSelArg({ selKeys, ifDeleted: fieldSelectParam.ifDeleted, ifUseSelfData });
+    const publicData = this.prismao.defaultSelArg({selKeys, ifDeleted: fieldSelectParam.ifDeleted, ifUseSelfData});
     const arg = {
       where: this.genSelParams<T, P>({
         data,
@@ -400,7 +404,7 @@ export class PrismaService {
         ifDeleted: fieldSelectParam.ifDeleted,
         ifUseSelfData,
       }),
-      ...(publicData.select ? { select: publicData.select } : {}),
+      ...(publicData.select ? {select: publicData.select} : {}),
     };
     if (typeof orderBy === 'boolean' && orderBy) {
       arg['orderBy'] = {
@@ -427,22 +431,22 @@ export class PrismaService {
    * @param selKeys
    * @param ifUseSelfData
    */
-  async findFirst<T, P = any>(model: string, args?: Partial<P>, {
-                                selKeys = [],
-                                ifUseSelfData = false,
-                              }: {
-                                selKeys?: string[],
-                                ifUseSelfData?: boolean,
-                              } = {},
+  public async findFirst<T, P = any>(model: string, args?: Partial<P>, {
+                                       selKeys = [],
+                                       ifUseSelfData = false,
+                                     }: {
+                                       selKeys?: string[],
+                                       ifUseSelfData?: boolean,
+                                     } = {},
   ): Promise<T> {
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
-    const publicData = this.prismao.defaultSelArg({ selKeys, ifDeleted: fieldSelectParam.ifDeleted, ifUseSelfData });
+    const publicData = this.prismao.defaultSelArg({selKeys, ifDeleted: fieldSelectParam.ifDeleted, ifUseSelfData});
     const arg = {
       where: {
         ...publicData.where,
         ...(baseUtils.objToSnakeCase(args) || {}),
       },
-      ...(publicData.select ? { select: publicData.select } : {}),
+      ...(publicData.select ? {select: publicData.select} : {}),
     };
     const first = await this.getModel(model).findFirst(arg);
     const objToCamelCase1 = baseUtils.objToCamelCase<T>(first);
@@ -456,15 +460,15 @@ export class PrismaService {
    * @param selKeys
    * @param ifUseSelfData
    */
-  async findById<T>(model: string, id: string | number, {
-                      selKeys = [],
-                      ifUseSelfData = false,
-                    }: {
-                      selKeys?: string[],
-                      ifUseSelfData?: boolean,
-                    } = {},
+  public async findById<T>(model: string, id: string | number, {
+                             selKeys = [],
+                             ifUseSelfData = false,
+                           }: {
+                             selKeys?: string[],
+                             ifUseSelfData?: boolean,
+                           } = {},
   ): Promise<T> {
-    return this.findFirst<T>(model, { id: id }, { selKeys, ifUseSelfData });
+    return this.findFirst<T>(model, {id: id}, {selKeys, ifUseSelfData});
   }
 
   /**
@@ -474,16 +478,16 @@ export class PrismaService {
    * @param selKeys
    * @param ifUseSelfData
    */
-  async findByIds<T>(model: string, ids: number[] | string[], {
-                       selKeys = [],
-                       ifUseSelfData = false,
-                     }: {
-                       selKeys?: string[],
-                       ifUseSelfData?: boolean,
-                     } = {},
+  public async findByIds<T>(model: string, ids: number[] | string[], {
+                              selKeys = [],
+                              ifUseSelfData = false,
+                            }: {
+                              selKeys?: string[],
+                              ifUseSelfData?: boolean,
+                            } = {},
   ): Promise<T[]> {
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
-    const publicData = this.prismao.defaultSelArg({ selKeys, ifDeleted: fieldSelectParam.ifDeleted, ifUseSelfData });
+    const publicData = this.prismao.defaultSelArg({selKeys, ifDeleted: fieldSelectParam.ifDeleted, ifUseSelfData});
     const arg = {
       where: {
         ...publicData.where,
@@ -491,7 +495,7 @@ export class PrismaService {
           in: ids,
         },
       },
-      ...(publicData.select ? { select: publicData.select } : {}),
+      ...(publicData.select ? {select: publicData.select} : {}),
     };
     const list = await this.getModel(model).findMany(arg);
     const list2 = ids.map((id) => baseUtils.objToCamelCase<T>(list.find(item => item.id === id)));
@@ -505,15 +509,15 @@ export class PrismaService {
    * @param range
    * @param ifUseSelfData
    */
-  async count<T, P = object>(model: string, {
-                               data,
-                               range = {},
-                               ifUseSelfData = false,
-                             }: {
-                               data?: P,
-                               range?: object,
-                               ifUseSelfData?: boolean,
-                             } = {},
+  public async count<T, P = object>(model: string, {
+                                      data,
+                                      range = {},
+                                      ifUseSelfData = false,
+                                    }: {
+                                      data?: P,
+                                      range?: object,
+                                      ifUseSelfData?: boolean,
+                                    } = {},
   ): Promise<number> {
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
     const arg = {
@@ -537,11 +541,11 @@ export class PrismaService {
    * @param data
    * @param ifCustomizeId
    */
-  async create<T>(model: string, data, {
-                    ifCustomizeId = false,
-                  }: {
-                    ifCustomizeId?: boolean,
-                  } = {},
+  public async create<T>(model: string, data, {
+                           ifCustomizeId = false,
+                         }: {
+                           ifCustomizeId?: boolean,
+                         } = {},
   ): Promise<T> {
     const data2 = deepClone(data);
     if (!ifCustomizeId) {
@@ -573,11 +577,11 @@ export class PrismaService {
    * @param data
    * @param ifCustomizeId
    */
-  async createMany<T>(model: string, data, {
-                        ifCustomizeId = false,
-                      }: {
-                        ifCustomizeId?: boolean,
-                      } = {},
+  public async createMany<T>(model: string, data, {
+                               ifCustomizeId = false,
+                             }: {
+                               ifCustomizeId?: boolean,
+                             } = {},
   ): Promise<T[]> {
     const retArr: T[] = [];
     for (let i = 0; i < data.length; i++) {
@@ -595,11 +599,11 @@ export class PrismaService {
    * @param data
    * @param ifUseSelfData
    */
-  async updateById<T>(model: string, data?, {
-                        ifUseSelfData = false,
-                      }: {
-                        ifUseSelfData?: boolean
-                      } = {},
+  public async updateById<T>(model: string, data?, {
+                               ifUseSelfData = false,
+                             }: {
+                               ifUseSelfData?: boolean
+                             } = {},
   ): Promise<T> {
     const id = data.id;
     const data2 = deepClone(data);
@@ -632,11 +636,11 @@ export class PrismaService {
    * @param data
    * @param ifUseSelfData
    */
-  async updateMany<T>(model: string, data?, {
-                        ifUseSelfData = false,
-                      }: {
-                        ifUseSelfData?: boolean
-                      } = {},
+  public async updateMany<T>(model: string, data?, {
+                               ifUseSelfData = false,
+                             }: {
+                               ifUseSelfData?: boolean
+                             } = {},
   ): Promise<T[]> {
     const retArr: T[] = [];
     for (let i = 0; i < data.length; i++) {
@@ -654,13 +658,13 @@ export class PrismaService {
    * @param ids
    * @param ifUseSelfData
    */
-  async deleteById<T>(model: string, ids: number[] | string[], {
-                        ifUseSelfData = false,
-                      }: {
-                        ifUseSelfData?: boolean
-                      } = {},
+  public async deleteById<T>(model: string, ids: number[] | string[], {
+                               ifUseSelfData = false,
+                             }: {
+                               ifUseSelfData?: boolean
+                             } = {},
   ): Promise<boolean> {
-    const publicData = this.prismao.defaultDelArg({ ifUseSelfData });
+    const publicData = this.prismao.defaultDelArg({ifUseSelfData});
     const arg = {
       where: {
         ...publicData.where,
@@ -683,13 +687,13 @@ export class PrismaService {
    * @param values
    * @param ifUseSelfData
    */
-  async delete<T>(model: string, key: string, values, {
-                    ifUseSelfData = false,
-                  }: {
-                    ifUseSelfData?: boolean
-                  } = {},
+  public async delete<T>(model: string, key: string, values, {
+                           ifUseSelfData = false,
+                         }: {
+                           ifUseSelfData?: boolean
+                         } = {},
   ): Promise<boolean> {
-    const publicData = this.prismao.defaultDelArg({ ifUseSelfData });
+    const publicData = this.prismao.defaultDelArg({ifUseSelfData});
     const arg = {
       where: {
         ...publicData.where,

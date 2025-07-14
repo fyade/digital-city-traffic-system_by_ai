@@ -7,7 +7,7 @@ import { BaseContextService } from '../../../../base-context/base-context.servic
 @Injectable()
 export class SignalLightGroupChildMappingService {
   constructor(
-      private readonly pgprisma: PostgresqlPrismaService,
+      private readonly pgsqlPrisma: PostgresqlPrismaService,
       private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('signal_light_group_child_mapping', {
@@ -17,7 +17,7 @@ export class SignalLightGroupChildMappingService {
   }
 
   async selSignalLightGroupChildMapping(dto: SignalLightGroupChildMappingSelListDto): Promise<R> {
-    const res = await this.pgprisma.findPage<SignalLightGroupChildMappingDto, SignalLightGroupChildMappingSelListDto>('signal_light_group_child_mapping', {
+    const res = await this.pgsqlPrisma.findPage<SignalLightGroupChildMappingDto, SignalLightGroupChildMappingSelListDto>('signal_light_group_child_mapping', {
       data: dto,
       orderBy: false,
     });
@@ -25,7 +25,7 @@ export class SignalLightGroupChildMappingService {
   }
 
   async selAllSignalLightGroupChildMapping(dto: SignalLightGroupChildMappingSelAllDto): Promise<R> {
-    const res = await this.pgprisma.findAll<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', {
+    const res = await this.pgsqlPrisma.findAll<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', {
       data: dto,
       orderBy: false,
     });
@@ -33,37 +33,37 @@ export class SignalLightGroupChildMappingService {
   }
 
   async selOnesSignalLightGroupChildMapping(ids: number[]): Promise<R> {
-    const res = await this.pgprisma.findByIds<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', Object.values(ids).map(n => Number(n)));
+    const res = await this.pgsqlPrisma.findByIds<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', Object.values(ids).map(n => Number(n)));
     return R.ok(res);
   }
 
   async selOneSignalLightGroupChildMapping(id: number): Promise<R> {
-    const res = await this.pgprisma.findById<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', Number(id));
+    const res = await this.pgsqlPrisma.findById<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', Number(id));
     return R.ok(res);
   }
 
   async insSignalLightGroupChildMapping(dto: SignalLightGroupChildMappingInsOneDto): Promise<R> {
-    const res = await this.pgprisma.create<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', dto);
+    const res = await this.pgsqlPrisma.create<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', dto);
     return R.ok(res);
   }
 
   async insSignalLightGroupChildMappings(dtos: SignalLightGroupChildMappingInsOneDto[]): Promise<R> {
-    const res = await this.pgprisma.createMany<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', dtos);
+    const res = await this.pgsqlPrisma.createMany<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', dtos);
     return R.ok(res);
   }
 
   async updSignalLightGroupChildMapping(dto: SignalLightGroupChildMappingUpdOneDto): Promise<R> {
-    const res = await this.pgprisma.updateById<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', dto);
+    const res = await this.pgsqlPrisma.updateById<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', dto);
     return R.ok(res);
   }
 
   async updSignalLightGroupChildMappings(dtos: SignalLightGroupChildMappingUpdOneDto[]): Promise<R> {
-    const res = await this.pgprisma.updateMany<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', dtos);
+    const res = await this.pgsqlPrisma.updateMany<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', dtos);
     return R.ok(res);
   }
 
   async delSignalLightGroupChildMapping(ids: number[]): Promise<R> {
-    const res = await this.pgprisma.deleteById<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', ids);
+    const res = await this.pgsqlPrisma.deleteById<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', ids);
     return R.ok(res);
   }
 }

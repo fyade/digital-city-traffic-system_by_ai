@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../../../prisma/prisma.service';
+import { MysqlPrismaService } from '../../../../../prisma/mysql.prisma.service';
 import { R } from '../../../../../common/R';
 import { BaseContextService } from '../../../../base-context/base-context.service';
 import { ViewRealTimeDirs, ViewRealTimeSelDirsDto, ViewRealTimeSelFileDto } from './dto';
@@ -12,7 +12,7 @@ export class ViewRealTimeService {
   private logSavePath: string = '';
 
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly mysqlPrisma: MysqlPrismaService,
     private readonly bcs: BaseContextService,
   ) {
     this.logSavePath = serverConfig.currentConfig().log.logSavePath;

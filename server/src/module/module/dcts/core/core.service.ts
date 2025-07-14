@@ -2,7 +2,6 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ScheduleService } from "../../../schedule/schedule.service";
 import { WsService } from "../../../ws/ws.service";
 import { PostgresqlPrismaoService } from "../../../../prisma/postgresql.prismao.service";
-import { CommonPostgresqlPrismaoService } from "../../../../prisma/common.postgresql.prismao.service";
 import { base } from "../../../../util/base";
 import { baseUtils } from "@dcts/common";
 import { SignalLightGroupInfoDto } from "../signal-light/signal-light-group-info/dto";
@@ -15,12 +14,13 @@ import { SignalLightStrategyTypeStrategyScheduleMappingDto } from "../signal-lig
 import { SignalLightStrategyScheduleDto } from "../signal-light-strategy/signal-light-strategy-schedule/dto";
 import { SignalLightStrategyScheduleStrategyParamMappingDto } from "../signal-light-strategy/signal-light-strategy-schedule-strategy-param-mapping/dto";
 import { SignalLightStrategyParamDto } from "../signal-light-strategy/signal-light-strategy-param/dto";
+import { PrismaoService } from "../../../../prisma/prismao.service";
 
 @Injectable()
 export class CoreService implements OnModuleInit {
   constructor(
-      private readonly cpgprismao: CommonPostgresqlPrismaoService,
-      private readonly pgprismao: PostgresqlPrismaoService,
+      private readonly prismao: PrismaoService,
+      private readonly pgsqlPrismao: PostgresqlPrismaoService,
       private readonly scheduleService: ScheduleService,
       private readonly wsService: WsService,
   ) {
@@ -50,15 +50,15 @@ export class CoreService implements OnModuleInit {
    */
   private async calculateLight() {
     const start = performance.now();
-    const defaultSelArg = this.cpgprismao.defaultSelArg();
+    const defaultSelArg = this.prismao.defaultSelArg();
     // 查询所有信号灯组
-    const allSignalLightGroups = (await this.pgprismao.signal_light_group_info.findMany({
+    const allSignalLightGroups = (await this.pgsqlPrismao.signal_light_group_info.findMany({
       where: {
         ...defaultSelArg.where
       }
     })).map(baseUtils.objToCamelCase<SignalLightGroupInfoDto>)
     // 查询信号灯组下的子信号灯
-    const _signalLightGroup_signalLight = (await this.pgprismao.signal_light_group_child_mapping.findMany({
+    const _signalLightGroup_signalLight = (await this.pgsqlPrismao.signal_light_group_child_mapping.findMany({
       where: {
         group_id: {
           in: allSignalLightGroups.map(item => item.id)
@@ -66,7 +66,7 @@ export class CoreService implements OnModuleInit {
         ...defaultSelArg.where
       }
     })).map(baseUtils.objToCamelCase<SignalLightGroupChildMappingDto>)
-    const allSignalLights = (await this.pgprismao.signal_light_info.findMany({
+    const allSignalLights = (await this.pgsqlPrismao.signal_light_info.findMany({
       where: {
         id: {
           in: _signalLightGroup_signalLight.map(item => item.childLightId)
@@ -75,7 +75,7 @@ export class CoreService implements OnModuleInit {
       }
     })).map(baseUtils.objToCamelCase<SignalLightInfoDto>)
     // 查询信号灯组下的策略类型
-    const _signalLightGroup_strategyType = (await this.pgprismao.signal_light_group_strategy_type_mapping.findMany({
+    const _signalLightGroup_strategyType = (await this.pgsqlPrismao.signal_light_group_strategy_type_mapping.findMany({
       where: {
         group_id: {
           in: allSignalLightGroups.map(item => item.id)
@@ -83,7 +83,7 @@ export class CoreService implements OnModuleInit {
         ...defaultSelArg.where
       }
     })).map(baseUtils.objToCamelCase<SignalLightGroupStrategyTypeMappingDto>)
-    const allStrategyTypes = (await this.pgprismao.signal_light_strategy_type.findMany({
+    const allStrategyTypes = (await this.pgsqlPrismao.signal_light_strategy_type.findMany({
       where: {
         id: {
           in: _signalLightGroup_strategyType.map(item => item.strategyTypeId)
@@ -97,7 +97,7 @@ export class CoreService implements OnModuleInit {
       ]
     })).map(baseUtils.objToCamelCase<SignalLightStrategyTypeDto>)
     // 查询子信号灯与策略类型下的策略调度
-    const _signalLight_strategySchedule = (await this.pgprismao.signal_light_child_strategy_schedule_mapping.findMany({
+    const _signalLight_strategySchedule = (await this.pgsqlPrismao.signal_light_child_strategy_schedule_mapping.findMany({
       where: {
         child_light_id: {
           in: allSignalLights.map(item => item.id)
@@ -105,7 +105,7 @@ export class CoreService implements OnModuleInit {
         ...defaultSelArg.where
       }
     })).map(baseUtils.objToCamelCase<SignalLightChildStrategyScheduleMappingDto>)
-    const _strategyType_strategySchedule = (await this.pgprismao.signal_light_strategy_type_strategy_schedule_mapping.findMany({
+    const _strategyType_strategySchedule = (await this.pgsqlPrismao.signal_light_strategy_type_strategy_schedule_mapping.findMany({
       where: {
         strategy_type_id: {
           in: allStrategyTypes.map(item => item.id)
@@ -113,7 +113,7 @@ export class CoreService implements OnModuleInit {
         ...defaultSelArg.where
       }
     })).map(baseUtils.objToCamelCase<SignalLightStrategyTypeStrategyScheduleMappingDto>)
-    const allStrategySchedules = (await this.pgprismao.signal_light_strategy_schedule.findMany({
+    const allStrategySchedules = (await this.pgsqlPrismao.signal_light_strategy_schedule.findMany({
       where: {
         id: {
           in: [
@@ -130,7 +130,7 @@ export class CoreService implements OnModuleInit {
       ]
     })).map(baseUtils.objToCamelCase<SignalLightStrategyScheduleDto>)
     // 查询策略调度下的策略参数
-    const _strategySchedule_strategyParam = (await this.pgprismao.signal_light_strategy_schedule_strategy_param_mapping.findMany({
+    const _strategySchedule_strategyParam = (await this.pgsqlPrismao.signal_light_strategy_schedule_strategy_param_mapping.findMany({
       where: {
         strategy_schedule_id: {
           in: allStrategySchedules.map(item => item.id)
@@ -138,7 +138,7 @@ export class CoreService implements OnModuleInit {
         ...defaultSelArg.where
       }
     })).map(baseUtils.objToCamelCase<SignalLightStrategyScheduleStrategyParamMappingDto>)
-    const allStrategyParams = (await this.pgprismao.signal_light_strategy_param.findMany({
+    const allStrategyParams = (await this.pgsqlPrismao.signal_light_strategy_param.findMany({
       where: {
         id: {
           in: _strategySchedule_strategyParam.map(item => item.strategyParamId)
