@@ -3,6 +3,7 @@ import { dashboardConfig } from "@dcts/config";
 import { goToLogin } from "@/utils/baseUtils.ts";
 import { useUserStore } from "@/store/module/user.ts";
 import { useRouter } from "vue-router";
+import { timeUtils } from "@dcts/common";
 
 const router = useRouter()
 const userStore = useUserStore();
@@ -11,6 +12,10 @@ const props = defineProps({
     type: Array<Array<string>>,
     required: true
   },
+  currentTime: {
+    type: Number,
+    required: true
+  }
 });
 const emits = defineEmits(['openSettingLayerChange', 'openDebugPanel']);
 
@@ -27,6 +32,7 @@ const goHome = () => {
     <div class="footer">
       <!--<p>因瓦片调用额度限制，若地图加载异常，请切换图层或次日重试。</p>-->
       <p>v{{ dashboardConfig.currentVersion }}</p>
+      <p>{{ timeUtils.formatDate(new Date(props.currentTime)) }}</p>
       <a href="https://beian.miit.gov.cn" target="_blank"><span>苏ICP备2023025698号-1</span></a>
       <p v-for="(item, index) in props.labels" :key="index">
         {{ item[0] }}来自<a :href="item[2]" target="_blank">{{ item[1] }}</a>

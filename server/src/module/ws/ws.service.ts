@@ -27,7 +27,7 @@ class EventDataType {
   }
 }
 
-class EventDataFuncParamType extends EventDataType {
+class WsEventDataFuncParamType extends EventDataType {
   socketId: string
   userInfo: TokenDto
 
@@ -42,7 +42,7 @@ class EventDataFuncParamType extends EventDataType {
 export class WsService implements OnModuleInit {
   private sidTokenMap = new Map<string, TokenDto>();
   private userroleidSocketMap = new Map<string, Socket>();
-  private events = new Map<string, [string, (data: EventDataFuncParamType) => Promise<void>][]>();
+  private events = new Map<string, [string, (data: WsEventDataFuncParamType) => Promise<void>][]>();
 
   constructor(
       private readonly cacheTokenService: CacheTokenService,
@@ -117,7 +117,7 @@ export class WsService implements OnModuleInit {
    * @param perm
    * @param funcs
    */
-  public addEventListener(perm: string, ...funcs: ((data: EventDataFuncParamType) => Promise<void>)[]): string[] {
+  public addEventListener(perm: string, ...funcs: ((data: WsEventDataFuncParamType) => Promise<void>)[]): string[] {
     if (!this.events.get(perm)) {
       this.events.set(perm, [])
     }

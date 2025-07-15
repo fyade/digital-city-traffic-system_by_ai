@@ -1,5 +1,5 @@
 import * as Cesium from "cesium";
-import { signalLightGroupsInPolygonApi } from "@/api/module/dcts/spatialData.ts";
+import { calculateLightsInPolygonApi, signalLightGroupsInPolygonApi } from "@/api/module/dcts/spatialData.ts";
 import { ID_PREFIX_SIGNAL_LIGHT, ID_PREFIX_SIGNAL_LIGHT_GROUP } from "@/views/dashboard/functionModules/constant.ts";
 import signalLight1Svg from "@/assets/images2/signal-light-1.png";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
@@ -42,7 +42,7 @@ export class MapEntityModule {
   }
 
   // 当前选中的实体，注意，添加数据时，禁止使用数组方法
-  set selectedEntityIds(value: string[]) {
+  public set selectedEntityIds(value: string[]) {
     this._selectedEntityIds = value;
     if (this.vdModule) {
       this.vdModule.setHistorySelectedEntityIds(value);
@@ -126,7 +126,7 @@ export class MapEntityModule {
         ...seidsByGroup.signalLightGroupInfo
       ]
       if (this.vdModule) {
-        const hslgip = this.vdModule.getHistorySignalLightGroupsInPolygonVo();
+        const hslgip = this.vdModule.getHistorySignalLightGroupsInPolygonVo(-1);
         if (hslgip) {
           const _ids = hslgip.data.signalLightGroupInfos.map(item => item.id);
           ids.push(..._ids)
@@ -166,7 +166,7 @@ export class MapEntityModule {
         ...seidsByGroup.signalLightInfo
       ]
       if (this.vdModule) {
-        const hslgip = this.vdModule.getHistorySignalLightGroupsInPolygonVo();
+        const hslgip = this.vdModule.getHistorySignalLightGroupsInPolygonVo(-1);
         if (hslgip) {
           const _ids = hslgip.data.signalLightInfos.map(item => item.id);
           ids.push(..._ids)
@@ -199,5 +199,10 @@ export class MapEntityModule {
         id: d,
       });
     }
+
+    await calculateLightsInPolygonApi({
+      version: '1.0',
+      points: viewCornerCoordinates
+    })
   }
 }

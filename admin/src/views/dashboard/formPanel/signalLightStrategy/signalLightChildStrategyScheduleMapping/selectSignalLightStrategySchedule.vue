@@ -15,6 +15,7 @@ import { signalLightStrategyTypeStrategyScheduleMappingDict } from "@/dict/modul
 import { final } from "@/utils/base.ts";
 import { SignalLightChildStrategyScheduleMappingDto, SignalLightChildStrategyScheduleMappingInsDto } from "@/type/module/dcts/signalLightStrategy/signalLightChildStrategyScheduleMapping.ts";
 import { signalLightChildStrategyScheduleMappingApi } from "@/api/module/dcts/signalLightStrategy/signalLightChildStrategyScheduleMapping.ts";
+import { timeUtils } from "@dcts/common";
 
 const props = defineProps({
   selectStrategyTypeId: {
@@ -62,8 +63,24 @@ const columns: DataTableColumns<SignalLightStrategyScheduleDto> = [
   {title: signalLightStrategyScheduleDict.name, key: 'name'},
   {title: signalLightStrategyScheduleDict.description, key: 'description'},
   {title: signalLightStrategyScheduleDict.scheduleType, key: 'scheduleType'},
-  {title: signalLightStrategyScheduleDict.startTime, key: 'startTime'},
-  {title: signalLightStrategyScheduleDict.endTime, key: 'endTime'},
+  {
+    title: signalLightStrategyScheduleDict.startTime,
+    key: 'startTime',
+    render(row) {
+      return h('span', null, {
+        default: () => timeUtils.formatDate(new Date(row.startTime))
+      })
+    }
+  },
+  {
+    title: signalLightStrategyScheduleDict.endTime,
+    key: 'endTime',
+    render(row) {
+      return h('span', null, {
+        default: () => timeUtils.formatDate(new Date(row.endTime))
+      })
+    }
+  },
   {title: signalLightStrategyScheduleDict.cronExpression, key: 'cronExpression'},
   {title: signalLightStrategyScheduleDict.ifDisabled, key: 'ifDisabled'},
   {title: signalLightStrategyScheduleDict.orderNum, key: 'orderNum'},

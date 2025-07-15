@@ -50,6 +50,7 @@ const openDebugLayerChange = () => {
 <template>
   <DataLayer
       :labels="cesiumClass.allLabels"
+      :current-time="cesiumClass.currentTime"
       @open-setting-layer-change="openSettingLayerChange"
       @open-debug-panel="openDebugLayerChange"
   />

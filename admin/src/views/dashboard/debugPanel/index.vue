@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nodesWithWaysInPolygonApi } from "@/api/module/dcts/spatialData.ts";
+import { calculateLightsInPolygonApi, nodesWithWaysInPolygonApi } from "@/api/module/dcts/spatialData.ts";
 import { CesiumLine, CesiumPoint } from "@/views/dashboard/utils/dto.ts";
 import { getLonlatFromLinestring } from "@/utils/RegularUtils.ts";
 import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
@@ -31,10 +31,22 @@ const a1 = () => {
     useCesium.addLines(map1)
   })
 }
+const a2 = () => {
+  const coordinates = useCesium.getViewCornerCoordinates();
+  if (!coordinates) {
+    return
+  }
+  coordinates.push(coordinates[0])
+  calculateLightsInPolygonApi({
+    version: '1.0',
+    points: coordinates
+  })
+}
 </script>
 
 <template>
   <n-button @click="a1">查询可视区域内的路网信息</n-button>
+  <n-button @click="a2">计算多边形内的所有信号灯</n-button>
 </template>
 
 <style scoped>

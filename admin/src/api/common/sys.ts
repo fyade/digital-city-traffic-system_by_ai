@@ -10,7 +10,7 @@ export function getSysVersion() {
 }
 
 export function getSysTime() {
-  return request({
+  return request<string>({
     url: '/sys/base/time',
     method: 'GET'
   })

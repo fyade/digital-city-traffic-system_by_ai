@@ -4,6 +4,7 @@ import { NSpin } from "naive-ui";
 import * as Cesium from "cesium";
 import { useSysStore } from "@/store/module/sys.ts";
 import { WsClient } from "@/services/wsClient.ts";
+import { ClockModule } from "@/views/dashboard/functionModules/clockModule.ts";
 import { ContextMenuModule } from "@/views/dashboard/functionModules/contextMenuModule.ts";
 import { LayerNotificationModule } from "@/views/dashboard/functionModules/layerNotificationModule.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
@@ -13,6 +14,7 @@ import { SignalLightModule } from "@/views/dashboard/functionModules/signalLight
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 import { adminConfig } from "@dcts/config";
 import { NNotification } from "@/utils/naiveUtils.ts";
+import { CalculateLightsInPolygonVo } from "@/type/module/dcts/spatialData.ts";
 
 const currentConfig = adminConfig.currentConfig()
 
@@ -26,6 +28,7 @@ const visibleButtons = sysStore.getVisibleButtons();
 class UseDashboardCesium extends UseCesium {
   constructor(
       private readonly wsClient: WsClient,
+      private readonly cModule: ClockModule,
       private readonly cmModule: ContextMenuModule,
       private readonly lnModule: LayerNotificationModule,
       private readonly meModule: MapEntityModule,
@@ -35,13 +38,15 @@ class UseDashboardCesium extends UseCesium {
       private readonly vdModule: VersionDataModule,
   ) {
     super();
-    wsClient.sendMsg('test:test', 'hello!')
-    wsClient.addEventListener('test:test2', async data => {
-      console.log('data', data)
+    this.wsClient.addEventListener('dcts:spatialData:calculateLightsInPolygon', async data => {
+      const calculateLightResult = JSON.parse(data.msg) as CalculateLightsInPolygonVo[];
+      this.slModule.addTask(calculateLightResult)
     })
   }
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 外部访问 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+  public currentTime = this.cModule.currentTime
+
   public readonly refreshContextMenuOption = this.cmModule.refreshContextMenuOption.bind(this.cmModule)
   public contextMenuShow = this.cmModule.contextMenuShow
   public contextMenuXY = this.cmModule.contextMenuXY
@@ -53,13 +58,17 @@ class UseDashboardCesium extends UseCesium {
 
   public readonly refreshScreenEntities = this.meModule.refreshScreenEntities.bind(this.meModule)
 
-  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 事件覆盖 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 事件覆盖及初始化 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   protected init() {
     super.init();
 
     if (!this.viewer) {
       return
     }
+
+    this.cModule.setSetCurrentTimeCB(() => {
+      this.currentTime = this.cModule.currentTime
+    })
 
     this.cmModule.setMeModule(this.meModule);
     this.cmModule.setMiModule(this.miModule);
@@ -94,14 +103,19 @@ class UseDashboardCesium extends UseCesium {
 
     this.pModule.setMeModule(this.meModule)
 
+    this.slModule.setCModule(this.cModule)
     this.slModule.setViewer(this.viewer)
 
+    this.cModule.init()
     this.lnModule.init()
     this.miModule.init()
+    this.slModule.init()
   }
 
   destroy() {
     super.destroy();
+    this.cModule.destroy()
+    this.slModule.destroy()
     this.layerLoadingEnd().finally(() => {
       useDashboardCesium = createDashboardCesium()
     })
@@ -245,6 +259,7 @@ class UseDashboardCesium extends UseCesium {
 
 export function createDashboardCesium() {
   const wsClient = new WsClient();
+  const cModule = new ClockModule();
   const cmModule = new ContextMenuModule();
   const lmModule = new LayerNotificationModule();
   const meModule = new MapEntityModule();
@@ -254,6 +269,7 @@ export function createDashboardCesium() {
   const vdModule = new VersionDataModule();
   return new UseDashboardCesium(
       wsClient,
+      cModule,
       cmModule,
       lmModule,
       meModule,

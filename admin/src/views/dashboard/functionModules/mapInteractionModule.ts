@@ -72,7 +72,7 @@ export class MapInteractionModule {
     return this._ifEditing;
   }
 
-  set ifEditing(value: boolean) {
+  public set ifEditing(value: boolean) {
     this._ifEditing = value;
     if (value) {
       if (this.movingPoint) {
@@ -100,7 +100,7 @@ export class MapInteractionModule {
           return
         }
         let pid = ''
-        const hseids = this.vdModule.getHistorySelectedEntityIds();
+        const hseids = this.vdModule.getHistorySelectedEntityIds(-1);
         if (hseids) {
           pid = hseids.data[0].replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, '')
         }

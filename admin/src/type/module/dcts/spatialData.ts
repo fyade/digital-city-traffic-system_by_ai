@@ -28,3 +28,20 @@ export class SignalLightGroupsInPolygonVo {
   signalLightGroupChildMappings!: SignalLightGroupChildMappingDto[]
   signalLightInfos!: SignalLightInfoDto[]
 }
+
+export class CalculateLightsInPolygonDto {
+  version!: string
+  points!: PolygonPointDto[]
+}
+
+class CalculateLightsInPolygonVoDParam {
+  start!: number
+  end!: number
+  color!: string
+}
+
+export class CalculateLightsInPolygonVo {
+  signalLightGroupId!: number
+  signalLightChildId!: number
+  runParam!: CalculateLightsInPolygonVoDParam[]
+}

@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { SpatialDataService } from "./spatial-data.service";
 import { Authorize } from "../../../../decorator/authorize.decorator";
 import { R } from "../../../../common/R";
-import { NodesWithWaysInPolygonDto, SignalLightGroupsInPolygonDto } from "./dto";
+import { CalculateLightsInPolygonDto, NodesWithWaysInPolygonDto, SignalLightGroupsInPolygonDto } from "./dto";
 import { publicConfig } from "@dcts/config";
 
 @Controller('/dcts/spatial-data')
@@ -36,5 +36,17 @@ export class SpatialDataController {
   })
   async signalLightGroupsInPolygon(@Body() dto: SignalLightGroupsInPolygonDto): Promise<R> {
     return this.spatialDataService.signalLightGroupsInPolygon(dto);
+  }
+
+  @Post('/calculate-lights-in-polygon')
+  @ApiOperation({
+    summary: '计算多边形内的所有信号灯'
+  })
+  @Authorize({
+    permission: 'dcts:spatialData:calculateLightsInPolygon',
+    label: '计算多边形内的所有信号灯'
+  })
+  async calculateLightsInPolygon(@Body() dto: CalculateLightsInPolygonDto): Promise<R> {
+    return this.spatialDataService.calculateLightsInPolygon(dto);
   }
 }

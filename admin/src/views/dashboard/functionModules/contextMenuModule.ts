@@ -64,7 +64,7 @@ export class ContextMenuModule {
     return this._contextMenuShow;
   }
 
-  set contextMenuShow(value: boolean) {
+  public set contextMenuShow(value: boolean) {
     this._contextMenuShow = value;
     if (this.setContextMenuShowCB) {
       this.setContextMenuShowCB()
@@ -80,7 +80,7 @@ export class ContextMenuModule {
   }
 
   // 右键菜单的坐标，注意，添加数据时，禁止使用数组方法
-  set contextMenuXY(value: number[]) {
+  public set contextMenuXY(value: number[]) {
     this._contextMenuXY = value;
     if (this.setContextMenuXYCB) {
       this.setContextMenuXYCB()
@@ -207,7 +207,7 @@ export class ContextMenuModule {
   }
 
   // 右键菜单项，注意，添加数据时，禁止使用数组方法
-  set contextMenuOption(value: Array<DropdownOption | DropdownGroupOption | DropdownDividerOption | DropdownRenderOption>) {
+  private set contextMenuOption(value: Array<DropdownOption | DropdownGroupOption | DropdownDividerOption | DropdownRenderOption>) {
     this._contextMenuOption = value;
     if (this.setContextMenuOptionCB) {
       this.setContextMenuOptionCB()
@@ -314,7 +314,7 @@ export class ContextMenuModule {
     return this._formPanelTitle;
   }
 
-  set formPanelTitle(value: string) {
+  private set formPanelTitle(value: string) {
     this._formPanelTitle = value;
     if (this.setFormPanelTitleCB) {
       this.setFormPanelTitleCB()

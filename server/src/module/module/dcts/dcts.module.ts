@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { CoreModule } from './core/core.module';
+import { DctsCoreModule } from './core/dcts-core.module';
 import { JunctionPositionModule } from './junction/junction-position/junction-position.module';
 import { JunctionConnectionModule } from './junction/junction-connection/junction-connection.module';
 import { SpatialDataModule } from './spatial-data/spatial-data.module';
@@ -16,7 +16,7 @@ import { SignalLightStrategyScheduleStrategyParamMappingModule } from './signal-
 
 @Module({
   imports: [
-    CoreModule,
+    DctsCoreModule,
     JunctionPositionModule,
     JunctionConnectionModule,
     SpatialDataModule,

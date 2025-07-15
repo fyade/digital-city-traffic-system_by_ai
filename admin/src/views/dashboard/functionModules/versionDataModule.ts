@@ -30,11 +30,8 @@ export class VersionDataModule {
   }
 
   // 获取上一次选择的实体
-  public getHistorySelectedEntityIds() {
-    if (this.history_selectedEntityIds.length < 2) {
-      return null
-    }
-    return this.history_selectedEntityIds[this.history_selectedEntityIds.length - 1 - 1]
+  public getHistorySelectedEntityIds(index = 0, ifLast = true) {
+    return this.___(index, this.history_selectedEntityIds, ifLast)
   }
 
   // 曾经地图可视区域内的信号灯组
@@ -48,22 +45,35 @@ export class VersionDataModule {
   }
 
   // 获取上一次地图可视区域内的信号灯组
-  public getHistorySignalLightGroupsInPolygonVo() {
-    if (this.history_signalLightGroupsInPolygonVo.length < 2) {
-      return null
-    }
-    return this.history_signalLightGroupsInPolygonVo[this.history_signalLightGroupsInPolygonVo.length - 1 - 1]
+  public getHistorySignalLightGroupsInPolygonVo(index = 0, ifLast = true) {
+    return this.___(index, this.history_signalLightGroupsInPolygonVo, ifLast)
   }
 
   //
-  private __<T>(val: T, sour: VersionDataType<T>[]) {
+  private ___<T>(index: number, sour: VersionDataType<T>[], ifLast: boolean) {
+    if (ifLast) {
+      index = -index
+      if (index < 0 || index > sour.length - 1) {
+        return null
+      }
+      return sour[sour.length - 1 - index]
+    } else {
+      if (index < 0 || index > sour.length - 1) {
+        return null
+      }
+      return sour[index]
+    }
+  }
+
+  //
+  private __<T>(val: T, sour: VersionDataType<T>[], maxLength = this.MAX_LENGTH) {
     const index = this._(sour)
     const oldd = JSON.parse(JSON.stringify(sour))
     sour = [
       ...oldd,
       new VersionDataType(index, val)
     ]
-    if (sour.length > this.MAX_LENGTH) {
+    if (sour.length > maxLength) {
       sour.splice(0, 1)
     }
     return sour

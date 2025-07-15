@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { R } from "../../../../common/R";
-import { NodesWithWaysInPolygonDto, SignalLightGroupsInPolygonDto } from "./dto";
+import { CalculateLightsInPolygonDto, NodesWithWaysInPolygonDto, SignalLightGroupsInPolygonDto } from "./dto";
 import { PostgresqlPrismaoService } from "../../../../prisma/postgresql.prismao.service";
 import {
   nodesWithWaysInPolygon,
@@ -12,11 +12,15 @@ import { SignalLightGroupInfoDto } from "../signal-light/signal-light-group-info
 import { SignalLightInfoDto } from "../signal-light/signal-light-info/dto";
 import { NodesWithWaysInPolygonVo, SignalLightGroupsInPolygonVo } from "./vo";
 import { SignalLightGroupChildMappingDto } from "../signal-light/signal-light-group-child-mapping/dto";
+import { DctsCoreService } from "../core/dcts-core.service";
+import { BaseContextService } from "../../../base-context/base-context.service";
 
 @Injectable()
 export class SpatialDataService {
   constructor(
-      private readonly pgsqlPrismao: PostgresqlPrismaoService
+      private readonly pgsqlPrismao: PostgresqlPrismaoService,
+      private readonly dctsCoreService: DctsCoreService,
+      private readonly bcs: BaseContextService,
   ) {
   }
 
@@ -50,5 +54,11 @@ export class SpatialDataService {
       }
     }
     return R.ok(ret)
+  }
+
+  async calculateLightsInPolygon(dto: CalculateLightsInPolygonDto): Promise<R> {
+    const userData = this.bcs.getUserData();
+    await this.dctsCoreService.calculateLightsInPolygon(dto, userData.loginRole, userData.userId)
+    return R.ok(true)
   }
 }

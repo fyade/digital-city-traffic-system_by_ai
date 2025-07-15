@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "[dev] [admin ] dev": "cross-env NODE_ENV=dev pnpm --filter @dcts/admin dev",
+    "[dev] [server] start": "cross-env NODE_ENV=dev pnpm --filter @dcts/server start",
     "[dev] [server] start:dev": "cross-env NODE_ENV=dev pnpm --filter @dcts/server start:dev",
     "[dev] [server] start:debug": "cross-env NODE_ENV=dev pnpm --filter @dcts/server start:debug",
     "[build] [config] build": "pnpm -filter @dcts/config build",
