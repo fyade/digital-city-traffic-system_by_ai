@@ -192,7 +192,16 @@ export class ContextMenuModule {
       }
     },
     {
-      id: 'close',
+      id: 'cmModule:menuOption:refreshSignalLight',
+      func: () => {
+        if (!this.meModule) {
+          return
+        }
+        this.meModule.refreshScreenEntities()
+      }
+    },
+    {
+      id: 'cmModule:menuOption:close',
       func: () => {
         this.contextMenuShow = false
       }
@@ -302,8 +311,15 @@ export class ContextMenuModule {
         type: 'divider'
       },
       {
+        label: '刷新信号灯状态',
+        key: 'cmModule:menuOption:refreshSignalLight'
+      },
+      {
+        type: 'divider'
+      },
+      {
         label: '关闭',
-        key: 'close'
+        key: 'cmModule:menuOption:close'
       }
     ]
   }

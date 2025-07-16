@@ -3,11 +3,18 @@ import { calculateLightsInPolygonApi, signalLightGroupsInPolygonApi } from "@/ap
 import { ID_PREFIX_SIGNAL_LIGHT, ID_PREFIX_SIGNAL_LIGHT_GROUP } from "@/views/dashboard/functionModules/constant.ts";
 import signalLight1Svg from "@/assets/images2/signal-light-1.png";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
+import { LayerNotificationModule } from "@/views/dashboard/functionModules/layerNotificationModule.ts";
 
 /**
  * 地图实体
  */
 export class MapEntityModule {
+  private lnModule: LayerNotificationModule | null = null
+
+  public setLnModule(lnModule: LayerNotificationModule) {
+    this.lnModule = lnModule;
+  }
+
   private vdModule: VersionDataModule | null = null
 
   public setVdModule(vdModule: VersionDataModule) {
@@ -91,6 +98,9 @@ export class MapEntityModule {
    * @param ifRefresh
    */
   public async refreshScreenEntities(ifRefresh = false) {
+    if (this.lnModule) {
+      this.lnModule.openSignalLightLoading()
+    }
     await this.drawSignalLightsWhenMapMove(ifRefresh)
   }
 

@@ -178,4 +178,5 @@ alter table public.signal_light_strategy_param
 alter table public.signal_light_strategy_param
     alter column order_num set not null;
 
+-- ===== ===== ===== ===== ===== ===== 已同步至此 ===== ===== ===== ===== ===== =====
 -- ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== =====

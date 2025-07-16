@@ -37,8 +37,8 @@ export class DctsCoreService {
     this.scheduleService.addScheduleFunc('sys:dcts:runCoreSchedule', this.runCoreSchedule.bind(this))
   }
 
-  public async calculateLightsInPolygon(dto: CalculateLightsInPolygonDto, loginRole: string, userId: string) {
-    const signalLightRunParams = await this.calculateLight();
+  public async calculateLightsInPolygon(signalLightGroupIds: number[], loginRole: string, userId: string) {
+    const signalLightRunParams = await this.calculateLight(signalLightGroupIds);
     this.wsService.sendMsg(loginRole, userId, 'dcts:spatialData:calculateLightsInPolygon', JSON.stringify(signalLightRunParams))
   }
 
@@ -46,13 +46,16 @@ export class DctsCoreService {
    * 计算信号灯
    * @private
    */
-  private async calculateLight() {
+  private async calculateLight(signalLightGroupIds: number[]) {
     const start = performance.now();
     const defaultSelArg = this.prismao.defaultSelArg();
     // 查询信号灯组下的子信号灯、策略类型、策略调度、策略参数
     // 查询所有信号灯组
     const allSignalLightGroups = (await this.pgsqlPrismao.signal_light_group_info.findMany({
       where: {
+        id: {
+          in: signalLightGroupIds
+        },
         ...defaultSelArg.where
       }
     })).map(baseUtils.objToCamelCase<SignalLightGroupInfoDto>)
@@ -178,6 +181,7 @@ export class DctsCoreService {
       const strategyParamIds = strategyParams.map(item => item.id)
 
       // 开始计算每秒钟每种灯的状态
+
       const now0 = Math.floor(Date.now() / 1000) * 1000
 
       // 策略类型为固定策略的
@@ -228,7 +232,7 @@ export class DctsCoreService {
           offsetsByScheduleId.push(0)
           continue
         }
-        offsetsByScheduleId.push(asps[0].redDuration)
+        offsetsByScheduleId.push(asps[0].redDuration * 1000)
       }
 
       for (const light of lights) {
@@ -275,9 +279,9 @@ export class DctsCoreService {
         const rel = relation[0]
         const index = strategyScheduleIds.indexOf(rel[1].id);
         const offset = offsetsByScheduleId[index];
-        const redDuration = rel[2].redDuration;
-        const greenDuration = rel[2].greenDuration;
-        const yellowDuration = rel[2].yellowDuration;
+        const redDuration = rel[2].redDuration * 1000;
+        const greenDuration = rel[2].greenDuration * 1000;
+        const yellowDuration = rel[2].yellowDuration * 1000;
         const allDuration = redDuration + greenDuration + yellowDuration;
         let start0 = new Date(rel[1].startTime).getTime()
         let end0 = new Date(rel[1].endTime).getTime()
@@ -286,25 +290,25 @@ export class DctsCoreService {
           start0 = find[1]
           end0 = find[2]
         }
-        const count = Math.ceil((end0 - start0) / (allDuration * 1000))
-        const _i = Math.max(Math.floor((now0 - start0) / (allDuration * 1000)) - 1, 0);
+        const count = Math.ceil((end0 - start0) / allDuration)
+        const _offset = 3000 + offset
+        const _i = Math.floor((now0 - start0 - _offset) / allDuration);
         for (let i = _i; i < count; i++) {
-          const _offset = 3 + offset
           const redStart = allDuration * i + _offset
           const greenStart = allDuration * i + _offset + redDuration
           const yellowStart = allDuration * i + _offset + redDuration + greenDuration
           const dParamR = new SignalLightRunParamDParam();
           dParamR.color = 'red'
-          dParamR.start = start0 + redStart * 1000
-          dParamR.end = start0 + (redStart + redDuration) * 1000
+          dParamR.start = start0 + redStart
+          dParamR.end = start0 + redStart + redDuration
           const dParamG = new SignalLightRunParamDParam();
           dParamG.color = 'green'
-          dParamG.start = start0 + greenStart * 1000
-          dParamG.end = start0 + (greenStart + greenDuration) * 1000
+          dParamG.start = start0 + greenStart
+          dParamG.end = start0 + greenStart + greenDuration
           const dParamY = new SignalLightRunParamDParam();
           dParamY.color = 'yellow'
-          dParamY.start = start0 + yellowStart * 1000
-          dParamY.end = start0 + (yellowStart + yellowDuration) * 1000
+          dParamY.start = start0 + yellowStart
+          dParamY.end = start0 + yellowStart + yellowDuration
           signalLightRunParam.runParam.push(dParamR, dParamG, dParamY)
         }
 
@@ -315,7 +319,7 @@ export class DctsCoreService {
     const end = performance.now();
     const t1 = Math.round(start2 - start);
     const t2 = Math.round(end - start2);
-    // console.info(`calculateLight查询所需时间 ${t1} ms，计算所需时间 ${t2} ms，共 ${t1 + t2} ms。`)
+    console.info(`calculateLight查询所需时间 ${t1} ms，计算所需时间 ${t2} ms，共 ${t1 + t2} ms。`)
 
     return allSignalLightRunParam
   }

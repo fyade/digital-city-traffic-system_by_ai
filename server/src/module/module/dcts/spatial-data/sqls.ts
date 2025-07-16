@@ -60,8 +60,8 @@ export function nodesWithWaysInPolygon(dto: NodesWithWaysInPolygonDto) {
   }
 }
 
-export function signalLightGroupsInPolygon(dto: SignalLightGroupsInPolygonDto) {
-  const pointsstring = dto.points
+export function signalLightGroupsInPolygon(points: SignalLightGroupsInPolygonDto['points']) {
+  const pointsstring = points
       .map(item => `${item.lon} ${item.lat}`)
       .join(', ');
   const sql = `

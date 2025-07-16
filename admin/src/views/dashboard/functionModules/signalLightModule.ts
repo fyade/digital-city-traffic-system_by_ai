@@ -4,11 +4,14 @@ import { CalculateLightsInPolygonVo } from "@/type/module/dcts/spatialData.ts";
 import { ClockModule } from "@/views/dashboard/functionModules/clockModule.ts";
 import { deepClone } from "@/utils/ObjectUtils.ts";
 import { ID_PREFIX_SIGNAL_LIGHT } from "@/views/dashboard/functionModules/constant.ts";
+import signalLight1Svg from "@/assets/images2/signal-light-1.png";
 
 const canvasWidth = 60
 const canvasHeight = 16
 const canvasCircleDiameter = 10
 const canvasPadding = (canvasHeight - canvasCircleDiameter) / 2
+
+const LONG_TASK_INTERVAL = 10; // 长任务执行间隔（分钟）
 
 /**
  * 信号灯模块
@@ -28,10 +31,11 @@ export class SignalLightModule {
 
 
   private jobs: CronJob<null, null>[] = [];
+
   public init() {
     // 长间隔任务
     const job = new CronJob(
-        '0 */10 * * * *',
+        `0 */${LONG_TASK_INTERVAL} * * * *`,
         this.longIntervalTask.bind(this),
         null,
         true
@@ -87,7 +91,10 @@ export class SignalLightModule {
     for (const _data of this.datas) {
       const data = deepClone<typeof _data>(_data);
       data.runParam = data.runParam.filter(rp => {
-        return currentTime <= rp.start && rp.start <= currentTime + 1000 * 60 * 2
+        return (rp.start <= currentTime && rp.end >= currentTime)
+            || (rp.start <= currentTime + 1000 * 60 * LONG_TASK_INTERVAL && rp.end >= currentTime + 1000 * 60 * LONG_TASK_INTERVAL)
+            || (currentTime <= rp.start && rp.end <= currentTime + 1000 * 60 * LONG_TASK_INTERVAL)
+            || (rp.start <= currentTime && currentTime + 1000 * 60 * LONG_TASK_INTERVAL <= rp.end)
       })
       this.shortTaskDatas.push(data)
     }
@@ -118,37 +125,42 @@ export class SignalLightModule {
     for (const shortTaskData of this.shortTaskDatas) {
       const rps: typeof shortTaskData.runParam = []
       for (let rp of shortTaskData.runParam) {
+        if (rps.length > 0) {
+          continue;
+        }
         // 当前信号灯颜色
         if (rp.start <= currentTime && currentTime <= rp.end) {
           rps.push(rp)
         }
       }
-      if (rps.length === 0) {
-        return;
-      }
       const entity = this.viewer.entities.getById(`${ID_PREFIX_SIGNAL_LIGHT}${shortTaskData.signalLightChildId}`);
-      if (!entity) {
-        return;
+      if (!entity || !entity.billboard) {
+        continue;
       }
-      if (!entity.billboard) {
-        return;
-      }
-      entity.billboard.width = new Cesium.ConstantProperty(canvasWidth)
-      entity.billboard.height = new Cesium.ConstantProperty(canvasHeight)
-      const rp1 = rps[0];
-      const leftTime = Math.floor((rp1.end - currentTime) / 1000);
-      if (rp1.color === 'red') {
-        entity.billboard.image = new Cesium.ConstantProperty(getLightCanvas('red', leftTime))
-      } else if (rp1.color === 'green') {
-        entity.billboard.image = new Cesium.ConstantProperty(getLightCanvas('green', leftTime))
-      } else if (rp1.color === 'yellow') {
-        if (ifHalfSecond) {
-          entity.billboard.image = new Cesium.ConstantProperty(getLightCanvas('yellow', leftTime))
+      if (rps.length === 0) {
+        // 把实体变成静态图片
+        entity.billboard.width = new Cesium.ConstantProperty(24)
+        entity.billboard.height = new Cesium.ConstantProperty(24)
+        entity.billboard.image = new Cesium.ConstantProperty(signalLight1Svg)
+      } else {
+        // 修改为对应颜色的信号灯
+        entity.billboard.width = new Cesium.ConstantProperty(canvasWidth)
+        entity.billboard.height = new Cesium.ConstantProperty(canvasHeight)
+        const rp1 = rps[0];
+        const leftTime = Math.floor((rp1.end - currentTime) / 1000);
+        if (rp1.color === 'red') {
+          entity.billboard.image = new Cesium.ConstantProperty(getLightCanvas('red', leftTime))
+        } else if (rp1.color === 'green') {
+          entity.billboard.image = new Cesium.ConstantProperty(getLightCanvas('green', leftTime))
+        } else if (rp1.color === 'yellow') {
+          if (ifHalfSecond) {
+            entity.billboard.image = new Cesium.ConstantProperty(getLightCanvas('yellow', leftTime))
+          } else {
+            entity.billboard.image = new Cesium.ConstantProperty(getLightCanvas('', leftTime))
+          }
         } else {
           entity.billboard.image = new Cesium.ConstantProperty(getLightCanvas('', leftTime))
         }
-      } else {
-        entity.billboard.image = new Cesium.ConstantProperty(getLightCanvas('', leftTime))
       }
     }
   }

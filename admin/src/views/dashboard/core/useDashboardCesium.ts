@@ -1,6 +1,5 @@
 import { UseCesium } from "@/views/dashboard/core/useCesium.ts";
-import { h, watch } from "vue";
-import { NSpin } from "naive-ui";
+import { watch } from "vue";
 import * as Cesium from "cesium";
 import { useSysStore } from "@/store/module/sys.ts";
 import { WsClient } from "@/services/wsClient.ts";
@@ -13,7 +12,6 @@ import { PermissionModule } from "@/views/dashboard/functionModules/permissionMo
 import { SignalLightModule } from "@/views/dashboard/functionModules/signalLightModule.ts";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 import { adminConfig } from "@dcts/config";
-import { NNotification } from "@/utils/naiveUtils.ts";
 import { CalculateLightsInPolygonVo } from "@/type/module/dcts/spatialData.ts";
 
 const currentConfig = adminConfig.currentConfig()
@@ -41,6 +39,7 @@ class UseDashboardCesium extends UseCesium {
     this.wsClient.addEventListener('dcts:spatialData:calculateLightsInPolygon', async data => {
       const calculateLightResult = JSON.parse(data.msg) as CalculateLightsInPolygonVo[];
       this.slModule.addTask(calculateLightResult)
+      this.lnModule.closeSignalLightLoading()
     })
   }
 
@@ -90,7 +89,9 @@ class UseDashboardCesium extends UseCesium {
     this.lnModule.setSetAllLabelsCB(() => {
       this.allLabels = this.lnModule.allLabels
     })
+    this.lnModule.setLayerLoadingEndCB(this.LnModuleCloseCB.bind(this))
 
+    this.meModule.setLnModule(this.lnModule)
     this.meModule.setVdModule(this.vdModule)
     this.meModule.setViewer(this.viewer)
     this.meModule.setRefreshContextMenuOption(this.refreshContextMenuOption)
@@ -116,7 +117,7 @@ class UseDashboardCesium extends UseCesium {
     super.destroy();
     this.cModule.destroy()
     this.slModule.destroy()
-    this.layerLoadingEnd().finally(() => {
+    this.lnModule.closeLayerLoading().then(() => {
       useDashboardCesium = createDashboardCesium()
     })
   }
@@ -124,56 +125,12 @@ class UseDashboardCesium extends UseCesium {
   protected async globeTileLoadProgressEventCB(queuedTileCount: number) {
     await super.globeTileLoadProgressEventCB(queuedTileCount);
     // 加载中
-    if (queuedTileCount > 0 && !this.lnModule.layerLoading) {
-      this.lnModule.layerLoading = true
-      this.lnModule.layerLoadingNotification = NNotification.create({
-        title: '提示',
-        content: '图层加载中...',
-        duration: 0,
-        avatar: () => h(NSpin, {
-          size: 'medium',
-          strokeWidth: 20
-        }),
-        closable: false,
-      });
-      // 设置定时器
-      if (!this.lnModule.layerLoadingTimer) {
-        this.lnModule.layerLoadingTimer = setTimeout(() => {
-          if (this.lnModule.layerLoadingNotification) {
-            this.lnModule.layerLoadingNotification.content = '加载时间可能稍长，请稍作等待，感谢您的配合...'
-          }
-        }, 3000)
-      }
+    if (queuedTileCount > 0) {
+      this.lnModule.openLayerLoading()
     }
     // 加载完成
-    if (queuedTileCount === 0 && this.lnModule.layerLoading) {
-      await this.layerLoadingEnd(true)
-    }
-  }
-
-  private async layerLoadingEnd(ifLoadEnd = false) {
-    this.lnModule.layerLoadingCount++;
-    // 第一次图层加载完成后调用
-    if (ifLoadEnd) {
-      if (this.lnModule.layerLoadingCount === 1) {
-        await this.refreshScreenEntities()
-      }
-    }
-    if (this.lnModule.layerLoadingNotification) {
-      this.lnModule.layerLoadingNotification.destroy()
-    }
-    this.lnModule.layerLoading = false
-    if (ifLoadEnd) {
-      NNotification.success({
-        title: '提示',
-        content: '图层加载完成',
-        duration: 3000
-      })
-    }
-    // 清除定时器
-    if (this.lnModule.layerLoadingTimer) {
-      clearTimeout(this.lnModule.layerLoadingTimer)
-      this.lnModule.layerLoadingTimer = null
+    if (queuedTileCount === 0) {
+      await this.lnModule.closeLayerLoading(true)
     }
   }
 
@@ -253,6 +210,13 @@ class UseDashboardCesium extends UseCesium {
     }
     if (!ifHasObj) {
       this.meModule.selectedEntityIds = []
+    }
+  }
+
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 其他 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+  private async LnModuleCloseCB(count: number) {
+    if (count === 1) {
+      await this.refreshScreenEntities()
     }
   }
 }

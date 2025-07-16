@@ -1,7 +1,9 @@
 import * as Cesium from "cesium";
-import { NotificationReactive } from "naive-ui";
+import { NotificationReactive, NSpin } from "naive-ui";
 import { LayerDto } from "@/views/dashboard/index/dto.ts";
 import { geoserverConfig } from "@dcts/config";
+import { NNotification } from "@/utils/naiveUtils.ts";
+import { h } from "vue";
 
 /**
  * 图层及通知
@@ -19,19 +21,78 @@ export class LayerNotificationModule {
     this.setAllLabelsCB = func
   }
 
+  private layerLoadingEndCB: ((count: number) => Promise<void>) | null = null
+
+  public setLayerLoadingEndCB(func: (count: number) => Promise<void>) {
+    this.layerLoadingEndCB = func
+  }
+
 
   public init() {
     this.setLayer()
   }
 
   // 图层是否正在加载
-  public layerLoading = false
+  private layerLoading = false
   // 图层加载次数
-  public layerLoadingCount = 0
+  private layerLoadingCount = 0
   // 右上角的 Loading 通知
-  public layerLoadingNotification: NotificationReactive | null = null
+  private layerLoadingNotification: NotificationReactive | null = null
   // 右上角的通知内容变化定时器
-  public layerLoadingTimer: NodeJS.Timeout | null = null
+  private layerLoadingTimer: NodeJS.Timeout | null = null
+
+  public openLayerLoading() {
+    if (this.layerLoading) {
+      return
+    }
+    this.layerLoading = true
+    this.layerLoadingNotification = NNotification.create({
+      title: '提示',
+      content: '图层加载中...',
+      duration: 0,
+      avatar: () => h(NSpin, {
+        size: 'medium',
+        strokeWidth: 20
+      }),
+      closable: false,
+    });
+    // 设置定时器
+    if (!this.layerLoadingTimer) {
+      this.layerLoadingTimer = setTimeout(() => {
+        if (this.layerLoadingNotification) {
+          this.layerLoadingNotification.content = '加载时间可能稍长，请稍作等待，感谢您的配合...'
+        }
+      }, 3000)
+    }
+  }
+
+  public async closeLayerLoading(ifLoadEnd = false) {
+    if (!this.layerLoading) {
+      return
+    }
+    this.layerLoading = false
+    this.layerLoadingCount++
+    if (this.layerLoadingNotification) {
+      this.layerLoadingNotification.destroy()
+      this.layerLoadingNotification = null
+    }
+    if (ifLoadEnd) {
+      NNotification.success({
+        title: '提示',
+        content: '图层加载完成',
+        duration: 3000
+      })
+    }
+    // 清除定时器
+    if (this.layerLoadingTimer) {
+      clearTimeout(this.layerLoadingTimer)
+      this.layerLoadingTimer = null
+    }
+    if (this.layerLoadingEndCB) {
+      await this.layerLoadingEndCB(this.layerLoadingCount)
+    }
+  }
+
   // 所有图层的链接及当前图层index
   private currentIdOfBaseMap = [[''], ['a1']]
   private currentIdOfRoadData = [[''], ['b1']]
@@ -109,5 +170,41 @@ export class LayerNotificationModule {
       f.func()
       this.allLabels = [...JSON.parse(JSON.stringify(this.allLabels)), [f.dataType, f.fromCompany, f.fromUrl]]
     }
+  }
+
+  private signalLightLoading = false
+  private signalLightLoadingNotification: NotificationReactive | null = null
+
+  public openSignalLightLoading() {
+    if (this.signalLightLoading) {
+      return
+    }
+    this.signalLightLoading = true
+    this.signalLightLoadingNotification = NNotification.create({
+      title: '提示',
+      content: '信号灯等地图实体加载中...',
+      duration: 0,
+      avatar: () => h(NSpin, {
+        size: 'medium',
+        strokeWidth: 20,
+      }),
+      closable: false,
+    });
+  }
+
+  public closeSignalLightLoading() {
+    if (!this.signalLightLoading) {
+      return
+    }
+    this.signalLightLoading = false
+    if (this.signalLightLoadingNotification) {
+      this.signalLightLoadingNotification.destroy()
+      this.signalLightLoadingNotification = null
+    }
+    NNotification.success({
+      title: '提示',
+      content: '信号灯等地图实体加载完成',
+      duration: 3000
+    })
   }
 }
