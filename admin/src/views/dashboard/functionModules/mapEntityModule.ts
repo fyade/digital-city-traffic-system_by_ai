@@ -5,6 +5,78 @@ import signalLight1Svg from "@/assets/images2/signal-light-1.png";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 import { LayerNotificationModule } from "@/views/dashboard/functionModules/layerNotificationModule.ts";
 
+const canvasWidth = 60
+const canvasHeight = 16
+const canvasCircleDiameter = 10
+const canvasPadding = (canvasHeight - canvasCircleDiameter) / 2
+
+const lightCanvasMap = new Map<string, HTMLCanvasElement>();
+
+/**
+ * 获取使用Canvas动态生成信号灯图像的缓存
+ * @param color
+ * @param time
+ */
+function getLightCanvas(color: 'red' | 'green' | 'yellow' | '', time: number) {
+  const t0 = Math.min(time, 99);
+  const canvas0 = lightCanvasMap.get(`${color}.${t0}`);
+  if (canvas0) {
+    return canvas0
+  }
+  const trafficLightCanvas = createTrafficLightCanvas(color, t0);
+  if (trafficLightCanvas) {
+    lightCanvasMap.set(`${color}.${t0}`, trafficLightCanvas);
+    return trafficLightCanvas
+  }
+  return null
+}
+
+/**
+ * 使用Canvas动态生成信号灯图像
+ * @param activeColor
+ * @param time
+ */
+function createTrafficLightCanvas(activeColor = '', time = 0) {
+  const canvas = document.createElement('canvas');
+  canvas.width = canvasWidth;
+  canvas.height = canvasHeight;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    return null
+  }
+
+  // 绘制灯框
+  ctx.fillStyle = '#333';
+  ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+  // 绘制红灯
+  ctx.beginPath();
+  ctx.arc((canvasPadding + canvasCircleDiameter) - canvasCircleDiameter / 2, canvasHeight / 2, canvasCircleDiameter / 2, 0, Math.PI * 2);
+  ctx.fillStyle = activeColor === 'red' ? 'red' : '#400';
+  ctx.fill();
+
+  // 绘制黄灯
+  ctx.beginPath();
+  ctx.arc((canvasPadding + canvasCircleDiameter) * 2 - canvasCircleDiameter / 2, canvasHeight / 2, canvasCircleDiameter / 2, 0, Math.PI * 2);
+  ctx.fillStyle = activeColor === 'yellow' ? 'yellow' : '#440';
+  ctx.fill();
+
+  // 绘制绿灯
+  ctx.beginPath();
+  ctx.arc((canvasPadding + canvasCircleDiameter) * 3 - canvasCircleDiameter / 2, canvasHeight / 2, canvasCircleDiameter / 2, 0, Math.PI * 2);
+  ctx.fillStyle = activeColor === 'green' ? '#0f0' : '#004';
+  ctx.fill();
+
+  // 绘制倒数
+  ctx.font = `${canvasCircleDiameter * 1.2}px Arial`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#fff';
+  ctx.fillText(`${time}`, ((canvasPadding + canvasCircleDiameter) * 3 + canvasWidth) / 2, canvasHeight / 2)
+
+  return canvas;
+}
+
 /**
  * 地图实体
  */
@@ -214,5 +286,44 @@ export class MapEntityModule {
       version: '1.0',
       points: viewCornerCoordinates
     })
+  }
+
+  public setSignalLightToPic(id: number) {
+    if (!this.viewer) {
+      return;
+    }
+    const entity = this.viewer.entities.getById(`${ID_PREFIX_SIGNAL_LIGHT}${id}`);
+    if (!entity || !entity.billboard) {
+      return
+    }
+    entity.billboard.width = new Cesium.ConstantProperty(24)
+    entity.billboard.height = new Cesium.ConstantProperty(24)
+    entity.billboard.image = new Cesium.ConstantProperty(signalLight1Svg)
+  }
+
+  public setSignalLightColor(id: number, color: string, ifHalfSecond: boolean, leftTime: number) {
+    if (!this.viewer) {
+      return
+    }
+    const entity = this.viewer.entities.getById(`${ID_PREFIX_SIGNAL_LIGHT}${id}`);
+    if (!entity || !entity.billboard) {
+      return;
+    }
+    // 修改为对应颜色的信号灯
+    entity.billboard.width = new Cesium.ConstantProperty(canvasWidth)
+    entity.billboard.height = new Cesium.ConstantProperty(canvasHeight)
+    if (color === 'red') {
+      entity.billboard.image = new Cesium.ConstantProperty(getLightCanvas('red', leftTime))
+    } else if (color === 'green') {
+      entity.billboard.image = new Cesium.ConstantProperty(getLightCanvas('green', leftTime))
+    } else if (color === 'yellow') {
+      if (ifHalfSecond) {
+        entity.billboard.image = new Cesium.ConstantProperty(getLightCanvas('yellow', leftTime))
+      } else {
+        entity.billboard.image = new Cesium.ConstantProperty(getLightCanvas('', leftTime))
+      }
+    } else {
+      entity.billboard.image = new Cesium.ConstantProperty(getLightCanvas('', leftTime))
+    }
   }
 }

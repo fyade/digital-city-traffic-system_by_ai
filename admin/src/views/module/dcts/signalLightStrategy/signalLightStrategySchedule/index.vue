@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { reactive, ref } from "vue";
-import { CONFIG, final } from "@/utils/base.ts";
+import { CONFIG, final, sLSSTTypeDict, SLSSTTypeEnum } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
@@ -164,7 +164,10 @@ const manageSonData = (row: SignalLightStrategyScheduleDto) => {
         <el-row>
           <el-col :span="12">
             <el-form-item :label="signalLightStrategyScheduleDict.scheduleType" prop="scheduleType">
-              <el-input v-model="state.dialogForm.scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType"/>
+              <!--<el-input v-model="state.dialogForm.scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType"/>-->
+              <el-radio-group v-model="state.dialogForm.scheduleType">
+                <el-radio :value="SLSSTTypeEnum.T_DAY">{{ sLSSTTypeDict[SLSSTTypeEnum.T_DAY] }}</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -269,7 +272,10 @@ const manageSonData = (row: SignalLightStrategyScheduleDto) => {
             </template>
             <template #default="{$index}">
               <div :class="state.dialogForms_error?.[`${$index}-scheduleType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType"/>
+                <!--<el-input v-model="state.dialogForms[$index].scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType"/>-->
+                <el-radio-group v-model="state.dialogForms[$index].scheduleType">
+                  <el-radio :value="SLSSTTypeEnum.T_DAY">{{ sLSSTTypeDict[SLSSTTypeEnum.T_DAY] }}</el-radio>
+                </el-radio-group>
               </div>
             </template>
           </el-table-column>
@@ -372,7 +378,10 @@ const manageSonData = (row: SignalLightStrategyScheduleDto) => {
         <el-input v-model="state.filterForm.description" :placeholder="signalLightStrategyScheduleDict.description"/>
       </el-form-item>
       <el-form-item :label="signalLightStrategyScheduleDict.scheduleType" prop="scheduleType">
-        <el-input v-model="state.filterForm.scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType"/>
+        <!--<el-input v-model="state.filterForm.scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType"/>-->
+        <el-select  v-model="state.filterForm.scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType" clearable filterable>
+          <el-option :label="sLSSTTypeDict[SLSSTTypeEnum.T_DAY]" :value="SLSSTTypeEnum.T_DAY"/>
+        </el-select>
       </el-form-item>
       <el-form-item :label="signalLightStrategyScheduleDict.ifDisabled" prop="ifDisabled">
         <!--<el-input v-model="state.filterForm.ifDisabled" :placeholder="signalLightStrategyScheduleDict.ifDisabled"/>-->
@@ -417,7 +426,11 @@ const manageSonData = (row: SignalLightStrategyScheduleDto) => {
       <!--在此下方添加表格列-->
       <el-table-column prop="name" :label="signalLightStrategyScheduleDict.name" width="180"/>
       <el-table-column prop="description" :label="signalLightStrategyScheduleDict.description" width="180"/>
-      <el-table-column prop="scheduleType" :label="signalLightStrategyScheduleDict.scheduleType" width="180"/>
+      <el-table-column prop="scheduleType" :label="signalLightStrategyScheduleDict.scheduleType" width="180">
+        <template #default="{row}">
+          {{ sLSSTTypeDict[row.scheduleType as SLSSTTypeEnum] }}
+        </template>
+      </el-table-column>
       <el-table-column prop="startTime" :label="signalLightStrategyScheduleDict.startTime" width="180">
         <template #default="{row}">
           {{ timeUtils.formatDate(new Date(row.startTime)) }}

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { PropType, reactive, ref } from "vue";
-import { CONFIG, final } from "@/utils/base.ts";
+import { CONFIG, final, sLSSTTypeDict, SLSSTTypeEnum } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
@@ -236,7 +236,10 @@ const _del = (...delids: number[]) => {
         <el-input v-model="state.filterForm.description" :placeholder="signalLightStrategyScheduleDict.description"/>
       </el-form-item>
       <el-form-item :label="signalLightStrategyScheduleDict.scheduleType" prop="scheduleType">
-        <el-input v-model="state.filterForm.scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType"/>
+        <!--<el-input v-model="state.filterForm.scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType"/>-->
+        <el-select  v-model="state.filterForm.scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType" clearable filterable>
+          <el-option :label="sLSSTTypeDict[SLSSTTypeEnum.T_DAY]" :value="SLSSTTypeEnum.T_DAY"/>
+        </el-select>
       </el-form-item>
       <el-form-item :label="signalLightStrategyScheduleDict.ifDisabled" prop="ifDisabled">
         <!--<el-input v-model="state.filterForm.ifDisabled" :placeholder="signalLightStrategyScheduleDict.ifDisabled"/>-->
@@ -283,7 +286,11 @@ const _del = (...delids: number[]) => {
       <!--在此下方添加表格列-->
       <el-table-column prop="name" :label="signalLightStrategyScheduleDict.name" width="180"/>
       <el-table-column prop="description" :label="signalLightStrategyScheduleDict.description" width="180"/>
-      <el-table-column prop="scheduleType" :label="signalLightStrategyScheduleDict.scheduleType" width="180"/>
+      <el-table-column prop="scheduleType" :label="signalLightStrategyScheduleDict.scheduleType" width="180">
+        <template #default="{row}">
+          {{ sLSSTTypeDict[row.scheduleType as SLSSTTypeEnum] }}
+        </template>
+      </el-table-column>
       <el-table-column prop="startTime" :label="signalLightStrategyScheduleDict.startTime" width="180">
         <template #default="{row}">
           {{ timeUtils.formatDate(new Date(row.startTime)) }}

@@ -21,32 +21,35 @@ export class VersionDataModule {
 
   // 曾经选择的实体
   private _history_selectedEntityIds: VersionDataType<string[]>[] = []
-  get history_selectedEntityIds() {
-    return this._history_selectedEntityIds
-  }
 
   public setHistorySelectedEntityIds(value: string[]) {
-    this._history_selectedEntityIds = this.__(value, this.history_selectedEntityIds)
+    this._history_selectedEntityIds = this.__(value, this._history_selectedEntityIds)
   }
 
-  // 获取上一次选择的实体
   public getHistorySelectedEntityIds(index = 0, ifLast = true) {
-    return this.___(index, this.history_selectedEntityIds, ifLast)
+    return this.___(index, this._history_selectedEntityIds, ifLast)
   }
 
   // 曾经地图可视区域内的信号灯组
   private _history_signalLightGroupsInPolygonVo: VersionDataType<SignalLightGroupsInPolygonVo>[] = []
-  get history_signalLightGroupsInPolygonVo() {
-    return this._history_signalLightGroupsInPolygonVo
-  }
 
   public setHistorySignalLightGroupsInPolygonVo(value: SignalLightGroupsInPolygonVo) {
-    this._history_signalLightGroupsInPolygonVo = this.__(value, this.history_signalLightGroupsInPolygonVo)
+    this._history_signalLightGroupsInPolygonVo = this.__(value, this._history_signalLightGroupsInPolygonVo)
   }
 
-  // 获取上一次地图可视区域内的信号灯组
   public getHistorySignalLightGroupsInPolygonVo(index = 0, ifLast = true) {
-    return this.___(index, this.history_signalLightGroupsInPolygonVo, ifLast)
+    return this.___(index, this._history_signalLightGroupsInPolygonVo, ifLast)
+  }
+
+  // 运行中（有颜色状态）的子信号灯id
+  private _history_runningSignalLightIds: VersionDataType<number[]>[] = []
+
+  public setHistoryRunningSignalLightIds(value: number[]) {
+    this._history_runningSignalLightIds = this.__(value, this._history_runningSignalLightIds)
+  }
+
+  public getHistoryRunningSignalLightIds(index = 0, ifLast = true) {
+    return this.___(index, this._history_runningSignalLightIds, ifLast)
   }
 
   //

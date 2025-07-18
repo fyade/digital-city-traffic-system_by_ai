@@ -27,10 +27,10 @@ export class SignalLightStrategyScheduleDto extends BaseDto {
 }
 
 export class SignalLightStrategyScheduleSelListDto extends PageDto {
-  @ApiProperty({ description: '信号灯策略调度名', required: false })
+  @ApiProperty({ description: '策略调度名', required: false })
   name: string;
 
-  @ApiProperty({ description: '信号灯策略调度描述', required: false })
+  @ApiProperty({ description: '策略调度描述', required: false })
   description: string;
 
   @ApiProperty({ description: '调度类型', required: false })
@@ -56,10 +56,10 @@ export class SignalLightStrategyScheduleSelListDto extends PageDto {
 }
 
 export class SignalLightStrategyScheduleSelAllDto {
-  @ApiProperty({ description: '信号灯策略调度名', required: false })
+  @ApiProperty({ description: '策略调度名', required: false })
   name: string;
 
-  @ApiProperty({ description: '信号灯策略调度描述', required: false })
+  @ApiProperty({ description: '策略调度描述', required: false })
   description: string;
 
   @ApiProperty({ description: '调度类型', required: false })
@@ -85,14 +85,14 @@ export class SignalLightStrategyScheduleSelAllDto {
 }
 
 export class SignalLightStrategyScheduleInsOneDto {
-  @ApiProperty({ description: '信号灯策略调度名', required: true })
-  @IsNotEmpty({ message: '信号灯策略调度名不能为空' })
-  @MaxLength(100, { message: '信号灯策略调度名不能超过100个字符' })
+  @ApiProperty({ description: '策略调度名', required: true })
+  @IsNotEmpty({ message: '策略调度名不能为空' })
+  @MaxLength(100, { message: '策略调度名不能超过100个字符' })
   name: string;
 
-  @ApiProperty({ description: '信号灯策略调度描述', required: true })
-  @IsNotEmpty({ message: '信号灯策略调度描述不能为空' })
-  @MaxLength(100, { message: '信号灯策略调度描述不能超过100个字符' })
+  @ApiProperty({ description: '策略调度描述', required: true })
+  @IsNotEmpty({ message: '策略调度描述不能为空' })
+  @MaxLength(100, { message: '策略调度描述不能超过100个字符' })
   description: string;
 
   @ApiProperty({ description: '调度类型', required: true })

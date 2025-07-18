@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { reactive, ref } from "vue";
-import { CONFIG, final } from "@/utils/base.ts";
+import { CONFIG, final, sLSTTTypeDict, SLSTTTypeEnum } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
@@ -157,7 +157,12 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
         <el-row>
           <el-col :span="12">
             <el-form-item :label="signalLightStrategyTypeDict.strategyType" prop="strategyType">
-              <el-input v-model="state.dialogForm.strategyType" :placeholder="signalLightStrategyTypeDict.strategyType"/>
+              <!--<el-input v-model="state.dialogForm.strategyType" :placeholder="signalLightStrategyTypeDict.strategyType"/>-->
+              <el-radio-group v-model="state.dialogForm.strategyType">
+                <el-radio :value="SLSTTTypeEnum.T_CUSTOM">{{ sLSTTTypeDict[SLSTTTypeEnum.T_CUSTOM] }}</el-radio>
+                <el-radio :value="SLSTTTypeEnum.T_FINE_TUNING">{{ sLSTTTypeDict[SLSTTTypeEnum.T_FINE_TUNING] }}</el-radio>
+                <el-radio :value="SLSTTTypeEnum.T_TOP">{{ sLSTTTypeDict[SLSTTTypeEnum.T_TOP] }}</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -243,7 +248,12 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
             </template>
             <template #default="{$index}">
               <div :class="state.dialogForms_error?.[`${$index}-strategyType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].strategyType" :placeholder="signalLightStrategyTypeDict.strategyType"/>
+                <!--<el-input v-model="state.dialogForms[$index].strategyType" :placeholder="signalLightStrategyTypeDict.strategyType"/>-->
+                <el-radio-group v-model="state.dialogForms[$index].strategyType">
+                  <el-radio :value="SLSTTTypeEnum.T_CUSTOM">{{ sLSTTTypeDict[SLSTTTypeEnum.T_CUSTOM] }}</el-radio>
+                  <el-radio :value="SLSTTTypeEnum.T_FINE_TUNING">{{ sLSTTTypeDict[SLSTTTypeEnum.T_FINE_TUNING] }}</el-radio>
+                  <el-radio :value="SLSTTTypeEnum.T_TOP">{{ sLSTTTypeDict[SLSTTTypeEnum.T_TOP] }}</el-radio>
+                </el-radio-group>
               </div>
             </template>
           </el-table-column>
@@ -314,7 +324,12 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
         <el-input v-model="state.filterForm.description" :placeholder="signalLightStrategyTypeDict.description"/>
       </el-form-item>
       <el-form-item :label="signalLightStrategyTypeDict.strategyType" prop="strategyType">
-        <el-input v-model="state.filterForm.strategyType" :placeholder="signalLightStrategyTypeDict.strategyType"/>
+        <!--<el-input v-model="state.filterForm.strategyType" :placeholder="signalLightStrategyTypeDict.strategyType"/>-->
+        <el-select v-model="state.filterForm.strategyType" :placeholder="signalLightStrategyTypeDict.strategyType" clearable filterable>
+          <el-option :label="sLSTTTypeDict[SLSTTTypeEnum.T_CUSTOM]" :value="SLSTTTypeEnum.T_CUSTOM"/>
+          <el-option :label="sLSTTTypeDict[SLSTTTypeEnum.T_FINE_TUNING]" :value="SLSTTTypeEnum.T_FINE_TUNING"/>
+          <el-option :label="sLSTTTypeDict[SLSTTTypeEnum.T_TOP]" :value="SLSTTTypeEnum.T_TOP"/>
+        </el-select>
       </el-form-item>
       <el-form-item :label="signalLightStrategyTypeDict.ifDisabled" prop="ifDisabled">
         <!--<el-input v-model="state.filterForm.ifDisabled" :placeholder="signalLightStrategyTypeDict.ifDisabled"/>-->
@@ -359,7 +374,11 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
       <!--在此下方添加表格列-->
       <el-table-column prop="name" :label="signalLightStrategyTypeDict.name" width="180"/>
       <el-table-column prop="description" :label="signalLightStrategyTypeDict.description" width="240"/>
-      <el-table-column prop="strategyType" :label="signalLightStrategyTypeDict.strategyType" width="120"/>
+      <el-table-column prop="strategyType" :label="signalLightStrategyTypeDict.strategyType" width="120">
+        <template #default="{row}">
+          {{ sLSTTTypeDict[row.strategyType as SLSTTTypeEnum] }}
+        </template>
+      </el-table-column>
       <el-table-column prop="ifDisabled" :label="signalLightStrategyTypeDict.ifDisabled" width="120">
         <template #default="{row}">
           <el-tag v-if="row.ifDisabled===final.Y" type="info">是</el-tag>

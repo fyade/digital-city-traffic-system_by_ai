@@ -53,7 +53,7 @@ export enum SLSTTTypeEnum {
   T_TOP = 'top',
 }
 
-export const SLSTTTypeDict = {
+export const sLSTTTypeDict = {
   [SLSTTTypeEnum.T_CUSTOM]: '固定策略',
   [SLSTTTypeEnum.T_FINE_TUNING]: '微调策略',
   [SLSTTTypeEnum.T_TOP]: '紧急策略',
@@ -64,7 +64,7 @@ export enum SLSSTTypeEnum {
   T_DAY = 'day',
 }
 
-export const SLSSTTypeDict = {
+export const sLSSTTypeDict = {
   [SLSSTTypeEnum.T_DAY]: '日循环',
 }
 

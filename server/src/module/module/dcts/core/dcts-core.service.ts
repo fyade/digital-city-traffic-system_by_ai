@@ -216,23 +216,37 @@ export class DctsCoreService {
         modifiedStartEndTime.push([schedule_custom.id, startDate, endDate])
       }
 
-      // 策略执行偏移量 [offsetNum]
-      const offsetsByScheduleId: number[] = []
-      for (let i = 0; i < strategyScheduleIds_custom.length; i++) {
-        if (i === 0) {
-          offsetsByScheduleId.push(0)
-          continue
-        }
-        // 第n(从0开始)个的偏移时间 = 第n个的红灯时长
-        // 第n个的策略参数
-        const asps = allStrategyParams.filter(param => {
-          return _strategySchedule_strategyParam.some(item => item.strategyScheduleId === strategyScheduleIds_custom[i] && item.strategyParamId === param.id)
+      // 策略执行偏移量 [strategyScheduleId, startTime, endTime, offsetNum][]
+      const offsetsByScheduleId: [number, number, number, number][] = []
+      // 在每个时间段内
+      // 第1个的偏移量=0
+      // 第2个的偏移量=第2个的红灯时间
+      // 第3个的偏移量=第3个的红灯时间
+      // 第n个的偏移量=第n个的红灯时间
+      // 先计算出一共有多少个时间段
+      const allTimePoint = objectUtils.arrNoRepeat(modifiedStartEndTime.map(ar => [ar[1], ar[2]]).flat().sort());
+      if (allTimePoint.length < 1) {
+        continue
+      }
+      for (let i = 1; i < allTimePoint.length; i++) {
+        const t1 = allTimePoint[i - 1]
+        const t2 = allTimePoint[i]
+        // 有几个调度在此时间段内
+        const filter = modifiedStartEndTime.filter(ar => {
+          const _n = (t1 + t2) / 2;
+          return ar[1] <= _n && _n <= ar[2]
         });
-        if (asps.length === 0) {
-          offsetsByScheduleId.push(0)
-          continue
+        for (let j = 0; j < filter.length; j++) {
+          const f = filter[j]
+          let _offset = 0
+          if (j > 0) {
+            const asps = allStrategyParams.filter(param => {
+              return _strategySchedule_strategyParam.some(item => item.strategyScheduleId === f[0] && item.strategyParamId === param.id)
+            });
+            _offset = asps.length === 0 ? 0 : asps[0].redDuration * 1000
+          }
+          offsetsByScheduleId.push([f[0], t1, t2, _offset])
         }
-        offsetsByScheduleId.push(asps[0].redDuration * 1000)
       }
 
       for (const light of lights) {
@@ -271,14 +285,23 @@ export class DctsCoreService {
         signalLightRunParam.signalLightChildId = light.id
         signalLightRunParam.runParam = []
 
-        if (relation.length === 0) {
+        const relation2 = relation.filter(r => {
+          const find1 = modifiedStartEndTime.find(item => item[0] === r[1].id);
+          if (!find1) {
+            return false
+          }
+          return find1[1] <= now0 && now0 <= find1[2]
+        })
+
+        if (relation2.length === 0) {
           continue
         }
 
-        // for (const rel of relation)
-        const rel = relation[0]
-        const index = strategyScheduleIds.indexOf(rel[1].id);
-        const offset = offsetsByScheduleId[index];
+        const rel = relation2[0]
+        const find2 = offsetsByScheduleId.find(item => {
+          return item[0] === rel[1].id && item[1] <= now0 && now0 <= item[2]
+        });
+        const offset = find2 ? find2[3] : 0;
         const redDuration = rel[2].redDuration * 1000;
         const greenDuration = rel[2].greenDuration * 1000;
         const yellowDuration = rel[2].yellowDuration * 1000;
@@ -293,23 +316,25 @@ export class DctsCoreService {
         const count = Math.ceil((end0 - start0) / allDuration)
         const _offset = 3000 + offset
         const _i = Math.floor((now0 - start0 - _offset) / allDuration);
-        for (let i = _i; i < count; i++) {
-          const redStart = allDuration * i + _offset
-          const greenStart = allDuration * i + _offset + redDuration
-          const yellowStart = allDuration * i + _offset + redDuration + greenDuration
-          const dParamR = new SignalLightRunParamDParam();
-          dParamR.color = 'red'
-          dParamR.start = start0 + redStart
-          dParamR.end = start0 + redStart + redDuration
-          const dParamG = new SignalLightRunParamDParam();
-          dParamG.color = 'green'
-          dParamG.start = start0 + greenStart
-          dParamG.end = start0 + greenStart + greenDuration
-          const dParamY = new SignalLightRunParamDParam();
-          dParamY.color = 'yellow'
-          dParamY.start = start0 + yellowStart
-          dParamY.end = start0 + yellowStart + yellowDuration
-          signalLightRunParam.runParam.push(dParamR, dParamG, dParamY)
+        if (0 <= _i && _i < count) {
+          for (let i = _i; i < count; i++) {
+            const redStart = allDuration * i + _offset
+            const greenStart = allDuration * i + _offset + redDuration
+            const yellowStart = allDuration * i + _offset + redDuration + greenDuration
+            const dParamR = new SignalLightRunParamDParam();
+            dParamR.color = 'red'
+            dParamR.start = start0 + redStart
+            dParamR.end = start0 + redStart + redDuration
+            const dParamG = new SignalLightRunParamDParam();
+            dParamG.color = 'green'
+            dParamG.start = start0 + greenStart
+            dParamG.end = start0 + greenStart + greenDuration
+            const dParamY = new SignalLightRunParamDParam();
+            dParamY.color = 'yellow'
+            dParamY.start = start0 + yellowStart
+            dParamY.end = start0 + yellowStart + yellowDuration
+            signalLightRunParam.runParam.push(dParamR, dParamG, dParamY)
+          }
         }
 
         allSignalLightRunParam.push(signalLightRunParam)

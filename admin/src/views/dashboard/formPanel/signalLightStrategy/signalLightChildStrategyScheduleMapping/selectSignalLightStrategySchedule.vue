@@ -12,10 +12,11 @@ import { signalLightStrategyScheduleDict } from "@/dict/module/dcts/signalLightS
 import { SignalLightStrategyTypeStrategyScheduleMappingDto, SignalLightStrategyTypeStrategyScheduleMappingUpdDto } from "@/type/module/dcts/signalLightStrategy/signalLightStrategyTypeStrategyScheduleMapping.ts";
 import { signalLightStrategyTypeStrategyScheduleMappingApi } from "@/api/module/dcts/signalLightStrategy/signalLightStrategyTypeStrategyScheduleMapping.ts";
 import { signalLightStrategyTypeStrategyScheduleMappingDict } from "@/dict/module/dcts/signalLightStrategy/signalLightStrategyTypeStrategyScheduleMapping.ts";
-import { final } from "@/utils/base.ts";
+import { final, sLSSTTypeDict, SLSSTTypeEnum } from "@/utils/base.ts";
 import { SignalLightChildStrategyScheduleMappingDto, SignalLightChildStrategyScheduleMappingInsDto } from "@/type/module/dcts/signalLightStrategy/signalLightChildStrategyScheduleMapping.ts";
 import { signalLightChildStrategyScheduleMappingApi } from "@/api/module/dcts/signalLightStrategy/signalLightChildStrategyScheduleMapping.ts";
 import { timeUtils } from "@dcts/common";
+import { nOptionIfDisabled, nOptionSLSST } from "@/utils/naiveBase.ts";
 
 const props = defineProps({
   selectStrategyTypeId: {
@@ -48,6 +49,7 @@ const state = reactive<State2<SignalLightStrategyScheduleDto, SignalLightStrateg
     name: '',
     description: '',
     scheduleType: '',
+    ifDisabled: '',
   },
 })
 const config = new TablePageConfig<SignalLightStrategyScheduleDto>({
@@ -62,7 +64,13 @@ const config = new TablePageConfig<SignalLightStrategyScheduleDto>({
 const columns: DataTableColumns<SignalLightStrategyScheduleDto> = [
   {title: signalLightStrategyScheduleDict.name, key: 'name'},
   {title: signalLightStrategyScheduleDict.description, key: 'description'},
-  {title: signalLightStrategyScheduleDict.scheduleType, key: 'scheduleType'},
+  {
+    title: signalLightStrategyScheduleDict.scheduleType,
+    key: 'scheduleType',
+    render(row) {
+      return sLSSTTypeDict[row.scheduleType as SLSSTTypeEnum]
+    }
+  },
   {
     title: signalLightStrategyScheduleDict.startTime,
     key: 'startTime',
@@ -229,7 +237,12 @@ const selectRow2 = (ifBd: boolean, row: SignalLightStrategyScheduleDto) => {
         <n-input v-model:value="state.filterForm.description" :placeholder="signalLightStrategyScheduleDict.description"/>
       </n-form-item>
       <n-form-item :label="signalLightStrategyScheduleDict.scheduleType" path="scheduleType">
-        <n-input v-model:value="state.filterForm.scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType"/>
+        <!--<n-input v-model:value="state.filterForm.scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType"/>-->
+        <n-select v-model:value="state.filterForm.scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType" clearable filterable :options="nOptionSLSST"/>
+      </n-form-item>
+      <n-form-item :label="signalLightStrategyScheduleDict.ifDisabled" path="ifDisabled">
+        <!--<n-input v-model:value="state.filterForm.ifDisabled" :placeholder="signalLightStrategyScheduleDict.ifDisabled"/>-->
+        <n-select v-model:value="state.filterForm.ifDisabled" :placeholder="signalLightStrategyScheduleDict.ifDisabled" clearable filterable :options="nOptionIfDisabled"/>
       </n-form-item>
       <!--在此上方添加表单项-->
       <n-form-item>

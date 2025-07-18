@@ -5,13 +5,11 @@ import router from './router'
 import directives from "@/dicevtive/index.ts";
 import { createPinia } from "pinia";
 import { createPersistedState } from 'pinia-plugin-persistedstate'
-import ElementPlus from 'element-plus'
-import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import 'virtual:svg-icons-register'
-import 'element-plus/dist/index.css'
 import { publicConfig } from '@dcts/config'
-import 'cesium/Build/Cesium/Widgets/widgets.css'
+import 'element-plus/dist/index.css'
 import naive from "naive-ui";
+import 'cesium/Build/Cesium/Widgets/widgets.css'
 
 import './loaded/autoUpdate.ts'
 import './loaded/singleInputNoEnterSubmit.ts'
@@ -30,9 +28,6 @@ pinia.use(createPersistedState({
 app.use(router)
 app.use(pinia)
 app.use(naive)
-app.use(ElementPlus, {
-  locale: zhCn,
-})
 app.use(directives)
 app.mount('#app')
 

@@ -105,6 +105,8 @@ class UseDashboardCesium extends UseCesium {
     this.pModule.setMeModule(this.meModule)
 
     this.slModule.setCModule(this.cModule)
+    this.slModule.setMeModule(this.meModule)
+    this.slModule.setVdModule(this.vdModule)
     this.slModule.setViewer(this.viewer)
 
     this.cModule.init()

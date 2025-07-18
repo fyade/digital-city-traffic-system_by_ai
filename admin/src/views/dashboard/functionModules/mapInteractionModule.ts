@@ -1,4 +1,8 @@
-import { EDIT_TYPE_1, ID_PREFIX_SIGNAL_LIGHT_GROUP } from "@/views/dashboard/functionModules/constant.ts";
+import {
+  EDIT_TYPE_1,
+  ID_PREFIX_SIGNAL_LIGHT_GROUP,
+  ID_SPECIAL_MouseMovingPoint
+} from "@/views/dashboard/functionModules/constant.ts";
 import * as Cesium from "cesium";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
@@ -37,8 +41,7 @@ export class MapInteractionModule {
     if (!this.viewer) {
       return
     }
-    this.movingPoint = this.viewer.entities.add({
-      name: 'MouseMovingPoint',
+    this.viewer.entities.add({
       position: Cesium.Cartesian3.ZERO,
       point: {
         pixelSize: 12,
@@ -47,24 +50,26 @@ export class MapInteractionModule {
         outlineWidth: 1,
         heightReference: Cesium.HeightReference.CLAMP_TO_GROUND // 贴地
       },
-      show: false // 初始隐藏
+      show: false, // 初始隐藏
+      id: ID_SPECIAL_MouseMovingPoint
     });
   }
 
   public setMovingPointPosition() {
-    if (!this.movingPoint) {
+    if (!this.viewer) {
       return
     }
     if (!this.getMouseMovePosition) {
       return;
     }
+    const entity = this.viewer.entities.getById(ID_SPECIAL_MouseMovingPoint);
+    if (!entity) {
+      return;
+    }
     const lonlat = this.getMouseMovePosition();
     const position = Cesium.Cartesian3.fromDegrees(lonlat[0], lonlat[1]);
-    this.movingPoint.position = new Cesium.ConstantPositionProperty(position)
+    entity.position = new Cesium.ConstantPositionProperty(position)
   }
-
-  // 跟随鼠标移动的点
-  private movingPoint: Cesium.Entity | null = null
 
   // 是否处于编辑状态
   private _ifEditing = false
@@ -74,15 +79,18 @@ export class MapInteractionModule {
 
   public set ifEditing(value: boolean) {
     this._ifEditing = value;
+    this.setMovingPointPosition()
+    if (!this.viewer) {
+      return
+    }
+    const entity = this.viewer.entities.getById(ID_SPECIAL_MouseMovingPoint);
+    if (!entity) {
+      return
+    }
     if (value) {
-      if (this.movingPoint) {
-        this.setMovingPointPosition()
-        this.movingPoint.show = true
-      }
+      entity.show = true
     } else {
-      if (this.movingPoint) {
-        this.movingPoint.show = false
-      }
+      entity.show = false
     }
   }
 

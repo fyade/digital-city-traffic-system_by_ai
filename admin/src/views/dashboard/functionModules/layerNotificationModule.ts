@@ -2,7 +2,7 @@ import * as Cesium from "cesium";
 import { NotificationReactive, NSpin } from "naive-ui";
 import { LayerDto } from "@/views/dashboard/index/dto.ts";
 import { geoserverConfig } from "@dcts/config";
-import { NNotification } from "@/utils/naiveUtils.ts";
+import { NNotification } from "@/utils/naiveBase.ts";
 import { h } from "vue";
 
 /**

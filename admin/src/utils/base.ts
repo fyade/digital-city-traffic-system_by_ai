@@ -59,6 +59,28 @@ export const uTDPTypeDict = {
   [UTDPTypeEnum.T_UG]: "用户组",
 };
 
+// 信号灯策略类型类型
+export enum SLSTTTypeEnum {
+  T_CUSTOM = 'custom',
+  T_FINE_TUNING = 'fineTuning',
+  T_TOP = 'top',
+}
+
+export const sLSTTTypeDict = {
+  [SLSTTTypeEnum.T_CUSTOM]: '固定策略',
+  [SLSTTTypeEnum.T_FINE_TUNING]: '微调策略',
+  [SLSTTTypeEnum.T_TOP]: '紧急策略',
+}
+
+// 信号灯策略调度类型
+export enum SLSSTTypeEnum {
+  T_DAY = 'day',
+}
+
+export const sLSSTTypeDict = {
+  [SLSSTTypeEnum.T_DAY]: '日循环',
+}
+
 export const allTRPDataTypes: LV[] = [
   { label: "全部", value: "ALL" },
   { label: "本部门", value: "SELF_DEPT" },

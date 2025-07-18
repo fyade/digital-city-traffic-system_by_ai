@@ -1,6 +1,9 @@
 export const ID_PREFIX_POINT = 'ID_PREFIX_POINT::::::::::'
 export const ID_PREFIX_LINE = 'ID_PREFIX_LINE::::::::::'
 
+const ID_PREFIX_SPECIAL = 'ID_PREFIX_SPECIAL::::::::::'
+export const ID_SPECIAL_MouseMovingPoint = `${ID_PREFIX_SPECIAL}MouseMovingPoint`
+
 // 信号灯组
 export const ID_PREFIX_SIGNAL_LIGHT_GROUP = 'ID_PREFIX_SIGNAL_LIGHT_GROUP::::::::::'
 // 子信号灯

@@ -9,9 +9,10 @@ import { MdRefresh, MdSearch } from '@vicons/ionicons4'
 import { SignalLightStrategyTypeDto, SignalLightStrategyTypeUpdDto } from "@/type/module/dcts/signalLightStrategy/signalLightStrategyType.ts";
 import { signalLightStrategyTypeApi } from "@/api/module/dcts/signalLightStrategy/signalLightStrategyType.ts";
 import { signalLightStrategyTypeDict } from "@/dict/module/dcts/signalLightStrategy/signalLightStrategyType.ts";
-import { final } from "@/utils/base.ts";
+import { final, sLSTTTypeDict, SLSTTTypeEnum } from "@/utils/base.ts";
 import { signalLightGroupStrategyTypeMappingApi } from "@/api/module/dcts/signalLightStrategy/signalLightGroupStrategyTypeMapping.ts";
 import { SignalLightGroupStrategyTypeMappingDto, SignalLightGroupStrategyTypeMappingInsDto } from "@/type/module/dcts/signalLightStrategy/signalLightGroupStrategyTypeMapping.ts";
+import { nOptionIfDisabled, nOptionSLSTT } from "@/utils/naiveBase.ts";
 
 const emits = defineEmits(['selectRow']);
 const props = defineProps({
@@ -35,6 +36,9 @@ const state = reactive<State2<SignalLightStrategyTypeDto, SignalLightStrategyTyp
   dialogForms_error: {},
   filterForm: {
     name: '',
+    description: '',
+    strategyType: '',
+    ifDisabled: '',
   },
 })
 const config = new TablePageConfig<SignalLightStrategyTypeDto>({
@@ -45,7 +49,13 @@ const config = new TablePageConfig<SignalLightStrategyTypeDto>({
 const columns: DataTableColumns<SignalLightStrategyTypeDto> = [
   {title: signalLightStrategyTypeDict.name, key: 'name'},
   {title: signalLightStrategyTypeDict.description, key: 'description'},
-  {title: signalLightStrategyTypeDict.strategyType, key: 'strategyType'},
+  {
+    title: signalLightStrategyTypeDict.strategyType,
+    key: 'strategyType',
+    render(row) {
+      return sLSTTTypeDict[row.strategyType as SLSTTTypeEnum]
+    }
+  },
   {title: signalLightStrategyTypeDict.ifDisabled, key: 'ifDisabled'},
   {title: signalLightStrategyTypeDict.orderNum, key: 'orderNum'},
   {title: signalLightStrategyTypeDict.remark, key: 'remark'},
@@ -160,6 +170,17 @@ const selectRow2 = (ifBd: boolean, row: SignalLightStrategyTypeDto) => {
       <!--在此下方添加表单项-->
       <n-form-item :label="signalLightStrategyTypeDict.name" path="name">
         <n-input v-model:value="state.filterForm.name" :placeholder="signalLightStrategyTypeDict.name"/>
+      </n-form-item>
+      <n-form-item :label="signalLightStrategyTypeDict.description" path="description">
+        <n-input v-model:value="state.filterForm.description" :placeholder="signalLightStrategyTypeDict.description"/>
+      </n-form-item>
+      <n-form-item :label="signalLightStrategyTypeDict.strategyType" path="strategyType">
+        <!--<n-input v-model:value="state.filterForm.strategyType" :placeholder="signalLightStrategyTypeDict.strategyType"/>-->
+        <n-select v-model:value="state.filterForm.strategyType" :placeholder="signalLightStrategyTypeDict.strategyType" clearable filterable :options="nOptionSLSTT"/>
+      </n-form-item>
+      <n-form-item :label="signalLightStrategyTypeDict.ifDisabled" path="ifDisabled">
+        <!--<n-input v-model:value="state.filterForm.ifDisabled" :placeholder="signalLightStrategyTypeDict.ifDisabled"/>-->
+        <n-select v-model:value="state.filterForm.ifDisabled" :placeholder="signalLightStrategyTypeDict.ifDisabled" clearable filterable :options="nOptionIfDisabled"/>
       </n-form-item>
       <!--在此上方添加表单项-->
       <n-form-item>

@@ -2,7 +2,7 @@ import { io, Socket } from 'socket.io-client'
 import { adminConfig } from "@dcts/config";
 import { useUserStore } from "@/store/module/user.ts";
 import { idUtils, timeUtils } from "@dcts/common";
-import { NMessage } from "@/utils/naiveUtils.ts";
+import { NMessage } from "@/utils/naiveBase.ts";
 
 const currentConfig = adminConfig.currentConfig();
 

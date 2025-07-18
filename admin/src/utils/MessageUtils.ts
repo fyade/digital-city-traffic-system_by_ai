@@ -1,4 +1,4 @@
-import { NDialog, NMessage } from "@/utils/naiveUtils.ts";
+import { NDialog, NMessage } from "@/utils/naiveBase.ts";
 import { ifDashboardPage } from "@/utils/DashboardUtils.ts";
 
 /**

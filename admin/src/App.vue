@@ -3,6 +3,19 @@ import { CONFIG } from "@/utils/base.ts";
 import { BCService } from "@/services/broadcastChannel.ts";
 import { useUserStore } from "@/store/module/user.ts";
 import { ElMessageBox } from 'element-plus'
+import zhCn from "element-plus/es/locale/lang/zh-cn";
+import { zhCN, dateZhCN } from 'naive-ui'
+
+const themeOverrides = {
+  Notification: {
+    containerStyle: {
+      pointerEvents: 'none'
+    },
+    style: {
+      pointerEvents: 'auto'
+    }
+  }
+}
 
 const userStore = useUserStore()
 
@@ -31,7 +44,24 @@ BCService.on('login', (data) => {
         '--theme-color-main-bg': `${CONFIG.theme_color_main_bg}`,
       }"
   >
-    <router-view/>
+    <el-config-provider
+        :locale="zhCn"
+        :z-index="999999"
+    >
+      <n-config-provider
+          :theme-overrides="themeOverrides"
+          :locale="zhCN"
+          :date-locale="dateZhCN"
+      >
+        <n-notification-provider>
+          <n-dialog-provider>
+            <n-message-provider>
+              <router-view/>
+            </n-message-provider>
+          </n-dialog-provider>
+        </n-notification-provider>
+      </n-config-provider>
+    </el-config-provider>
   </div>
 </template>
 
@@ -39,5 +69,10 @@ BCService.on('login', (data) => {
 .el {
   width: 100%;
   height: 100%;
+
+  > .n-config-provider {
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>
