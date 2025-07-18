@@ -26,7 +26,7 @@ const state = reactive<State2<SignalLightStrategyScheduleDto, SignalLightStrateg
     scheduleType: '',
     startTime: '',
     endTime: '',
-    cronExpression: '',
+    cronExpression: '#',
     ifDisabled: final.N,
     orderNum: final.DEFAULT_ORDER_NUM,
     remark: '',
