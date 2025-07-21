@@ -13,6 +13,8 @@ import { SignalLightChildStrategyScheduleMappingModule } from './signal-light-st
 import { SignalLightStrategyTypeStrategyScheduleMappingModule } from './signal-light-strategy/signal-light-strategy-type-strategy-schedule-mapping/signal-light-strategy-type-strategy-schedule-mapping.module';
 import { SignalLightStrategyParamModule } from './signal-light-strategy/signal-light-strategy-param/signal-light-strategy-param.module';
 import { SignalLightStrategyScheduleStrategyParamMappingModule } from './signal-light-strategy/signal-light-strategy-schedule-strategy-param-mapping/signal-light-strategy-schedule-strategy-param-mapping.module';
+import { SignalLightStyleModule } from './signal-light/signal-light-style/signal-light-style.module';
+import { SignalLightChildStyleMappingModule } from './signal-light/signal-light-child-style-mapping/signal-light-child-style-mapping.module';
 
 @Module({
   imports: [
@@ -29,7 +31,9 @@ import { SignalLightStrategyScheduleStrategyParamMappingModule } from './signal-
     SignalLightChildStrategyScheduleMappingModule,
     SignalLightStrategyTypeStrategyScheduleMappingModule,
     SignalLightStrategyParamModule,
-    SignalLightStrategyScheduleStrategyParamMappingModule
+    SignalLightStrategyScheduleStrategyParamMappingModule,
+    SignalLightStyleModule,
+    SignalLightChildStyleMappingModule
   ]
 })
 export class DctsModule {

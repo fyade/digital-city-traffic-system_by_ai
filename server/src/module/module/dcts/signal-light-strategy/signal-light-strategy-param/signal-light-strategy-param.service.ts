@@ -11,8 +11,8 @@ export class SignalLightStrategyParamService {
       private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('signal_light_strategy_param', {
-      notNullKeys: ['redDuration', 'yellowDuration', 'greenDuration', 'ifDisabled', 'orderNum'],
-      numberKeys: ['redDuration', 'yellowDuration', 'greenDuration', 'orderNum'],
+      notNullKeys: ['lightType', 'round', 'duration', 'currentLight', 'ifDisabled', 'orderNum'],
+      numberKeys: ['round', 'duration', 'orderNum'],
     });
   }
 

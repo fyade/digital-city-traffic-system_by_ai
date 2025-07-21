@@ -437,27 +437,26 @@ model signal_light_strategy_type {
   if_disabled   String   @dbPostgresql.Char(1)
   order_num     Int
   remark        String?  @dbPostgresql.VarChar(300)
+  schedule_type String   @dbPostgresql.VarChar(30)
+  start_time    DateTime @dbPostgresql.Timestamptz(6)
+  end_time      DateTime @dbPostgresql.Timestamptz(6)
 }
 
 // 信号灯策略调度表
 model signal_light_strategy_schedule {
-  id              Int      @id(map: "signal_light_strategy_scheduling_pkey") @default(autoincrement())
-  schedule_type   String   @dbPostgresql.VarChar(30)
-  start_time      DateTime @dbPostgresql.Timestamptz(6)
-  end_time        DateTime @dbPostgresql.Timestamptz(6)
-  cron_expression String   @dbPostgresql.VarChar(30)
-  create_role     String   @dbPostgresql.VarChar(30)
-  update_role     String   @dbPostgresql.VarChar(30)
-  create_by       String   @dbPostgresql.VarChar(10)
-  update_by       String   @dbPostgresql.VarChar(10)
-  create_time     DateTime @default(now()) @dbPostgresql.Timestamptz(6)
-  update_time     DateTime @default(now()) @dbPostgresql.Timestamptz(6)
-  deleted         String   @default("N") @dbPostgresql.Char(1)
-  name            String   @dbPostgresql.VarChar(100)
-  description     String   @dbPostgresql.VarChar(100)
-  if_disabled     String   @dbPostgresql.Char(1)
-  order_num       Int
-  remark          String?  @dbPostgresql.VarChar(300)
+  id          Int      @id(map: "signal_light_strategy_scheduling_pkey") @default(autoincrement())
+  create_role String   @dbPostgresql.VarChar(30)
+  update_role String   @dbPostgresql.VarChar(30)
+  create_by   String   @dbPostgresql.VarChar(10)
+  update_by   String   @dbPostgresql.VarChar(10)
+  create_time DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted     String   @default("N") @dbPostgresql.Char(1)
+  name        String   @dbPostgresql.VarChar(100)
+  description String   @dbPostgresql.VarChar(100)
+  if_disabled String   @dbPostgresql.Char(1)
+  order_num   Int
+  remark      String?  @dbPostgresql.VarChar(300)
 }
 
 // 信号灯组-信号灯策略类型关联表
@@ -504,20 +503,21 @@ model signal_light_strategy_type_strategy_schedule_mapping {
 
 // 信号灯策略参数表
 model signal_light_strategy_param {
-  id              Int      @id @default(autoincrement())
-  red_duration    Int
-  yellow_duration Int
-  green_duration  Int
-  create_role     String   @dbPostgresql.VarChar(30)
-  update_role     String   @dbPostgresql.VarChar(30)
-  create_by       String   @dbPostgresql.VarChar(10)
-  update_by       String   @dbPostgresql.VarChar(10)
-  create_time     DateTime @default(now()) @dbPostgresql.Timestamptz(6)
-  update_time     DateTime @default(now()) @dbPostgresql.Timestamptz(6)
-  deleted         String   @default("N") @dbPostgresql.Char(1)
-  if_disabled     String   @dbPostgresql.Char(1)
-  order_num       Int
-  remark          String?  @dbPostgresql.VarChar(300)
+  id            Int      @id @default(autoincrement())
+  create_role   String   @dbPostgresql.VarChar(30)
+  update_role   String   @dbPostgresql.VarChar(30)
+  create_by     String   @dbPostgresql.VarChar(10)
+  update_by     String   @dbPostgresql.VarChar(10)
+  create_time   DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time   DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted       String   @default("N") @dbPostgresql.Char(1)
+  if_disabled   String   @dbPostgresql.Char(1)
+  order_num     Int
+  remark        String?  @dbPostgresql.VarChar(300)
+  light_type    String   @dbPostgresql.VarChar(100)
+  round         Int
+  duration      Int
+  current_light String   @dbPostgresql.VarChar(30)
 }
 
 // 信号灯策略调度-信号灯策略参数关联表
@@ -532,4 +532,32 @@ model signal_light_strategy_schedule_strategy_param_mapping {
   create_time          DateTime @default(now()) @dbPostgresql.Timestamptz(6)
   update_time          DateTime @default(now()) @dbPostgresql.Timestamptz(6)
   deleted              String   @default("N") @dbPostgresql.Char(1)
+}
+
+// 子信号灯-信号灯样式关联表
+model signal_light_child_style_mapping {
+  id          Int      @id @default(autoincrement())
+  child_id    Int
+  style_id    Int
+  create_role String   @dbPostgresql.VarChar(30)
+  update_role String   @dbPostgresql.VarChar(30)
+  create_by   String   @dbPostgresql.VarChar(10)
+  update_by   String   @dbPostgresql.VarChar(10)
+  create_time DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted     String   @default("N") @dbPostgresql.Char(1)
+}
+
+// 信号灯样式表
+model signal_light_style {
+  id          Int      @id @default(autoincrement())
+  name        String   @dbPostgresql.VarChar(100)
+  style       String   @dbPostgresql.VarChar(200)
+  create_role String   @dbPostgresql.VarChar(30)
+  update_role String   @dbPostgresql.VarChar(30)
+  create_by   String   @dbPostgresql.VarChar(10)
+  update_by   String   @dbPostgresql.VarChar(10)
+  create_time DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted     String   @default("N") @dbPostgresql.Char(1)
 }

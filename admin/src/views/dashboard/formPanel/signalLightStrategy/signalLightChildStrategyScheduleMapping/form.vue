@@ -11,6 +11,9 @@ import SelectSignalLightStrategySchedule from "@/views/dashboard/formPanel/signa
 import { SignalLightStrategyScheduleDto } from "@/type/module/dcts/signalLightStrategy/signalLightStrategySchedule.ts";
 import { SignalLightChildStrategyScheduleMappingInsDto } from "@/type/module/dcts/signalLightStrategy/signalLightChildStrategyScheduleMapping.ts";
 import { signalLightChildStrategyScheduleMappingInsV2 } from "@/api/module/dcts/signalLightStrategy/signalLightChildStrategyScheduleMapping.ts";
+import { signalLightInfoDict } from "@/dict/module/dcts/signalLight/signalLightInfo.ts";
+import { SignalLightInfoDto } from "@/type/module/dcts/signalLight/signalLightInfo.ts";
+import { signalLightInfoApi } from "@/api/module/dcts/signalLight/signalLightInfo.ts";
 
 const route = useRoute();
 const useCesium = useDashboardCesium;
@@ -32,8 +35,20 @@ if (ifDel && !itemId) {
   gotoDashboardHome()
 }
 
+// 子信号灯信息
+const signalLightInfo = ref(new SignalLightInfoDto())
+const getSLCI = () => {
+  if (!itemClid) {
+    return
+  }
+  signalLightInfoApi.selectById(itemClid).then(res => {
+    signalLightInfo.value = res
+  })
+}
+
 const init = () => {
   qzjc()
+  getSLCI()
 }
 
 const formLoading = ref(false)
@@ -81,6 +96,23 @@ const selectRow = (row: SignalLightStrategyScheduleDto) => {
       :run-init="init"
   >
     <template v-if="ifIns || ifUpd">
+      <n-divider title-placement="left">子信号灯信息</n-divider>
+      <n-form label-placement="left" >
+        <n-grid>
+          <n-gi :span="8">
+            <n-form-item :label="signalLightInfoDict.name">
+              {{ signalLightInfo.name }}
+            </n-form-item>
+          </n-gi>
+          <n-gi :span="8">
+            <n-form-item :label="signalLightInfoDict.description">
+              {{ signalLightInfo.description }}
+            </n-form-item>
+          </n-gi>
+        </n-grid>
+      </n-form>
+
+      <n-divider title-placement="left">策略调度列表</n-divider>
       <n-spin :show="formLoading">
         <SelectSignalLightStrategySchedule
             v-if="visible2"

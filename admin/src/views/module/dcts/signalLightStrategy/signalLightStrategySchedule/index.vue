@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { reactive, ref } from "vue";
-import { CONFIG, final, sLSSTTypeDict, SLSSTTypeEnum } from "@/utils/base.ts";
+import { CONFIG, final } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
@@ -15,7 +15,6 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { SignalLightStrategyScheduleDto, SignalLightStrategyScheduleUpdDto } from "@/type/module/dcts/signalLightStrategy/signalLightStrategySchedule.ts";
 import { signalLightStrategyScheduleApi } from "@/api/module/dcts/signalLightStrategy/signalLightStrategySchedule.ts";
 import { signalLightStrategyScheduleDict } from "@/dict/module/dcts/signalLightStrategy/signalLightStrategySchedule.ts";
-import { timeUtils } from "@dcts/common";
 import StrategyParamOfStrategySchedule from "@/views/module/dcts/signalLightStrategy/signalLightStrategySchedule/strategyParamOfStrategySchedule.vue";
 
 const state = reactive<State2<SignalLightStrategyScheduleDto, SignalLightStrategyScheduleUpdDto>>({
@@ -23,10 +22,6 @@ const state = reactive<State2<SignalLightStrategyScheduleDto, SignalLightStrateg
     id: -1,
     name: '',
     description: '',
-    scheduleType: '',
-    startTime: '',
-    endTime: '',
-    cronExpression: '#',
     ifDisabled: final.N,
     orderNum: final.DEFAULT_ORDER_NUM,
     remark: '',
@@ -36,17 +31,12 @@ const state = reactive<State2<SignalLightStrategyScheduleDto, SignalLightStrateg
   filterForm: {
     name: '',
     description: '',
-    scheduleType: '',
     ifDisabled: '',
   },
 })
 const dFormRules: FormRules = {
   name: [{required: true, trigger: 'change'}],
   description: [{required: true, trigger: 'change'}],
-  scheduleType: [{required: true, trigger: 'change'}],
-  startTime: [{required: true, trigger: 'change'}],
-  endTime: [{required: true, trigger: 'change'}],
-  cronExpression: [{required: true, trigger: 'change'}],
   ifDisabled: [{required: true, trigger: 'change'}],
   orderNum: [{required: true, trigger: 'change'}],
 }
@@ -163,35 +153,6 @@ const manageSonData = (row: SignalLightStrategyScheduleDto) => {
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item :label="signalLightStrategyScheduleDict.scheduleType" prop="scheduleType">
-              <!--<el-input v-model="state.dialogForm.scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType"/>-->
-              <el-radio-group v-model="state.dialogForm.scheduleType">
-                <el-radio :value="SLSSTTypeEnum.T_DAY">{{ sLSSTTypeDict[SLSSTTypeEnum.T_DAY] }}</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item :label="signalLightStrategyScheduleDict.startTime" prop="startTime">
-              <!--<el-input v-model="state.dialogForm.startTime" :placeholder="signalLightStrategyScheduleDict.startTime"/>-->
-              <el-date-picker v-model="state.dialogForm.startTime" type="datetime"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item :label="signalLightStrategyScheduleDict.endTime" prop="endTime">
-              <!--<el-input v-model="state.dialogForm.endTime" :placeholder="signalLightStrategyScheduleDict.endTime"/>-->
-              <el-date-picker v-model="state.dialogForm.endTime" type="datetime"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item :label="signalLightStrategyScheduleDict.cronExpression" prop="cronExpression">
-              <el-input v-model="state.dialogForm.cronExpression" :placeholder="signalLightStrategyScheduleDict.cronExpression"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
             <el-form-item :label="signalLightStrategyScheduleDict.ifDisabled" prop="ifDisabled">
               <el-radio-group v-model="state.dialogForm.ifDisabled">
                 <el-radio :value="final.Y">是</el-radio>
@@ -266,51 +227,6 @@ const manageSonData = (row: SignalLightStrategyScheduleDto) => {
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="scheduleType" :label="signalLightStrategyScheduleDict.scheduleType" width="300">
-            <template #header>
-              <span :class="ifRequired('scheduleType')?'tp-table-header-required':''">{{ signalLightStrategyScheduleDict.scheduleType }}</span>
-            </template>
-            <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-scheduleType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <!--<el-input v-model="state.dialogForms[$index].scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType"/>-->
-                <el-radio-group v-model="state.dialogForms[$index].scheduleType">
-                  <el-radio :value="SLSSTTypeEnum.T_DAY">{{ sLSSTTypeDict[SLSSTTypeEnum.T_DAY] }}</el-radio>
-                </el-radio-group>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="startTime" :label="signalLightStrategyScheduleDict.startTime" width="300">
-            <template #header>
-              <span :class="ifRequired('startTime')?'tp-table-header-required':''">{{ signalLightStrategyScheduleDict.startTime }}</span>
-            </template>
-            <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-startTime`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <!--<el-input v-model="state.dialogForms[$index].startTime" :placeholder="signalLightStrategyScheduleDict.startTime"/>-->
-                <el-date-picker v-model="state.dialogForms[$index].startTime" type="datetime"/>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="endTime" :label="signalLightStrategyScheduleDict.endTime" width="300">
-            <template #header>
-              <span :class="ifRequired('endTime')?'tp-table-header-required':''">{{ signalLightStrategyScheduleDict.endTime }}</span>
-            </template>
-            <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-endTime`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <!--<el-input v-model="state.dialogForms[$index].endTime" :placeholder="signalLightStrategyScheduleDict.endTime"/>-->
-                <el-date-picker v-model="state.dialogForms[$index].endTime" type="datetime"/>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="cronExpression" :label="signalLightStrategyScheduleDict.cronExpression" width="300">
-            <template #header>
-              <span :class="ifRequired('cronExpression')?'tp-table-header-required':''">{{ signalLightStrategyScheduleDict.cronExpression }}</span>
-            </template>
-            <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-cronExpression`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].cronExpression" :placeholder="signalLightStrategyScheduleDict.cronExpression"/>
-              </div>
-            </template>
-          </el-table-column>
           <el-table-column prop="ifDisabled" :label="signalLightStrategyScheduleDict.ifDisabled" width="70">
             <template #header>
               <span :class="ifRequired('ifDisabled')?'tp-table-header-required':''">{{ signalLightStrategyScheduleDict.ifDisabled }}</span>
@@ -377,12 +293,6 @@ const manageSonData = (row: SignalLightStrategyScheduleDto) => {
       <el-form-item :label="signalLightStrategyScheduleDict.description" prop="description">
         <el-input v-model="state.filterForm.description" :placeholder="signalLightStrategyScheduleDict.description"/>
       </el-form-item>
-      <el-form-item :label="signalLightStrategyScheduleDict.scheduleType" prop="scheduleType">
-        <!--<el-input v-model="state.filterForm.scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType"/>-->
-        <el-select  v-model="state.filterForm.scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType" clearable filterable>
-          <el-option :label="sLSSTTypeDict[SLSSTTypeEnum.T_DAY]" :value="SLSSTTypeEnum.T_DAY"/>
-        </el-select>
-      </el-form-item>
       <el-form-item :label="signalLightStrategyScheduleDict.ifDisabled" prop="ifDisabled">
         <!--<el-input v-model="state.filterForm.ifDisabled" :placeholder="signalLightStrategyScheduleDict.ifDisabled"/>-->
         <el-select v-model="state.filterForm.ifDisabled" :placeholder="signalLightStrategyScheduleDict.ifDisabled" clearable filterable>
@@ -426,22 +336,6 @@ const manageSonData = (row: SignalLightStrategyScheduleDto) => {
       <!--在此下方添加表格列-->
       <el-table-column prop="name" :label="signalLightStrategyScheduleDict.name" width="180"/>
       <el-table-column prop="description" :label="signalLightStrategyScheduleDict.description" width="180"/>
-      <el-table-column prop="scheduleType" :label="signalLightStrategyScheduleDict.scheduleType" width="180">
-        <template #default="{row}">
-          {{ sLSSTTypeDict[row.scheduleType as SLSSTTypeEnum] }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="startTime" :label="signalLightStrategyScheduleDict.startTime" width="180">
-        <template #default="{row}">
-          {{ timeUtils.formatDate(new Date(row.startTime)) }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="endTime" :label="signalLightStrategyScheduleDict.endTime" width="180">
-        <template #default="{row}">
-          {{ timeUtils.formatDate(new Date(row.endTime)) }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="cronExpression" :label="signalLightStrategyScheduleDict.cronExpression" width="180"/>
       <el-table-column prop="ifDisabled" :label="signalLightStrategyScheduleDict.ifDisabled" width="120">
         <template #default="{row}">
           <el-tag v-if="row.ifDisabled===final.Y" type="info">是</el-tag>

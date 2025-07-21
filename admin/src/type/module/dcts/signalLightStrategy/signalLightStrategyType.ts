@@ -5,6 +5,9 @@ export class SignalLightStrategyTypeDto extends BaseClass {
   name!: string;
   description!: string;
   strategyType!: string;
+  scheduleType!: string;
+  startTime!: string;
+  endTime!: string;
   ifDisabled!: string;
   orderNum!: number;
   remark!: string;
@@ -20,6 +23,9 @@ export class SignalLightStrategyTypeInsDto {
   name!: string;
   description!: string;
   strategyType!: string;
+  scheduleType!: string;
+  startTime!: string;
+  endTime!: string;
   ifDisabled!: string;
   orderNum!: number;
   remark!: string;

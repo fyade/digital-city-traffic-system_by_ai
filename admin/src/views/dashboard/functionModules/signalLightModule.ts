@@ -173,7 +173,7 @@ export class SignalLightModule {
         // 修改为对应颜色的信号灯
         const rp1 = rps[0];
         const leftTime = Math.floor((rp1.end - currentTime) / 1000);
-        this.meModule.setSignalLightColor(shortTaskData.signalLightChildId, rp1.color, ifHalfSecond, leftTime)
+        this.meModule.setSignalLightColor(shortTaskData.signalLightChildId, rp1.lightType, rp1.color, ifHalfSecond, leftTime)
       }
       if (
           shortTaskData.runParam.length === 0

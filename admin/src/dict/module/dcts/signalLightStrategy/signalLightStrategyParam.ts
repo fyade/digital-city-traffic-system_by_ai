@@ -3,7 +3,8 @@ import { SignalLightStrategyParamDto } from "@/type/module/dcts/signalLightStrat
 
 export const signalLightStrategyParamDict: { [P in keyof SignalLightStrategyParamDto]: string } = {
   ...publicDict,
-  redDuration: '红灯时长',
-  yellowDuration: '黄灯时长',
-  greenDuration: '绿灯时长',
+  lightType: '灯类型',
+  round: '轮次',
+  duration: '时长',
+  currentLight: '当前灯色',
 }

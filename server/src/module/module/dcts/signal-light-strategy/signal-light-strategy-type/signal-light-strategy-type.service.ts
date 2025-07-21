@@ -11,7 +11,7 @@ export class SignalLightStrategyTypeService {
       private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('signal_light_strategy_type', {
-      notNullKeys: ['name', 'description', 'strategyType', 'ifDisabled', 'orderNum'],
+      notNullKeys: ['name', 'description', 'strategyType', 'scheduleType', 'startTime', 'endTime', 'ifDisabled', 'orderNum'],
       numberKeys: ['orderNum'],
     });
   }

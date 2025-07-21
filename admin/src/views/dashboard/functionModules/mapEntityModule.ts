@@ -4,8 +4,9 @@ import { ID_PREFIX_SIGNAL_LIGHT, ID_PREFIX_SIGNAL_LIGHT_GROUP } from "@/views/da
 import signalLight1Svg from "@/assets/images2/signal-light-1.png";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 import { LayerNotificationModule } from "@/views/dashboard/functionModules/layerNotificationModule.ts";
+import { SignalLightColorEnum, sLSPLTTypeDict, SLSPLTTypeEnum } from "@/utils/base.ts";
 
-const canvasWidth = 60
+const canvasWidth = 72
 const canvasHeight = 16
 const canvasCircleDiameter = 10
 const canvasPadding = (canvasHeight - canvasCircleDiameter) / 2
@@ -14,18 +15,22 @@ const lightCanvasMap = new Map<string, HTMLCanvasElement>();
 
 /**
  * 获取使用Canvas动态生成信号灯图像的缓存
- * @param color
+ * @param color0 掉头灯颜色
+ * @param color1 左转灯颜色
+ * @param color2 直行灯颜色
+ * @param color3 右转灯颜色
  * @param time
  */
-function getLightCanvas(color: 'red' | 'green' | 'yellow' | '', time: number) {
+function getLightCanvas(color0: SignalLightColorEnum, color1: SignalLightColorEnum, color2: SignalLightColorEnum, color3: SignalLightColorEnum, time: number) {
   const t0 = Math.min(time, 99);
-  const canvas0 = lightCanvasMap.get(`${color}.${t0}`);
+  const key = `${color0}.${color1}.${color2}.${color3}.${t0}`;
+  const canvas0 = lightCanvasMap.get(key);
   if (canvas0) {
     return canvas0
   }
-  const trafficLightCanvas = createTrafficLightCanvas(color, t0);
+  const trafficLightCanvas = createTrafficLightCanvas(color0, color1, color2, color3, t0);
   if (trafficLightCanvas) {
-    lightCanvasMap.set(`${color}.${t0}`, trafficLightCanvas);
+    lightCanvasMap.set(key, trafficLightCanvas);
     return trafficLightCanvas
   }
   return null
@@ -33,10 +38,13 @@ function getLightCanvas(color: 'red' | 'green' | 'yellow' | '', time: number) {
 
 /**
  * 使用Canvas动态生成信号灯图像
- * @param activeColor
+ * @param color0
+ * @param color1
+ * @param color2
+ * @param color3
  * @param time
  */
-function createTrafficLightCanvas(activeColor = '', time = 0) {
+function createTrafficLightCanvas(color0: SignalLightColorEnum, color1: SignalLightColorEnum, color2: SignalLightColorEnum, color3: SignalLightColorEnum, time = 0) {
   const canvas = document.createElement('canvas');
   canvas.width = canvasWidth;
   canvas.height = canvasHeight;
@@ -49,22 +57,78 @@ function createTrafficLightCanvas(activeColor = '', time = 0) {
   ctx.fillStyle = '#333';
   ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-  // 绘制红灯
+  const centerXY = {
+    x: (canvasPadding + canvasCircleDiameter) * 1 - canvasCircleDiameter / 2 - canvasCircleDiameter / 2,
+    y: canvasHeight / 2 - canvasCircleDiameter / 2
+  }
+
+  // 绘制掉头灯
   ctx.beginPath();
-  ctx.arc((canvasPadding + canvasCircleDiameter) - canvasCircleDiameter / 2, canvasHeight / 2, canvasCircleDiameter / 2, 0, Math.PI * 2);
-  ctx.fillStyle = activeColor === 'red' ? 'red' : '#400';
+  ctx.moveTo(centerXY.x + 3, centerXY.y + 10)
+  ctx.lineTo(centerXY.x + 6, centerXY.y + 7)
+  ctx.lineTo(centerXY.x + 6, centerXY.y + 5)
+  ctx.lineTo(centerXY.x + 4, centerXY.y + 7)
+  ctx.lineTo(centerXY.x + 4, centerXY.y + 2)
+  ctx.lineTo(centerXY.x + 7, centerXY.y + 2)
+  ctx.lineTo(centerXY.x + 7, centerXY.y + 10)
+  ctx.lineTo(centerXY.x + 9, centerXY.y + 10)
+  ctx.lineTo(centerXY.x + 9, centerXY.y)
+  ctx.lineTo(centerXY.x + 2, centerXY.y)
+  ctx.lineTo(centerXY.x + 2, centerXY.y + 7)
+  ctx.lineTo(centerXY.x, centerXY.y + 5)
+  ctx.lineTo(centerXY.x, centerXY.y + 7)
+  ctx.closePath();
+  ctx.fillStyle = color0 === SignalLightColorEnum.NONE ? '#400' : color0;
   ctx.fill();
 
-  // 绘制黄灯
+  centerXY.x += (canvasCircleDiameter + canvasPadding)
+  // 绘制左转灯
   ctx.beginPath();
-  ctx.arc((canvasPadding + canvasCircleDiameter) * 2 - canvasCircleDiameter / 2, canvasHeight / 2, canvasCircleDiameter / 2, 0, Math.PI * 2);
-  ctx.fillStyle = activeColor === 'yellow' ? 'yellow' : '#440';
+  ctx.moveTo(centerXY.x, centerXY.y + 5)
+  ctx.lineTo(centerXY.x + 5, centerXY.y)
+  ctx.lineTo(centerXY.x + 7, centerXY.y)
+  ctx.lineTo(centerXY.x + 3, centerXY.y + 4)
+  ctx.lineTo(centerXY.x + 10, centerXY.y + 4)
+  ctx.lineTo(centerXY.x + 10, centerXY.y + 6)
+  ctx.lineTo(centerXY.x + 3, centerXY.y + 6)
+  ctx.lineTo(centerXY.x + 7, centerXY.y + 10)
+  ctx.lineTo(centerXY.x + 5, centerXY.y + 10)
+  ctx.closePath();
+  ctx.fillStyle = color1 === SignalLightColorEnum.NONE ? '#400' : color1;
   ctx.fill();
 
-  // 绘制绿灯
+  centerXY.x += (canvasCircleDiameter + canvasPadding)
+  // 绘制直行灯
   ctx.beginPath();
-  ctx.arc((canvasPadding + canvasCircleDiameter) * 3 - canvasCircleDiameter / 2, canvasHeight / 2, canvasCircleDiameter / 2, 0, Math.PI * 2);
-  ctx.fillStyle = activeColor === 'green' ? '#0f0' : '#004';
+  ctx.moveTo(centerXY.x + 5, centerXY.y)
+  ctx.lineTo(centerXY.x + 10, centerXY.y + 5)
+  ctx.lineTo(centerXY.x + 10, centerXY.y + 7)
+  ctx.lineTo(centerXY.x + 6, centerXY.y + 3)
+  ctx.lineTo(centerXY.x + 6, centerXY.y + 10)
+  ctx.lineTo(centerXY.x + 4, centerXY.y + 10)
+  ctx.lineTo(centerXY.x + 4, centerXY.y + 3)
+  ctx.lineTo(centerXY.x, centerXY.y + 7)
+  ctx.lineTo(centerXY.x, centerXY.y + 5)
+  ctx.moveTo(centerXY.x, centerXY.y)
+  ctx.lineTo(centerXY.x, centerXY.y)
+  ctx.closePath();
+  ctx.fillStyle = color2 === SignalLightColorEnum.NONE ? '#400' : color2;
+  ctx.fill();
+
+  centerXY.x += (canvasCircleDiameter + canvasPadding)
+  // 绘制右转灯
+  ctx.beginPath();
+  ctx.moveTo(centerXY.x + 10, centerXY.y + 5)
+  ctx.lineTo(centerXY.x + 5, centerXY.y + 10)
+  ctx.lineTo(centerXY.x + 3, centerXY.y + 10)
+  ctx.lineTo(centerXY.x + 7, centerXY.y + 6)
+  ctx.lineTo(centerXY.x, centerXY.y + 6)
+  ctx.lineTo(centerXY.x, centerXY.y + 4)
+  ctx.lineTo(centerXY.x + 7, centerXY.y + 4)
+  ctx.lineTo(centerXY.x + 3, centerXY.y)
+  ctx.lineTo(centerXY.x + 5, centerXY.y)
+  ctx.closePath();
+  ctx.fillStyle = color3 === SignalLightColorEnum.NONE ? '#400' : color3;
   ctx.fill();
 
   // 绘制倒数
@@ -72,7 +136,7 @@ function createTrafficLightCanvas(activeColor = '', time = 0) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillStyle = '#fff';
-  ctx.fillText(`${time}`, ((canvasPadding + canvasCircleDiameter) * 3 + canvasWidth) / 2, canvasHeight / 2)
+  ctx.fillText(`${time}`, ((canvasPadding + canvasCircleDiameter) * 4 + canvasWidth) / 2, canvasHeight / 2)
 
   return canvas;
 }
@@ -301,7 +365,7 @@ export class MapEntityModule {
     entity.billboard.image = new Cesium.ConstantProperty(signalLight1Svg)
   }
 
-  public setSignalLightColor(id: number, color: string, ifHalfSecond: boolean, leftTime: number) {
+  public setSignalLightColor(id: number, lightTypes: string[], color: SignalLightColorEnum, ifHalfSecond: boolean, leftTime: number) {
     if (!this.viewer) {
       return
     }
@@ -312,18 +376,20 @@ export class MapEntityModule {
     // 修改为对应颜色的信号灯
     entity.billboard.width = new Cesium.ConstantProperty(canvasWidth)
     entity.billboard.height = new Cesium.ConstantProperty(canvasHeight)
-    if (color === 'red') {
-      entity.billboard.image = new Cesium.ConstantProperty(getLightCanvas('red', leftTime))
-    } else if (color === 'green') {
-      entity.billboard.image = new Cesium.ConstantProperty(getLightCanvas('green', leftTime))
-    } else if (color === 'yellow') {
-      if (ifHalfSecond) {
-        entity.billboard.image = new Cesium.ConstantProperty(getLightCanvas('yellow', leftTime))
-      } else {
-        entity.billboard.image = new Cesium.ConstantProperty(getLightCanvas('', leftTime))
-      }
-    } else {
-      entity.billboard.image = new Cesium.ConstantProperty(getLightCanvas('', leftTime))
+    const colors: [SignalLightColorEnum, SignalLightColorEnum, SignalLightColorEnum, SignalLightColorEnum] = [SignalLightColorEnum.RED, SignalLightColorEnum.RED, SignalLightColorEnum.RED, SignalLightColorEnum.RED]
+    if (lightTypes.includes(SLSPLTTypeEnum.AROUND)) {
+      colors[0] = color
     }
+    if (lightTypes.includes(SLSPLTTypeEnum.LEFT)) {
+      colors[1] = color
+    }
+    if (lightTypes.includes(SLSPLTTypeEnum.STRAIGHT)) {
+      colors[2] = color
+    }
+    if (lightTypes.includes(SLSPLTTypeEnum.RIGHT)) {
+      colors[3] = color
+    }
+    const lightCanvas = getLightCanvas(...colors, leftTime);
+    entity.billboard.image = new Cesium.ConstantProperty(lightCanvas)
   }
 }

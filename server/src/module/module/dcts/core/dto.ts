@@ -1,3 +1,5 @@
+import { SignalLightColorEnum, SLSPLTTypeEnum } from "../../../../util/base";
+
 export class SignalLightRunParam {
   signalLightGroupId: number
   signalLightChildId: number
@@ -7,5 +9,6 @@ export class SignalLightRunParam {
 export class SignalLightRunParamDParam {
   start: number
   end: number
-  color: string
+  color: SignalLightColorEnum
+  lightType: SLSPLTTypeEnum[]
 }

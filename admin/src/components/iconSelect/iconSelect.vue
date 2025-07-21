@@ -4,7 +4,7 @@ import { getFilenameWithoutSuffix } from "@/utils/RegularUtils.ts";
 import iconEnCn from '../../assets/iconEnCn.json'
 import { CONFIG } from "@/utils/base.ts";
 
-const modelValue = defineModel()
+const modelValue = defineModel({type: String})
 const props = defineProps({
   placeholder: {
     type: String,

@@ -81,6 +81,36 @@ export const sLSSTTypeDict = {
   [SLSSTTypeEnum.T_DAY]: '日循环',
 }
 
+// 信号灯策略参数灯类型
+export enum SLSPLTTypeEnum {
+  AROUND = 'around',
+  LEFT = 'left',
+  STRAIGHT = 'straight',
+  RIGHT = 'right',
+}
+
+export const sLSPLTTypeDict = {
+  [SLSPLTTypeEnum.AROUND]: '掉头',
+  [SLSPLTTypeEnum.LEFT]: '左转',
+  [SLSPLTTypeEnum.STRAIGHT]: '直行',
+  [SLSPLTTypeEnum.RIGHT]: '右转',
+}
+
+// 信号灯策略参数灯色
+export enum SignalLightColorEnum {
+  GREEN = 'green',
+  YELLOW = 'yellow',
+  RED = 'red',
+  NONE = 'none',
+}
+
+export const signalLightColorDict = {
+  [SignalLightColorEnum.GREEN]: '绿',
+  [SignalLightColorEnum.YELLOW]: '黄',
+  [SignalLightColorEnum.RED]: '红',
+  [SignalLightColorEnum.NONE]: '无',
+}
+
 export const allTRPDataTypes: LV[] = [
   { label: "全部", value: "ALL" },
   { label: "本部门", value: "SELF_DEPT" },

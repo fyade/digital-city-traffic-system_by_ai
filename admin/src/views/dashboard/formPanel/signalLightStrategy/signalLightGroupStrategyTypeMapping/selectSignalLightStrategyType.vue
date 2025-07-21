@@ -9,10 +9,11 @@ import { MdRefresh, MdSearch } from '@vicons/ionicons4'
 import { SignalLightStrategyTypeDto, SignalLightStrategyTypeUpdDto } from "@/type/module/dcts/signalLightStrategy/signalLightStrategyType.ts";
 import { signalLightStrategyTypeApi } from "@/api/module/dcts/signalLightStrategy/signalLightStrategyType.ts";
 import { signalLightStrategyTypeDict } from "@/dict/module/dcts/signalLightStrategy/signalLightStrategyType.ts";
-import { final, sLSTTTypeDict, SLSTTTypeEnum } from "@/utils/base.ts";
+import { final, sLSSTTypeDict, SLSSTTypeEnum, sLSTTTypeDict, SLSTTTypeEnum } from "@/utils/base.ts";
 import { signalLightGroupStrategyTypeMappingApi } from "@/api/module/dcts/signalLightStrategy/signalLightGroupStrategyTypeMapping.ts";
 import { SignalLightGroupStrategyTypeMappingDto, SignalLightGroupStrategyTypeMappingInsDto } from "@/type/module/dcts/signalLightStrategy/signalLightGroupStrategyTypeMapping.ts";
-import { nOptionIfDisabled, nOptionSLSTT } from "@/utils/naiveBase.ts";
+import { nOptionIfDisabled, nOptionSLSST, nOptionSLSTT } from "@/utils/naiveBase.ts";
+import { timeUtils } from "@dcts/common";
 
 const emits = defineEmits(['selectRow']);
 const props = defineProps({
@@ -28,6 +29,9 @@ const state = reactive<State2<SignalLightStrategyTypeDto, SignalLightStrategyTyp
     name: '',
     description: '',
     strategyType: '',
+    scheduleType: '',
+    startTime: '',
+    endTime: '',
     ifDisabled: final.N,
     orderNum: final.DEFAULT_ORDER_NUM,
     remark: '',
@@ -38,6 +42,7 @@ const state = reactive<State2<SignalLightStrategyTypeDto, SignalLightStrategyTyp
     name: '',
     description: '',
     strategyType: '',
+    scheduleType: '',
     ifDisabled: '',
   },
 })
@@ -56,6 +61,27 @@ const columns: DataTableColumns<SignalLightStrategyTypeDto> = [
       return sLSTTTypeDict[row.strategyType as SLSTTTypeEnum]
     }
   },
+  {
+    title: signalLightStrategyTypeDict.scheduleType,
+    key: 'scheduleType',
+    render(row) {
+      return sLSSTTypeDict[row.scheduleType as SLSSTTypeEnum]
+    }
+  },
+  {
+    title: signalLightStrategyTypeDict.startTime,
+    key: 'startTime',
+    render(row) {
+      return timeUtils.formatDate(new Date(row.startTime))
+    }
+  },
+  {
+    title: signalLightStrategyTypeDict.endTime,
+    key: 'endTime',
+    render(row) {
+      return timeUtils.formatDate(new Date(row.endTime))
+    }
+  },
   {title: signalLightStrategyTypeDict.ifDisabled, key: 'ifDisabled'},
   {title: signalLightStrategyTypeDict.orderNum, key: 'orderNum'},
   {title: signalLightStrategyTypeDict.remark, key: 'remark'},
@@ -67,8 +93,8 @@ const columns: DataTableColumns<SignalLightStrategyTypeDto> = [
   //       text: true,
   //       onClick: () => emits('selectRow', row)
   //     }, {
-  //       default: '选择',
-  //       icon: h(NIcon, null, h(HandPointLeft))
+  //       default: () => '选择',
+  //       icon: () => h(NIcon, null, {default: () => h(HandPointLeft)})
   //     })
   //   }
   // }
@@ -177,6 +203,10 @@ const selectRow2 = (ifBd: boolean, row: SignalLightStrategyTypeDto) => {
       <n-form-item :label="signalLightStrategyTypeDict.strategyType" path="strategyType">
         <!--<n-input v-model:value="state.filterForm.strategyType" :placeholder="signalLightStrategyTypeDict.strategyType"/>-->
         <n-select v-model:value="state.filterForm.strategyType" :placeholder="signalLightStrategyTypeDict.strategyType" clearable filterable :options="nOptionSLSTT"/>
+      </n-form-item>
+      <n-form-item :label="signalLightStrategyTypeDict.scheduleType" path="scheduleType">
+        <!--<n-input v-model:value="state.filterForm.scheduleType" :placeholder="signalLightStrategyTypeDict.scheduleType"/>-->
+        <n-select v-model:value="state.filterForm.scheduleType" :placeholder="signalLightStrategyTypeDict.scheduleType" clearable filterable :options="nOptionSLSST"/>
       </n-form-item>
       <n-form-item :label="signalLightStrategyTypeDict.ifDisabled" path="ifDisabled">
         <!--<n-input v-model:value="state.filterForm.ifDisabled" :placeholder="signalLightStrategyTypeDict.ifDisabled"/>-->

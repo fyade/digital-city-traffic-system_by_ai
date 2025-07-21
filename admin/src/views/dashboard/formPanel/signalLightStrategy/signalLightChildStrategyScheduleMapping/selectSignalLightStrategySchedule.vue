@@ -12,11 +12,10 @@ import { signalLightStrategyScheduleDict } from "@/dict/module/dcts/signalLightS
 import { SignalLightStrategyTypeStrategyScheduleMappingDto, SignalLightStrategyTypeStrategyScheduleMappingUpdDto } from "@/type/module/dcts/signalLightStrategy/signalLightStrategyTypeStrategyScheduleMapping.ts";
 import { signalLightStrategyTypeStrategyScheduleMappingApi } from "@/api/module/dcts/signalLightStrategy/signalLightStrategyTypeStrategyScheduleMapping.ts";
 import { signalLightStrategyTypeStrategyScheduleMappingDict } from "@/dict/module/dcts/signalLightStrategy/signalLightStrategyTypeStrategyScheduleMapping.ts";
-import { final, sLSSTTypeDict, SLSSTTypeEnum } from "@/utils/base.ts";
+import { final } from "@/utils/base.ts";
 import { SignalLightChildStrategyScheduleMappingDto, SignalLightChildStrategyScheduleMappingInsDto } from "@/type/module/dcts/signalLightStrategy/signalLightChildStrategyScheduleMapping.ts";
 import { signalLightChildStrategyScheduleMappingApi } from "@/api/module/dcts/signalLightStrategy/signalLightChildStrategyScheduleMapping.ts";
-import { timeUtils } from "@dcts/common";
-import { nOptionIfDisabled, nOptionSLSST } from "@/utils/naiveBase.ts";
+import { nOptionIfDisabled } from "@/utils/naiveBase.ts";
 
 const props = defineProps({
   selectStrategyTypeId: {
@@ -35,10 +34,6 @@ const state = reactive<State2<SignalLightStrategyScheduleDto, SignalLightStrateg
     id: -1,
     name: '',
     description: '',
-    scheduleType: '',
-    startTime: '',
-    endTime: '',
-    cronExpression: '#',
     ifDisabled: final.N,
     orderNum: final.DEFAULT_ORDER_NUM,
     remark: '',
@@ -48,7 +43,6 @@ const state = reactive<State2<SignalLightStrategyScheduleDto, SignalLightStrateg
   filterForm: {
     name: '',
     description: '',
-    scheduleType: '',
     ifDisabled: '',
   },
 })
@@ -64,32 +58,6 @@ const config = new TablePageConfig<SignalLightStrategyScheduleDto>({
 const columns: DataTableColumns<SignalLightStrategyScheduleDto> = [
   {title: signalLightStrategyScheduleDict.name, key: 'name'},
   {title: signalLightStrategyScheduleDict.description, key: 'description'},
-  {
-    title: signalLightStrategyScheduleDict.scheduleType,
-    key: 'scheduleType',
-    render(row) {
-      return sLSSTTypeDict[row.scheduleType as SLSSTTypeEnum]
-    }
-  },
-  {
-    title: signalLightStrategyScheduleDict.startTime,
-    key: 'startTime',
-    render(row) {
-      return h('span', null, {
-        default: () => timeUtils.formatDate(new Date(row.startTime))
-      })
-    }
-  },
-  {
-    title: signalLightStrategyScheduleDict.endTime,
-    key: 'endTime',
-    render(row) {
-      return h('span', null, {
-        default: () => timeUtils.formatDate(new Date(row.endTime))
-      })
-    }
-  },
-  {title: signalLightStrategyScheduleDict.cronExpression, key: 'cronExpression'},
   {title: signalLightStrategyScheduleDict.ifDisabled, key: 'ifDisabled'},
   {title: signalLightStrategyScheduleDict.orderNum, key: 'orderNum'},
   {title: signalLightStrategyScheduleDict.remark, key: 'remark'},
@@ -101,8 +69,8 @@ const columns: DataTableColumns<SignalLightStrategyScheduleDto> = [
   //       text: true,
   //       onClick: () => emits('selectRow', row)
   //     }, {
-  //       default: '选择',
-  //       icon: h(NIcon, null, h(HandPointLeft))
+  //       default: () => '选择',
+  //       icon: () => h(NIcon, null, {default: () => h(HandPointLeft)})
   //     })
   //   }
   // }
@@ -235,10 +203,6 @@ const selectRow2 = (ifBd: boolean, row: SignalLightStrategyScheduleDto) => {
       </n-form-item>
       <n-form-item :label="signalLightStrategyScheduleDict.description" path="description">
         <n-input v-model:value="state.filterForm.description" :placeholder="signalLightStrategyScheduleDict.description"/>
-      </n-form-item>
-      <n-form-item :label="signalLightStrategyScheduleDict.scheduleType" path="scheduleType">
-        <!--<n-input v-model:value="state.filterForm.scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType"/>-->
-        <n-select v-model:value="state.filterForm.scheduleType" :placeholder="signalLightStrategyScheduleDict.scheduleType" clearable filterable :options="nOptionSLSST"/>
       </n-form-item>
       <n-form-item :label="signalLightStrategyScheduleDict.ifDisabled" path="ifDisabled">
         <!--<n-input v-model:value="state.filterForm.ifDisabled" :placeholder="signalLightStrategyScheduleDict.ifDisabled"/>-->

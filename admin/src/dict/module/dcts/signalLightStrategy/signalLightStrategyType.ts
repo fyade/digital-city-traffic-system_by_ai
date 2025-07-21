@@ -6,4 +6,7 @@ export const signalLightStrategyTypeDict: { [P in keyof SignalLightStrategyTypeD
   name: '策略类型名',
   description: '策略类型描述',
   strategyType: '策略类型',
+  scheduleType: '调度类型',
+  startTime: '开始时间',
+  endTime: '结束时间',
 }

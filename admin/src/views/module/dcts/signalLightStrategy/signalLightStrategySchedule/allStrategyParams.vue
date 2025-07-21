@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { reactive } from "vue";
-import { CONFIG, final } from "@/utils/base.ts";
+import {
+  CONFIG,
+  final,
+  signalLightColorDict,
+  SignalLightColorEnum,
+  sLSPLTTypeDict,
+  SLSPLTTypeEnum
+} from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
@@ -15,9 +22,10 @@ const emits = defineEmits(['selectRow'])
 const state = reactive<State2<SignalLightStrategyParamDto, SignalLightStrategyParamUpdDto>>({
   dialogForm: {
     id: -1,
-    redDuration: 0,
-    yellowDuration: 0,
-    greenDuration: 0,
+    lightType: '',
+    round: 0,
+    duration: 0,
+    currentLight: '',
     ifDisabled: final.N,
     orderNum: final.DEFAULT_ORDER_NUM,
     remark: '',
@@ -25,13 +33,16 @@ const state = reactive<State2<SignalLightStrategyParamDto, SignalLightStrategyPa
   dialogForms: [],
   dialogForms_error: {},
   filterForm: {
+    lightType: '',
+    currentLight: '',
     ifDisabled: '',
   },
 })
 const dFormRules: FormRules = {
-  redDuration: [{required: true, trigger: 'change'}],
-  yellowDuration: [{required: true, trigger: 'change'}],
-  greenDuration: [{required: true, trigger: 'change'}],
+  lightType: [{required: true, trigger: 'change'}],
+  round: [{required: true, trigger: 'change'}],
+  duration: [{required: true, trigger: 'change'}],
+  currentLight: [{required: true, trigger: 'change'}],
   ifDisabled: [{required: true, trigger: 'change'}],
   orderNum: [{required: true, trigger: 'change'}],
 }
@@ -103,6 +114,18 @@ const selectRow2 = () => {
         @keyup.enter="fEnter"
     >
       <!--在此下方添加表单项-->
+      <el-form-item :label="signalLightStrategyParamDict.lightType" prop="lightType">
+        <!--<el-input v-model="state.filterForm.lightType" :placeholder="signalLightStrategyParamDict.lightType"/>-->
+        <el-select v-model="state.filterForm.lightType" :placeholder="signalLightStrategyParamDict.lightType" clearable filterable>
+          <el-option v-for="key in SLSPLTTypeEnum" :key="key" :label="sLSPLTTypeDict[key]" :value="key"/>
+        </el-select>
+      </el-form-item>
+      <el-form-item :label="signalLightStrategyParamDict.currentLight" prop="currentLight">
+        <!--<el-input v-model="state.filterForm.currentLight" :placeholder="signalLightStrategyParamDict.currentLight"/>-->
+        <el-select v-model="state.filterForm.currentLight" :placeholder="signalLightStrategyParamDict.currentLight" clearable filterable>
+          <el-option v-for="key in SignalLightColorEnum" :key="key" :label="signalLightColorDict[key]" :value="key"/>
+        </el-select>
+      </el-form-item>
       <el-form-item :label="signalLightStrategyParamDict.ifDisabled" prop="ifDisabled">
         <!--<el-input v-model="state.filterForm.ifDisabled" :placeholder="signalLightStrategyParamDict.ifDisabled"/>-->
         <el-select v-model="state.filterForm.ifDisabled" :placeholder="signalLightStrategyParamDict.ifDisabled" clearable filterable>
@@ -145,9 +168,18 @@ const selectRow2 = () => {
       <!--<el-table-column fixed prop="id" :label="signalLightStrategyParamDict.id" width="180"/>-->
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
-      <el-table-column prop="redDuration" :label="signalLightStrategyParamDict.redDuration" width="120"/>
-      <el-table-column prop="yellowDuration" :label="signalLightStrategyParamDict.yellowDuration" width="120"/>
-      <el-table-column prop="greenDuration" :label="signalLightStrategyParamDict.greenDuration" width="120"/>
+      <el-table-column prop="lightType" :label="signalLightStrategyParamDict.lightType" width="180">
+        <template #default="{row}">
+          {{ row.lightType.split('-').filter(_ => _).map(key => sLSPLTTypeDict[key as SLSPLTTypeEnum]).join('、') }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="round" :label="signalLightStrategyParamDict.round" width="120"/>
+      <el-table-column prop="duration" :label="signalLightStrategyParamDict.duration" width="120"/>
+      <el-table-column prop="currentLight" :label="signalLightStrategyParamDict.currentLight" width="120">
+        <template #default="{row}">
+          {{ signalLightColorDict[row.currentLight as SignalLightColorEnum] }}
+        </template>
+      </el-table-column>
       <el-table-column prop="ifDisabled" :label="signalLightStrategyParamDict.ifDisabled" width="120">
         <template #default="{row}">
           <el-tag v-if="row.ifDisabled===final.Y" type="info">是</el-tag>

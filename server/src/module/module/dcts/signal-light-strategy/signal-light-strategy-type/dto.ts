@@ -13,6 +13,12 @@ export class SignalLightStrategyTypeDto extends BaseDto {
 
   strategyType: string;
 
+  scheduleType: string;
+
+  startTime: string;
+
+  endTime: string;
+
   ifDisabled: string;
 
   orderNum: number;
@@ -29,6 +35,15 @@ export class SignalLightStrategyTypeSelListDto extends PageDto {
 
   @ApiProperty({ description: '策略类型', required: false })
   strategyType: string;
+
+  @ApiProperty({ description: '调度类型', required: false })
+  scheduleType: string;
+
+  @ApiProperty({ description: '开始时间', required: false })
+  startTime: string;
+
+  @ApiProperty({ description: '结束时间', required: false })
+  endTime: string;
 
   @ApiProperty({ description: '是否禁用', required: false })
   ifDisabled: string;
@@ -49,6 +64,15 @@ export class SignalLightStrategyTypeSelAllDto {
 
   @ApiProperty({ description: '策略类型', required: false })
   strategyType: string;
+
+  @ApiProperty({ description: '调度类型', required: false })
+  scheduleType: string;
+
+  @ApiProperty({ description: '开始时间', required: false })
+  startTime: string;
+
+  @ApiProperty({ description: '结束时间', required: false })
+  endTime: string;
 
   @ApiProperty({ description: '是否禁用', required: false })
   ifDisabled: string;
@@ -75,6 +99,19 @@ export class SignalLightStrategyTypeInsOneDto {
   @IsNotEmpty({ message: '策略类型不能为空' })
   @MaxLength(100, { message: '策略类型不能超过100个字符' })
   strategyType: string;
+
+  @ApiProperty({ description: '调度类型', required: true })
+  @IsNotEmpty({ message: '调度类型不能为空' })
+  @MaxLength(30, { message: '调度类型不能超过30个字符' })
+  scheduleType: string;
+
+  @ApiProperty({ description: '开始时间', required: true })
+  @IsNotEmpty({ message: '开始时间不能为空' })
+  startTime: string;
+
+  @ApiProperty({ description: '结束时间', required: true })
+  @IsNotEmpty({ message: '结束时间不能为空' })
+  endTime: string;
 
   @ApiProperty({ description: '是否禁用', required: true })
   @IsNotEmpty({ message: '是否禁用不能为空' })

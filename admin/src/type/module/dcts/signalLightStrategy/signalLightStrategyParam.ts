@@ -2,9 +2,10 @@ import { BaseClass, PageDto } from "@/type/tablePage.ts";
 
 export class SignalLightStrategyParamDto extends BaseClass {
   id!: number;
-  redDuration!: number;
-  yellowDuration!: number;
-  greenDuration!: number;
+  lightType!: string;
+  round!: number;
+  duration!: number;
+  currentLight!: string;
   ifDisabled!: string;
   orderNum!: number;
   remark!: string;
@@ -17,9 +18,10 @@ export class SignalLightStrategyParamSelAllDto {
 }
 
 export class SignalLightStrategyParamInsDto {
-  redDuration!: number;
-  yellowDuration!: number;
-  greenDuration!: number;
+  lightType!: string;
+  round!: number;
+  duration!: number;
+  currentLight!: string;
   ifDisabled!: string;
   orderNum!: number;
   remark!: string;

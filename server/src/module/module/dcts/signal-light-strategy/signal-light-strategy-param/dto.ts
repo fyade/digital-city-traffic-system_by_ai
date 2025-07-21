@@ -7,11 +7,13 @@ import { ApiProperty } from '@nestjs/swagger';
 export class SignalLightStrategyParamDto extends BaseDto {
   id: number;
 
-  redDuration: number;
+  lightType: string;
 
-  yellowDuration: number;
+  round: number;
 
-  greenDuration: number;
+  duration: number;
+
+  currentLight: string;
 
   ifDisabled: string;
 
@@ -21,14 +23,17 @@ export class SignalLightStrategyParamDto extends BaseDto {
 }
 
 export class SignalLightStrategyParamSelListDto extends PageDto {
-  @ApiProperty({ description: '红灯时长', required: false })
-  redDuration: number;
+  @ApiProperty({ description: '灯类型', required: false })
+  lightType: string;
 
-  @ApiProperty({ description: '黄灯时长', required: false })
-  yellowDuration: number;
+  @ApiProperty({ description: '轮次', required: false })
+  round: number;
 
-  @ApiProperty({ description: '绿灯时长', required: false })
-  greenDuration: number;
+  @ApiProperty({ description: '时长', required: false })
+  duration: number;
+
+  @ApiProperty({ description: '当前灯色', required: false })
+  currentLight: string;
 
   @ApiProperty({ description: '是否禁用', required: false })
   ifDisabled: string;
@@ -41,14 +46,17 @@ export class SignalLightStrategyParamSelListDto extends PageDto {
 }
 
 export class SignalLightStrategyParamSelAllDto {
-  @ApiProperty({ description: '红灯时长', required: false })
-  redDuration: number;
+  @ApiProperty({ description: '灯类型', required: false })
+  lightType: string;
 
-  @ApiProperty({ description: '黄灯时长', required: false })
-  yellowDuration: number;
+  @ApiProperty({ description: '轮次', required: false })
+  round: number;
 
-  @ApiProperty({ description: '绿灯时长', required: false })
-  greenDuration: number;
+  @ApiProperty({ description: '时长', required: false })
+  duration: number;
+
+  @ApiProperty({ description: '当前灯色', required: false })
+  currentLight: string;
 
   @ApiProperty({ description: '是否禁用', required: false })
   ifDisabled: string;
@@ -61,20 +69,25 @@ export class SignalLightStrategyParamSelAllDto {
 }
 
 export class SignalLightStrategyParamInsOneDto {
-  @ApiProperty({ description: '红灯时长', required: true })
-  @Type(() => Number)
-  @IsNotEmpty({ message: '红灯时长不能为空' })
-  redDuration: number;
+  @ApiProperty({ description: '灯类型', required: true })
+  @IsNotEmpty({ message: '灯类型不能为空' })
+  @MaxLength(100, { message: '灯类型不能超过100个字符' })
+  lightType: string;
 
-  @ApiProperty({ description: '黄灯时长', required: true })
+  @ApiProperty({ description: '轮次', required: true })
   @Type(() => Number)
-  @IsNotEmpty({ message: '黄灯时长不能为空' })
-  yellowDuration: number;
+  @IsNotEmpty({ message: '轮次不能为空' })
+  round: number;
 
-  @ApiProperty({ description: '绿灯时长', required: true })
+  @ApiProperty({ description: '时长', required: true })
   @Type(() => Number)
-  @IsNotEmpty({ message: '绿灯时长不能为空' })
-  greenDuration: number;
+  @IsNotEmpty({ message: '时长不能为空' })
+  duration: number;
+
+  @ApiProperty({ description: '当前灯色', required: true })
+  @IsNotEmpty({ message: '当前灯色不能为空' })
+  @MaxLength(30, { message: '当前灯色不能超过30个字符' })
+  currentLight: string;
 
   @ApiProperty({ description: '是否禁用', required: true })
   @IsNotEmpty({ message: '是否禁用不能为空' })
