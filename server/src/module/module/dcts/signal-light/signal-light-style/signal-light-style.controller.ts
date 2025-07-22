@@ -4,9 +4,10 @@ import { SignalLightStyleService } from './signal-light-style.service';
 import { Authorize } from '../../../../../decorator/authorize.decorator';
 import { R } from '../../../../../common/R';
 import { SignalLightStyleSelListDto, SignalLightStyleSelAllDto, SignalLightStyleInsOneDto, SignalLightStyleUpdOneDto, SignalLightStyleInsMoreDto, SignalLightStyleUpdMoreDto } from './dto';
+import { publicConfig } from "@dcts/config";
 
 @Controller('/dcts/signal-light/signal-light-style')
-@ApiTags('数智交通全域调度系统/信号灯管理/信号灯样式')
+@ApiTags(`${publicConfig.APP_NAME}/信号灯管理/信号灯样式`)
 @ApiBearerAuth()
 @UsePipes(new ValidationPipe({ transform: true }))
 export class SignalLightStyleController {

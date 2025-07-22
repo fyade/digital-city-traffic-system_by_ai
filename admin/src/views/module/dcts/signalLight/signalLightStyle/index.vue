@@ -5,8 +5,13 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { reactive } from "vue";
-import { CONFIG, final } from "@/utils/base.ts";
+import { reactive, ref } from "vue";
+import {
+  CONFIG,
+  final,
+  signalLightUnitStyleDict,
+  SignalLightUnitStyleEnum
+} from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
@@ -15,6 +20,7 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { SignalLightStyleDto, SignalLightStyleUpdDto } from "@/type/module/dcts/signalLight/signalLightStyle.ts";
 import { signalLightStyleApi } from "@/api/module/dcts/signalLight/signalLightStyle.ts";
 import { signalLightStyleDict } from "@/dict/module/dcts/signalLight/signalLightStyle.ts";
+import { deepClone } from "@/utils/ObjectUtils.ts";
 
 const state = reactive<State2<SignalLightStyleDto, SignalLightStyleUpdDto>>({
   dialogForm: {
@@ -24,14 +30,21 @@ const state = reactive<State2<SignalLightStyleDto, SignalLightStyleUpdDto>>({
   },
   dialogForms: [],
   dialogForms_error: {},
-  filterForm: {},
+  filterForm: {
+    name: '',
+  },
 })
 const dFormRules: FormRules = {
   name: [{required: true, trigger: 'change'}],
   style: [{required: true, trigger: 'change'}],
 }
 const config = new TablePageConfig({
-  bulkOperation: true,
+  dialogVisibleCallback: () => {
+    dialogChange()
+  },
+  dialogFormLoadingFinishCallback: () => {
+    dialogChange()
+  }
 })
 
 const {
@@ -78,6 +91,53 @@ const {
   api: signalLightStyleApi,
   dict: signalLightStyleDict,
 })
+
+const lightCount = 10
+const checkBoxValue = ref<boolean[][]>([])
+const signalLightUnitStyleEnumValue = Object.values(SignalLightUnitStyleEnum)
+const initCheckBoxValue = () => {
+  checkBoxValue.value = []
+  const _arr = []
+  for (let key in SignalLightUnitStyleEnum) {
+    _arr.push(false)
+  }
+  for (let i = 0; i < lightCount; i++) {
+    checkBoxValue.value.push(deepClone(_arr))
+  }
+}
+initCheckBoxValue()
+const setValueToForm = () => {
+  const arr = []
+  for (const val of checkBoxValue.value) {
+    const indexOf = val.indexOf(true);
+    if (indexOf === -1) {
+      continue
+    }
+    arr.push(signalLightUnitStyleEnumValue[indexOf])
+  }
+  state.dialogForm.style = arr.length > 0 ? `-${arr.join('-')}-` : ''
+}
+const dialogChange = () => {
+  initCheckBoxValue()
+  if (dialogType.value === final.upd) {
+    const splits = state.dialogForm.style.split('-').filter(_ => _);
+    for (let i = 0; i < splits.length; i++) {
+      const inde = signalLightUnitStyleEnumValue.indexOf(splits[i] as SignalLightUnitStyleEnum);
+      checkBoxValue.value[i][inde] = true
+    }
+  }
+}
+const change = (ind: number, ind2: number, key: SignalLightUnitStyleEnum) => {
+  if (checkBoxValue.value[ind].filter(_ => _).length > 1) {
+    for (let i = 0; i < checkBoxValue.value[ind].length; i++) {
+      if (i === ind2) {
+        continue
+      }
+      checkBoxValue.value[ind][i] = false
+    }
+  }
+  setValueToForm()
+}
 </script>
 
 <template>
@@ -110,14 +170,20 @@ const {
         </el-form-item>
         <!--在此下方添加表单项-->
         <el-row>
-          <el-col :span="12">
+          <el-col :span="24">
             <el-form-item :label="signalLightStyleDict.name" prop="name">
               <el-input v-model="state.dialogForm.name" :placeholder="signalLightStyleDict.name"/>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+        </el-row>
+        <el-row>
+          <el-col :span="24">
             <el-form-item :label="signalLightStyleDict.style" prop="style">
-              <el-input v-model="state.dialogForm.style" :placeholder="signalLightStyleDict.style"/>
+              <!--<el-input v-model="state.dialogForm.style" :placeholder="signalLightStyleDict.style"/>-->
+              <div v-for="(ind, i1) in lightCount" :key="ind">
+                <span>左{{ ind }}：</span>
+                <el-checkbox v-for="(key, v, i2) in SignalLightUnitStyleEnum" :key="key" v-model="checkBoxValue[i1][i2]" :label="signalLightUnitStyleDict[key]" @change="change(i1, i2, key)"/>
+              </div>
             </el-form-item>
           </el-col>
         </el-row>
@@ -140,53 +206,6 @@ const {
         <!--上方几个酌情使用-->
       </el-form>
     </template>
-    <template v-if="activeTabName===final.more">
-      <el-form
-          ref="dialogFormsRef"
-          v-loading="dialogLoadingRef"
-      >
-        <el-table
-            :data="state.dialogForms"
-            v-if="state.dialogForms"
-        >
-          <el-table-column type="index" width="50">
-            <template #header>
-              #
-            </template>
-          </el-table-column>
-          <!--在此下方添加表格列-->
-          <el-table-column prop="name" :label="signalLightStyleDict.name" width="300">
-            <template #header>
-              <span :class="ifRequired('name')?'tp-table-header-required':''">{{ signalLightStyleDict.name }}</span>
-            </template>
-            <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-name`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].name" :placeholder="signalLightStyleDict.name"/>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="style" :label="signalLightStyleDict.style" width="300">
-            <template #header>
-              <span :class="ifRequired('style')?'tp-table-header-required':''">{{ signalLightStyleDict.style }}</span>
-            </template>
-            <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-style`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].style" :placeholder="signalLightStyleDict.style"/>
-              </div>
-            </template>
-          </el-table-column>
-          <!--在此上方添加表格列-->
-          <el-table-column fixed="right" label="操作" min-width="120">
-            <template v-if="dialogType.value===final.ins" #default="{$index}">
-              <el-button link type="danger" size="small" :icon="Delete" @click="dfDel($index)">删除</el-button>
-            </template>
-          </el-table-column>
-          <template v-if="dialogType.value===final.ins" #append>
-            <el-button text type="primary" plain :icon="Plus" @click="dfIns">新增</el-button>
-          </template>
-        </el-table>
-      </el-form>
-    </template>
     <template #footer>
       <span class="dialog-footer">
         <el-button :disabled="dialogButtonLoadingRef" @click="dCan">取消</el-button>
@@ -205,9 +224,9 @@ const {
         @keyup.enter="fEnter"
     >
       <!--在此下方添加表单项-->
-      <!--<el-form-item :label="signalLightStyleDict." prop="">-->
-      <!--  <el-input v-model="state.filterForm." :placeholder="signalLightStyleDict."/>-->
-      <!--</el-form-item>-->
+      <el-form-item :label="signalLightStyleDict.name" prop="name">
+        <el-input v-model="state.filterForm.name" :placeholder="signalLightStyleDict.name"/>
+      </el-form-item>
       <!--在此上方添加表单项-->
       <el-form-item>
         <el-button type="primary" @click="fCon">筛选</el-button>
@@ -243,7 +262,11 @@ const {
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
       <el-table-column prop="name" :label="signalLightStyleDict.name" width="120"/>
-      <el-table-column prop="style" :label="signalLightStyleDict.style" width="120"/>
+      <el-table-column prop="style" :label="signalLightStyleDict.style" width="480">
+        <template #default="{row}">
+          {{ row.style.split('-').filter((_: string) => _).map((str: string) => signalLightUnitStyleDict[str as SignalLightUnitStyleEnum]).join('-') }}
+        </template>
+      </el-table-column>
       <!--在此上方添加表格列-->
       <!--<el-table-column prop="createRole" :label="signalLightStyleDict.createRole" width="120"/>-->
       <!--<el-table-column prop="updateRole" :label="signalLightStyleDict.updateRole" width="120"/>-->

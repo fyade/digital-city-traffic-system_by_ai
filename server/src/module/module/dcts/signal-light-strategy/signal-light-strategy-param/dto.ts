@@ -7,6 +7,10 @@ import { ApiProperty } from '@nestjs/swagger';
 export class SignalLightStrategyParamDto extends BaseDto {
   id: number;
 
+  name: string;
+
+  description: string;
+
   lightType: string;
 
   round: number;
@@ -23,6 +27,12 @@ export class SignalLightStrategyParamDto extends BaseDto {
 }
 
 export class SignalLightStrategyParamSelListDto extends PageDto {
+  @ApiProperty({ description: '策略参数名', required: false })
+  name: string;
+
+  @ApiProperty({ description: '策略参数描述', required: false })
+  description: string;
+
   @ApiProperty({ description: '灯类型', required: false })
   lightType: string;
 
@@ -46,6 +56,12 @@ export class SignalLightStrategyParamSelListDto extends PageDto {
 }
 
 export class SignalLightStrategyParamSelAllDto {
+  @ApiProperty({ description: '策略参数名', required: false })
+  name: string;
+
+  @ApiProperty({ description: '策略参数描述', required: false })
+  description: string;
+
   @ApiProperty({ description: '灯类型', required: false })
   lightType: string;
 
@@ -69,6 +85,16 @@ export class SignalLightStrategyParamSelAllDto {
 }
 
 export class SignalLightStrategyParamInsOneDto {
+  @ApiProperty({ description: '策略参数名', required: true })
+  @IsNotEmpty({ message: '策略参数名不能为空' })
+  @MaxLength(100, { message: '策略参数名不能超过100个字符' })
+  name: string;
+
+  @ApiProperty({ description: '策略参数描述', required: true })
+  @IsNotEmpty({ message: '策略参数描述不能为空' })
+  @MaxLength(100, { message: '策略参数描述不能超过100个字符' })
+  description: string;
+
   @ApiProperty({ description: '灯类型', required: true })
   @IsNotEmpty({ message: '灯类型不能为空' })
   @MaxLength(100, { message: '灯类型不能超过100个字符' })

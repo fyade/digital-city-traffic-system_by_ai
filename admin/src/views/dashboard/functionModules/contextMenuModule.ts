@@ -164,6 +164,20 @@ export class ContextMenuModule {
       }
     },
     {
+      id: 'dcts:signalLight:signalLightChildStyleMapping:insv2',
+      func: () => {
+        if (!this.meModule) {
+          return
+        }
+        let itemId = ''
+        const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
+        if (seidsByGroup.signalLightInfoCount > 0) {
+          itemId = seidsByGroup.signalLightInfo[0]
+        }
+        routerPushByName('~fp~:signalLight:signalLightChildStyleMapping:ins', {clid: itemId})
+      }
+    },
+    {
       id: 'dcts:signalLightStrategy:signalLightGroupStrategyTypeMapping:insv2',
       func: () => {
         if (!this.meModule) {
@@ -271,6 +285,18 @@ export class ContextMenuModule {
                 label: '删除子信号灯',
                 key: 'dcts:signalLight:signalLightInfo:delv2',
                 show: !this.pModule || this.pModule.cmihp('dcts:signalLight:signalLightInfo:delv2', [ID_PREFIX_SIGNAL_LIGHT])
+              }
+            ]
+          },
+          {
+            label: '子信号灯样式关联',
+            key: 'i:dcts:signalLight:signalLightChildStyleMapping',
+            show: !this.pModule || this.pModule.cmihp('i:dcts:signalLight:signalLightChildStyleMapping', [ID_PREFIX_SIGNAL_LIGHT]),
+            children: [
+              {
+                label: '新增/修改关联',
+                key: 'dcts:signalLight:signalLightChildStyleMapping:insv2',
+                show: !this.pModule || this.pModule.cmihp('dcts:signalLight:signalLightChildStyleMapping:insv2', [ID_PREFIX_SIGNAL_LIGHT])
               }
             ]
           }

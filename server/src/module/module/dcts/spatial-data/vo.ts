@@ -1,6 +1,8 @@
 import { SignalLightGroupInfoDto } from "../signal-light/signal-light-group-info/dto";
 import { SignalLightInfoDto } from "../signal-light/signal-light-info/dto";
 import { SignalLightGroupChildMappingDto } from "../signal-light/signal-light-group-child-mapping/dto";
+import { SignalLightChildStyleMappingDto } from "../signal-light/signal-light-child-style-mapping/dto";
+import { SignalLightStyleDto } from "../signal-light/signal-light-style/dto";
 
 export class NodesWithWaysInPolygonVo {
   allNodes: { id: string, lon: number, lat: number, tags: any }[]
@@ -11,4 +13,6 @@ export class SignalLightGroupsInPolygonVo {
   signalLightGroupInfos: SignalLightGroupInfoDto[]
   signalLightGroupChildMappings: SignalLightGroupChildMappingDto[]
   signalLightInfos: SignalLightInfoDto[]
+  signalLightChildStyleMappings: SignalLightChildStyleMappingDto[]
+  signalLightStyles: SignalLightStyleDto[]
 }

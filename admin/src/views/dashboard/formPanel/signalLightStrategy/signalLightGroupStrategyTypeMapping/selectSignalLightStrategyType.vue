@@ -15,7 +15,6 @@ import { SignalLightGroupStrategyTypeMappingDto, SignalLightGroupStrategyTypeMap
 import { nOptionIfDisabled, nOptionSLSST, nOptionSLSTT } from "@/utils/naiveBase.ts";
 import { timeUtils } from "@dcts/common";
 
-const emits = defineEmits(['selectRow']);
 const props = defineProps({
   groupId: {
     type: Number,
@@ -85,19 +84,6 @@ const columns: DataTableColumns<SignalLightStrategyTypeDto> = [
   {title: signalLightStrategyTypeDict.ifDisabled, key: 'ifDisabled'},
   {title: signalLightStrategyTypeDict.orderNum, key: 'orderNum'},
   {title: signalLightStrategyTypeDict.remark, key: 'remark'},
-  // {
-  //   title: '操作',
-  //   key: 'operation',
-  //   render(row) {
-  //     return h(NButton, {
-  //       text: true,
-  //       onClick: () => emits('selectRow', row)
-  //     }, {
-  //       default: () => '选择',
-  //       icon: () => h(NIcon, null, {default: () => h(HandPointLeft)})
-  //     })
-  //   }
-  // }
   {
     title: '操作',
     key: 'operation',

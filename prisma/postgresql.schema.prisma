@@ -518,6 +518,8 @@ model signal_light_strategy_param {
   round         Int
   duration      Int
   current_light String   @dbPostgresql.VarChar(30)
+  name          String   @dbPostgresql.VarChar(100)
+  description   String   @dbPostgresql.VarChar(100)
 }
 
 // 信号灯策略调度-信号灯策略参数关联表

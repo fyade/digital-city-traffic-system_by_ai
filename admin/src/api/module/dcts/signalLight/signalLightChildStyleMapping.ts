@@ -1,6 +1,10 @@
 import request from "@/api/request.ts";
 import { ApiConfig } from "@/type/tablePage.ts";
-import { SignalLightChildStyleMappingDto, SignalLightChildStyleMappingUpdDto } from "@/type/module/dcts/signalLight/signalLightChildStyleMapping.ts";
+import {
+  SignalLightChildStyleMappingDto,
+  SignalLightChildStyleMappingInsDto,
+  SignalLightChildStyleMappingUpdDto
+} from "@/type/module/dcts/signalLight/signalLightChildStyleMapping.ts";
 
 export const signalLightChildStyleMappingApi: ApiConfig<SignalLightChildStyleMappingDto, SignalLightChildStyleMappingUpdDto> = {
   /**
@@ -86,5 +90,13 @@ export const signalLightChildStyleMappingApi: ApiConfig<SignalLightChildStyleMap
     url: '/dcts/signal-light/signal-light-child-style-mapping',
     method: 'DELETE',
     data: ids
+  })
+}
+
+export function signalLightChildStyleMappingInsV2(obj: SignalLightChildStyleMappingInsDto) {
+  return request({
+    url: '/dcts/signal-light/signal-light-child-style-mapping/v2',
+    method: 'POST',
+    data: obj
   })
 }

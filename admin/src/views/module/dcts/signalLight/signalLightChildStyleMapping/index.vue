@@ -19,8 +19,8 @@ import { signalLightChildStyleMappingDict } from "@/dict/module/dcts/signalLight
 const state = reactive<State2<SignalLightChildStyleMappingDto, SignalLightChildStyleMappingUpdDto>>({
   dialogForm: {
     id: -1,
-    childId: '',
-    styleId: '',
+    childId: 0,
+    styleId: 0,
   },
   dialogForms: [],
   dialogForms_error: {},

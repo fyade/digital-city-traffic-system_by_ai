@@ -178,7 +178,6 @@ alter table public.signal_light_strategy_param
 alter table public.signal_light_strategy_param
     alter column order_num set not null;
 
--- ===== ===== ===== ===== ===== ===== 已同步至此 ===== ===== ===== ===== ===== =====
 -- ===== ===== ===== ===== ===== ===== 2025.07.18 ===== ===== ===== ===== ===== =====
 
 delete
@@ -271,5 +270,16 @@ create table public.signal_light_child_style_mapping
     update_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted     CHAR(1)                  NOT NULL DEFAULT 'N'
 )
+
+-- ===== ===== ===== ===== ===== ===== 2025.07.22 ===== ===== ===== ===== ===== =====
+
+alter table public.signal_light_strategy_param
+    add name varchar(100);
+alter table public.signal_light_strategy_param
+    add description varchar(100);
+alter table public.signal_light_strategy_param
+    alter column name set not null;
+alter table public.signal_light_strategy_param
+    alter column description set not null;
 
 -- ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== =====

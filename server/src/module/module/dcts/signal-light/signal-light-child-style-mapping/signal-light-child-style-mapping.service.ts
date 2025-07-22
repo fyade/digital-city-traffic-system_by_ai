@@ -3,10 +3,14 @@ import { R } from '../../../../../common/R';
 import { SignalLightChildStyleMappingDto, SignalLightChildStyleMappingSelListDto, SignalLightChildStyleMappingSelAllDto, SignalLightChildStyleMappingInsOneDto, SignalLightChildStyleMappingUpdOneDto } from './dto';
 import { BaseContextService } from '../../../../base-context/base-context.service';
 import { PostgresqlPrismaService } from "../../../../../prisma/postgresql.prisma.service";
+import { PostgresqlPrismaoService } from "../../../../../prisma/postgresql.prismao.service";
+import { PrismaoService } from "../../../../../prisma/prismao.service";
 
 @Injectable()
 export class SignalLightChildStyleMappingService {
   constructor(
+      private readonly prismao: PrismaoService,
+      private readonly pgsqlPrismao: PostgresqlPrismaoService,
       private readonly pgsqlPrisma: PostgresqlPrismaService,
       private readonly bcs: BaseContextService,
   ) {
@@ -65,5 +69,30 @@ export class SignalLightChildStyleMappingService {
   async delSignalLightChildStyleMapping(ids: number[]): Promise<R> {
     const res = await this.pgsqlPrisma.deleteById<SignalLightChildStyleMappingDto>('signal_light_child_style_mapping', ids);
     return R.ok(res);
+  }
+
+  async insSignalLightChildStyleMappingV2(dto: SignalLightChildStyleMappingInsOneDto): Promise<R> {
+    const datas = await this.pgsqlPrismao.signal_light_child_style_mapping.findMany({
+      where: {
+        child_id: dto.childId,
+        ...this.prismao.defaultSelArg().where
+      }
+    });
+    if (datas.length > 0) {
+      const defaultDelArg = this.prismao.defaultDelArg();
+      await this.pgsqlPrismao.signal_light_child_style_mapping.updateMany({
+        data: {
+          ...defaultDelArg.data
+        },
+        where: {
+          id: {
+            in: datas.map(item => item.id)
+          },
+          ...defaultDelArg.where
+        }
+      })
+    }
+    await this.pgsqlPrisma.create<SignalLightChildStyleMappingDto>('signal_light_child_style_mapping', dto);
+    return R.ok(true);
   }
 }

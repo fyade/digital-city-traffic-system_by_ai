@@ -1,19 +1,15 @@
 <script setup lang="ts">
-import { nextTick, ref, useTemplateRef } from "vue";
-import { FormInst, FormRules, useMessage } from "naive-ui";
 import { useRoute } from "vue-router";
-import FormPanelCard from '@/components/formPanelCard/index.vue'
 import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
+import { useMessage } from "naive-ui";
 import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
-import { signalLightGroupChildMappingApi } from "@/api/module/dcts/signalLight/signalLightGroupChildMapping.ts";
-import { signalLightGroupStrategyTypeMappingApi } from "@/api/module/dcts/signalLightStrategy/signalLightGroupStrategyTypeMapping.ts";
-import SelectSignalLightStrategySchedule from "@/views/dashboard/formPanel/signalLightStrategy/signalLightChildStrategyScheduleMapping/selectSignalLightStrategySchedule.vue";
-import { SignalLightStrategyScheduleDto } from "@/type/module/dcts/signalLightStrategy/signalLightStrategySchedule.ts";
-import { SignalLightChildStrategyScheduleMappingInsDto } from "@/type/module/dcts/signalLightStrategy/signalLightChildStrategyScheduleMapping.ts";
-import { signalLightChildStrategyScheduleMappingInsV2 } from "@/api/module/dcts/signalLightStrategy/signalLightChildStrategyScheduleMapping.ts";
-import { signalLightInfoDict } from "@/dict/module/dcts/signalLight/signalLightInfo.ts";
+import { ref } from "vue";
 import { SignalLightInfoDto } from "@/type/module/dcts/signalLight/signalLightInfo.ts";
 import { signalLightInfoApi } from "@/api/module/dcts/signalLight/signalLightInfo.ts";
+import FormPanelCard from "@/components/formPanelCard/index.vue";
+import { signalLightInfoDict } from "@/dict/module/dcts/signalLight/signalLightInfo.ts";
+import SelectSignalLightStyle
+  from "@/views/dashboard/formPanel/signalLight/signalLightChildStyleMapping/selectSignalLightStyle.vue";
 
 const route = useRoute();
 const useCesium = useDashboardCesium;
@@ -46,31 +42,14 @@ const getSLCI = () => {
 }
 
 const init = () => {
-  qzjc()
   getSLCI()
 }
 
 const formLoading = ref(false)
-const parentStrategyTypeId = ref<number[]>([])
-const visible2 = ref(false)
-
-const qzjc = async () => {
-  formLoading.value = true
-  const slgcms = await signalLightGroupChildMappingApi.selectAll({childLightId: {in: {value: [Number(itemClid)]}}});
-  const gids = slgcms.map(item => item.groupId);
-  const slgstms = await signalLightGroupStrategyTypeMappingApi.selectAll({groupId: {in: {value: gids}}});
-  formLoading.value = false
-  if (slgstms.length === 0) {
-    message.warning('请先给信号灯组绑定信号灯策略类型。')
-    gotoDashboardHome()
-    return
-  }
-  parentStrategyTypeId.value = slgstms.map(item => item.strategyTypeId);
-  visible2.value = true
-}
 
 const submitCallback = () => {
 }
+const selectRow = () => {}
 </script>
 
 <template>
@@ -100,11 +79,9 @@ const submitCallback = () => {
         </n-grid>
       </n-form>
 
-      <n-divider title-placement="left">策略调度列表</n-divider>
+      <n-divider title-placement="left">信号灯样式列表</n-divider>
       <n-spin :show="formLoading">
-        <SelectSignalLightStrategySchedule
-            v-if="visible2"
-            :select-strategy-type-id="parentStrategyTypeId"
+        <SelectSignalLightStyle
             :child-id="Number(itemClid)"
         />
       </n-spin>

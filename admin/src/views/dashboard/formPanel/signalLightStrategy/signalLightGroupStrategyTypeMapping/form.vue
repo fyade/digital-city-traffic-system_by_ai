@@ -19,15 +19,14 @@ const useCesium = useDashboardCesium;
 const ifIns = route.path.endsWith('ins')
 const ifUpd = route.path.endsWith('upd')
 const ifDel = route.path.endsWith('del')
-const itemId = route.query.id as string | undefined
 const itemSlgid = route.query.slgid as string | undefined
 if (ifIns && !itemSlgid) {
   gotoDashboardHome()
 }
-if (ifUpd && !itemId) {
+if (ifUpd) {
   gotoDashboardHome()
 }
-if (ifDel && !itemId) {
+if (ifDel) {
   gotoDashboardHome()
 }
 
@@ -49,24 +48,6 @@ const init = () => {
 const formLoading = ref(false)
 
 const submitCallback = () => {
-  formLoading.value = true
-  signalLightGroupStrategyTypeMappingApi.deleteList(itemId!).then(_ => {
-    useCesium.refreshScreenEntities(true)
-    gotoDashboardHome()
-  }).finally(() => {
-    formLoading.value = false
-  })
-}
-const selectRow = (row: SignalLightStrategyTypeDto) => {
-  formLoading.value = true
-  const dto = new SignalLightGroupStrategyTypeMappingInsDto();
-  dto.groupId = Number(itemSlgid)
-  dto.strategyTypeId = row.id
-  signalLightGroupStrategyTypeMappingInsV2(dto).then(_ => {
-    gotoDashboardHome()
-  }).finally(() => {
-    formLoading.value = false
-  })
 }
 </script>
 
@@ -101,7 +82,6 @@ const selectRow = (row: SignalLightStrategyTypeDto) => {
       <n-spin :show="formLoading">
         <SelectSignalLightStrategyType
             :group-id="Number(itemSlgid)"
-            @select-row="selectRow"
         />
       </n-spin>
     </template>

@@ -22,6 +22,8 @@ const emits = defineEmits(['selectRow'])
 const state = reactive<State2<SignalLightStrategyParamDto, SignalLightStrategyParamUpdDto>>({
   dialogForm: {
     id: -1,
+    name: '',
+    description: '',
     lightType: '',
     round: 0,
     duration: 0,
@@ -33,12 +35,16 @@ const state = reactive<State2<SignalLightStrategyParamDto, SignalLightStrategyPa
   dialogForms: [],
   dialogForms_error: {},
   filterForm: {
+    name: '',
+    description: '',
     lightType: '',
     currentLight: '',
     ifDisabled: '',
   },
 })
 const dFormRules: FormRules = {
+  name: [{required: true, trigger: 'change'}],
+  description: [{required: true, trigger: 'change'}],
   lightType: [{required: true, trigger: 'change'}],
   round: [{required: true, trigger: 'change'}],
   duration: [{required: true, trigger: 'change'}],
@@ -114,6 +120,12 @@ const selectRow2 = () => {
         @keyup.enter="fEnter"
     >
       <!--在此下方添加表单项-->
+      <el-form-item :label="signalLightStrategyParamDict.name" prop="name">
+        <el-input v-model="state.filterForm.name" :placeholder="signalLightStrategyParamDict.name"/>
+      </el-form-item>
+      <el-form-item :label="signalLightStrategyParamDict.description" prop="description">
+        <el-input v-model="state.filterForm.description" :placeholder="signalLightStrategyParamDict.description"/>
+      </el-form-item>
       <el-form-item :label="signalLightStrategyParamDict.lightType" prop="lightType">
         <!--<el-input v-model="state.filterForm.lightType" :placeholder="signalLightStrategyParamDict.lightType"/>-->
         <el-select v-model="state.filterForm.lightType" :placeholder="signalLightStrategyParamDict.lightType" clearable filterable>
@@ -168,9 +180,11 @@ const selectRow2 = () => {
       <!--<el-table-column fixed prop="id" :label="signalLightStrategyParamDict.id" width="180"/>-->
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
+      <el-table-column prop="name" :label="signalLightStrategyParamDict.name" width="120"/>
+      <el-table-column prop="description" :label="signalLightStrategyParamDict.description" width="120"/>
       <el-table-column prop="lightType" :label="signalLightStrategyParamDict.lightType" width="180">
         <template #default="{row}">
-          {{ row.lightType.split('-').filter(_ => _).map(key => sLSPLTTypeDict[key as SLSPLTTypeEnum]).join('、') }}
+          {{ row.lightType.split('-').filter((_: string) => _).map((key: string) => sLSPLTTypeDict[key as SLSPLTTypeEnum]).join('、') }}
         </template>
       </el-table-column>
       <el-table-column prop="round" :label="signalLightStrategyParamDict.round" width="120"/>

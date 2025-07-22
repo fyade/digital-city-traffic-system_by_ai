@@ -26,6 +26,8 @@ import { signalLightStrategyParamDict } from "@/dict/module/dcts/signalLightStra
 const state = reactive<State2<SignalLightStrategyParamDto, SignalLightStrategyParamUpdDto>>({
   dialogForm: {
     id: -1,
+    name: '',
+    description: '',
     lightType: '',
     round: 0,
     duration: 0,
@@ -37,12 +39,16 @@ const state = reactive<State2<SignalLightStrategyParamDto, SignalLightStrategyPa
   dialogForms: [],
   dialogForms_error: {},
   filterForm: {
+    name: '',
+    description: '',
     lightType: '',
     currentLight: '',
     ifDisabled: '',
   },
 })
 const dFormRules: FormRules = {
+  name: [{required: true, trigger: 'change'}],
+  description: [{required: true, trigger: 'change'}],
   lightType: [{required: true, trigger: 'change'}],
   round: [{required: true, trigger: 'change'}],
   duration: [{required: true, trigger: 'change'}],
@@ -131,6 +137,18 @@ const {
         <!--在此下方添加表单项-->
         <el-row>
           <el-col :span="12">
+            <el-form-item :label="signalLightStrategyParamDict.name" prop="name">
+              <el-input v-model="state.dialogForm.name" :placeholder="signalLightStrategyParamDict.name"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="signalLightStrategyParamDict.description" prop="description">
+              <el-input v-model="state.dialogForm.description" :placeholder="signalLightStrategyParamDict.description"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
             <el-form-item :label="signalLightStrategyParamDict.lightType" prop="lightType">
               <!--<el-input v-model="state.dialogForm.lightType" :placeholder="signalLightStrategyParamDict.lightType"/>-->
               <MultipleCheckbox v-model="state.dialogForm.lightType" :placeholder="signalLightStrategyParamDict.lightType" :kvs="sLSPLTTypeDict"/>
@@ -213,6 +231,26 @@ const {
             </template>
           </el-table-column>
           <!--在此下方添加表格列-->
+          <el-table-column prop="name" :label="signalLightStrategyParamDict.name" width="300">
+            <template #header>
+              <span :class="ifRequired('name')?'tp-table-header-required':''">{{ signalLightStrategyParamDict.name }}</span>
+            </template>
+            <template #default="{$index}">
+              <div :class="state.dialogForms_error?.[`${$index}-name`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-input v-model="state.dialogForms[$index].name" :placeholder="signalLightStrategyParamDict.name"/>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="description" :label="signalLightStrategyParamDict.description" width="300">
+            <template #header>
+              <span :class="ifRequired('description')?'tp-table-header-required':''">{{ signalLightStrategyParamDict.description }}</span>
+            </template>
+            <template #default="{$index}">
+              <div :class="state.dialogForms_error?.[`${$index}-description`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-input v-model="state.dialogForms[$index].description" :placeholder="signalLightStrategyParamDict.description"/>
+              </div>
+            </template>
+          </el-table-column>
           <el-table-column prop="lightType" :label="signalLightStrategyParamDict.lightType" width="300">
             <template #header>
               <span :class="ifRequired('lightType')?'tp-table-header-required':''">{{ signalLightStrategyParamDict.lightType }}</span>
@@ -317,6 +355,12 @@ const {
         @keyup.enter="fEnter"
     >
       <!--在此下方添加表单项-->
+      <el-form-item :label="signalLightStrategyParamDict.name" prop="name">
+        <el-input v-model="state.filterForm.name" :placeholder="signalLightStrategyParamDict.name"/>
+      </el-form-item>
+      <el-form-item :label="signalLightStrategyParamDict.description" prop="description">
+        <el-input v-model="state.filterForm.description" :placeholder="signalLightStrategyParamDict.description"/>
+      </el-form-item>
       <el-form-item :label="signalLightStrategyParamDict.lightType" prop="lightType">
         <!--<el-input v-model="state.filterForm.lightType" :placeholder="signalLightStrategyParamDict.lightType"/>-->
         <el-select v-model="state.filterForm.lightType" :placeholder="signalLightStrategyParamDict.lightType" clearable filterable>
@@ -370,9 +414,11 @@ const {
       <!--<el-table-column fixed prop="id" :label="signalLightStrategyParamDict.id" width="180"/>-->
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
+      <el-table-column prop="name" :label="signalLightStrategyParamDict.name" width="120"/>
+      <el-table-column prop="description" :label="signalLightStrategyParamDict.description" width="120"/>
       <el-table-column prop="lightType" :label="signalLightStrategyParamDict.lightType" width="180">
         <template #default="{row}">
-          {{ row.lightType.split('-').filter(_ => _).map(key => sLSPLTTypeDict[key as SLSPLTTypeEnum]).join('、') }}
+          {{ row.lightType.split('-').filter((_: string) => _).map((key: string) => sLSPLTTypeDict[key as SLSPLTTypeEnum]).join('、') }}
         </template>
       </el-table-column>
       <el-table-column prop="round" :label="signalLightStrategyParamDict.round" width="120"/>

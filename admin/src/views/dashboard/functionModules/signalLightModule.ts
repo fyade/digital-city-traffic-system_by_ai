@@ -5,6 +5,7 @@ import { ClockModule } from "@/views/dashboard/functionModules/clockModule.ts";
 import { deepClone } from "@/utils/ObjectUtils.ts";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
+import { SignalLightUnitStyleEnum } from "@/utils/base.ts";
 
 const LONG_TASK_INTERVAL = 10; // 长任务执行间隔（分钟）
 
@@ -150,9 +151,13 @@ export class SignalLightModule {
     if (!this.meModule) {
       return;
     }
+    if (!this.vdModule) {
+      return;
+    }
     if (!this.viewer) {
       return;
     }
+    const sls = this.vdModule.getHistorySignalLightGroupsInPolygonVo();
     // 以服务器时间为准，实时渲染信号灯
     const currentTime = this.cModule.currentTime;
     for (const shortTaskData of this.shortTaskDatas) {
@@ -173,7 +178,17 @@ export class SignalLightModule {
         // 修改为对应颜色的信号灯
         const rp1 = rps[0];
         const leftTime = Math.floor((rp1.end - currentTime) / 1000);
-        this.meModule.setSignalLightColor(shortTaskData.signalLightChildId, rp1.lightType, rp1.color, ifHalfSecond, leftTime)
+        let style: SignalLightUnitStyleEnum[] | null = null
+        if (sls) {
+          const find = sls.data.signalLightChildStyleMappings.find(item => item.childId === shortTaskData.signalLightChildId);
+          if (find) {
+            const find1 = sls.data.signalLightStyles.find(item => item.id === find.styleId);
+            if (find1) {
+              style = find1.style.split('-').filter(_ => _) as SignalLightUnitStyleEnum[]
+            }
+          }
+        }
+        this.meModule.setSignalLightColor(shortTaskData.signalLightChildId, style, rp1.lightType, rp1.color, ifHalfSecond, leftTime)
       }
       if (
           shortTaskData.runParam.length === 0

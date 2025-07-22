@@ -98,6 +98,25 @@ export const signalLightColorDict = {
   [SignalLightColorEnum.NONE]: '无',
 }
 
+// 信号灯样式类型
+export enum SignalLightUnitStyleEnum {
+  AROUND = 'around',
+  LEFT = 'left',
+  STRAIGHT = 'straight',
+  RIGHT = 'right',
+  ROUND = 'round',
+  NUMBER = 'number',
+}
+
+export const signalLightUnitStyleDict = {
+  [SignalLightUnitStyleEnum.AROUND]: '掉头灯',
+  [SignalLightUnitStyleEnum.LEFT]: '左转灯',
+  [SignalLightUnitStyleEnum.STRAIGHT]: '直行灯',
+  [SignalLightUnitStyleEnum.RIGHT]: '右转灯',
+  [SignalLightUnitStyleEnum.ROUND]: '圆灯',
+  [SignalLightUnitStyleEnum.NUMBER]: '倒计时',
+}
+
 export enum AuthTypeEnum {
   token = 'token',
   apiKey = 'apiKey',

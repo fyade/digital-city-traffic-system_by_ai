@@ -2,6 +2,8 @@ import { SignalLightGroupInfoDto } from "@/type/module/dcts/signalLight/signalLi
 import { SignalLightInfoDto } from "@/type/module/dcts/signalLight/signalLightInfo.ts";
 import { SignalLightGroupChildMappingDto } from "@/type/module/dcts/signalLight/signalLightGroupChildMapping.ts";
 import { SignalLightColorEnum, SLSPLTTypeEnum } from "@/utils/base.ts";
+import { SignalLightChildStyleMappingDto } from "@/type/module/dcts/signalLight/signalLightChildStyleMapping.ts";
+import { SignalLightStyleDto } from "@/type/module/dcts/signalLight/signalLightStyle.ts";
 
 class PolygonPointDto {
   lon!: number;
@@ -28,6 +30,8 @@ export class SignalLightGroupsInPolygonVo {
   signalLightGroupInfos!: SignalLightGroupInfoDto[]
   signalLightGroupChildMappings!: SignalLightGroupChildMappingDto[]
   signalLightInfos!: SignalLightInfoDto[]
+  signalLightChildStyleMappings!: SignalLightChildStyleMappingDto[]
+  signalLightStyles!: SignalLightStyleDto[]
 }
 
 export class CalculateLightsInPolygonDto {

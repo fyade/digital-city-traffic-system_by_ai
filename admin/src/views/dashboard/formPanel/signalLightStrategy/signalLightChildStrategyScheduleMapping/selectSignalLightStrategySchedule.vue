@@ -27,7 +27,6 @@ const props = defineProps({
     required: true
   }
 })
-const emits = defineEmits(['selectRow']);
 
 const state = reactive<State2<SignalLightStrategyScheduleDto, SignalLightStrategyScheduleUpdDto>>({
   dialogForm: {
@@ -61,19 +60,6 @@ const columns: DataTableColumns<SignalLightStrategyScheduleDto> = [
   {title: signalLightStrategyScheduleDict.ifDisabled, key: 'ifDisabled'},
   {title: signalLightStrategyScheduleDict.orderNum, key: 'orderNum'},
   {title: signalLightStrategyScheduleDict.remark, key: 'remark'},
-  // {
-  //   title: '操作',
-  //   key: 'operation',
-  //   render(row) {
-  //     return h(NButton, {
-  //       text: true,
-  //       onClick: () => emits('selectRow', row)
-  //     }, {
-  //       default: () => '选择',
-  //       icon: () => h(NIcon, null, {default: () => h(HandPointLeft)})
-  //     })
-  //   }
-  // }
   {
     title: '操作',
     key: 'operation',

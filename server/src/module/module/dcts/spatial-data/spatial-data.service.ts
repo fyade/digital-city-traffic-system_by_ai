@@ -14,10 +14,15 @@ import { NodesWithWaysInPolygonVo, SignalLightGroupsInPolygonVo } from "./vo";
 import { SignalLightGroupChildMappingDto } from "../signal-light/signal-light-group-child-mapping/dto";
 import { DctsCoreService } from "../core/dcts-core.service";
 import { BaseContextService } from "../../../base-context/base-context.service";
+import { PrismaoService } from "../../../../prisma/prismao.service";
+import { baseUtils } from "@dcts/common";
+import { SignalLightChildStyleMappingDto } from "../signal-light/signal-light-child-style-mapping/dto";
+import { SignalLightStyleDto } from "../signal-light/signal-light-style/dto";
 
 @Injectable()
 export class SpatialDataService {
   constructor(
+      private readonly prismao: PrismaoService,
       private readonly pgsqlPrismao: PostgresqlPrismaoService,
       private readonly dctsCoreService: DctsCoreService,
       private readonly bcs: BaseContextService,
@@ -50,6 +55,25 @@ export class SpatialDataService {
           const s2 = signalLightGroupsInPolygon3(slgcmds.map(item => item.childLightId));
           const dtos1 = await this.pgsqlPrismao.$queryRawUnsafe<SignalLightInfoDto[]>(s2);
           ret.signalLightInfos = dtos1
+          const defaultSelArg = this.prismao.defaultSelArg();
+          const childStyleMappings = (await this.pgsqlPrismao.signal_light_child_style_mapping.findMany({
+            where: {
+              child_id: {
+                in: dtos1.map(item => item.id)
+              },
+              ...defaultSelArg.where
+            }
+          })).map(baseUtils.objToCamelCase<SignalLightChildStyleMappingDto>);
+          ret.signalLightChildStyleMappings = childStyleMappings
+          const styles = (await this.pgsqlPrismao.signal_light_style.findMany({
+            where: {
+              id: {
+                in: childStyleMappings.map(item => item.styleId)
+              },
+              ...defaultSelArg.where
+            }
+          })).map(baseUtils.objToCamelCase<SignalLightStyleDto>);
+          ret.signalLightStyles = styles
         }
       }
     }

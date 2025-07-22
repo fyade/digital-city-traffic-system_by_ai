@@ -4,9 +4,10 @@ import { SignalLightChildStyleMappingService } from './signal-light-child-style-
 import { Authorize } from '../../../../../decorator/authorize.decorator';
 import { R } from '../../../../../common/R';
 import { SignalLightChildStyleMappingSelListDto, SignalLightChildStyleMappingSelAllDto, SignalLightChildStyleMappingInsOneDto, SignalLightChildStyleMappingUpdOneDto, SignalLightChildStyleMappingInsMoreDto, SignalLightChildStyleMappingUpdMoreDto } from './dto';
+import { publicConfig } from "@dcts/config";
 
 @Controller('/dcts/signal-light/signal-light-child-style-mapping')
-@ApiTags('数智交通全域调度系统/信号灯管理/子信号灯-信号灯样式关联')
+@ApiTags(`${publicConfig.APP_NAME}/信号灯管理/子信号灯-信号灯样式关联`)
 @ApiBearerAuth()
 @UsePipes(new ValidationPipe({ transform: true }))
 export class SignalLightChildStyleMappingController {
@@ -137,5 +138,17 @@ export class SignalLightChildStyleMappingController {
   })
   async delSignalLightChildStyleMapping(@Body() ids: number[]): Promise<R> {
     return this.signalLightChildStyleMappingService.delSignalLightChildStyleMapping(ids);
+  }
+
+  @Post('/v2')
+  @ApiOperation({
+    summary: '新增子信号灯-信号灯样式关联v2',
+  })
+  @Authorize({
+    permission: 'dcts:signalLight:signalLightChildStyleMapping:insv2',
+    label: '新增子信号灯-信号灯样式关联v2',
+  })
+  async insSignalLightChildStyleMappingV2(@Body() dto: SignalLightChildStyleMappingInsOneDto): Promise<R> {
+    return this.signalLightChildStyleMappingService.insSignalLightChildStyleMappingV2(dto);
   }
 }
