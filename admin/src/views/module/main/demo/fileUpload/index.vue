@@ -47,7 +47,7 @@ const state = reactive<State2<FileUploadDto, FileUploadUpdDto>>({
     ifFinished: '',
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<FileUploadDto> = {
   fileName: [{required: true, trigger: 'change'}],
   fileNewName: [{required: true, trigger: 'change'}],
   fileSize: [{required: true, trigger: 'change'}],
@@ -59,7 +59,7 @@ const dFormRules: FormRules = {
   ifFinished: [{required: true, trigger: 'change'}],
   module: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig({
+const config = new TablePageConfig<FileUploadDto>({
   bulkOperation: true,
 })
 

@@ -52,7 +52,7 @@ const state = reactive<State2<SignalLightStrategyParamDto, SignalLightStrategyPa
     ifDisabled: '',
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<SignalLightStrategyParamDto> = {
   name: [{required: true, trigger: 'change'}],
   description: [{required: true, trigger: 'change'}],
   lightType: [{required: true, trigger: 'change'}],

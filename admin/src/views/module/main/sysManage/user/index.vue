@@ -40,7 +40,7 @@ const state = reactive<State2<UserDto, UserUpdDto>>({
     nickname: ''
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<UserDto> = {
   username: [{required: true, trigger: 'change'}],
   password: [{required: true, trigger: 'change'}]
 }

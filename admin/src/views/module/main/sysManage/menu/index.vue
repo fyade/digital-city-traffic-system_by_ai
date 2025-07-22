@@ -48,7 +48,7 @@ const state = reactive<State2<MenuDto, MenuUpdDto>>({
     perms: ''
   },
 })
-const dFormRules: FormRules = reactive({})
+const dFormRules: FormRules<MenuDto> = reactive({})
 const config = new TablePageConfig<MenuDto<String>>({
   pageQuery: false,
   bulkOperation: true,
@@ -132,7 +132,7 @@ const stateInter = reactive<State2<MenuDto, MenuUpdDto>>({
     perms: ''
   },
 })
-const dFormRulesInter: FormRules = {
+const dFormRulesInter: FormRules<MenuDto> = {
   type: [{required: true, trigger: 'change'}],
   label: [{required: true, trigger: 'change'}],
   orderNum: [{required: true, trigger: 'change'}],
@@ -209,11 +209,11 @@ const canChooseTypes = ref<MenuTypeEnum[]>([])
 // 校验规则的修改
 watch(() => [state.dialogForm.type, activeTabName.value], () => {
   if (activeTabName.value === final.more) {
-    Object.keys(dFormRules).forEach(key => delete dFormRules[key])
+    Object.keys(dFormRules).forEach((key: string) => delete dFormRules[key as keyof typeof dFormRules])
     return
   }
-  Object.keys(dFormRules).forEach(key => delete dFormRules[key])
-  const rule: FormRules = {
+  Object.keys(dFormRules).forEach((key: string) => delete dFormRules[key as keyof typeof dFormRules])
+  const rule: FormRules<MenuDto> = {
     label: [{required: true, trigger: 'change'}],
     type: [{required: true, trigger: 'change'}],
     path: [{required: true, trigger: 'change'}],
@@ -227,13 +227,13 @@ watch(() => [state.dialogForm.type, activeTabName.value], () => {
     perms: [{required: true, trigger: 'change'}],
     sysId: [{required: true, trigger: 'change'}],
   }
-  Object.keys(rule).forEach(key => dFormRules[key] = rule[key])
+  Object.keys(rule).forEach((key: string) => dFormRules[key as keyof typeof dFormRules] = rule[key as keyof typeof dFormRules])
   if ([MenuTypeEnum.T_COMP].indexOf(state.dialogForm.type) > -1) {
-    const rule: FormRules = {
+    const rule: FormRules<MenuDto> = {
       component: [{required: true, trigger: 'change'}],
       ifFixed: [{required: true, trigger: 'change'}],
     }
-    Object.keys(rule).forEach(key => dFormRules[key] = rule[key])
+    Object.keys(rule).forEach((key: string) => dFormRules[key as keyof typeof dFormRules] = rule[key as keyof typeof dFormRules])
   }
 }, {
   immediate: true,
@@ -387,7 +387,7 @@ const stateI2 = reactive<State2<MenuDto, MenuUpdDto>>({
     perms: '',
   },
 })
-const dFormRulesI2: FormRules = {
+const dFormRulesI2: FormRules<MenuDto> = {
   label: [{required: true, trigger: 'change'}],
   type: [{required: true, trigger: 'change'}],
   orderNum: [{required: true, trigger: 'change'}],

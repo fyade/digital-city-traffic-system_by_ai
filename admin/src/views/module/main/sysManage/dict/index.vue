@@ -34,13 +34,13 @@ const state = reactive<State2<DicTypeDto, DicTypeUpdDto>>({
     ifDisabled: '',
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<DicTypeDto> = {
   name: [{required: true, trigger: 'change'}],
   type: [{required: true, trigger: 'change'}],
   ifDisabled: [{required: true, trigger: 'change'}],
   orderNum: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig({
+const config = new TablePageConfig<DicTypeDto>({
   bulkOperation: true,
 })
 

@@ -40,12 +40,12 @@ const userGroupState = reactive<State2<UserGroupDto, UserGroupUpdDto>>({
     label: ''
   },
 })
-const userGroupDFormRules: FormRules = {
+const userGroupDFormRules: FormRules<UserGroupDto> = {
   label: [{required: true, trigger: 'change'}],
   parentId: [{required: true, trigger: 'change'}],
   orderNum: [{required: true, trigger: 'change'}],
 }
-const userGroupConfig = new TablePageConfig({
+const userGroupConfig = new TablePageConfig<UserGroupDto>({
   bulkOperation: true,
 })
 
@@ -113,13 +113,13 @@ const interfaceGroupState = reactive<State2<InterfaceGroupDto, InterfaceGroupUpd
     label: ''
   },
 })
-const interfaceGroupDFormRules: FormRules = {
+const interfaceGroupDFormRules: FormRules<InterfaceGroupDto> = {
   label: [{required: true, trigger: 'change'}],
   parentId: [{required: true, trigger: 'change'}],
   baseURL: [{required: true, trigger: 'change'}],
   orderNum: [{required: true, trigger: 'change'}],
 }
-const interfaceGroupConfig = new TablePageConfig({
+const interfaceGroupConfig = new TablePageConfig<InterfaceGroupDto>({
   bulkOperation: true,
 })
 
@@ -191,7 +191,7 @@ const userGroupPermissionState = reactive<State2<UserGroupPermissionDto, UserGro
   dialogForms_error: {},
   filterForm: {},
 })
-const userGroupPermissionDFormRules: FormRules = {
+const userGroupPermissionDFormRules: FormRules<UserGroupPermissionDto> = {
   userGroupId: [{required: true, trigger: 'change'}],
   permissionId: [{required: true, trigger: 'change'}],
   ifLongTerm: [{required: true, trigger: 'change'}],
@@ -201,7 +201,7 @@ const userGroupPermissionDFormRules: FormRules = {
   permissionEndTime: [{required: true, trigger: 'change'}],
   orderNum: [{required: true, trigger: 'change'}],
 }
-const userGroupPermissionConfig = new TablePageConfig({
+const userGroupPermissionConfig = new TablePageConfig<UserGroupPermissionDto>({
   bulkOperation: true,
   getDataOnMounted: false,
   pageQuery: false,

@@ -35,7 +35,7 @@ const state = reactive<State2<MenuIpWhiteListDto, MenuIpWhiteListUpdDto>>({
     fromType: '',
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<MenuIpWhiteListDto> = {
   menuId: [{required: true, trigger: 'change'}],
   whiteList: [{required: true, trigger: 'change'}],
   fromType: [{required: true, trigger: 'change'}],

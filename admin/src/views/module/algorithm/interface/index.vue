@@ -39,7 +39,7 @@ const state = reactive<State2<InterfaceDto, InterfaceUpdDto>>({
     perms: '',
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<InterfaceDto> = {
   label: [{required: true, trigger: 'change'}],
   orderNum: [{required: true, trigger: 'change'}],
   ifDisabled: [{required: true, trigger: 'change'}],
@@ -47,7 +47,7 @@ const dFormRules: FormRules = {
   perms: [{required: true, trigger: 'change'}],
   url: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig({
+const config = new TablePageConfig<InterfaceDto>({
   bulkOperation: true,
 })
 

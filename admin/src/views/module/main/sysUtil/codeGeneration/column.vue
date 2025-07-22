@@ -59,7 +59,7 @@ const state = reactive<State2<CodeGenColumnDto, CodeGenColumnUpdDto>>({
     selType: '',
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<CodeGenColumnDto> = {
   colName: [{required: true, trigger: 'change'}],
   colDescr: [{required: true, trigger: 'change'}],
   mysqlType: [{required: true, trigger: 'change'}],

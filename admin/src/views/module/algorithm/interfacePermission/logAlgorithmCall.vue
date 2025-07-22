@@ -42,7 +42,7 @@ const state = reactive<State2<LogAlgorithmCallDto, LogAlgorithmCallUpdDto>>({
     callIp: '',
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<LogAlgorithmCallDto> = {
   userGroupPermissionId: [{required: true, trigger: 'change'}],
   pperms: [{required: true, trigger: 'change'}],
   perms: [{required: true, trigger: 'change'}],

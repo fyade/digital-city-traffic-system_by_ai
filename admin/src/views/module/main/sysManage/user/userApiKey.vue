@@ -31,7 +31,7 @@ const state = reactive<State2<UserApiKeyDto, UserApiKeyUpdDto>>({
   dialogForms_error: {},
   filterForm: {},
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<UserApiKeyDto> = {
   userId: [{required: true, trigger: 'change'}],
   userRole: [{required: true, trigger: 'change'}],
   apiKey: [{required: true, trigger: 'change'}],

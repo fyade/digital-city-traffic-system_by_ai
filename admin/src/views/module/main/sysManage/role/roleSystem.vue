@@ -35,14 +35,14 @@ const state = reactive<State2<SysDto, SysUpdDto>>({
   dialogForms_error: {},
   filterForm: {},
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<SysDto> = {
   name: [{required: true, trigger: 'change'}],
   perms: [{required: true, trigger: 'change'}],
   orderNum: [{required: true, trigger: 'change'}],
   path: [{required: true, trigger: 'change'}],
   ifDisabled: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig({
+const config = new TablePageConfig<SysDto>({
   bulkOperation: true,
   pageQuery: false,
   selectListCallback: () => {

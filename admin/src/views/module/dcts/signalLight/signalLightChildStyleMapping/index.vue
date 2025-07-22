@@ -26,11 +26,11 @@ const state = reactive<State2<SignalLightChildStyleMappingDto, SignalLightChildS
   dialogForms_error: {},
   filterForm: {},
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<SignalLightChildStyleMappingDto> = {
   childId: [{required: true, trigger: 'change'}],
   styleId: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig({
+const config = new TablePageConfig<SignalLightChildStyleMappingDto>({
   bulkOperation: true,
 })
 

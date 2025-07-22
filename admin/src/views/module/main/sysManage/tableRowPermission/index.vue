@@ -29,7 +29,7 @@ const state = reactive<State2<MenuDto, MenuUpdDto>>({
   dialogForms_error: {},
   filterForm: {},
 })
-const dFormRules: FormRules = reactive({})
+const dFormRules: FormRules<MenuDto> = reactive({})
 const config = new TablePageConfig<MenuDto<String>>({
   pageQuery: false,
   getDataOnMounted: false,

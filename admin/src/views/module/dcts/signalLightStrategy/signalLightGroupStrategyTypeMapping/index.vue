@@ -26,11 +26,11 @@ const state = reactive<State2<SignalLightGroupStrategyTypeMappingDto, SignalLigh
   dialogForms_error: {},
   filterForm: {},
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<SignalLightGroupStrategyTypeMappingDto> = {
   groupId: [{required: true, trigger: 'change'}],
   strategyTypeId: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig({
+const config = new TablePageConfig<SignalLightGroupStrategyTypeMappingDto>({
   bulkOperation: true,
 })
 

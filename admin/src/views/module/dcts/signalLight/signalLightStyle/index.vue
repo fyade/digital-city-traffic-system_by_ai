@@ -34,11 +34,11 @@ const state = reactive<State2<SignalLightStyleDto, SignalLightStyleUpdDto>>({
     name: '',
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<SignalLightStyleDto> = {
   name: [{required: true, trigger: 'change'}],
   style: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig({
+const config = new TablePageConfig<SignalLightStyleDto>({
   dialogVisibleCallback: () => {
     dialogChange()
   },

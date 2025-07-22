@@ -26,11 +26,11 @@ const state = reactive<State2<SignalLightStrategyScheduleStrategyParamMappingDto
   dialogForms_error: {},
   filterForm: {},
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<SignalLightStrategyScheduleStrategyParamMappingDto> = {
   strategyScheduleId: [{required: true, trigger: 'change'}],
   strategyParamId: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig({
+const config = new TablePageConfig<SignalLightStrategyScheduleStrategyParamMappingDto>({
   bulkOperation: true,
 })
 

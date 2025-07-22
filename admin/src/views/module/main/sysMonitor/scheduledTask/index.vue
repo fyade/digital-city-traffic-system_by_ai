@@ -34,14 +34,14 @@ const state = reactive<State2<ScheduledTaskDto, ScheduledTaskUpdDto>>({
     cronExpression: '',
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<ScheduledTaskDto> = {
   name: [{required: true, trigger: 'change'}],
   target: [{required: true, trigger: 'change'}],
   cronExpression: [{required: true, trigger: 'change'}],
   orderNum: [{required: true, trigger: 'change'}],
   ifDisabled: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig({
+const config = new TablePageConfig<ScheduledTaskDto>({
 })
 
 const {

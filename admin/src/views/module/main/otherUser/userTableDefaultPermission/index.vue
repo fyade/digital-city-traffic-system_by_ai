@@ -38,12 +38,12 @@ const state = reactive<State2<UserTableDefaultPermissionDto, UserTableDefaultPer
     tableName: '',
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<UserTableDefaultPermissionDto> = {
   tableName: [{required: true, trigger: 'change'}],
   permType: [{required: true, trigger: 'change'}],
   permId: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig({
+const config = new TablePageConfig<UserTableDefaultPermissionDto>({
   bulkOperation: false,
   selectListCallback: () => {
     selectAllPs()

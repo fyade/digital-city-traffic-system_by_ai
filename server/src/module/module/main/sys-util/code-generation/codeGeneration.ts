@@ -835,7 +835,7 @@ ${`  dialogForms: [],`}
 ${`  dialogForms_error: {},`}
 ${`  filterForm: {},`}
 ${`})`}
-${`const dFormRules: FormRules = {`}
+${`const dFormRules: FormRules<${moduleName2}Dto> = {`}
 ${
     columns
       .filter(item=>item.ifRequired===base.Y)
@@ -843,7 +843,7 @@ ${
       .join('\n')
   }
 ${`}`}
-${`const config = new TablePageConfig({`}
+${`const config = new TablePageConfig<${moduleName2}Dto>({`}
 ${`  bulkOperation: true,`}
 ${`})`}
 ${``}

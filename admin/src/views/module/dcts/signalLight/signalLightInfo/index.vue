@@ -27,12 +27,12 @@ const state = reactive<State2<SignalLightInfoDto, SignalLightInfoUpdDto>>({
   dialogForms_error: {},
   filterForm: {},
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<SignalLightInfoDto> = {
   name: [{required: true, trigger: 'change'}],
   location: [{required: true, trigger: 'change'}],
   description: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig({
+const config = new TablePageConfig<SignalLightInfoDto>({
   bulkOperation: true,
 })
 

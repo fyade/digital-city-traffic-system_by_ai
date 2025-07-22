@@ -39,14 +39,14 @@ const state = reactive<State2<DeptDto, DeptUpdDto>>({
     ifDisabled: '',
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<DeptDto> = {
   label: [{required: true, trigger: 'change'}],
   ifAdmin: [{required: true, trigger: 'change'}],
   ifDisabled: [{required: true, trigger: 'change'}],
   parentId: [{required: true, trigger: 'change'}],
   orderNum: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig({
+const config = new TablePageConfig<DeptDto>({
   pageQuery: false,
   bulkOperation: true,
 })

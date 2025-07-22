@@ -49,7 +49,7 @@ const state = reactive<State2<CodeGenTableDto, CodeGenTableUpdDto>>({
     moduleName: '',
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<CodeGenTableDto> = {
   tableName: [{required: true, trigger: 'change'}],
   tableDescr: [{required: true, trigger: 'change'}],
   entityName: [{required: true, trigger: 'change'}],
@@ -58,7 +58,7 @@ const dFormRules: FormRules = {
   sysId: [{required: true, trigger: 'change'}],
   orderNum: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig({
+const config = new TablePageConfig<CodeGenTableDto>({
   bulkOperation: true,
   changeActiveTabNameCallback: newVal => {
     changeActiveTabName(newVal)

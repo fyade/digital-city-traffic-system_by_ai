@@ -29,13 +29,13 @@ const state = reactive<State2<RoleDto, RoleUpdDto>>({
     ifDisabled: ''
   }
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<RoleDto> = {
   label: [{required: true, trigger: 'change'}],
   ifAdmin: [{required: true, trigger: 'change'}],
   ifDisabled: [{required: true, trigger: 'change'}],
   orderNum: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig({
+const config = new TablePageConfig<RoleDto>({
   bulkOperation: true,
 })
 

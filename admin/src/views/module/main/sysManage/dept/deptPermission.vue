@@ -46,7 +46,7 @@ const state = reactive<State2<MenuDto<string>, MenuUpdDto<string>>>({
   dialogForms_error: {},
   filterForm: {},
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<MenuDto> = {
   label: [{required: true, trigger: 'change'}],
   type: [{required: true, trigger: 'change'}],
   path: [{required: true, trigger: 'change'}],

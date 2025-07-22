@@ -41,7 +41,7 @@ const state = reactive<State2<LogUserLoginDto, LogUserLoginUpdDto>>({
     ifSuccess: '',
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<LogUserLoginDto> = {
   userId: [{required: true, trigger: 'change'}],
   loginRole: [{required: true, trigger: 'change'}],
   loginIp: [{required: true, trigger: 'change'}],

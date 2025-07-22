@@ -32,12 +32,12 @@ const state = reactive<State2<UserGroupDto, UserGroupUpdDto>>({
     label: ''
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<UserGroupDto> = {
   label: [{required: true, trigger: 'change'}],
   parentId: [{required: true, trigger: 'change'}],
   orderNum: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig({
+const config = new TablePageConfig<UserGroupDto>({
   bulkOperation: true,
   pageQuery: false,
 })

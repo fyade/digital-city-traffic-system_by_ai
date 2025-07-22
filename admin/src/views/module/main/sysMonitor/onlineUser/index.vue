@@ -27,8 +27,8 @@ const state = reactive<State2<OnlineUserDto, OnlineUserUpdDto>>({
     loginRole: '',
   },
 })
-const dFormRules: FormRules = {}
-const config = new TablePageConfig({
+const dFormRules: FormRules<OnlineUserDto> = {}
+const config = new TablePageConfig<OnlineUserDto>({
 })
 
 const {

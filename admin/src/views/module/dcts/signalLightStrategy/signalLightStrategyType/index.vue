@@ -41,7 +41,7 @@ const state = reactive<State2<SignalLightStrategyTypeDto, SignalLightStrategyTyp
     ifDisabled: '',
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<SignalLightStrategyTypeDto> = {
   name: [{required: true, trigger: 'change'}],
   description: [{required: true, trigger: 'change'}],
   strategyType: [{required: true, trigger: 'change'}],
@@ -51,7 +51,7 @@ const dFormRules: FormRules = {
   ifDisabled: [{required: true, trigger: 'change'}],
   orderNum: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig({
+const config = new TablePageConfig<SignalLightStrategyTypeDto>({
   bulkOperation: true,
 })
 

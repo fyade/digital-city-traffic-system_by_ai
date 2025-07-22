@@ -31,12 +31,12 @@ const state = reactive<State2<JunctionPositionDto, JunctionPositionUpdDto>>({
     junctionType: '',
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<JunctionPositionDto> = {
   geom: [{required: true, trigger: 'change'}],
   name: [{required: true, trigger: 'change'}],
   junctionType: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig({
+const config = new TablePageConfig<JunctionPositionDto>({
   bulkOperation: true,
 })
 

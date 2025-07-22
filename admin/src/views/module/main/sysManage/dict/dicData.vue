@@ -40,7 +40,7 @@ const state = reactive<State2<DicDataDto, DicDataUpdDto>>({
     ifDisabled: '',
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<DicDataDto> = {
   label: [{required: true, trigger: 'change'}],
   value: [{required: true, trigger: 'change'}],
   dicTypeId: [{required: true, trigger: 'change'}],

@@ -35,14 +35,14 @@ const state = reactive<State2<InterfaceGroupDto, InterfaceGroupUpdDto>>({
     perms: '',
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<InterfaceGroupDto> = {
   label: [{required: true, trigger: 'change'}],
   parentId: [{required: true, trigger: 'change'}],
   perms: [{required: true, trigger: 'change'}],
   baseURL: [{required: true, trigger: 'change'}],
   orderNum: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig({
+const config = new TablePageConfig<InterfaceGroupDto>({
   bulkOperation: true,
 })
 

@@ -32,13 +32,13 @@ const state = reactive<State2<MenuThrottleDto, MenuThrottleUpdDto>>({
   dialogForms_error: {},
   filterForm: {},
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<MenuThrottleDto> = {
   menuId: [{required: true, trigger: 'change'}],
   ttl: [{required: true, trigger: 'change'}],
   limit: [{required: true, trigger: 'change'}],
   type: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig({
+const config = new TablePageConfig<MenuThrottleDto>({
   bulkOperation: true,
   selectParam: {
     menuId: props.menu.id,

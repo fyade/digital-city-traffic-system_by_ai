@@ -41,7 +41,7 @@ const state = reactive<State2<LogOperationWsDto, LogOperationWsUpdDto>>({
     ifSuccess: '',
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<LogOperationWsDto> = {
   socketId: [{required: true, trigger: 'change'}],
   callIp: [{required: true, trigger: 'change'}],
   hostName: [{required: true, trigger: 'change'}],

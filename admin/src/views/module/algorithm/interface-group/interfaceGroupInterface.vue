@@ -32,7 +32,7 @@ const interfaceInterfaceGroupState = reactive<State2<InterfaceInterfaceGroupDto,
   dialogForms_error: {},
   filterForm: {},
 })
-const interfaceInterfaceGroupDFormRules: FormRules = {
+const interfaceInterfaceGroupDFormRules: FormRules<InterfaceInterfaceGroupDto> = {
   interfaceId: [{required: true, trigger: 'change'}],
   interfaceGroupId: [{required: true, trigger: 'change'}],
 }
@@ -118,7 +118,7 @@ const interfaceState = reactive<State2<InterfaceDto, InterfaceUpdDto>>({
     perms: '',
   },
 })
-const interfaceDFormRules: FormRules = {
+const interfaceDFormRules: FormRules<InterfaceDto> = {
   label: [{required: true, trigger: 'change'}],
   orderNum: [{required: true, trigger: 'change'}],
   ifDisabled: [{required: true, trigger: 'change'}],
@@ -126,7 +126,7 @@ const interfaceDFormRules: FormRules = {
   perms: [{required: true, trigger: 'change'}],
   url: [{required: true, trigger: 'change'}],
 }
-const interfaceConfig = new TablePageConfig({
+const interfaceConfig = new TablePageConfig<InterfaceDto>({
   bulkOperation: true,
   getDataOnMounted: false,
 })

@@ -33,7 +33,7 @@ const state = reactive<State2<LogScheduledTaskDto, LogScheduledTaskUpdDto>>({
     ifSuccess: '',
   },
 })
-const dFormRules: FormRules = {
+const dFormRules: FormRules<LogScheduledTaskDto> = {
   taskTarget: [{required: true, trigger: 'change'}],
   operateType: [{required: true, trigger: 'change'}],
   ifSuccess: [{required: true, trigger: 'change'}],
