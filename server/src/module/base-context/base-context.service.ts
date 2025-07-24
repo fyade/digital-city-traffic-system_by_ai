@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
 import { CurrentUser, FieldSelectParam, genCurrentUser, USER_INFO_LINSHI_FIELD_NAME } from './baseContext';
-import { AuthTypeEnum } from '../../util/base';
+import { base } from "@dcts/common";
 
 @Injectable()
 export class BaseContextService {
@@ -28,7 +28,7 @@ export class BaseContextService {
     this.setUserData(userData);
   }
 
-  setUserAuthType(authType: AuthTypeEnum) {
+  setUserAuthType(authType: base.AuthTypeEnum) {
     const userData = this.getUserData();
     userData.authType = authType;
     this.setUserData(userData);

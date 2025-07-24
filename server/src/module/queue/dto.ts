@@ -1,5 +1,5 @@
 import { getIpInfoFromRequest } from '../../util/RequestUtils';
-import { AuthTypeEnum } from '../../util/base';
+import { base } from "@dcts/common";
 
 export class LogOperationQueueJobDataDto {
   permission: string;
@@ -13,7 +13,7 @@ export class LogOperationQueueJobDataDto {
   reqId: string;
   userId: string;
   loginRole: string;
-  authType: AuthTypeEnum;
+  authType: base.AuthTypeEnum;
   createTime: Date;
 }
 

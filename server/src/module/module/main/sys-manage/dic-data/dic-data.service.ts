@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MysqlPrismaService } from '../../../../../prisma/mysql.prisma.service';
 import { R } from '../../../../../common/R';
 import { DicDataDto, DicDataSelListDto, DicDataSelAllDto, DicDataInsOneDto, DicDataUpdOneDto } from './dto';
-import { base } from '../../../../../util/base';
+import { final } from '../../../../../util/base';
 import { BaseContextService } from '../../../../base-context/base-context.service';
 import { Exception } from "../../../../../exception/exception";
 import { CommonService } from "../../../../common/common.service";
@@ -52,10 +52,10 @@ export class DicDataService {
   }
 
   async insDicData(dto: DicDataInsOneDto): Promise<R> {
-    if (dto.ifDefault === base.Y) {
+    if (dto.ifDefault === final.Y) {
       const r = await this.selAllDicData({ dicTypeId: dto.dicTypeId });
-      const upds = r.data.filter(item => item.ifDefault === base.Y).map(item => {
-        item.ifDefault = base.N;
+      const upds = r.data.filter(item => item.ifDefault === final.Y).map(item => {
+        item.ifDefault = final.N;
         return item;
       });
       if (upds.length > 0) {
@@ -67,14 +67,14 @@ export class DicDataService {
   }
 
   async insDicDatas(dtos: DicDataInsOneDto[]): Promise<R> {
-    const dicDataInsOneDtos = dtos.filter(item => item.ifDefault === base.Y);
+    const dicDataInsOneDtos = dtos.filter(item => item.ifDefault === final.Y);
     if (dicDataInsOneDtos.length > 1) {
       throw new Exception('只允许有一个默认值。');
     }
     if (dicDataInsOneDtos.length === 1) {
       const r = await this.selAllDicData({ dicTypeId: dicDataInsOneDtos[0].dicTypeId });
-      const upds = r.data.filter(item => item.ifDefault === base.Y).map(item => {
-        item.ifDefault = base.N;
+      const upds = r.data.filter(item => item.ifDefault === final.Y).map(item => {
+        item.ifDefault = final.N;
         return item;
       });
       if (upds.length > 0) {
@@ -86,10 +86,10 @@ export class DicDataService {
   }
 
   async updDicData(dto: DicDataUpdOneDto): Promise<R> {
-    if (dto.ifDefault === base.Y) {
+    if (dto.ifDefault === final.Y) {
       const r = await this.selAllDicData({ dicTypeId: dto.dicTypeId });
-      const upds = r.data.filter(item => item.ifDefault === base.Y && item.id !== dto.id).map(item => {
-        item.ifDefault = base.N;
+      const upds = r.data.filter(item => item.ifDefault === final.Y && item.id !== dto.id).map(item => {
+        item.ifDefault = final.N;
         return item;
       });
       if (upds.length > 0) {
@@ -101,14 +101,14 @@ export class DicDataService {
   }
 
   async updDicDatas(dtos: DicDataUpdOneDto[]): Promise<R> {
-    const dicDataUpdOneDtos = dtos.filter(item => item.ifDefault === base.Y);
+    const dicDataUpdOneDtos = dtos.filter(item => item.ifDefault === final.Y);
     if (dicDataUpdOneDtos.length > 1) {
       throw new Exception('只允许有一个默认值。');
     }
     if (dicDataUpdOneDtos.length === 1) {
       const r = await this.selAllDicData({ dicTypeId: dicDataUpdOneDtos[0].dicTypeId });
-      const upds = r.data.filter(item => item.ifDefault === base.Y && item.id !== dicDataUpdOneDtos[0].id).map(item => {
-        item.ifDefault = base.N;
+      const upds = r.data.filter(item => item.ifDefault === final.Y && item.id !== dicDataUpdOneDtos[0].id).map(item => {
+        item.ifDefault = final.N;
         return item;
       });
       if (upds.length > 0) {

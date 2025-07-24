@@ -4,7 +4,7 @@ import { R } from '../../../../../common/R';
 import { ScheduledTaskDto, ScheduledTaskSelListDto, ScheduledTaskSelAllDto, ScheduledTaskInsOneDto, ScheduledTaskUpdOneDto } from './dto';
 import { BaseContextService } from '../../../../base-context/base-context.service';
 import { ScheduleService } from "../../../../schedule/schedule.service";
-import { base } from "../../../../../util/base";
+import { final } from "../../../../../util/base";
 
 @Injectable()
 export class ScheduledTaskService {
@@ -47,7 +47,7 @@ export class ScheduledTaskService {
 
   async insScheduledTask(dto: ScheduledTaskInsOneDto): Promise<R> {
     const res = await this.mysqlPrisma.create<ScheduledTaskDto>('sys_scheduled_task', dto);
-    if (res.ifDisabled === base.N) {
+    if (res.ifDisabled === final.N) {
       this.scheduleService.dbInsSchedule(res.target, res.cronExpression);
     }
     return R.ok(res);
@@ -62,7 +62,7 @@ export class ScheduledTaskService {
     const oldTask = await this.selOneScheduledTask(dto.id);
     const res = await this.mysqlPrisma.updateById<ScheduledTaskDto>('sys_scheduled_task', dto);
     this.scheduleService.dbDelSchedule(oldTask.data.target)
-    if (res.ifDisabled === base.N) {
+    if (res.ifDisabled === final.N) {
       this.scheduleService.dbInsSchedule(res.target, res.cronExpression)
     }
     return R.ok(res);

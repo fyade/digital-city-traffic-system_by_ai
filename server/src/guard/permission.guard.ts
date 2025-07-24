@@ -13,8 +13,8 @@ import { UnauthorizedException } from '../exception/unauthorized.exception';
 import { CacheTokenService } from '../module/cache/cache.token.service';
 import { BaseContextService } from '../module/base-context/base-context.service';
 import { getTokenUuidFromAuth } from '../util/RequestUtils';
-import { AuthTypeEnum } from '../util/base';
 import { serverConfig } from '@dcts/config';
+import { base } from "@dcts/common";
 
 const serverCurrentConfig = serverConfig.currentConfig();
 
@@ -59,7 +59,7 @@ export class PermissionGuard implements CanActivate {
       ifTrue = true;
     }
 
-    let authType = AuthTypeEnum.token;
+    let authType = base.AuthTypeEnum.token;
 
     const headerApiKey = request.headers[serverCurrentConfig.headerApiKeyName];
     if (headerApiKey) {
@@ -70,7 +70,7 @@ export class PermissionGuard implements CanActivate {
         userData.loginRole = userInfoByKey.user_role;
         this.bcs.setUserData(userData);
         apiKeyUsable = true;
-        authType = AuthTypeEnum.apiKey;
+        authType = base.AuthTypeEnum.apiKey;
       }
     }
 

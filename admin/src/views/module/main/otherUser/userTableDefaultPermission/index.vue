@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { reactive, ref, watch } from "vue";
-import { CONFIG, final, uTDPTypeDict, UTDPTypeEnum } from "@/utils/base.ts";
+import { CONFIG, final } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
@@ -24,6 +24,7 @@ import UserTableUserGroup from "@/views/module/main/otherUser/userTableDefaultPe
 import { roleApi } from "@/api/module/main/sysManage/role.ts";
 import { deptApi } from "@/api/module/main/sysManage/dept.ts";
 import { userGroupApi } from "@/api/module/algorithm/userGroup.ts";
+import { base } from "@dcts/common";
 
 const state = reactive<State2<UserTableDefaultPermissionDto, UserTableDefaultPermissionUpdDto>>({
   dialogForm: {
@@ -99,13 +100,13 @@ const allRolesOfThisPage = ref<RoleDto[]>([])
 const allDeptsOfThisPage = ref<DeptDto[]>([])
 const allUserGroupsOfThisPage = ref<UserGroupDto[]>([])
 const selectAllPs = () => {
-  roleApi.selectByIds(tableData.value.filter(item => item.permType === UTDPTypeEnum.T_ROLE).map(item => item.permId)).then(res => {
+  roleApi.selectByIds(tableData.value.filter(item => item.permType === base.UTDPTypeEnum.T_ROLE).map(item => item.permId)).then(res => {
     allRolesOfThisPage.value = res
   })
-  deptApi.selectByIds(tableData.value.filter(item => item.permType === UTDPTypeEnum.T_DEPT).map(item => item.permId)).then(res => {
+  deptApi.selectByIds(tableData.value.filter(item => item.permType === base.UTDPTypeEnum.T_DEPT).map(item => item.permId)).then(res => {
     allDeptsOfThisPage.value = res
   })
-  userGroupApi.selectByIds(tableData.value.filter(item => item.permType === UTDPTypeEnum.T_UG).map(item => item.permId)).then(res => {
+  userGroupApi.selectByIds(tableData.value.filter(item => item.permType === base.UTDPTypeEnum.T_UG).map(item => item.permId)).then(res => {
     allUserGroupsOfThisPage.value = res
   })
 }
@@ -117,13 +118,13 @@ const selectRole = ref<RoleDto|null>(null)
 const selectDept = ref<DeptDto|null>(null)
 const selectUserGroup = ref<UserGroupDto|null>(null)
 const selectPerm = () => {
-  if (state.dialogForm.permType === UTDPTypeEnum.T_ROLE) {
+  if (state.dialogForm.permType === base.UTDPTypeEnum.T_ROLE) {
     drawer1.value = true
   }
-  if (state.dialogForm.permType === UTDPTypeEnum.T_DEPT) {
+  if (state.dialogForm.permType === base.UTDPTypeEnum.T_DEPT) {
     drawer2.value = true
   }
-  if (state.dialogForm.permType === UTDPTypeEnum.T_UG) {
+  if (state.dialogForm.permType === base.UTDPTypeEnum.T_UG) {
     drawer3.value = true
   }
 }
@@ -240,9 +241,9 @@ const chooseUserGroup = (row: UserGroupDto) => {
             <el-form-item :label="userTableDefaultPermissionDict.permType" prop="permType">
               <!--<el-input v-model="state.dialogForm.permType" :placeholder="userTableDefaultPermissionDict.permType"/>-->
               <el-radio-group v-model="state.dialogForm.permType">
-                <el-radio :value="UTDPTypeEnum.T_ROLE">{{ uTDPTypeDict[UTDPTypeEnum.T_ROLE] }}</el-radio>
-                <el-radio :value="UTDPTypeEnum.T_DEPT">{{ uTDPTypeDict[UTDPTypeEnum.T_DEPT] }}</el-radio>
-                <el-radio :value="UTDPTypeEnum.T_UG">{{ uTDPTypeDict[UTDPTypeEnum.T_UG] }}</el-radio>
+                <el-radio :value="base.UTDPTypeEnum.T_ROLE">{{ base.uTDPTypeDict[base.UTDPTypeEnum.T_ROLE] }}</el-radio>
+                <el-radio :value="base.UTDPTypeEnum.T_DEPT">{{ base.uTDPTypeDict[base.UTDPTypeEnum.T_DEPT] }}</el-radio>
+                <el-radio :value="base.UTDPTypeEnum.T_UG">{{ base.uTDPTypeDict[base.UTDPTypeEnum.T_UG] }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -252,19 +253,19 @@ const chooseUserGroup = (row: UserGroupDto) => {
             <el-form-item :label="userTableDefaultPermissionDict.permId" prop="permId">
               <!--<el-input-number v-model="state.dialogForm.permId" controls-position="right"/>-->
               <div>
-                <div v-if="state.dialogForm.permType === UTDPTypeEnum.T_ROLE">
+                <div v-if="state.dialogForm.permType === base.UTDPTypeEnum.T_ROLE">
                   <div v-if="selectRole">
                     {{ selectRole.label }}
                   </div>
                   <div v-else>未选择</div>
                 </div>
-                <div v-if="state.dialogForm.permType === UTDPTypeEnum.T_DEPT">
+                <div v-if="state.dialogForm.permType === base.UTDPTypeEnum.T_DEPT">
                   <div v-if="selectDept">
                     {{ selectDept.label }}
                   </div>
                   <div v-else>未选择</div>
                 </div>
-                <div v-if="state.dialogForm.permType === UTDPTypeEnum.T_UG">
+                <div v-if="state.dialogForm.permType === base.UTDPTypeEnum.T_UG">
                   <div v-if="selectUserGroup">
                     {{ selectUserGroup.label }}
                   </div>
@@ -328,9 +329,9 @@ const chooseUserGroup = (row: UserGroupDto) => {
               <div :class="state.dialogForms_error?.[`${$index}-permType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
                 <!--<el-input v-model="state.dialogForms[$index].permType" :placeholder="userTableDefaultPermissionDict.permType"/>-->
                 <el-radio-group v-model="state.dialogForms[$index].permType">
-                  <el-radio :value="UTDPTypeEnum.T_ROLE">{{ uTDPTypeDict[UTDPTypeEnum.T_ROLE] }}</el-radio>
-                  <el-radio :value="UTDPTypeEnum.T_DEPT">{{ uTDPTypeDict[UTDPTypeEnum.T_DEPT] }}</el-radio>
-                  <el-radio :value="UTDPTypeEnum.T_UG">{{ uTDPTypeDict[UTDPTypeEnum.T_UG] }}</el-radio>
+                  <el-radio :value="base.UTDPTypeEnum.T_ROLE">{{ base.uTDPTypeDict[base.UTDPTypeEnum.T_ROLE] }}</el-radio>
+                  <el-radio :value="base.UTDPTypeEnum.T_DEPT">{{ base.uTDPTypeDict[base.UTDPTypeEnum.T_DEPT] }}</el-radio>
+                  <el-radio :value="base.UTDPTypeEnum.T_UG">{{ base.uTDPTypeDict[base.UTDPTypeEnum.T_UG] }}</el-radio>
                 </el-radio-group>
               </div>
             </template>
@@ -415,18 +416,18 @@ const chooseUserGroup = (row: UserGroupDto) => {
       <el-table-column prop="tableName" :label="userTableDefaultPermissionDict.tableName" width="180"/>
       <el-table-column prop="permType" :label="userTableDefaultPermissionDict.permType" width="120">
         <template #default="{row}">
-          {{ uTDPTypeDict[row.permType as UTDPTypeEnum] }}
+          {{ base.uTDPTypeDict[row.permType as base.UTDPTypeEnum] }}
         </template>
       </el-table-column>
       <el-table-column prop="permId" :label="userTableDefaultPermissionDict.permId" width="300">
         <template #default="{row}">
-          <template v-if="row.permType===UTDPTypeEnum.T_ROLE">
+          <template v-if="row.permType===base.UTDPTypeEnum.T_ROLE">
             {{ allRolesOfThisPage.find(item => item.id === row.permId)?.label }}
           </template>
-          <template v-if="row.permType===UTDPTypeEnum.T_DEPT">
+          <template v-if="row.permType===base.UTDPTypeEnum.T_DEPT">
             {{ allDeptsOfThisPage.find(item => item.id === row.permId)?.label }}
           </template>
-          <template v-if="row.permType===UTDPTypeEnum.T_UG">
+          <template v-if="row.permType===base.UTDPTypeEnum.T_UG">
             {{ allUserGroupsOfThisPage.find(item => item.id === row.permId)?.label }}
           </template>
         </template>

@@ -9,11 +9,11 @@ import { MdRefresh, MdSearch } from '@vicons/ionicons4'
 import { SignalLightStrategyTypeDto, SignalLightStrategyTypeUpdDto } from "@/type/module/dcts/signalLightStrategy/signalLightStrategyType.ts";
 import { signalLightStrategyTypeApi } from "@/api/module/dcts/signalLightStrategy/signalLightStrategyType.ts";
 import { signalLightStrategyTypeDict } from "@/dict/module/dcts/signalLightStrategy/signalLightStrategyType.ts";
-import { final, sLSSTTypeDict, SLSSTTypeEnum, sLSTTTypeDict, SLSTTTypeEnum } from "@/utils/base.ts";
+import { final } from "@/utils/base.ts";
 import { signalLightGroupStrategyTypeMappingApi } from "@/api/module/dcts/signalLightStrategy/signalLightGroupStrategyTypeMapping.ts";
 import { SignalLightGroupStrategyTypeMappingDto, SignalLightGroupStrategyTypeMappingInsDto } from "@/type/module/dcts/signalLightStrategy/signalLightGroupStrategyTypeMapping.ts";
 import { nOptionIfDisabled, nOptionSLSST, nOptionSLSTT } from "@/utils/naiveBase.ts";
-import { timeUtils } from "@dcts/common";
+import { base, timeUtils } from "@dcts/common";
 
 const props = defineProps({
   groupId: {
@@ -57,14 +57,14 @@ const columns: DataTableColumns<SignalLightStrategyTypeDto> = [
     title: signalLightStrategyTypeDict.strategyType,
     key: 'strategyType',
     render(row) {
-      return sLSTTTypeDict[row.strategyType as SLSTTTypeEnum]
+      return base.sLSTTTypeDict[row.strategyType as base.SLSTTTypeEnum]
     }
   },
   {
     title: signalLightStrategyTypeDict.scheduleType,
     key: 'scheduleType',
     render(row) {
-      return sLSSTTypeDict[row.scheduleType as SLSSTTypeEnum]
+      return base.sLSSTTypeDict[row.scheduleType as base.SLSSTTypeEnum]
     }
   },
   {

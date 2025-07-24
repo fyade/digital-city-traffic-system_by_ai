@@ -68,7 +68,7 @@ const getRoutes = () => {
                 default: () => meta.label
               }),
           key: route.path,
-          icon: () => h(SvgIcon, {name: meta.icon, color: '#000'}),
+          icon: () => h(SvgIcon, {name: meta.icon, color: 'var(--menu-icon-color)'}),
         }
       })
   const arr2ToDiguiObj1 = arr2ToDiguiObj2<MenuOption>(_menuOptions);

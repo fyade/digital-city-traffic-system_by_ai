@@ -3,7 +3,6 @@ import { R } from './common/R';
 import { NonSupportException } from './exception/non-support.exception';
 import { AuthService } from './module/auth/auth.service';
 import { getAllFiles } from './util/FileUtils';
-import { MenuTypeEnum } from './util/base';
 import { BaseContextService } from './module/base-context/base-context.service';
 import { serverConfig } from "@dcts/config";
 import * as fs from 'node:fs';
@@ -12,6 +11,7 @@ import { REGEX_MAIN_APP_1_match, REGEX_MAIN_APP_2_match, REGEX_MAIN_APP_3_match 
 import { WinstonService } from "./module/winston/winston.service";
 import { MysqlPrismaoService } from "./prisma/mysql.prismao.service";
 import { PrismaoService } from "./prisma/prismao.service";
+import { base } from "@dcts/common";
 
 const si = require("systeminformation");
 
@@ -154,7 +154,7 @@ export class AppService {
       userId: this.bcs.getUserData().userId,
       loginRole: this.bcs.getUserData().loginRole,
       sysId,
-      menuType: [MenuTypeEnum.T_MENU, MenuTypeEnum.T_COMP],
+      menuType: [base.MenuTypeEnum.T_MENU, base.MenuTypeEnum.T_COMP],
     });
     return R.ok(permissionsOfUser);
   }
@@ -164,7 +164,7 @@ export class AppService {
       userId: this.bcs.getUserData().userId,
       loginRole: this.bcs.getUserData().loginRole,
       sysId,
-      menuType: [MenuTypeEnum.T_IS, MenuTypeEnum.T_Inter],
+      menuType: [base.MenuTypeEnum.T_IS, base.MenuTypeEnum.T_Inter],
     });
     return R.ok(buttonsOfUser);
   }

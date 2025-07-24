@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { reactive, ref } from "vue";
-import { CONFIG, final, sLSSTTypeDict, SLSSTTypeEnum, sLSTTTypeDict, SLSTTTypeEnum } from "@/utils/base.ts";
+import { CONFIG, final } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
@@ -16,7 +16,7 @@ import { SignalLightStrategyTypeDto, SignalLightStrategyTypeUpdDto } from "@/typ
 import { signalLightStrategyTypeApi } from "@/api/module/dcts/signalLightStrategy/signalLightStrategyType.ts";
 import { signalLightStrategyTypeDict } from "@/dict/module/dcts/signalLightStrategy/signalLightStrategyType.ts";
 import StrategyScheduleOfStrategyType from "@/views/module/dcts/signalLightStrategy/signalLightStrategyType/strategyScheduleOfStrategyType.vue";
-import { timeUtils } from "@dcts/common";
+import { base, timeUtils } from "@dcts/common";
 
 const state = reactive<State2<SignalLightStrategyTypeDto, SignalLightStrategyTypeUpdDto>>({
   dialogForm: {
@@ -167,9 +167,9 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
             <el-form-item :label="signalLightStrategyTypeDict.strategyType" prop="strategyType">
               <!--<el-input v-model="state.dialogForm.strategyType" :placeholder="signalLightStrategyTypeDict.strategyType"/>-->
               <el-radio-group v-model="state.dialogForm.strategyType">
-                <el-radio :value="SLSTTTypeEnum.T_CUSTOM">{{ sLSTTTypeDict[SLSTTTypeEnum.T_CUSTOM] }}</el-radio>
-                <el-radio :value="SLSTTTypeEnum.T_FINE_TUNING">{{ sLSTTTypeDict[SLSTTTypeEnum.T_FINE_TUNING] }}</el-radio>
-                <el-radio :value="SLSTTTypeEnum.T_TOP">{{ sLSTTTypeDict[SLSTTTypeEnum.T_TOP] }}</el-radio>
+                <el-radio :value="base.SLSTTTypeEnum.T_CUSTOM">{{ base.sLSTTTypeDict[base.SLSTTTypeEnum.T_CUSTOM] }}</el-radio>
+                <el-radio :value="base.SLSTTTypeEnum.T_FINE_TUNING">{{ base.sLSTTTypeDict[base.SLSTTTypeEnum.T_FINE_TUNING] }}</el-radio>
+                <el-radio :value="base.SLSTTTypeEnum.T_TOP">{{ base.sLSTTTypeDict[base.SLSTTTypeEnum.T_TOP] }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -177,7 +177,7 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
             <el-form-item :label="signalLightStrategyTypeDict.scheduleType" prop="scheduleType">
               <!--<el-input v-model="state.dialogForm.scheduleType" :placeholder="signalLightStrategyTypeDict.scheduleType"/>-->
               <el-radio-group v-model="state.dialogForm.scheduleType">
-                <el-radio :value="SLSSTTypeEnum.T_DAY">{{ sLSSTTypeDict[SLSSTTypeEnum.T_DAY] }}</el-radio>
+                <el-radio :value="base.SLSSTTypeEnum.T_DAY">{{ base.sLSSTTypeDict[base.SLSSTTypeEnum.T_DAY] }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -280,9 +280,9 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
               <div :class="state.dialogForms_error?.[`${$index}-strategyType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
                 <!--<el-input v-model="state.dialogForms[$index].strategyType" :placeholder="signalLightStrategyTypeDict.strategyType"/>-->
                 <el-radio-group v-model="state.dialogForms[$index].strategyType">
-                  <el-radio :value="SLSTTTypeEnum.T_CUSTOM">{{ sLSTTTypeDict[SLSTTTypeEnum.T_CUSTOM] }}</el-radio>
-                  <el-radio :value="SLSTTTypeEnum.T_FINE_TUNING">{{ sLSTTTypeDict[SLSTTTypeEnum.T_FINE_TUNING] }}</el-radio>
-                  <el-radio :value="SLSTTTypeEnum.T_TOP">{{ sLSTTTypeDict[SLSTTTypeEnum.T_TOP] }}</el-radio>
+                  <el-radio :value="base.SLSTTTypeEnum.T_CUSTOM">{{ base.sLSTTTypeDict[base.SLSTTTypeEnum.T_CUSTOM] }}</el-radio>
+                  <el-radio :value="base.SLSTTTypeEnum.T_FINE_TUNING">{{ base.sLSTTTypeDict[base.SLSTTTypeEnum.T_FINE_TUNING] }}</el-radio>
+                  <el-radio :value="base.SLSTTTypeEnum.T_TOP">{{ base.sLSTTTypeDict[base.SLSTTTypeEnum.T_TOP] }}</el-radio>
                 </el-radio-group>
               </div>
             </template>
@@ -295,7 +295,7 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
               <div :class="state.dialogForms_error?.[`${$index}-scheduleType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
                 <!--<el-input v-model="state.dialogForms[$index].scheduleType" :placeholder="signalLightStrategyTypeDict.scheduleType"/>-->
                 <el-radio-group v-model="state.dialogForms[$index].scheduleType">
-                  <el-radio :value="SLSSTTypeEnum.T_DAY">{{ sLSSTTypeDict[SLSSTTypeEnum.T_DAY] }}</el-radio>
+                  <el-radio :value="base.SLSSTTypeEnum.T_DAY">{{ base.sLSSTTypeDict[base.SLSSTTypeEnum.T_DAY] }}</el-radio>
                 </el-radio-group>
               </div>
             </template>
@@ -391,15 +391,15 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
       <el-form-item :label="signalLightStrategyTypeDict.strategyType" prop="strategyType">
         <!--<el-input v-model="state.filterForm.strategyType" :placeholder="signalLightStrategyTypeDict.strategyType"/>-->
         <el-select v-model="state.filterForm.strategyType" :placeholder="signalLightStrategyTypeDict.strategyType" clearable filterable>
-          <el-option :label="sLSTTTypeDict[SLSTTTypeEnum.T_CUSTOM]" :value="SLSTTTypeEnum.T_CUSTOM"/>
-          <el-option :label="sLSTTTypeDict[SLSTTTypeEnum.T_FINE_TUNING]" :value="SLSTTTypeEnum.T_FINE_TUNING"/>
-          <el-option :label="sLSTTTypeDict[SLSTTTypeEnum.T_TOP]" :value="SLSTTTypeEnum.T_TOP"/>
+          <el-option :label="base.sLSTTTypeDict[base.SLSTTTypeEnum.T_CUSTOM]" :value="base.SLSTTTypeEnum.T_CUSTOM"/>
+          <el-option :label="base.sLSTTTypeDict[base.SLSTTTypeEnum.T_FINE_TUNING]" :value="base.SLSTTTypeEnum.T_FINE_TUNING"/>
+          <el-option :label="base.sLSTTTypeDict[base.SLSTTTypeEnum.T_TOP]" :value="base.SLSTTTypeEnum.T_TOP"/>
         </el-select>
       </el-form-item>
       <el-form-item :label="signalLightStrategyTypeDict.scheduleType" prop="scheduleType">
         <!--<el-input v-model="state.filterForm.scheduleType" :placeholder="signalLightStrategyTypeDict.scheduleType"/>-->
         <el-select  v-model="state.filterForm.scheduleType" :placeholder="signalLightStrategyTypeDict.scheduleType" clearable filterable>
-          <el-option :label="sLSSTTypeDict[SLSSTTypeEnum.T_DAY]" :value="SLSSTTypeEnum.T_DAY"/>
+          <el-option :label="base.sLSSTTypeDict[base.SLSSTTypeEnum.T_DAY]" :value="base.SLSSTTypeEnum.T_DAY"/>
         </el-select>
       </el-form-item>
       <el-form-item :label="signalLightStrategyTypeDict.ifDisabled" prop="ifDisabled">
@@ -447,12 +447,12 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
       <el-table-column prop="description" :label="signalLightStrategyTypeDict.description" width="240"/>
       <el-table-column prop="strategyType" :label="signalLightStrategyTypeDict.strategyType" width="120">
         <template #default="{row}">
-          {{ sLSTTTypeDict[row.strategyType as SLSTTTypeEnum] }}
+          {{ base.sLSTTTypeDict[row.strategyType as base.SLSTTTypeEnum] }}
         </template>
       </el-table-column>
       <el-table-column prop="scheduleType" :label="signalLightStrategyTypeDict.scheduleType" width="120">
         <template #default="{row}">
-          {{ sLSSTTypeDict[row.scheduleType as SLSSTTypeEnum] }}
+          {{ base.sLSSTTypeDict[row.scheduleType as base.SLSSTTypeEnum] }}
         </template>
       </el-table-column>
       <el-table-column prop="startTime" :label="signalLightStrategyTypeDict.startTime" width="180">

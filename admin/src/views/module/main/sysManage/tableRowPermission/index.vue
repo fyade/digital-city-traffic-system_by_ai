@@ -8,7 +8,7 @@ export default {
 import { computed, reactive, ref, useTemplateRef } from "vue";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
 import { MenuDto, MenuUpdDto } from "@/type/module/main/sysManage/menu.ts";
-import { final, MenuTypeEnum, uTDPTypeDict, UTDPTypeEnum } from "@/utils/base.ts";
+import { final } from "@/utils/base.ts";
 import { FormRules, TreeInstance } from "element-plus";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { menuApi } from "@/api/module/main/sysManage/menu.ts";
@@ -22,6 +22,7 @@ import { roleApi } from "@/api/module/main/sysManage/role.ts";
 import { RoleDto } from "@/type/module/main/sysManage/role.ts";
 import { DeptDto } from "@/type/module/main/sysManage/dept.ts";
 import { deptApi } from "@/api/module/main/sysManage/dept.ts";
+import { base } from "@dcts/common";
 
 const state = reactive<State2<MenuDto, MenuUpdDto>>({
   dialogForm: new MenuDto(),
@@ -35,7 +36,7 @@ const config = new TablePageConfig<MenuDto<String>>({
   getDataOnMounted: false,
   bulkOperation: true,
   selectParam: {
-    type: { in: { value: [MenuTypeEnum.T_IS] } },
+    type: { in: { value: [base.MenuTypeEnum.T_IS] } },
     sysId: final.DEFAULT_PARENT_ID,
   },
 })
@@ -108,12 +109,12 @@ const treeRole = useTemplateRef<TreeInstance>('treeRole')
 const treeDept = useTemplateRef<TreeInstance>('treeDept')
 const selectActionId = ref(0)
 const nodeClickRole = (row: RoleDto) => {
-  selectRT.value = UTDPTypeEnum.T_ROLE
+  selectRT.value = base.UTDPTypeEnum.T_ROLE
   selectActionId.value = row.id
   treeDept.value?.setCurrentKey(void 0)
 }
 const nodeClickDept = (row: DeptDto) => {
-  selectRT.value = UTDPTypeEnum.T_DEPT
+  selectRT.value = base.UTDPTypeEnum.T_DEPT
   selectActionId.value = row.id
   treeRole.value?.setCurrentKey(void 0)
 }
@@ -147,11 +148,11 @@ const nodeClick = (row: MenuDto) => {
     <!--最左侧，选择角色或者部门-->
     <div class="left">
       <!--<el-radio-group v-model="selectRT" @change="selectRTChange">-->
-      <!--  <el-radio-button :value="T_ROLE" border>{{ uTDPTypeDict[T_ROLE] }}</el-radio-button>-->
-      <!--  <el-radio-button :value="T_DEPT" border>{{ uTDPTypeDict[T_DEPT] }}</el-radio-button>-->
+      <!--  <el-radio-button :value="T_ROLE" border>{{ base.uTDPTypeDict[T_ROLE] }}</el-radio-button>-->
+      <!--  <el-radio-button :value="T_DEPT" border>{{ base.uTDPTypeDict[T_DEPT] }}</el-radio-button>-->
       <!--</el-radio-group>-->
       <!--<div v-if="selectRT===T_ROLE">-->
-      <el-divider content-position="left" border-style="dashed">{{ uTDPTypeDict[UTDPTypeEnum.T_ROLE] }}</el-divider>
+      <el-divider content-position="left" border-style="dashed">{{ base.uTDPTypeDict[base.UTDPTypeEnum.T_ROLE] }}</el-divider>
       <el-tree
           ref="treeRole"
           :data="allRoles2"
@@ -161,7 +162,7 @@ const nodeClick = (row: MenuDto) => {
       />
       <!--</div>-->
       <!--<div v-if="selectRT===T_DEPT">-->
-      <el-divider content-position="left" border-style="dashed">{{ uTDPTypeDict[UTDPTypeEnum.T_DEPT] }}</el-divider>
+      <el-divider content-position="left" border-style="dashed">{{ base.uTDPTypeDict[base.UTDPTypeEnum.T_DEPT] }}</el-divider>
       <el-tree
           ref="treeDept"
           :data="allDepts2"

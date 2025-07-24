@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, inject, nextTick, reactive, ref, Ref } from "vue";
-import { CONFIG, final, MenuTypeEnum } from "@/utils/base.ts";
+import { final } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
@@ -15,6 +15,7 @@ import { RoleDto } from "@/type/module/main/sysManage/role.ts";
 import { SysDto } from "@/type/module/main/sysManage/sys.ts";
 import { sysApi } from "@/api/module/main/sysManage/sys.ts";
 import { roleDict } from "@/dict/module/main/sysManage/role.ts";
+import { base } from "@dcts/common";
 
 const props = defineProps({
   selectRole: {
@@ -64,7 +65,7 @@ const config = new TablePageConfig<MenuDto<string>>({
   bulkOperation: true,
   pageQuery: false,
   selectParam: {
-    type: {in: {value: [MenuTypeEnum.T_MENU, MenuTypeEnum.T_COMP]}},
+    type: {in: {value: [base.MenuTypeEnum.T_MENU, base.MenuTypeEnum.T_COMP]}},
     sysId: final.DEFAULT_PARENT_ID,
   },
   selectListCallback: () => {
@@ -145,10 +146,10 @@ const handleCheckChange = (
 const loadNode = (node: Node, resolve: (data: (MenuDto & {leaf?: boolean, disabled?: boolean})[]) => void) => {
   menuApi.selectAll({
     parentId: node.level === 0 ? final.DEFAULT_PARENT_ID : node.data.id,
-    type: {in: {value: [MenuTypeEnum.T_IS, MenuTypeEnum.T_Inter]}},
+    type: {in: {value: [base.MenuTypeEnum.T_IS, base.MenuTypeEnum.T_Inter]}},
     sysId: selectSys.value || final.DEFAULT_PARENT_ID,
   }).then((res: MenuDto[]) => {
-    resolve(res.map(item => ({...item, leaf: item.type === MenuTypeEnum.T_Inter })))
+    resolve(res.map(item => ({...item, leaf: item.type === base.MenuTypeEnum.T_Inter })))
   })
 }
 

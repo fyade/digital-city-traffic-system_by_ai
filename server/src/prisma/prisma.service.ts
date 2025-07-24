@@ -7,7 +7,6 @@ import { PrismaoService } from "./prismao.service";
 import { AuthService } from '../module/auth/auth.service';
 import { BaseContextService } from '../module/base-context/base-context.service';
 import { WinstonService } from "../module/winston/winston.service";
-import { base, UTDPTypeEnum } from '../util/base';
 import { baseUtils, objectUtils } from "@dcts/common";
 
 enum RowPermissionEnum {

@@ -46,7 +46,7 @@ icons.value = Object.keys(files).map((path) => {
     <template #default="{item}">
       <div>
         <el-space>
-          <SvgIcon :name="item.value" :color="CONFIG.icon_black"/>
+          <SvgIcon :name="item.value" color="var(--menu-icon-color)"/>
           <span>{{ item.label }}</span>
         </el-space>
       </div>

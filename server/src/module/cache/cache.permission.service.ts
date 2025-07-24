@@ -1,6 +1,6 @@
 import { RedisService } from '../../redis/redis.service';
 import { Injectable } from '@nestjs/common';
-import { base } from '../../util/base';
+import { final } from '../../util/base';
 import { MenuIpWhiteListDto } from '../module/main/sys-manage/menu-ip-white-list/dto';
 import { MenuThrottleDto } from '../module/main/sys-manage/menu-throttle/dto';
 
@@ -33,7 +33,7 @@ export class CachePermissionService {
    * @param ifHave
    */
   async setPermissionInCache(userId: string, permission: string, loginRole: string, ifHave: boolean) {
-    await this.redis.hset(this.USER_PERMISSION, `${permission}---${loginRole}---${userId}`, ifHave ? base.Y : base.N);
+    await this.redis.hset(this.USER_PERMISSION, `${permission}---${loginRole}---${userId}`, ifHave ? final.Y : final.N);
   }
 
   /**
@@ -42,7 +42,7 @@ export class CachePermissionService {
    */
   async ifPublicPermissionInCache(permission: string) {
     const value = await this.redis.hget(this.PERMISSION_PUBLIC, `${permission}`);
-    return value === base.Y;
+    return value === final.Y;
   }
 
   /**
@@ -134,7 +134,7 @@ export class CachePermissionService {
   }
 
   async setAdminTopInCache(loginRole: string, userId: string, ifAdmin: boolean) {
-    await this.redis.hset(`${this.ADMIN_TOP}:${loginRole}`, userId, ifAdmin ? base.Y : base.N);
+    await this.redis.hset(`${this.ADMIN_TOP}:${loginRole}`, userId, ifAdmin ? final.Y : final.N);
   }
 
   async getAdminTopInCache(loginRole: string, userId: string) {

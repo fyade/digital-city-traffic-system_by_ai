@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive } from "vue";
-import { CONFIG, final, mTTypeDict, MTTypeEnum } from "@/utils/base.ts";
+import { CONFIG, final } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
@@ -11,6 +11,7 @@ import { menuThrottleApi } from "@/api/module/main/sysManage/menuThrottle.ts";
 import { menuThrottleDict } from "@/dict/module/main/sysManage/menuThrottle.ts";
 import { MenuDto } from "@/type/module/main/sysManage/menu.ts";
 import { menuDictInter } from "@/dict/module/main/sysManage/menu.ts";
+import { base } from "@dcts/common";
 
 const props = defineProps({
   menu: {
@@ -25,7 +26,7 @@ const state = reactive<State2<MenuThrottleDto, MenuThrottleUpdDto>>({
     menuId: props.menu.id,
     ttl: 0,
     limit: 0,
-    type: MTTypeEnum.T_IP,
+    type: base.MTTypeEnum.T_IP,
     remark: '',
   },
   dialogForms: [],
@@ -137,7 +138,7 @@ const {
             <el-form-item :label="menuThrottleDict.type" prop="type">
               <!--<el-input v-model="state.dialogForm.type" :placeholder="menuThrottleDict.type"/>-->
               <el-radio-group v-model="state.dialogForm.type">
-                <el-radio :value="MTTypeEnum.T_IP">{{ mTTypeDict[MTTypeEnum.T_IP] }}</el-radio>
+                <el-radio :value="base.MTTypeEnum.T_IP">{{ base.mTTypeDict[base.MTTypeEnum.T_IP] }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -211,7 +212,7 @@ const {
               <div :class="state.dialogForms_error?.[`${$index}-type`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
                 <!--<el-input v-model="state.dialogForms[$index].type" :placeholder="menuThrottleDict.type"/>-->
                 <el-radio-group v-model="state.dialogForms[$index].type">
-                  <el-radio :value="MTTypeEnum.T_IP">{{ mTTypeDict[MTTypeEnum.T_IP] }}</el-radio>
+                  <el-radio :value="base.MTTypeEnum.T_IP">{{ base.mTTypeDict[base.MTTypeEnum.T_IP] }}</el-radio>
                 </el-radio-group>
               </div>
             </template>

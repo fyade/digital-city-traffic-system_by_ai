@@ -15,7 +15,7 @@
  */
 import { CodeGenTableDto } from '../code-gen-table/dto';
 import { CodeGenColumnDto } from '../code-gen-column/dto';
-import { base } from '../../../../../util/base';
+import { final } from '../../../../../util/base';
 import { Exception } from '../../../../../exception/exception';
 import { SysDto } from '../../sys-manage/sys/dto';
 import { baseUtils } from "@dcts/common";
@@ -81,11 +81,11 @@ export function codeGeneration({ table, columns, sys }: { table: CodeGenTableDto
         .findIndex(item => item.colName === 'order_num') > -1,
       selKeys: columns
         .filter(item => !baseInterfaceColumns2.includes(item.tsName))
-        .filter(item => item.ifSelMore === base.Y)
+        .filter(item => item.ifSelMore === final.Y)
         .map(item => baseUtils.toCamelCase(item.colName)),
       notNullKeys: columns
         .filter(item => !baseInterfaceColumns2.includes(item.tsName))
-        .filter(item => item.ifRequired === base.Y)
+        .filter(item => item.ifRequired === final.Y)
         .map(item => baseUtils.toCamelCase(item.colName)),
       numberKeys: columns
         .filter(item => !baseInterfaceColumns2.includes(item.tsName))
@@ -114,7 +114,7 @@ export function codeGeneration({ table, columns, sys }: { table: CodeGenTableDto
     const selAllParam = selListParam;
 
     const selOnesParam = {
-      selKeys: columns.filter(item => item.ifSelMore === base.Y).map(item => baseUtils.toCamelCase(item.colName)),
+      selKeys: columns.filter(item => item.ifSelMore === final.Y).map(item => baseUtils.toCamelCase(item.colName)),
       ifDeleted: false,
     };
     if (ifDelSelKeys(selOnesParam.selKeys)) delete selOnesParam.selKeys;
@@ -123,7 +123,7 @@ export function codeGeneration({ table, columns, sys }: { table: CodeGenTableDto
     delete selOnesParam.ifDeleted;
 
     const selOneParam = {
-      selKeys: columns.filter(item => item.ifSelOne === base.Y).map(item => baseUtils.toCamelCase(item.colName)),
+      selKeys: columns.filter(item => item.ifSelOne === final.Y).map(item => baseUtils.toCamelCase(item.colName)),
       ifDeleted: false,
     };
     if (ifDelSelKeys(selOneParam.selKeys)) delete selOneParam.selKeys;
@@ -382,7 +382,7 @@ ${``}
 ${`export class ${moduleName2}SelListDto extends PageDto {`}
 ${
       columns
-        .filter(item => item.ifSelMore === base.Y)
+        .filter(item => item.ifSelMore === final.Y)
         .map(column => `  @ApiProperty({ description: '${column.colDescr}', required: false })\n  ${column.tsName}: ${column.tsType};`)
         .join('\n\n')
     }
@@ -391,7 +391,7 @@ ${``}
 ${`export class ${moduleName2}SelAllDto {`}
 ${
       columns
-        .filter(item => item.ifSelMore === base.Y)
+        .filter(item => item.ifSelMore === final.Y)
         .map(column => `  @ApiProperty({ description: '${column.colDescr}', required: false })\n  ${column.tsName}: ${column.tsType};`)
         .join('\n\n')
     }
@@ -400,18 +400,18 @@ ${``}
 ${`export class ${moduleName2}InsOneDto {`}
 ${
       columns
-        .filter(item => item.ifIns === base.Y)
+        .filter(item => item.ifIns === final.Y)
         .map(column => {
           let str: string = ''
-          str += `  @ApiProperty({ description: '${column.colDescr}', required: ${column.ifRequired === base.Y} })\n`
+          str += `  @ApiProperty({ description: '${column.colDescr}', required: ${column.ifRequired === final.Y} })\n`
           if (column.tsType === 'number') {
             str += `  @Type(() => Number)\n`
           }
-          if (column.ifRequired === base.Y) {
+          if (column.ifRequired === final.Y) {
             str += `  @IsNotEmpty({ message: '${column.colDescr}不能为空' })\n`
           }
           if (column.tsType === 'string' && column.mysqlLength > 0) {
-            if (column.ifRequired !== base.Y) {
+            if (column.ifRequired !== final.Y) {
               str += '  @IsOptional()\n';
             }
             str += `  @MaxLength(${column.mysqlLength}, { message: '${column.colDescr}不能超过${column.mysqlLength}个字符' })\n`
@@ -686,7 +686,7 @@ ${``}
 ${`export class ${moduleName2}InsDto {`}
 ${
     columns
-      .filter(item => item.ifIns === base.Y)
+      .filter(item => item.ifIns === final.Y)
       .map(column => `  ${column.tsName}!: ${column.tsType};`)
       .join('\n')
   }
@@ -697,7 +697,7 @@ ${`  id!: ${columns.find(item => item.colName === 'id').tsType};`}
 ${`}`}
 `;
   const qd2 =
-`${`import { publicDict } from "@/utils/base.ts";`}
+`${`import { publicDict } from "@/utils/final.ts";`}
 ${`import { ${moduleName2}Dto } from "@/type/module/${sysPath}${isBusiness?`/${businessName1}`:''}/${moduleName1}.ts";`}
 ${``}
 ${`export const ${moduleName1}Dict: { [P in keyof ${moduleName2}Dto]: string } = {`}
@@ -811,7 +811,7 @@ ${`</script>`}
 ` + `
 ${`<script setup lang="ts">`}
 ${`import { reactive } from "vue";`}
-${`import { CONFIG, final } from "@/utils/base.ts";`}
+${`import { CONFIG, final } from "@/utils/final.ts";`}
 ${`import Pagination from "@/components/pagination/pagination.vue";`}
 ${`import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";`}
 ${`import { State2, TablePageConfig } from "@/type/tablePage.ts";`}
@@ -826,7 +826,7 @@ ${`  dialogForm: {`}
 ${`    id: ${columns.find(item => item.colName === 'id').tsType === 'number' ? -1 : ''},`}
 ${
     columns
-      .filter(item => item.ifIns === base.Y)
+      .filter(item => item.ifIns === final.Y)
       .map(column => `    ${column.tsName}: ${qd3_dialogFormDefaultData.find(funcs => funcs[0](column.tsName))[1]()},`)
       .join('\n')
   }
@@ -838,7 +838,7 @@ ${`})`}
 ${`const dFormRules: FormRules<${moduleName2}Dto> = {`}
 ${
     columns
-      .filter(item=>item.ifRequired===base.Y)
+      .filter(item=>item.ifRequired===final.Y)
       .map(item=>`  ${item.tsName}: [{required: true, trigger: 'change'}],`)
       .join('\n')
   }
@@ -925,15 +925,15 @@ ${`        <!--在此下方添加表单项-->`}
 ${
     [
       ...columns
-        .filter(item => item.ifIns === base.Y)
+        .filter(item => item.ifIns === final.Y)
         .filter(item => item.tsName !== 'remark')
         .map((item, index) => `${qd3_dialogFormForm.find(funcs => funcs[0](item.formType, 0, 0))[1](
           item.tsName,
           index,
-          columns.filter(item => item.ifIns === base.Y).filter(item => item.tsName !== 'remark').length)}`
+          columns.filter(item => item.ifIns === final.Y).filter(item => item.tsName !== 'remark').length)}`
         ),
       ...columns
-        .filter(item => item.ifIns === base.Y)
+        .filter(item => item.ifIns === final.Y)
         .filter(item => item.tsName === 'remark')
         .map(() => `        <el-row>
           <el-col :span="24">
@@ -980,8 +980,8 @@ ${`            </template>`}
 ${`          </el-table-column>`}
 ${`          <!--在此下方添加表格列-->`}${
     columns
-      .filter(item => item.ifIns === base.Y)
-      .map((item, index) => `${qd3_dialogFormForm.find(funcs => funcs[0](item.formType, 0, 0))[2](item.tsName, index, columns.filter(item => item.ifIns === base.Y).length)}`)
+      .filter(item => item.ifIns === final.Y)
+      .map((item, index) => `${qd3_dialogFormForm.find(funcs => funcs[0](item.formType, 0, 0))[2](item.tsName, index, columns.filter(item => item.ifIns === final.Y).length)}`)
       .join('')
   }
 ${`          <!--在此上方添加表格列-->`}
@@ -1053,7 +1053,7 @@ ${`      <!--上面id列的宽度改一下-->`}
 ${`      <!--在此下方添加表格列-->`}
 ${
     columns
-      .filter(item => item.ifSelMore === base.Y)
+      .filter(item => item.ifSelMore === final.Y)
       .map(item => `      <el-table-column prop="${item.tsName}" :label="${moduleName1}Dict.${item.tsName}" width="120"/>`,
       )
       .join('\n')

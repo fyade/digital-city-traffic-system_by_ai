@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive } from "vue";
-import { CONFIG, final, MenuTypeEnum, mIWLTypeDict, TMWLTypeEnum } from "@/utils/base.ts";
+import { CONFIG, final } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
@@ -11,6 +11,7 @@ import { menuIpWhiteListApi } from "@/api/module/main/sysManage/menuIpWhiteList.
 import { menuIpWhiteListDict } from "@/dict/module/main/sysManage/menuIpWhiteList.ts";
 import { MenuDto } from "@/type/module/main/sysManage/menu.ts";
 import { menuDictInter } from "@/dict/module/main/sysManage/menu.ts";
+import { base } from "@dcts/common";
 
 const props = defineProps({
   menu: {
@@ -24,8 +25,8 @@ const state = reactive<State2<MenuIpWhiteListDto, MenuIpWhiteListUpdDto>>({
     id: -1,
     menuId: props.menu.id,
     whiteList: '',
-    fromType: TMWLTypeEnum.T_IP,
-    type: MenuTypeEnum.T_IS,
+    fromType: base.TMWLTypeEnum.T_IP,
+    type: base.MenuTypeEnum.T_IS,
     remark: '',
   },
   dialogForms: [],
@@ -133,8 +134,8 @@ const {
             <el-form-item :label="menuIpWhiteListDict.fromType" prop="fromType">
               <!--<el-input v-model="state.dialogForm.fromType" :placeholder="menuIpWhiteListDict.fromType"/>-->
               <el-radio-group v-model="state.dialogForm.fromType">
-                <el-radio :value="TMWLTypeEnum.T_IP">{{ mIWLTypeDict[TMWLTypeEnum.T_IP] }}</el-radio>
-                <el-radio :value="TMWLTypeEnum.T_HOST">{{ mIWLTypeDict[TMWLTypeEnum.T_HOST] }}</el-radio>
+                <el-radio :value="base.TMWLTypeEnum.T_IP">{{ base.mIWLTypeDict[base.TMWLTypeEnum.T_IP] }}</el-radio>
+                <el-radio :value="base.TMWLTypeEnum.T_HOST">{{ base.mIWLTypeDict[base.TMWLTypeEnum.T_HOST] }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -198,8 +199,8 @@ const {
               <div :class="state.dialogForms_error?.[`${$index}-fromType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
                 <!--<el-input v-model="state.dialogForms[$index].fromType" :placeholder="menuIpWhiteListDict.fromType"/>-->
                 <el-radio-group v-model="state.dialogForms[$index].fromType">
-                  <el-radio :value="TMWLTypeEnum.T_IP">{{ mIWLTypeDict[TMWLTypeEnum.T_IP] }}</el-radio>
-                  <el-radio :value="TMWLTypeEnum.T_HOST">{{ mIWLTypeDict[TMWLTypeEnum.T_HOST] }}</el-radio>
+                  <el-radio :value="base.TMWLTypeEnum.T_IP">{{ base.mIWLTypeDict[base.TMWLTypeEnum.T_IP] }}</el-radio>
+                  <el-radio :value="base.TMWLTypeEnum.T_HOST">{{ base.mIWLTypeDict[base.TMWLTypeEnum.T_HOST] }}</el-radio>
                 </el-radio-group>
               </div>
             </template>
@@ -271,8 +272,8 @@ const {
       </el-form-item>
       <el-form-item :label="menuIpWhiteListDict.fromType" prop="fromType">
         <el-select v-model="state.filterForm.fromType" :placeholder="menuIpWhiteListDict.fromType" clearable filterable>
-          <el-option :label="mIWLTypeDict[TMWLTypeEnum.T_IP]" :value="TMWLTypeEnum.T_IP"/>
-          <el-option :label="mIWLTypeDict[TMWLTypeEnum.T_HOST]" :value="TMWLTypeEnum.T_HOST"/>
+          <el-option :label="base.mIWLTypeDict[base.TMWLTypeEnum.T_IP]" :value="base.TMWLTypeEnum.T_IP"/>
+          <el-option :label="base.mIWLTypeDict[base.TMWLTypeEnum.T_HOST]" :value="base.TMWLTypeEnum.T_HOST"/>
         </el-select>
       </el-form-item>
       <!--在此上方添加表单项-->
@@ -312,7 +313,7 @@ const {
       <el-table-column prop="whiteList" :label="menuIpWhiteListDict.whiteList" width="360"/>
       <el-table-column prop="fromType" :label="menuIpWhiteListDict.fromType" width="120">
         <template #default="{row}">
-          {{ mIWLTypeDict[row.fromType as TMWLTypeEnum] }}
+          {{ base.mIWLTypeDict[row.fromType as base.TMWLTypeEnum] }}
         </template>
       </el-table-column>
       <el-table-column prop="remark" :label="menuIpWhiteListDict.remark" width="120"/>

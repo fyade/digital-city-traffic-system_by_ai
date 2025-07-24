@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref, toRaw, watch } from "vue";
-import { allTRPDataTypes, MenuTypeEnum } from "@/utils/base.ts";
+import { allTRPDataTypes } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
@@ -12,6 +12,7 @@ import { menuDict, menuDictInter } from "@/dict/module/main/sysManage/menu.ts";
 import { tableRowPermissionApi } from "@/api/module/main/sysManage/tableRowPermission.ts";
 import { TableRowPermissionDto } from "@/type/module/main/sysManage/tableRowPermission.ts";
 import { deepClone } from "@/utils/ObjectUtils.ts";
+import { base } from "@dcts/common";
 
 const props = defineProps({
   selectPermissionId: {
@@ -40,7 +41,7 @@ const config = new TablePageConfig<MenuDto<String>>({
   getDataOnMounted: false,
   bulkOperation: true,
   selectParam: {
-    type: {in: {value: [MenuTypeEnum.T_Inter]}},
+    type: {in: {value: [base.MenuTypeEnum.T_Inter]}},
   },
   selectListCallback: () => {
     selectTableRowPermissions()

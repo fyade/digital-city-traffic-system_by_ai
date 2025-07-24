@@ -69,6 +69,7 @@ declare module 'vue' {
     Pagination: typeof import('./../src/components/pagination/pagination.vue')['default']
     Pagination2: typeof import('./../src/components/pagination/pagination2.vue')['default']
     RightClickMenu: typeof import('./../src/components/rightClickMenu/rightClickMenu.vue')['default']
+    RootWrapper: typeof import('./../src/components/rootWrapper/rootWrapper.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SvgIcon: typeof import('./../src/components/svgIcon/svgIcon.vue')['default']

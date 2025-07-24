@@ -15,7 +15,13 @@ const props = defineProps({
       <Sider :admin-panel-loading="props.adminPanelLoading"/>
     </n-layout-sider>
     <n-layout content-class="my-dashboard-layout-content" :native-scrollbar="false">
-      <router-view/>
+      <router-view #default="{Component:c2,route:r2}">
+        <Transition name="component-switch" mode="out-in" appear>
+          <RootWrapper :key="r2.path">
+            <component :is="c2"/>
+          </RootWrapper>
+        </Transition>
+      </router-view>
     </n-layout>
   </n-layout>
 </template>
@@ -30,6 +36,6 @@ const props = defineProps({
 .my-dashboard-layout-content {
   padding: 24px;
   height: 100%;
-  background-color: #f1f2f6;
+  background-color: var(--table-page-bg);
 }
 </style>

@@ -175,7 +175,7 @@ refreshSysTime()
 
   > * {
     padding: 20px;
-    background-color: #fff;
+    background-color: var(--home-box-bg);
   }
 }
 

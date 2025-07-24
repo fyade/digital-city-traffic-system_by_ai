@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MysqlPrismaService } from '../../../../../prisma/mysql.prisma.service';
 import { R } from '../../../../../common/R';
 import { UserVisitorDto, UserVisitorSelListDto, AdminNewUserVisitorDto, ResetUserVisitorPsdDto } from './dto';
-import { base } from '../../../../../util/base';
+import { final } from '../../../../../util/base';
 import { UserRoleDto } from '../../sys-manage/user-role/dto';
 import { RoleDto } from '../../sys-manage/role/dto';
 import { UserDeptDto } from '../../sys-manage/user-dept/dto';
@@ -34,7 +34,7 @@ export class UserVisitorService {
     res.list.forEach(item => {
       delete item.password;
     });
-    if (ifWithRole !== base.Y) {
+    if (ifWithRole !== final.Y) {
       return R.ok(res);
     }
     const res2 = [];

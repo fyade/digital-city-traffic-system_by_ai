@@ -6,18 +6,12 @@ import { DataTableColumns, NButton, NIcon } from "naive-ui";
 import { funcTablePageDashBoard } from "@/composition/tablePage/tablePageDashBoard2.ts";
 import { signalLightStyleApi } from "@/api/module/dcts/signalLight/signalLightStyle.ts";
 import { signalLightStyleDict } from "@/dict/module/dcts/signalLight/signalLightStyle.ts";
-import {
-  SignalLightChildStyleMappingDto, SignalLightChildStyleMappingInsDto,
-  SignalLightChildStyleMappingUpdDto
-} from "@/type/module/dcts/signalLight/signalLightChildStyleMapping.ts";
-import {
-  signalLightChildStyleMappingApi,
-  signalLightChildStyleMappingInsV2
-} from "@/api/module/dcts/signalLight/signalLightChildStyleMapping.ts";
+import { SignalLightChildStyleMappingDto, SignalLightChildStyleMappingInsDto } from "@/type/module/dcts/signalLight/signalLightChildStyleMapping.ts";
+import { signalLightChildStyleMappingApi, signalLightChildStyleMappingInsV2 } from "@/api/module/dcts/signalLight/signalLightChildStyleMapping.ts";
 import { MdRefresh, MdSearch } from "@vicons/ionicons4";
 import Pagination2 from "@/components/pagination/pagination2.vue";
-import { signalLightUnitStyleDict, SignalLightUnitStyleEnum } from "@/utils/base.ts";
 import { HandPointLeft } from "@vicons/fa";
+import { base } from "@dcts/common";
 
 const props = defineProps({
   childId: {
@@ -50,7 +44,7 @@ const columns: DataTableColumns<SignalLightStyleDto> = [
     title: signalLightStyleDict.style,
     key: 'style',
     render(row) {
-      return row.style.split('-').filter(_ => _).map(str => signalLightUnitStyleDict[str as SignalLightUnitStyleEnum]).join('-')
+      return row.style.split('-').filter(_ => _).map(str => base.signalLightUnitStyleDict[str as base.SignalLightUnitStyleEnum]).join('-')
     }
   },
   {

@@ -1,9 +1,9 @@
 import { RouteRecordNormalized } from "vue-router";
 import { getPages, getSystems } from "@/api/common/sys.ts";
 import { MenuDto } from "@/type/module/main/sysManage/menu.ts";
-import { MenuTypeEnum } from "@/utils/base.ts";
 import { arr2ToDiguiObj } from "@/utils/baseUtils.ts";
 import router from "@/router";
+import { base } from "@dcts/common";
 
 // 引入资源
 const modules = {
@@ -29,7 +29,7 @@ export const goToAdminPanelSystem = async (callback: (path: string) => void) => 
     if (!ifHasAddRoutes) {
       const permissions: (RouteRecordNormalized & MenuDto & { component: any })[] = [];
       for (const page of pages) {
-        if (![MenuTypeEnum.T_MENU, MenuTypeEnum.T_COMP].includes(page.type)) {
+        if (![base.MenuTypeEnum.T_MENU, base.MenuTypeEnum.T_COMP].includes(page.type)) {
           continue
         }
         const permission = {
@@ -41,7 +41,7 @@ export const goToAdminPanelSystem = async (callback: (path: string) => void) => 
             sysPerms: 'sys:dcts'
           }
         } as unknown as (RouteRecordNormalized & MenuDto & { component: any })
-        if (permission.type === MenuTypeEnum.T_COMP) {
+        if (permission.type === base.MenuTypeEnum.T_COMP) {
           const component = await modules[`../../module/${system.path}${permission.component}`]()
           permission.component = component.default
         } else {

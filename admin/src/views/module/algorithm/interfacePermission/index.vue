@@ -994,8 +994,6 @@ const userGroupPermissionDCon2 = () => {
 
       <el-col :span="12">
         <el-button
-            style="color: #fff;"
-            :color="CONFIG.theme_color_menu_bg_active"
             @click="beforeAddUserGroupPermission"
             :disabled="!(userGroupMultipleSelection.length===1&&interfaceGroupMultipleSelection.length===1)"
         >

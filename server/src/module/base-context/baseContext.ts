@@ -1,6 +1,5 @@
 import { baseInterfaceColumns2 } from '../module/main/sys-util/code-generation/codeGeneration';
-import { idUtils } from '@dcts/common';
-import { AuthTypeEnum } from '../../util/base';
+import { base, idUtils } from '@dcts/common';
 
 export const USER_INFO_LINSHI_FIELD_NAME = 'user-info-linshi';
 
@@ -11,7 +10,7 @@ export class CurrentUser {
   loginRole: string;
   perms: string;
   topAdmin: boolean;
-  authType: AuthTypeEnum;
+  authType: base.AuthTypeEnum;
 }
 
 export function genCurrentUser(user?: string, token?: string, loginRole?: string, perms?: string) {
@@ -22,7 +21,7 @@ export function genCurrentUser(user?: string, token?: string, loginRole?: string
   currentUser.loginRole = loginRole;
   currentUser.perms = perms;
   currentUser.topAdmin = false;
-  currentUser.authType = AuthTypeEnum.unknown;
+  currentUser.authType = base.AuthTypeEnum.unknown;
   return currentUser;
 }
 

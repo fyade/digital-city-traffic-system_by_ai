@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { BaseContextService } from "../module/base-context/base-context.service";
 import { baseInterfaceColumns2 } from "../module/module/main/sys-util/code-generation/codeGeneration";
 import { baseUtils } from "@dcts/common";
-import { base } from "../util/base";
+import { final } from "../util/base";
 
 @Injectable()
 export class PrismaoService {
@@ -42,7 +42,7 @@ export class PrismaoService {
       retObj.where['create_role'] = this.getLoginRole();
       retObj.where['create_by'] = this.getUserId();
     }
-    if (ifDeleted) retObj.where['deleted'] = base.N;
+    if (ifDeleted) retObj.where['deleted'] = final.N;
     return retObj;
   };
 
@@ -74,7 +74,7 @@ export class PrismaoService {
         update_by: userid,
         create_time: time1,
         update_time: time1,
-        deleted: base.N,
+        deleted: final.N,
       },
     };
     if (!ifCreateRole) delete retObj.data.create_role;
@@ -105,7 +105,7 @@ export class PrismaoService {
       where: {
         create_role: this.getLoginRole(),
         create_by: this.getUserId(),
-        deleted: base.N,
+        deleted: final.N,
       },
       data: {
         update_role: this.getLoginRole(),
@@ -134,13 +134,13 @@ export class PrismaoService {
       where: {
         create_role: this.getLoginRole(),
         create_by: this.getUserId(),
-        deleted: base.N,
+        deleted: final.N,
       },
       data: {
         update_role: this.getLoginRole(),
         update_by: this.getUserId(),
         update_time: new Date(),
-        deleted: base.Y,
+        deleted: final.Y,
       },
     };
     if (!ifUseSelfData) {

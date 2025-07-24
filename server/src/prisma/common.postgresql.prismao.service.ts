@@ -4,7 +4,7 @@ import {
   baseInterfaceColumns2
 } from "../module/module/main/sys-util/code-generation/codeGeneration";
 import { objectUtils } from "@dcts/common";
-import { base } from "../util/base";
+import { final } from "../util/base";
 import { GenSqlDto, publicSqlSelectKey } from "./custom.dto";
 import { toCamelCase, toSnakeCase } from "@dcts/common/dist/util/base-utils";
 import { Injectable } from "@nestjs/common";
@@ -169,7 +169,7 @@ export class CommonPostgresqlPrismaoService {
       if (dto.type === 'del') {
         // 如果是删除，只需要修改逻辑删除字段
         allCols.push('deleted')
-        allVals.push(base.Y)
+        allVals.push(final.Y)
         _sql += ' set '
         _sql += ' update_time = CURRENT_TIMESTAMP '
         for (let i = 0; i < allCols.length; i++) {

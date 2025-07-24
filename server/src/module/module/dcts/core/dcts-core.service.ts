@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ScheduleService } from "../../../schedule/schedule.service";
 import { WsService } from "../../../ws/ws.service";
 import { PostgresqlPrismaoService } from "../../../../prisma/postgresql.prismao.service";
-import { base, SignalLightColorEnum, SLSPLTTypeEnum, SLSSTTypeEnum, SLSTTTypeEnum } from "../../../../util/base";
-import { baseUtils, objectUtils } from "@dcts/common";
+import { final } from "../../../../util/base";
+import { base, baseUtils, objectUtils } from "@dcts/common";
 import { SignalLightGroupInfoDto } from "../signal-light/signal-light-group-info/dto";
 import { SignalLightGroupChildMappingDto } from "../signal-light/signal-light-group-child-mapping/dto";
 import { SignalLightInfoDto } from "../signal-light/signal-light-info/dto";
@@ -89,7 +89,7 @@ export class DctsCoreService {
         id: {
           in: _signalLightGroup_strategyType.map(item => item.strategyTypeId)
         },
-        if_disabled: base.N,
+        if_disabled: final.N,
         ...defaultSelArg.where
       },
       orderBy: [
@@ -122,7 +122,7 @@ export class DctsCoreService {
             ..._strategyType_strategySchedule.map(item => item.strategyScheduleId)
           ]
         },
-        if_disabled: base.N,
+        if_disabled: final.N,
         ...defaultSelArg.where
       },
       orderBy: [
@@ -144,7 +144,7 @@ export class DctsCoreService {
         id: {
           in: _strategySchedule_strategyParam.map(item => item.strategyParamId)
         },
-        if_disabled: base.N,
+        if_disabled: final.N,
         ...defaultSelArg.where
       },
       orderBy: [
@@ -187,7 +187,7 @@ export class DctsCoreService {
 
       let start = new Date(0).getTime()
       let end = new Date(0).getTime()
-      if (strategyType.scheduleType === SLSSTTypeEnum.T_DAY) {
+      if (strategyType.scheduleType === base.SLSSTTypeEnum.T_DAY) {
         start = new Date(strategyType.startTime).getTime()
         end = new Date(strategyType.endTime).getTime()
         if (start < now0 && end < now0) {
@@ -232,7 +232,7 @@ export class DctsCoreService {
       }
 
       // 策略类型为固定策略的
-      const strategyTypes_custom = strategyTypes.filter(item => item.strategyType === SLSTTTypeEnum.T_CUSTOM)
+      const strategyTypes_custom = strategyTypes.filter(item => item.strategyType === base.SLSTTTypeEnum.T_CUSTOM)
       const strategyTypeIds_custom = strategyTypes_custom.map(item => item.id)
       // 这些策略类型下的策略调度
       const strategySchedules_custom = strategySchedules.filter(schedule => {
@@ -308,8 +308,8 @@ export class DctsCoreService {
               const dParam = new SignalLightRunParamDParam();
               dParam.start = _start
               dParam.end = _end
-              dParam.color = sp.currentLight as SignalLightColorEnum
-              dParam.lightType = sp.lightType.split('-').filter(_ => _) as SLSPLTTypeEnum[]
+              dParam.color = sp.currentLight as base.SignalLightColorEnum
+              dParam.lightType = sp.lightType.split('-').filter(_ => _) as base.SLSPLTTypeEnum[]
               const param2 = signalLightRunParams.get(l.id);
               if (param2) {
                 param2.runParam.push(dParam)
@@ -332,8 +332,8 @@ export class DctsCoreService {
         const dParam1 = new SignalLightRunParamDParam();
         dParam1.start = now0
         dParam1.end = signalLightRunParam.runParam[0].start
-        dParam1.color = SignalLightColorEnum.RED
-        dParam1.lightType = [SLSPLTTypeEnum.AROUND, SLSPLTTypeEnum.LEFT, SLSPLTTypeEnum.STRAIGHT, SLSPLTTypeEnum.RIGHT]
+        dParam1.color = base.SignalLightColorEnum.RED
+        dParam1.lightType = [base.SLSPLTTypeEnum.AROUND, base.SLSPLTTypeEnum.LEFT, base.SLSPLTTypeEnum.STRAIGHT, base.SLSPLTTypeEnum.RIGHT]
         signalLightRunParam.runParam.unshift(dParam1)
       }
       for (let i = signalLightRunParam.runParam.length - 1; i >= 0; i--) {
@@ -344,8 +344,8 @@ export class DctsCoreService {
           const dParam1 = new SignalLightRunParamDParam();
           dParam1.start = signalLightRunParam.runParam[i - 1].end
           dParam1.end = signalLightRunParam.runParam[i].start
-          dParam1.color = SignalLightColorEnum.RED
-          dParam1.lightType = [SLSPLTTypeEnum.AROUND, SLSPLTTypeEnum.LEFT, SLSPLTTypeEnum.STRAIGHT, SLSPLTTypeEnum.RIGHT]
+          dParam1.color = base.SignalLightColorEnum.RED
+          dParam1.lightType = [base.SLSPLTTypeEnum.AROUND, base.SLSPLTTypeEnum.LEFT, base.SLSPLTTypeEnum.STRAIGHT, base.SLSPLTTypeEnum.RIGHT]
           signalLightRunParam.runParam.push(dParam1)
         }
       }

@@ -87,7 +87,6 @@ const goHome = () => {
     transform: translateY(-12px);
     display: flex;
     gap: 4px;
-    color: #fff;
     font-size: 12px;
 
     > * {
@@ -113,62 +112,3 @@ const goHome = () => {
   }
 }
 </style>
-
-<!--<style scoped>-->
-<!--.data-layer {-->
-<!--  position: fixed;-->
-<!--  width: 100vw;-->
-<!--  height: 100vh;-->
-<!--  z-index: 1;-->
-<!--  pointer-events: none;-->
-
-<!--  > * {-->
-<!--    pointer-events: auto;-->
-<!--  }-->
-
-<!--  > .footer {-->
-<!--    position: absolute;-->
-<!--    bottom: 48px;-->
-<!--    left: 180px;-->
-<!--    width: calc(100% - 12px * 2);-->
-<!--    height: 0;-->
-<!--    color: #fff;-->
-<!--    font-size: 12px;-->
-<!--    line-height: 2;-->
-
-<!--    > * {-->
-<!--      display: flex;-->
-<!--      gap: 4px;-->
-<!--      height: 0;-->
-
-<!--      &:nth-child(1) {-->
-<!--        transform: translateY(-16px);-->
-<!--      }-->
-
-<!--      &:nth-child(2) {-->
-<!--      }-->
-
-<!--      > * {-->
-<!--        padding: 0 4px;-->
-<!--      }-->
-<!--    }-->
-
-<!--    a, p {-->
-<!--      color: inherit;-->
-<!--      line-height: 12px;-->
-<!--    }-->
-
-<!--    span {-->
-<!--      text-decoration: underline;-->
-
-<!--      &:hover {-->
-<!--        cursor: pointer;-->
-<!--      }-->
-
-<!--      &.no-underline {-->
-<!--        text-decoration: none;-->
-<!--      }-->
-<!--    }-->
-<!--  }-->
-<!--}-->
-<!--</style>-->

@@ -74,8 +74,8 @@ eventBus.on('right-click-close', hiddenRightClick)
   > .right-container {
     position: fixed;
     z-index: 5000;
-    box-shadow: 0 2px 10px 3px #ddd;
-    background-color: #fff;
+    box-shadow: var(--right-menu-box-shadow);
+    background-color: var(--right-menu-bg);
     border-radius: 4px;
     overflow: hidden;
 
@@ -83,9 +83,9 @@ eventBus.on('right-click-close', hiddenRightClick)
       padding: 6px 0;
 
       > .line {
-        margin: 4px 0;
+        margin: -4px 0 4px;
         height: 2px;
-        background-color: #ddd;
+        background-color: var(--right-menu-line-bg);
       }
 
       > .menu {
@@ -96,7 +96,7 @@ eventBus.on('right-click-close', hiddenRightClick)
         font-size: 14px;
 
         &:hover {
-          background-color: #eee;
+          background-color: var(--right-menu-bg-hover);
         }
       }
     }

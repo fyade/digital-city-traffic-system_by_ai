@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, useTemplateRef } from "vue";
+import { CONFIG } from "@/utils/base.ts";
 
 const props = defineProps({
   name: {
@@ -12,7 +13,7 @@ const props = defineProps({
   },
   color: {
     type: String,
-    default: '#ffffff'
+    default: 'none'
   }
 });
 const symbolId = computed(() => `#${props.name}`)

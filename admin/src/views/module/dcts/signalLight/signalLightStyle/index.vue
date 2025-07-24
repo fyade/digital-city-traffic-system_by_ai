@@ -6,12 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { reactive, ref } from "vue";
-import {
-  CONFIG,
-  final,
-  signalLightUnitStyleDict,
-  SignalLightUnitStyleEnum
-} from "@/utils/base.ts";
+import { CONFIG, final } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
@@ -21,6 +16,7 @@ import { SignalLightStyleDto, SignalLightStyleUpdDto } from "@/type/module/dcts/
 import { signalLightStyleApi } from "@/api/module/dcts/signalLight/signalLightStyle.ts";
 import { signalLightStyleDict } from "@/dict/module/dcts/signalLight/signalLightStyle.ts";
 import { deepClone } from "@/utils/ObjectUtils.ts";
+import { base } from "@dcts/common";
 
 const state = reactive<State2<SignalLightStyleDto, SignalLightStyleUpdDto>>({
   dialogForm: {
@@ -94,11 +90,11 @@ const {
 
 const lightCount = 10
 const checkBoxValue = ref<boolean[][]>([])
-const signalLightUnitStyleEnumValue = Object.values(SignalLightUnitStyleEnum)
+const signalLightUnitStyleEnumValue = Object.values(base.SignalLightUnitStyleEnum)
 const initCheckBoxValue = () => {
   checkBoxValue.value = []
   const _arr = []
-  for (let key in SignalLightUnitStyleEnum) {
+  for (let key in base.SignalLightUnitStyleEnum) {
     _arr.push(false)
   }
   for (let i = 0; i < lightCount; i++) {
@@ -122,12 +118,12 @@ const dialogChange = () => {
   if (dialogType.value === final.upd) {
     const splits = state.dialogForm.style.split('-').filter(_ => _);
     for (let i = 0; i < splits.length; i++) {
-      const inde = signalLightUnitStyleEnumValue.indexOf(splits[i] as SignalLightUnitStyleEnum);
+      const inde = signalLightUnitStyleEnumValue.indexOf(splits[i] as base.SignalLightUnitStyleEnum);
       checkBoxValue.value[i][inde] = true
     }
   }
 }
-const change = (ind: number, ind2: number, key: SignalLightUnitStyleEnum) => {
+const change = (ind: number, ind2: number, key: base.SignalLightUnitStyleEnum) => {
   if (checkBoxValue.value[ind].filter(_ => _).length > 1) {
     for (let i = 0; i < checkBoxValue.value[ind].length; i++) {
       if (i === ind2) {
@@ -182,7 +178,7 @@ const change = (ind: number, ind2: number, key: SignalLightUnitStyleEnum) => {
               <!--<el-input v-model="state.dialogForm.style" :placeholder="signalLightStyleDict.style"/>-->
               <div v-for="(ind, i1) in lightCount" :key="ind">
                 <span>左{{ ind }}：</span>
-                <el-checkbox v-for="(key, v, i2) in SignalLightUnitStyleEnum" :key="key" v-model="checkBoxValue[i1][i2]" :label="signalLightUnitStyleDict[key]" @change="change(i1, i2, key)"/>
+                <el-checkbox v-for="(key, v, i2) in base.SignalLightUnitStyleEnum" :key="key" v-model="checkBoxValue[i1][i2]" :label="base.signalLightUnitStyleDict[key]" @change="change(i1, i2, key)"/>
               </div>
             </el-form-item>
           </el-col>
@@ -264,7 +260,7 @@ const change = (ind: number, ind2: number, key: SignalLightUnitStyleEnum) => {
       <el-table-column prop="name" :label="signalLightStyleDict.name" width="120"/>
       <el-table-column prop="style" :label="signalLightStyleDict.style" width="480">
         <template #default="{row}">
-          {{ row.style.split('-').filter((_: string) => _).map((str: string) => signalLightUnitStyleDict[str as SignalLightUnitStyleEnum]).join('-') }}
+          {{ row.style.split('-').filter((_: string) => _).map((str: string) => base.signalLightUnitStyleDict[str as base.SignalLightUnitStyleEnum]).join('-') }}
         </template>
       </el-table-column>
       <!--在此上方添加表格列-->

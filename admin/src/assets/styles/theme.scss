@@ -1,0 +1,63 @@
+$themes: (
+        light: (
+                login-page-code-bg: #fff,
+                right-menu-bg: #fff,
+                right-menu-bg-hover: #eee,
+                right-menu-box-shadow: 0 2px 10px 3px #ddd,
+                right-menu-line-bg: #ddd,
+                home-bg: #f1f2f6,
+                home-box-bg: #fff,
+                table-page-bg: #f1f2f6,
+                table-page-box-bg: #fff,
+                menu-icon-color: #000,
+                table-page-layout-border: 1px solid #ddd,
+        ),
+        dark: (
+                login-page-code-bg: #fff,
+                right-menu-bg: #1d1e1f,
+                right-menu-bg-hover: #444,
+                right-menu-box-shadow: 0 2px 5px 2px #333,
+                right-menu-line-bg: #333,
+                home-bg: none,
+                home-box-bg: none,
+                table-page-bg: none,
+                table-page-box-bg: #1d1e1f,
+                menu-icon-color: #fff,
+                table-page-layout-border: 1px solid #333,
+        )
+);
+
+:root {
+  // 登录页验证码背景
+  --login-page-code-bg: none;
+  // 右键菜单背景
+  --right-menu-bg: none;
+  --right-menu-bg-hover: none;
+  // 右键菜单其他样式
+  --right-menu-box-shadow: none;
+  --right-menu-line-bg: none;
+  // 后台首页背景
+  --home-bg: none;
+  // 后台首页盒子背景
+  --home-box-bg: none;
+  // 后台通用页背景
+  --table-page-bg: none;
+  // 后台通用页盒子背景
+  --table-page-box-bg: none;
+  // 后台菜单页icon颜色
+  --menu-icon-color: none;
+  // 后台布局页边框
+  --table-page-layout-border: none;
+}
+
+:root {
+  @each $key, $value in map-get($themes, light) {
+    --#{$key}: #{$value}
+  }
+}
+
+:root.dark {
+  @each $key, $value in map-get($themes, dark) {
+    --#{$key}: #{$value}
+  }
+}

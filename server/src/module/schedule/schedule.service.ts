@@ -2,7 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
 import { QueueoService } from '../queue/queueo.service';
-import { base } from '../../util/base';
+import { final } from '../../util/base';
 import { WinstonService } from '../winston/winston.service';
 import { MysqlPrismaoService } from "../../prisma/mysql.prismao.service";
 import { PrismaoService } from "../../prisma/prismao.service";
@@ -31,7 +31,7 @@ export class ScheduleService implements OnModuleInit {
       },
     });
     for (const task of tasks) {
-      if (task.if_disabled === base.N) {
+      if (task.if_disabled === final.N) {
         this.addSchedule(task.target, task.cron_expression);
       }
     }
@@ -55,7 +55,7 @@ export class ScheduleService implements OnModuleInit {
       await this.queueo.addLogScheduledTaskQueue('ins', {
         taskTarget: name,
         operateType: 'by:self',
-        ifSuccess: ifSuccess ? base.Y : base.N,
+        ifSuccess: ifSuccess ? final.Y : final.N,
         remark: '',
         createTime: new Date(),
       });
@@ -87,7 +87,7 @@ export class ScheduleService implements OnModuleInit {
         await this.queueo.addLogScheduledTaskQueue('ins', {
           taskTarget: name,
           operateType: 'user:trigger',
-          ifSuccess: ifSuccess ? base.Y : base.N,
+          ifSuccess: ifSuccess ? final.Y : final.N,
           remark: '',
           createTime: new Date(),
         });

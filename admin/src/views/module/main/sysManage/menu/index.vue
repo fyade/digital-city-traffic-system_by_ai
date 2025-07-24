@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue";
-import { cascaderProps2, CONFIG, final, menuTypeDict, MenuTypeEnum } from "@/utils/base.ts";
+import { cascaderProps2, CONFIG, final } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
@@ -20,14 +20,14 @@ import { arr2ToDiguiObj } from "@/utils/baseUtils.ts";
 import { SysDto } from "@/type/module/main/sysManage/sys.ts";
 import { sysApi } from "@/api/module/main/sysManage/sys.ts";
 import MenuIpWhiteList from "@/views/module/main/sysManage/menu/menuIpWhiteList.vue";
-import { objectUtils } from "@dcts/common";
+import { base, objectUtils } from "@dcts/common";
 import MenuThrottle from "@/views/module/main/sysManage/menu/menuThrottle.vue";
 
 const state = reactive<State2<MenuDto, MenuUpdDto>>({
   dialogForm: {
     id: -1,
     label: '',
-    type: MenuTypeEnum.T_MENU,
+    type: base.MenuTypeEnum.T_MENU,
     path: '',
     parentId: final.DEFAULT_PARENT_ID,
     component: '#',
@@ -53,7 +53,7 @@ const config = new TablePageConfig<MenuDto<String>>({
   pageQuery: false,
   bulkOperation: true,
   selectParam: {
-    type: {in: {value: [MenuTypeEnum.T_MENU, MenuTypeEnum.T_COMP]}},
+    type: {in: {value: [base.MenuTypeEnum.T_MENU, base.MenuTypeEnum.T_COMP]}},
     sysId: final.DEFAULT_PARENT_ID,
   },
   selectListCallback: () => {
@@ -111,7 +111,7 @@ const stateInter = reactive<State2<MenuDto, MenuUpdDto>>({
   dialogForm: {
     id: -1,
     label: '',
-    type: MenuTypeEnum.T_IS,
+    type: base.MenuTypeEnum.T_IS,
     path: '#',
     parentId: final.DEFAULT_PARENT_ID,
     component: '#',
@@ -144,7 +144,7 @@ const configInter = new TablePageConfig<MenuDto<string>>({
   pageQuery: false,
   bulkOperation: true,
   selectParam: {
-    type: {in: {value: [MenuTypeEnum.T_IS]}},
+    type: {in: {value: [base.MenuTypeEnum.T_IS]}},
     sysId: final.DEFAULT_PARENT_ID,
   },
   selectListCallback: () => {
@@ -205,7 +205,7 @@ const routerStore = useRouterStore();
 const activeTab2Name = ref('a')
 
 // 可选择的类型
-const canChooseTypes = ref<MenuTypeEnum[]>([])
+const canChooseTypes = ref<base.MenuTypeEnum[]>([])
 // 校验规则的修改
 watch(() => [state.dialogForm.type, activeTabName.value], () => {
   if (activeTabName.value === final.more) {
@@ -228,7 +228,7 @@ watch(() => [state.dialogForm.type, activeTabName.value], () => {
     sysId: [{required: true, trigger: 'change'}],
   }
   Object.keys(rule).forEach((key: string) => dFormRules[key as keyof typeof dFormRules] = rule[key as keyof typeof dFormRules])
-  if ([MenuTypeEnum.T_COMP].indexOf(state.dialogForm.type) > -1) {
+  if ([base.MenuTypeEnum.T_COMP].indexOf(state.dialogForm.type) > -1) {
     const rule: FormRules<MenuDto> = {
       component: [{required: true, trigger: 'change'}],
       ifFixed: [{required: true, trigger: 'change'}],
@@ -241,21 +241,21 @@ watch(() => [state.dialogForm.type, activeTabName.value], () => {
 // 可供选择的类型的修改
 watch(() => [state.dialogForm.parentId, activeTabName.value], () => {
   if (activeTabName.value === final.more) {
-    canChooseTypes.value = [MenuTypeEnum.T_MENU, MenuTypeEnum.T_COMP, MenuTypeEnum.T_Inter]
+    canChooseTypes.value = [base.MenuTypeEnum.T_MENU, base.MenuTypeEnum.T_COMP, base.MenuTypeEnum.T_Inter]
     return
   }
   if (objectUtils.ifNull(state.dialogForm.parentId) || objectUtils.ifUndefined(state.dialogForm.parentId)) {
     state.dialogForm.parentId = final.DEFAULT_PARENT_ID
   }
   if (state.dialogForm.parentId === final.DEFAULT_PARENT_ID) {
-    canChooseTypes.value = [MenuTypeEnum.T_MENU, MenuTypeEnum.T_COMP]
+    canChooseTypes.value = [base.MenuTypeEnum.T_MENU, base.MenuTypeEnum.T_COMP]
   } else {
     const data = tableData.value.find(item => item.id === state.dialogForm.parentId);
     if (data) {
-      if (data.type === MenuTypeEnum.T_MENU) {
-        canChooseTypes.value = [MenuTypeEnum.T_MENU, MenuTypeEnum.T_COMP]
-      } else if (data.type === MenuTypeEnum.T_COMP) {
-        canChooseTypes.value = [MenuTypeEnum.T_COMP, MenuTypeEnum.T_Inter]
+      if (data.type === base.MenuTypeEnum.T_MENU) {
+        canChooseTypes.value = [base.MenuTypeEnum.T_MENU, base.MenuTypeEnum.T_COMP]
+      } else if (data.type === base.MenuTypeEnum.T_COMP) {
+        canChooseTypes.value = [base.MenuTypeEnum.T_COMP, base.MenuTypeEnum.T_Inter]
       }
     }
   }
@@ -273,7 +273,7 @@ const tIns = (id: number) => {
 }
 
 // 检查是否需要显示
-const checkVisible = (a: MenuTypeEnum, b: MenuTypeEnum[]): boolean => {
+const checkVisible = (a: base.MenuTypeEnum, b: base.MenuTypeEnum[]): boolean => {
   return b.indexOf(a) > -1
 }
 
@@ -286,7 +286,7 @@ const tableData2 = computed(() => {
   return diguiObj
 })
 const tableData3 = computed(() => {
-  return arr2ToDiguiObj(tableData.value.filter(item => checkVisible(item.type, [MenuTypeEnum.T_MENU, MenuTypeEnum.T_COMP])))
+  return arr2ToDiguiObj(tableData.value.filter(item => checkVisible(item.type, [base.MenuTypeEnum.T_MENU, base.MenuTypeEnum.T_COMP])))
 })
 
 // 表格的展开
@@ -363,7 +363,7 @@ const stateI2 = reactive<State2<MenuDto, MenuUpdDto>>({
   dialogForm: {
     id: -1,
     label: '',
-    type: MenuTypeEnum.T_Inter,
+    type: base.MenuTypeEnum.T_Inter,
     path: '#',
     parentId: final.DEFAULT_PARENT_ID,
     component: '#',
@@ -400,7 +400,7 @@ const configI2 = new TablePageConfig<MenuDto<string>>({
   getDataOnMounted: false,
   bulkOperation: true,
   selectParam: {
-    type: {in: {value: [MenuTypeEnum.T_Inter]}},
+    type: {in: {value: [base.MenuTypeEnum.T_Inter]}},
     parentId: selectInterGroup.id,
     sysId: final.DEFAULT_PARENT_ID,
   },
@@ -586,8 +586,8 @@ const setThrottle = (row: MenuDto) => {
             <el-col :span="24">
               <el-form-item :label="menuDictI2.type" prop="type">
                 <el-radio-group v-model="stateI2.dialogForm.type">
-                  <el-radio :value="MenuTypeEnum.T_Inter">
-                    {{ menuTypeDict[MenuTypeEnum.T_Inter] }}
+                  <el-radio :value="base.MenuTypeEnum.T_Inter">
+                    {{ base.menuTypeDict[base.MenuTypeEnum.T_Inter] }}
                   </el-radio>
                 </el-radio-group>
               </el-form-item>
@@ -682,8 +682,8 @@ const setThrottle = (row: MenuDto) => {
               <template #default="{$index}">
                 <div :class="stateI2.dialogForms_error?.[`${$index}-type`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
                   <el-radio-group v-model="stateI2.dialogForms[$index].type">
-                    <el-radio :value="MenuTypeEnum.T_Inter">
-                      {{ menuTypeDict[MenuTypeEnum.T_Inter] }}
+                    <el-radio :value="base.MenuTypeEnum.T_Inter">
+                      {{ base.menuTypeDict[base.MenuTypeEnum.T_Inter] }}
                     </el-radio>
                   </el-radio-group>
                 </div>
@@ -934,11 +934,11 @@ const setThrottle = (row: MenuDto) => {
                 </Tooltip>
               </template>
               <el-radio-group v-model="state.dialogForm.type">
-                <el-radio :value="MenuTypeEnum.T_MENU" :disabled="canChooseTypes.indexOf(MenuTypeEnum.T_MENU)===-1">
-                  {{ menuTypeDict[MenuTypeEnum.T_MENU] }}
+                <el-radio :value="base.MenuTypeEnum.T_MENU" :disabled="canChooseTypes.indexOf(base.MenuTypeEnum.T_MENU)===-1">
+                  {{ base.menuTypeDict[base.MenuTypeEnum.T_MENU] }}
                 </el-radio>
-                <el-radio :value="MenuTypeEnum.T_COMP" :disabled="canChooseTypes.indexOf(MenuTypeEnum.T_COMP)===-1">
-                  {{ menuTypeDict[MenuTypeEnum.T_COMP] }}
+                <el-radio :value="base.MenuTypeEnum.T_COMP" :disabled="canChooseTypes.indexOf(base.MenuTypeEnum.T_COMP)===-1">
+                  {{ base.menuTypeDict[base.MenuTypeEnum.T_COMP] }}
                 </el-radio>
               </el-radio-group>
             </el-form-item>
@@ -1008,7 +1008,7 @@ const setThrottle = (row: MenuDto) => {
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col :span="12" v-show="checkVisible(state.dialogForm.type, [MenuTypeEnum.T_COMP])">
+          <el-col :span="12" v-show="checkVisible(state.dialogForm.type, [base.MenuTypeEnum.T_COMP])">
             <el-form-item :label="menuDict.ifFixed" prop="ifFixed">
               <el-radio-group v-model="state.dialogForm.ifFixed">
                 <el-radio :value="final.Y">是</el-radio>
@@ -1017,7 +1017,7 @@ const setThrottle = (row: MenuDto) => {
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row v-show="checkVisible(state.dialogForm.type, [MenuTypeEnum.T_COMP])">
+        <el-row v-show="checkVisible(state.dialogForm.type, [base.MenuTypeEnum.T_COMP])">
           <el-col :span="24">
             <el-form-item :label="menuDict.component" prop="component">
               <template #label>
@@ -1077,11 +1077,11 @@ const setThrottle = (row: MenuDto) => {
             <template #default="{$index}">
               <div :class="state.dialogForms_error?.[`${$index}-type`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
                 <el-radio-group v-model="state.dialogForms[$index].type">
-                  <el-radio :value="MenuTypeEnum.T_MENU" :disabled="canChooseTypes.indexOf(MenuTypeEnum.T_MENU)===-1">
-                    {{ menuTypeDict[MenuTypeEnum.T_MENU] }}
+                  <el-radio :value="base.MenuTypeEnum.T_MENU" :disabled="canChooseTypes.indexOf(base.MenuTypeEnum.T_MENU)===-1">
+                    {{ base.menuTypeDict[base.MenuTypeEnum.T_MENU] }}
                   </el-radio>
-                  <el-radio :value="MenuTypeEnum.T_COMP" :disabled="canChooseTypes.indexOf(MenuTypeEnum.T_COMP)===-1">
-                    {{ menuTypeDict[MenuTypeEnum.T_COMP] }}
+                  <el-radio :value="base.MenuTypeEnum.T_COMP" :disabled="canChooseTypes.indexOf(base.MenuTypeEnum.T_COMP)===-1">
+                    {{ base.menuTypeDict[base.MenuTypeEnum.T_COMP] }}
                   </el-radio>
                 </el-radio-group>
               </div>
@@ -1188,7 +1188,7 @@ const setThrottle = (row: MenuDto) => {
               <span :class="ifRequired('ifFixed')?'tp-table-header-required':''">{{ menuDict.ifFixed }}</span>
             </template>
             <template #default="{$index}">
-              <template v-if="checkVisible(state.dialogForms[$index].type, [MenuTypeEnum.T_COMP])">
+              <template v-if="checkVisible(state.dialogForms[$index].type, [base.MenuTypeEnum.T_COMP])">
                 <div :class="state.dialogForms_error?.[`${$index}-ifFixed`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
                   <!--<el-radio-group v-model="state.dialogForms[$index].ifFixed">-->
                   <!--  <el-radio :value="final.Y">是</el-radio>-->
@@ -1207,7 +1207,7 @@ const setThrottle = (row: MenuDto) => {
               </Tooltip>
             </template>
             <template #default="{$index}">
-              <template v-if="checkVisible(state.dialogForms[$index].type, [MenuTypeEnum.T_COMP])">
+              <template v-if="checkVisible(state.dialogForms[$index].type, [base.MenuTypeEnum.T_COMP])">
                 <div :class="state.dialogForms_error?.[`${$index}-component`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
                   <el-input v-model="state.dialogForms[$index].component" :placeholder="menuDict.component"/>
                 </div>
@@ -1291,8 +1291,8 @@ const setThrottle = (row: MenuDto) => {
           <el-col :span="24">
             <el-form-item :label="menuDictInter.type" prop="type">
               <el-radio-group v-model="stateInter.dialogForm.type">
-                <el-radio :value="MenuTypeEnum.T_IS">
-                  {{ menuTypeDict[MenuTypeEnum.T_IS] }}
+                <el-radio :value="base.MenuTypeEnum.T_IS">
+                  {{ base.menuTypeDict[base.MenuTypeEnum.T_IS] }}
                 </el-radio>
               </el-radio-group>
             </el-form-item>
@@ -1369,8 +1369,8 @@ const setThrottle = (row: MenuDto) => {
             <template #default="{$index}">
               <div :class="stateInter.dialogForms_error?.[`${$index}-type`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
                 <el-radio-group v-model="stateInter.dialogForms[$index].type">
-                  <el-radio :value="MenuTypeEnum.T_IS">
-                    {{ menuTypeDict[MenuTypeEnum.T_IS] }}
+                  <el-radio :value="base.MenuTypeEnum.T_IS">
+                    {{ base.menuTypeDict[base.MenuTypeEnum.T_IS] }}
                   </el-radio>
                 </el-radio-group>
               </div>
@@ -1503,7 +1503,7 @@ const setThrottle = (row: MenuDto) => {
           <el-button type="info" plain :icon="Sort" @click="expendAll">展开/折叠</el-button>
           <el-button type="primary" plain :icon="Refresh" @click="gRefresh">刷新</el-button>
           <el-button type="primary" plain :icon="Plus" @click="gIns">新增</el-button>
-          <el-button type="success" plain :icon="Edit" :disabled="config.bulkOperation?multipleSelection.length===0:multipleSelection.length!==1||(multipleSelection.length>0&&checkVisible(multipleSelection[0].type,[MenuTypeEnum.T_Inter]))" @click="gUpd">修改</el-button>
+          <el-button type="success" plain :icon="Edit" :disabled="config.bulkOperation?multipleSelection.length===0:multipleSelection.length!==1||(multipleSelection.length>0&&checkVisible(multipleSelection[0].type,[base.MenuTypeEnum.T_Inter]))" @click="gUpd">修改</el-button>
           <el-button type="danger" plain :icon="Delete" :disabled="multipleSelection.length===0" @click="gDel()">删除</el-button>
           <!--<el-button type="warning" plain :icon="Download" :disabled="multipleSelection.length===0" @click="gExport()">导出</el-button>-->
           <!--<el-button type="warning" plain :icon="Upload" @click="gImport">上传</el-button>-->
@@ -1530,7 +1530,7 @@ const setThrottle = (row: MenuDto) => {
             <el-table-column fixed prop="label" :label="menuDict.label" width="240"/>
             <el-table-column prop="icon" :label="menuDict.icon" width="120">
               <template #default="{row}">
-                <SvgIcon :name="row.icon" :color="CONFIG.icon_black"/>
+                <SvgIcon :name="row.icon" color="var(--menu-icon-color)"/>
               </template>
             </el-table-column>
             <el-table-column prop="path" :label="menuDict.path" width="200"/>
@@ -1556,7 +1556,7 @@ const setThrottle = (row: MenuDto) => {
             </el-table-column>
             <el-table-column prop="ifFixed" :label="menuDict.ifFixed" width="120">
               <template #default="{row}">
-                <template v-if="row.type === MenuTypeEnum.T_COMP">
+                <template v-if="row.type === base.MenuTypeEnum.T_COMP">
                   <el-tag v-if="row.ifFixed===final.Y" type="primary">是</el-tag>
                   <el-tag v-else type="info">否</el-tag>
                 </template>
@@ -1575,7 +1575,7 @@ const setThrottle = (row: MenuDto) => {
             <el-table-column fixed="right" label="操作" min-width="140">
               <template #default="{row}">
                 <div class="zs-table-data-operate-button-row">
-                  <el-button v-if="row.type!==MenuTypeEnum.T_Inter" link type="primary" size="small" :icon="Plus" @click="tIns(row.id)">新增</el-button>
+                  <el-button v-if="row.type!==base.MenuTypeEnum.T_Inter" link type="primary" size="small" :icon="Plus" @click="tIns(row.id)">新增</el-button>
                   <el-button link type="primary" size="small" :icon="Edit" @click="tUpd(row.id)">修改</el-button>
                   <el-button link type="danger" size="small" :icon="Delete" @click="tDel(row.id)">删除</el-button>
                 </div>
@@ -1658,7 +1658,7 @@ const setThrottle = (row: MenuDto) => {
           <el-table-column fixed="right" label="操作" min-width="140">
             <template #default="{row}">
               <div class="zs-table-data-operate-button-row">
-                <el-button v-if="row.type!==MenuTypeEnum.T_Inter" link type="primary" size="small" :icon="Plus" @click="tInsInter(row.id)">新增</el-button>
+                <el-button v-if="row.type!==base.MenuTypeEnum.T_Inter" link type="primary" size="small" :icon="Plus" @click="tInsInter(row.id)">新增</el-button>
                 <el-button link type="primary" size="small" :icon="Edit" @click="tUpdInter(row.id)">修改</el-button>
                 <el-button link type="danger" size="small" :icon="Delete" @click="tDelInter(row.id)">删除</el-button>
                 <el-dropdown>

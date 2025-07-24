@@ -13,7 +13,7 @@ watch(route, () => {
   immediate: true
 })
 
-const routeOfUser = router.getRoutes().find(item => item.name === '/user');
+const routeOfUser = router.getRoutes().find(item => item.name === '~user');
 const menus = routeOfUser ? routeOfUser.children.map(item => ({
   index: `/user/${item.path}`,
   icon: item.meta ? `${item.meta.icon}` : '',
@@ -29,23 +29,22 @@ const menuIndex = computed(() => {
     <el-container class="el">
       <el-aside class="left" width="200px">
         <el-menu :default-active="defaultActive" :collapse="false" :unique-opened="true" router>
-          <el-menu-item v-for="(item, index) in menus" :key="index" :index="item.index" style="z-index: 1;" :style="{
-            color: index === menuIndex ? '#fff' : '#000'
-          }">
+          <el-menu-item v-for="(item, index) in menus" :key="index" :index="item.index">
             <el-space class="elSpace">
-              <SvgIcon :name="item.icon" :color="index === menuIndex ? CONFIG.icon_white : CONFIG.theme_color_menu_bg_active"/>
+              <SvgIcon :name="item.icon" color="var(--menu-icon-color)"/>
               <span>{{ item.label }}</span>
             </el-space>
-            <div v-if="index === menuIndex" class="bg" style="position: absolute;padding: 3px 0">
-              <div class="r0"></div>
-              <div class="r1"></div>
-              <div class="r2"></div>
-            </div>
           </el-menu-item>
         </el-menu>
       </el-aside>
       <el-main class="right">
-        <router-view/>
+        <router-view #default="{Component:c2,route:r2}">
+          <Transition name="component-switch" mode="out-in" appear>
+            <RootWrapper :key="r2.path">
+              <component :is="c2"/>
+            </RootWrapper>
+          </Transition>
+        </router-view>
       </el-main>
     </el-container>
   </PublicIndex>
@@ -72,48 +71,6 @@ const menuIndex = computed(() => {
     padding: 8px;
     min-width: 600px;
     max-width: 1000px;
-  }
-}
-
-.elSpace {
-  z-index: 1;
-}
-
-.bg {
-  --padding: 6px;
-  position: absolute;
-  z-index: 0;
-  left: var(--padding);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  width: calc(100% - var(--padding));
-  height: 50px;
-  transition: all .2s;
-
-  > .r0,
-  .r2 {
-    flex: none;
-    width: var(--padding);
-    height: var(--padding);
-    background-color: transparent;
-    overflow: hidden;
-    background-clip: padding-box;
-  }
-
-  > .r0 {
-    background-image: radial-gradient(circle at 0 0, transparent var(--padding), var(--theme-color-menu-bg-active) var(--padding));
-  }
-
-  > .r2 {
-    background-image: radial-gradient(circle at 0 var(--padding), transparent var(--padding), var(--theme-color-menu-bg-active) var(--padding));
-  }
-
-  > .r1 {
-    flex: auto;
-    width: 100%;
-    background-color: var(--theme-color-menu-bg-active);
-    border-radius: var(--padding) 0 0 var(--padding);
   }
 }
 </style>

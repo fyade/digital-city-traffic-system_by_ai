@@ -1,13 +1,6 @@
 <script setup lang="ts">
 import { reactive } from "vue";
-import {
-  CONFIG,
-  final,
-  signalLightColorDict,
-  SignalLightColorEnum,
-  sLSPLTTypeDict,
-  SLSPLTTypeEnum
-} from "@/utils/base.ts";
+import { final } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
@@ -16,6 +9,7 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { SignalLightStrategyParamDto, SignalLightStrategyParamUpdDto } from "@/type/module/dcts/signalLightStrategy/signalLightStrategyParam.ts";
 import { signalLightStrategyParamApi } from "@/api/module/dcts/signalLightStrategy/signalLightStrategyParam.ts";
 import { signalLightStrategyParamDict } from "@/dict/module/dcts/signalLightStrategy/signalLightStrategyParam.ts";
+import { base } from "@dcts/common";
 
 const emits = defineEmits(['selectRow'])
 
@@ -129,13 +123,13 @@ const selectRow2 = () => {
       <el-form-item :label="signalLightStrategyParamDict.lightType" prop="lightType">
         <!--<el-input v-model="state.filterForm.lightType" :placeholder="signalLightStrategyParamDict.lightType"/>-->
         <el-select v-model="state.filterForm.lightType" :placeholder="signalLightStrategyParamDict.lightType" clearable filterable>
-          <el-option v-for="key in SLSPLTTypeEnum" :key="key" :label="sLSPLTTypeDict[key]" :value="key"/>
+          <el-option v-for="key in base.SLSPLTTypeEnum" :key="key" :label="base.sLSPLTTypeDict[key]" :value="key"/>
         </el-select>
       </el-form-item>
       <el-form-item :label="signalLightStrategyParamDict.currentLight" prop="currentLight">
         <!--<el-input v-model="state.filterForm.currentLight" :placeholder="signalLightStrategyParamDict.currentLight"/>-->
         <el-select v-model="state.filterForm.currentLight" :placeholder="signalLightStrategyParamDict.currentLight" clearable filterable>
-          <el-option v-for="key in SignalLightColorEnum" :key="key" :label="signalLightColorDict[key]" :value="key"/>
+          <el-option v-for="key in base.SignalLightColorEnum" :key="key" :label="base.signalLightColorDict[key]" :value="key"/>
         </el-select>
       </el-form-item>
       <el-form-item :label="signalLightStrategyParamDict.ifDisabled" prop="ifDisabled">
@@ -184,14 +178,14 @@ const selectRow2 = () => {
       <el-table-column prop="description" :label="signalLightStrategyParamDict.description" width="120"/>
       <el-table-column prop="lightType" :label="signalLightStrategyParamDict.lightType" width="180">
         <template #default="{row}">
-          {{ row.lightType.split('-').filter((_: string) => _).map((key: string) => sLSPLTTypeDict[key as SLSPLTTypeEnum]).join('、') }}
+          {{ row.lightType.split('-').filter((_: string) => _).map((key: string) => base.sLSPLTTypeDict[key as base.SLSPLTTypeEnum]).join('、') }}
         </template>
       </el-table-column>
       <el-table-column prop="round" :label="signalLightStrategyParamDict.round" width="120"/>
       <el-table-column prop="duration" :label="signalLightStrategyParamDict.duration" width="120"/>
       <el-table-column prop="currentLight" :label="signalLightStrategyParamDict.currentLight" width="120">
         <template #default="{row}">
-          {{ signalLightColorDict[row.currentLight as SignalLightColorEnum] }}
+          {{ base.signalLightColorDict[row.currentLight as base.SignalLightColorEnum] }}
         </template>
       </el-table-column>
       <el-table-column prop="ifDisabled" :label="signalLightStrategyParamDict.ifDisabled" width="120">

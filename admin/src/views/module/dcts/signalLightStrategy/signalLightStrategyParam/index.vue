@@ -6,14 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { reactive } from "vue";
-import {
-  CONFIG,
-  final,
-  signalLightColorDict,
-  SignalLightColorEnum,
-  sLSPLTTypeDict,
-  SLSPLTTypeEnum
-} from "@/utils/base.ts";
+import { CONFIG, final } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
@@ -22,6 +15,7 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { SignalLightStrategyParamDto, SignalLightStrategyParamUpdDto } from "@/type/module/dcts/signalLightStrategy/signalLightStrategyParam.ts";
 import { signalLightStrategyParamApi } from "@/api/module/dcts/signalLightStrategy/signalLightStrategyParam.ts";
 import { signalLightStrategyParamDict } from "@/dict/module/dcts/signalLightStrategy/signalLightStrategyParam.ts";
+import { base } from "@dcts/common";
 
 const state = reactive<State2<SignalLightStrategyParamDto, SignalLightStrategyParamUpdDto>>({
   dialogForm: {
@@ -151,7 +145,7 @@ const {
           <el-col :span="12">
             <el-form-item :label="signalLightStrategyParamDict.lightType" prop="lightType">
               <!--<el-input v-model="state.dialogForm.lightType" :placeholder="signalLightStrategyParamDict.lightType"/>-->
-              <MultipleCheckbox v-model="state.dialogForm.lightType" :placeholder="signalLightStrategyParamDict.lightType" :kvs="sLSPLTTypeDict"/>
+              <MultipleCheckbox v-model="state.dialogForm.lightType" :placeholder="signalLightStrategyParamDict.lightType" :kvs="base.sLSPLTTypeDict"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -170,7 +164,7 @@ const {
             <el-form-item :label="signalLightStrategyParamDict.currentLight" prop="currentLight">
               <!--<el-input v-model="state.dialogForm.currentLight" :placeholder="signalLightStrategyParamDict.currentLight"/>-->
               <el-radio-group v-model="state.dialogForm.currentLight">
-                <el-radio v-for="key in SignalLightColorEnum" :key="key" :value="key">{{ signalLightColorDict[key] }}</el-radio>
+                <el-radio v-for="key in base.SignalLightColorEnum" :key="key" :value="key">{{ base.signalLightColorDict[key] }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -258,7 +252,7 @@ const {
             <template #default="{$index}">
               <div :class="state.dialogForms_error?.[`${$index}-lightType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
                 <!--<el-input v-model="state.dialogForms[$index].lightType" :placeholder="signalLightStrategyParamDict.lightType"/>-->
-                <MultipleCheckbox v-model="state.dialogForms[$index].lightType" :placeholder="signalLightStrategyParamDict.lightType" :kvs="sLSPLTTypeDict"/>
+                <MultipleCheckbox v-model="state.dialogForms[$index].lightType" :placeholder="signalLightStrategyParamDict.lightType" :kvs="base.sLSPLTTypeDict"/>
               </div>
             </template>
           </el-table-column>
@@ -290,7 +284,7 @@ const {
               <div :class="state.dialogForms_error?.[`${$index}-currentLight`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
                 <!--<el-input v-model="state.dialogForms[$index].currentLight" :placeholder="signalLightStrategyParamDict.currentLight"/>-->
                 <el-radio-group v-model="state.dialogForms[$index].currentLight">
-                  <el-radio v-for="key in SignalLightColorEnum" :key="key" :value="key">{{ signalLightColorDict[key] }}</el-radio>
+                  <el-radio v-for="key in base.SignalLightColorEnum" :key="key" :value="key">{{ base.signalLightColorDict[key] }}</el-radio>
                 </el-radio-group>
               </div>
             </template>
@@ -364,13 +358,13 @@ const {
       <el-form-item :label="signalLightStrategyParamDict.lightType" prop="lightType">
         <!--<el-input v-model="state.filterForm.lightType" :placeholder="signalLightStrategyParamDict.lightType"/>-->
         <el-select v-model="state.filterForm.lightType" :placeholder="signalLightStrategyParamDict.lightType" clearable filterable>
-          <el-option v-for="key in SLSPLTTypeEnum" :key="key" :label="sLSPLTTypeDict[key]" :value="key"/>
+          <el-option v-for="key in base.SLSPLTTypeEnum" :key="key" :label="base.sLSPLTTypeDict[key]" :value="key"/>
         </el-select>
       </el-form-item>
       <el-form-item :label="signalLightStrategyParamDict.currentLight" prop="currentLight">
         <!--<el-input v-model="state.filterForm.currentLight" :placeholder="signalLightStrategyParamDict.currentLight"/>-->
         <el-select v-model="state.filterForm.currentLight" :placeholder="signalLightStrategyParamDict.currentLight" clearable filterable>
-          <el-option v-for="key in SignalLightColorEnum" :key="key" :label="signalLightColorDict[key]" :value="key"/>
+          <el-option v-for="key in base.SignalLightColorEnum" :key="key" :label="base.signalLightColorDict[key]" :value="key"/>
         </el-select>
       </el-form-item>
       <el-form-item :label="signalLightStrategyParamDict.ifDisabled" prop="ifDisabled">
@@ -418,14 +412,14 @@ const {
       <el-table-column prop="description" :label="signalLightStrategyParamDict.description" width="120"/>
       <el-table-column prop="lightType" :label="signalLightStrategyParamDict.lightType" width="180">
         <template #default="{row}">
-          {{ row.lightType.split('-').filter((_: string) => _).map((key: string) => sLSPLTTypeDict[key as SLSPLTTypeEnum]).join('、') }}
+          {{ row.lightType.split('-').filter((_: string) => _).map((key: string) => base.sLSPLTTypeDict[key as base.SLSPLTTypeEnum]).join('、') }}
         </template>
       </el-table-column>
       <el-table-column prop="round" :label="signalLightStrategyParamDict.round" width="120"/>
       <el-table-column prop="duration" :label="signalLightStrategyParamDict.duration" width="120"/>
       <el-table-column prop="currentLight" :label="signalLightStrategyParamDict.currentLight" width="120">
         <template #default="{row}">
-          {{ signalLightColorDict[row.currentLight as SignalLightColorEnum] }}
+          {{ base.signalLightColorDict[row.currentLight as base.SignalLightColorEnum] }}
         </template>
       </el-table-column>
       <el-table-column prop="ifDisabled" :label="signalLightStrategyParamDict.ifDisabled" width="120">

@@ -12,7 +12,7 @@ import {
 } from './dto';
 import { AuthService } from '../../../../auth/auth.service';
 import { HTTP } from '../../../../../common/Enum';
-import { base } from '../../../../../util/base';
+import { final } from '../../../../../util/base';
 import { UserRoleDto } from '../user-role/dto';
 import { UserUnknownException } from '../../../../../exception/user-unknown.exception';
 import { UserPermissionDeniedException } from '../../../../../exception/user-permission-denied.exception';
@@ -63,7 +63,7 @@ export class UserService {
     res.list.forEach(item => {
       delete item.password;
     });
-    if (ifWithRole !== base.Y) {
+    if (ifWithRole !== final.Y) {
       return R.ok(res);
     }
     const topAdminUser = await this.mysqlPrisma.findAll<{ id: number; userId: string }>('sys_admin_top', {
@@ -268,7 +268,7 @@ export class UserService {
     });
     if (sysConfigs.length > 0) {
       const sysConfig = sysConfigs[0];
-      if (sysConfig.if_allow_user_regist === base.N) {
+      if (sysConfig.if_allow_user_regist === final.N) {
         throw new Exception('当前不允许新用户注册。')
       }
     }
@@ -431,7 +431,7 @@ export class UserService {
   private async getLoginLogsOfPasswordError(userId: string, loginIp: string, loginRole: string) {
     const loginLog = await this.logUserLoginService.selAllLogUserLogin({
       userId: userId,
-      ifSuccess: base.N,
+      ifSuccess: final.N,
       failType: PASSWORD_ERROR,
       loginIp: loginIp,
       loginRole: loginRole,
@@ -454,7 +454,7 @@ export class UserService {
       loginPosition: loginPosition,
       loginOs: loginOs,
       userId: userId,
-      ifSuccess: ifSuccess ? base.Y : base.N,
+      ifSuccess: ifSuccess ? final.Y : final.N,
       failType: failType,
       loginRole: loginRole,
       remark: ifSuccess ? '登录成功' : errorRemark ? errorRemark : '密码错误',

@@ -51,19 +51,12 @@ const ifParentMenuItem = (item: RouteRecordNormalized) => {
       >
         <template #title>
           <template v-if="sysConfigStore.getMenuCollapse()&&ifParentMenuItem(item)">
-            <SvgIcon :name="item.meta.icon as string"
-                     :color="item.meta&&item.meta.fullPath===route.path?CONFIG.icon_white:CONFIG.theme_color_menu_bg_active"/>
+            <SvgIcon :name="item.meta.icon as string" color="var(--menu-icon-color)"/>
           </template>
           <el-space v-else class="elSpace">
-            <SvgIcon :name="item.meta.icon as string"
-                     :color="item.meta&&item.meta.fullPath===route.path?CONFIG.icon_white:CONFIG.theme_color_menu_bg_active"/>
+            <SvgIcon :name="item.meta.icon as string" color="var(--menu-icon-color)"/>
             <span>{{ item.meta ? item.meta.label : item.name }}</span>
           </el-space>
-          <div v-if="item.meta&&item.meta.fullPath===route.path" class="bg">
-            <div class="r0"></div>
-            <div class="r1"></div>
-            <div class="r2"></div>
-          </div>
         </template>
         <AsideMenu
             :menus="item.children as  RouteRecordNormalized[]"
@@ -80,35 +73,21 @@ const ifParentMenuItem = (item: RouteRecordNormalized) => {
           @click="menuClick(item.path, item.meta.ifLink===final.Y)"
       >
         <template v-if="item.meta.ifLink===final.Y">
-          <a :href="item.path.replace('/http', 'http')" target="_blank"
-             style="position: absolute;left: 0;display: block;padding: inherit;width: 100%;" @click.stop>
+          <a class="link" :href="item.path.replace('/http', 'http')" target="_blank" @click.stop>
             <el-space class="elSpace">
-              <SvgIcon :name="item.meta.icon as string"
-                       :color="item.meta&&item.meta.fullPath===route.path?CONFIG.icon_white:CONFIG.theme_color_menu_bg_active"/>
+              <SvgIcon :name="item.meta.icon as string" color="var(--menu-icon-color)"/>
               <span>{{ item.meta ? item.meta.label : item.name }}</span>
             </el-space>
-            <div v-if="item.meta&&item.meta.fullPath===route.path" class="bg">
-              <div class="r0"></div>
-              <div class="r1"></div>
-              <div class="r2"></div>
-            </div>
           </a>
         </template>
 
         <template v-else>
           <el-space class="elSpace">
-            <SvgIcon :name="item.meta.icon as string"
-                     :color="item.meta&&item.meta.fullPath===route.path?CONFIG.icon_white:CONFIG.theme_color_menu_bg_active"/>
-            <template
-                v-if="!sysConfigStore.getMenuCollapse()||(sysConfigStore.getMenuCollapse()&&!ifParentMenuItem(item))">
+            <SvgIcon :name="item.meta.icon as string" color="var(--menu-icon-color)"/>
+            <template v-if="!sysConfigStore.getMenuCollapse()||(sysConfigStore.getMenuCollapse()&&!ifParentMenuItem(item))">
               <span>{{ item.meta ? item.meta.label : item.name }}</span>
             </template>
           </el-space>
-          <div v-if="item.meta&&item.meta.fullPath===route.path" class="bg">
-            <div class="r0"></div>
-            <div class="r1"></div>
-            <div class="r2"></div>
-          </div>
         </template>
       </el-menu-item>
     </template>
@@ -118,65 +97,13 @@ const ifParentMenuItem = (item: RouteRecordNormalized) => {
 <style scoped>
 .asideMenu {
   overflow: hidden;
+}
 
-  a {
-    color: #000;
-  }
-
-  .el-menu-item {
-    .elSpace {
-      z-index: 1;
-    }
-
-    .bg {
-      --padding: 6px;
-      position: absolute;
-      z-index: 0;
-      left: var(--padding);
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      width: calc(100% - var(--padding));
-      height: 50px;
-      transition: all .2s;
-
-      > .r0, .r2 {
-        flex: none;
-        width: var(--padding);
-        height: var(--padding);
-        background-color: transparent;
-        overflow: hidden;
-        background-clip: padding-box;
-      }
-
-      > .r0 {
-        background-image: radial-gradient(circle at 0 0, transparent var(--padding), var(--theme-color-menu-bg-active) var(--padding));
-      }
-
-      > .r2 {
-        background-image: radial-gradient(circle at 0 var(--padding), transparent var(--padding), var(--theme-color-menu-bg-active) var(--padding));
-      }
-
-      > .r1 {
-        flex: auto;
-        width: 100%;
-        background-color: var(--theme-color-menu-bg-active);
-        border-radius: var(--padding) 0 0 var(--padding);
-      }
-    }
-
-    &:hover {
-      //background-color: transparent;
-    }
-  }
-
-  .el-menu-item.is-active {
-    position: relative;
-    color: var(--theme-color-menu-color);
-
-    > div {
-      //z-index: 100;
-    }
-  }
+.link {
+  position: absolute;
+  left: 0;
+  display: block;
+  padding: inherit;
+  width: 100%;
 }
 </style>

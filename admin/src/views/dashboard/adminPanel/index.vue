@@ -60,9 +60,10 @@ getRouters()
     padding: 4px;
     border-radius: 4px;
     cursor: pointer;
+    transition: transform .2s ease;
 
     &:hover {
-      background-color: #eee;
+      transform: scale(1.1);
     }
   }
 }

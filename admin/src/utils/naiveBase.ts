@@ -1,30 +1,44 @@
-import { createDiscreteApi, SelectGroupOption, SelectOption } from "naive-ui";
-import { final, sLSSTTypeDict, SLSSTTypeEnum, sLSTTTypeDict, SLSTTTypeEnum } from "@/utils/base.ts";
+import { createDiscreteApi, darkTheme, lightTheme, SelectGroupOption, SelectOption } from "naive-ui";
+import { final } from "@/utils/base.ts";
+import { base } from "@dcts/common";
 
-export const {
-  dialog: NDialog,
-  message: NMessage,
-  notification: NNotification
-} = createDiscreteApi(
-    [
-      'dialog',
-      'message',
-      'notification'
-    ],
-    {
-      notificationProviderProps: {
-        scrollable: false
+let discreteApi = createDiscrete();
+export let NDialog = discreteApi.dialog
+export let NMessage = discreteApi.message
+export let NNotification = discreteApi.notification
+
+function createDiscrete(theme: typeof lightTheme | typeof darkTheme | null = null) {
+  return createDiscreteApi(
+      [
+        'dialog',
+        'message',
+        'notification'
+      ],
+      {
+        configProviderProps: {
+          theme: theme
+        },
+        notificationProviderProps: {
+          scrollable: false
+        }
       }
-    }
-)
+  );
+}
+
+export function reCreateDiscrete(theme: typeof lightTheme | typeof darkTheme | null = null) {
+  discreteApi = createDiscrete(theme)
+  NDialog = discreteApi.dialog
+  NMessage = discreteApi.message
+  NNotification = discreteApi.notification
+}
 
 export const nOptionSLSTT: Array<SelectOption | SelectGroupOption> = [
-  {label: sLSTTTypeDict[SLSTTTypeEnum.T_CUSTOM], value: SLSTTTypeEnum.T_CUSTOM},
-  {label: sLSTTTypeDict[SLSTTTypeEnum.T_FINE_TUNING], value: SLSTTTypeEnum.T_FINE_TUNING},
-  {label: sLSTTTypeDict[SLSTTTypeEnum.T_TOP], value: SLSTTTypeEnum.T_TOP},
+  {label: base.sLSTTTypeDict[base.SLSTTTypeEnum.T_CUSTOM], value: base.SLSTTTypeEnum.T_CUSTOM},
+  {label: base.sLSTTTypeDict[base.SLSTTTypeEnum.T_FINE_TUNING], value: base.SLSTTTypeEnum.T_FINE_TUNING},
+  {label: base.sLSTTTypeDict[base.SLSTTTypeEnum.T_TOP], value: base.SLSTTTypeEnum.T_TOP},
 ]
 export const nOptionSLSST: Array<SelectOption | SelectGroupOption> = [
-  {label: sLSSTTypeDict[SLSSTTypeEnum.T_DAY], value: SLSSTTypeEnum.T_DAY},
+  {label: base.sLSSTTypeDict[base.SLSSTTypeEnum.T_DAY], value: base.SLSSTTypeEnum.T_DAY},
 ]
 export const nOptionIfDisabled: Array<SelectOption | SelectGroupOption> = [
   {label: '是', value: final.Y},

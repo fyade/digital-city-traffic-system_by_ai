@@ -3,7 +3,7 @@ import { MysqlPrismaService } from '../../../../../prisma/mysql.prisma.service';
 import { R } from '../../../../../common/R';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import { base } from '../../../../../util/base';
+import { final } from '../../../../../util/base';
 import {
   FileChunkDto,
   FileDto,
@@ -54,11 +54,11 @@ export class FileUploadService {
       },
     });
     for (let i = 0; i < data.list.length; i++) {
-      if (data.list[i].ifChunk === base.Y && data.list[i].ifMerge === base.N) {
+      if (data.list[i].ifChunk === final.Y && data.list[i].ifMerge === final.N) {
         const count = await this.mysqlPrisma.count('tbl_file_chunk', {
           data: {
             fileMd5: data.list[i].fileMd5,
-            ifFinished: base.Y,
+            ifFinished: final.Y,
           },
         });
         data.list[i]['uploadedCount'] = count;
@@ -82,8 +82,8 @@ export class FileUploadService {
       const sameFile = await this.mysqlPrisma.findFirst<FileDto>('tbl_file', {
         // fileName: fileName2,
         fileMd5: fileMd5,
-        ifChunk: base.N,
-        ifFinished: base.Y,
+        ifChunk: final.N,
+        ifFinished: final.Y,
       });
       const fileSize = file.size;
       const fileSuffix = fileName2.substring(fileName2.lastIndexOf('.'));
@@ -96,17 +96,17 @@ export class FileUploadService {
         fileNewName: fileNewName2,
         fileSize: BigInt(fileSize),
         fileMd5: fileMd5,
-        ifChunk: base.N,
-        ifFirst: base.Y,
-        ifFinished: base.N,
+        ifChunk: final.N,
+        ifFirst: final.Y,
+        ifFinished: final.N,
         module: module,
       };
       if (sameFile) {
         // 如果已有相同文件，直接存库
         fillObj.fileNewName = sameFile.fileNewName;
         fillObj.fileSize = BigInt(sameFile.fileSize);
-        fillObj.ifFirst = base.N;
-        fillObj.ifFinished = base.Y;
+        fillObj.ifFirst = final.N;
+        fillObj.ifFinished = final.Y;
         await this.mysqlPrisma.create<FileDto>('tbl_file', fillObj);
       } else {
         // 如果无相同文件，先存下库，ifFinished字段设为false，然后存文件，最后更新库
@@ -114,7 +114,7 @@ export class FileUploadService {
         saveFile(this.env.file.uploadPath, fileNewName1, file.buffer, { a: s });
         await this.mysqlPrisma.updateById<FileDto>('tbl_file', {
           id: newVar.id,
-          ifFinished: base.Y,
+          ifFinished: final.Y,
         });
       }
       return R.ok(fillObj.fileNewName);
@@ -135,8 +135,8 @@ export class FileUploadService {
       data: {
         // fileName: dto.fileName,
         fileMd5: dto.fileMd5,
-        ifChunk: base.Y,
-        deleted: base.N,
+        ifChunk: final.Y,
+        deleted: final.N,
       },
     });
     if (sameFile.length > 0) {
@@ -144,7 +144,7 @@ export class FileUploadService {
       // 是否合并
       let b = true;
       for (const sameFileElement of sameFile) {
-        if (sameFileElement.ifMerge === base.N) {
+        if (sameFileElement.ifMerge === final.N) {
           b = false;
         }
       }
@@ -157,11 +157,11 @@ export class FileUploadService {
           fileNewName: sameFileElement1.fileNewName,
           fileSize: BigInt(sameFileElement1.fileSize),
           fileMd5: sameFileElement1.fileMd5,
-          ifChunk: base.Y,
+          ifChunk: final.Y,
           chunkNum: sameFileElement1.chunkNum,
-          ifFirst: base.N,
-          ifMerge: base.Y,
-          ifFinished: base.Y,
+          ifFirst: final.N,
+          ifMerge: final.Y,
+          ifFinished: final.Y,
         };
         await this.mysqlPrisma.create<FileDto>('tbl_file', fillObj);
         return R.ok({ merge: true });
@@ -173,19 +173,19 @@ export class FileUploadService {
           fileNewName: sameFileElement1.fileNewName,
           fileSize: BigInt(sameFileElement1.fileSize),
           fileMd5: sameFileElement1.fileMd5,
-          ifChunk: base.Y,
+          ifChunk: final.Y,
           chunkNum: sameFileElement1.chunkNum,
-          ifFirst: base.N,
-          ifMerge: base.N,
-          ifFinished: base.N,
+          ifFirst: final.N,
+          ifMerge: final.N,
+          ifFinished: final.N,
         };
         await this.mysqlPrisma.create<FileDto>('tbl_file', fillObj);
         const findMany = await this.mysqlPrisma.findAll<FileChunkDto>('tbl_file_chunk', {
           data: {
             fileNewName: sameFileElement1.fileNewName,
             fileMd5: dto.fileMd5,
-            ifFinished: base.Y,
-            deleted: base.N,
+            ifFinished: final.Y,
+            deleted: final.N,
           },
         });
         return R.ok({
@@ -202,11 +202,11 @@ export class FileUploadService {
         fileNewName: fileNewName2,
         fileSize: BigInt(dto.fileSize),
         fileMd5: dto.fileMd5,
-        ifChunk: base.Y,
+        ifChunk: final.Y,
         chunkNum: dto.chunkNum,
-        ifFirst: base.Y,
-        ifMerge: base.N,
-        ifFinished: base.N,
+        ifFirst: final.Y,
+        ifMerge: final.N,
+        ifFinished: final.N,
       };
       await this.mysqlPrisma.create<FileDto>('tbl_file', fillObj);
       return R.ok({
@@ -230,14 +230,14 @@ export class FileUploadService {
         fileNewName: dto.fileNewName,
         chunkName: chunkName2,
         chunkIndex: dto.chunkIndex,
-        ifFinished: base.N,
+        ifFinished: final.N,
       });
       // 保存文件
       saveFile(this.env.file.uploadPath, chunkName1, dto.file.buffer, { a: s });
       // 更新文件信息
       await this.mysqlPrisma.updateById<FileChunkDto>('tbl_file_chunk', {
         id: info.id,
-        ifFinished: base.Y,
+        ifFinished: final.Y,
       });
       return R.ok(true);
     } catch (e) {
@@ -251,7 +251,7 @@ export class FileUploadService {
       data: {
         fileNewName: dto.fileNewName,
         fileMd5: dto.fileMd5,
-        deleted: base.N,
+        deleted: final.N,
       },
     });
     const fileInfo = fileInfos[0];
@@ -300,8 +300,8 @@ export class FileUploadService {
       try {
         await this.mysqlPrisma.updateById<FileDto>('tbl_file', {
           id: fileInfos[i].id,
-          ifMerge: base.Y,
-          ifFinished: base.Y,
+          ifMerge: final.Y,
+          ifFinished: final.Y,
         });
       } catch (e) {
         this.winston.error(e);

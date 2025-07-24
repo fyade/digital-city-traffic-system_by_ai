@@ -44,7 +44,7 @@
 .zs-filter-form {
   margin-bottom: 12px;
   padding: 8px;
-  background-color: #fff;
+  background-color: var(--table-page-box-bg);
   border-radius: 8px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1),
   0 4px 8px rgba(0, 0, 0, 0.1);
@@ -57,7 +57,7 @@
 .zs-button-row {
   margin-bottom: 12px;
   padding: 8px;
-  background-color: #fff;
+  background-color: var(--table-page-box-bg);
   border-radius: 8px;
   display: flex;
   justify-content: space-between;
@@ -67,7 +67,7 @@
 
 .zs-table-data {
   padding: 8px;
-  background-color: #fff;
+  background-color: var(--table-page-box-bg);
   border-radius: 8px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1),
   0 4px 8px rgba(0, 0, 0, 0.1);
@@ -129,7 +129,7 @@
   > .left {
     width: 240px;
     flex: none;
-    background-color: #fff;
+    background-color: var(--table-page-box-bg);
     border-radius: 8px;
   }
 

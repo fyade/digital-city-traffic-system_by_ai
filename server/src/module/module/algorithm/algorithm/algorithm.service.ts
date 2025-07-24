@@ -5,7 +5,7 @@ import { InterfaceService } from '../interface/interface.service';
 import { InterfaceGroupService } from '../interface-group/interface-group.service';
 import { AuthService } from '../../../auth/auth.service';
 import { requestSF } from '../../../../api/request';
-import { base } from '../../../../util/base';
+import { final } from '../../../../util/base';
 import { BaseContextService } from '../../../base-context/base-context.service';
 import { Exception } from "../../../../exception/exception";
 
@@ -21,11 +21,11 @@ export class AlgorithmService {
 
   async algorithm(dto: AlgorithmDto): Promise<R> {
     const permission = dto.perms;
-    const sfPermissionsOfUserid = await this.authService.getSFPermissionsOfUserid(this.bcs.getUserData().userId, dto.pperms, permission, this.bcs.getUserData().loginRole, base.Y);
+    const sfPermissionsOfUserid = await this.authService.getSFPermissionsOfUserid(this.bcs.getUserData().userId, dto.pperms, permission, this.bcs.getUserData().loginRole, final.Y);
     if (sfPermissionsOfUserid.length > 0) {
-      const permissionId = sfPermissionsOfUserid.every(item => item.ifUseUp === base.Y)
+      const permissionId = sfPermissionsOfUserid.every(item => item.ifUseUp === final.Y)
         ? sfPermissionsOfUserid[sfPermissionsOfUserid.length - 1].permissionId
-        : sfPermissionsOfUserid[sfPermissionsOfUserid.findIndex(item => item.ifUseUp === base.N)].permissionId;
+        : sfPermissionsOfUserid[sfPermissionsOfUserid.findIndex(item => item.ifUseUp === final.N)].permissionId;
       const interfaceGroup = await this.interfaceGroupService.selOneInterfaceGroup(permissionId);
       const inter = await this.interfaceService.selAllInterface({ perms: dto.perms });
       if (interfaceGroup.data && inter.data.length > 0) {

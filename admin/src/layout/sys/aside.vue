@@ -99,7 +99,7 @@ defineExpose({
     <div class="bottom">
       <div class="row">
         <div @click="changeMenuCollapse">
-          <SvgIcon :name="sysConfigStore.getMenuCollapse()?'indent-right':'indent-left'" color="#000" style="cursor: pointer;"/>
+          <SvgIcon :name="sysConfigStore.getMenuCollapse()?'indent-right':'indent-left'" color="var(--menu-icon-color)" style="cursor: pointer;"/>
         </div>
       </div>
     </div>
@@ -112,7 +112,7 @@ defineExpose({
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-  border-right: 1px solid #ddd;
+  border-right: var(--table-page-layout-border);
   overflow: hidden;
 
   &.menuCollapseTrue {

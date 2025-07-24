@@ -73,11 +73,11 @@ const gotoDirectory2 = (index: number) => {
     <div class="left">
       <div class="dir" @click="gotoDirectory2(0)">日志根目录</div>
       <template v-for="(path, index) in allDirs" :key="index">
-        <SvgIcon name="right" color="#000"/>
+        <SvgIcon name="right" color="var(--menu-icon-color)"/>
         <div class="dir" @click="gotoDirectory2(index+1)">{{ path }}</div>
       </template>
       <template v-if="viewType === 'file'">
-        <SvgIcon name="right" color="#000"/>
+        <SvgIcon name="right" color="var(--menu-icon-color)"/>
         <div class="dir" @click="refresh">{{ selectFileName }}</div>
       </template>
     </div>
@@ -93,14 +93,14 @@ const gotoDirectory2 = (index: number) => {
     <template v-if="viewType==='directory'">
       <div v-for="(item, index) in tableData" :key="index" @click="gotoDirectory(item)">
         <div class="left">
-          <SvgIcon v-if="item.type==='directory'" name="seo-folder" color="#000"/>
-          <SvgIcon v-else-if="item.type==='file'" name="file-cabinet" color="#000"/>
+          <SvgIcon v-if="item.type==='directory'" name="seo-folder" color="var(--menu-icon-color)"/>
+          <SvgIcon v-else-if="item.type==='file'" name="file-cabinet" color="var(--menu-icon-color)"/>
         </div>
         <div class="center">
           <p>{{ item.filename }}</p>
         </div>
         <div class="right">
-          <SvgIcon v-if="item.type==='directory'" name="right" color="#000"/>
+          <SvgIcon v-if="item.type==='directory'" name="right" color="var(--menu-icon-color)"/>
           <div v-else-if="item.type==='file'">
             {{ numberUtils.unitConversion_storage(item.filesize, { unitSpace: ' ' }) }}
           </div>
@@ -123,7 +123,7 @@ const gotoDirectory2 = (index: number) => {
       border-radius: 4px;
 
       &:hover {
-        background-color: #f3f4f6;
+        font-style: oblique;
       }
     }
   }
@@ -153,7 +153,7 @@ const gotoDirectory2 = (index: number) => {
     }
 
     &:hover {
-      background-color: #f3f4f6;
+      font-style: oblique;
     }
   }
 }

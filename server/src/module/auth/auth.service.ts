@@ -1,4 +1,4 @@
-import { AuthTypeEnum, base, MenuTypeEnum, MTTypeEnum, TMWLTypeEnum, UTDPTypeEnum } from '../../util/base';
+import { final } from '../../util/base';
 import { Injectable } from '@nestjs/common';
 import { LogAlgorithmCallDto } from '../module/algorithm/log-algorithm-call/dto';
 import { getIpInfoFromRequest } from '../../util/RequestUtils';
@@ -11,7 +11,7 @@ import { BaseContextService } from '../base-context/base-context.service';
 import { CachePermissionService } from '../cache/cache.permission.service';
 import { UserTableDefaultPermissionDto } from '../module/main/other-user/user-table-default-permission/dto';
 import { SysDto } from '../module/main/sys-manage/sys/dto';
-import { baseUtils, timeUtils } from '@dcts/common';
+import { base, baseUtils, timeUtils } from '@dcts/common';
 import { MenuThrottleDto } from '../module/main/sys-manage/menu-throttle/dto';
 import { WinstonService } from '../winston/winston.service';
 import { MysqlPrismaoService } from "../../prisma/mysql.prismao.service";
@@ -62,7 +62,7 @@ export class AuthService {
   async hasTopAdminPermission(loginRole: string, userId: string) {
     const s = await this.cachePermissionService.getAdminTopInCache(loginRole, userId);
     if (s) {
-      return s === base.Y;
+      return s === final.Y;
     }
     if (loginRole === 'admin') {
       const admintop = await this.mysqlPrismao.sys_admin_top.findFirst({
@@ -87,7 +87,7 @@ export class AuthService {
   async hasAdminPermissionByUserid(userId: string, permission: string, loginRole: string) {
     const b = await this.cachePermissionService.ifHavePermissionInCache(userId, permission, loginRole);
     if (b) {
-      return b === base.Y;
+      return b === final.Y;
     }
     if (await this.hasTopAdminPermission(loginRole, userId)) {
       return true;
@@ -105,18 +105,18 @@ export class AuthService {
   async ifPublicInterface(permission: string) {
     const ifPublicInterfaceInCache = await this.cachePermissionService.getIfPublicPermissionInCache(permission);
     if (ifPublicInterfaceInCache) {
-      return ifPublicInterfaceInCache === base.Y;
+      return ifPublicInterfaceInCache === final.Y;
     }
     const raw = await this.mysqlPrismao.sys_menu.findMany({
       where: {
         perms: permission,
-        if_public: base.Y,
-        if_disabled: base.N,
+        if_public: final.Y,
+        if_disabled: final.N,
         ...this.prismao.defaultSelArg().where,
       },
     });
     const b = raw.length > 0;
-    await this.cachePermissionService.setPublicPermissionInCache(permission, b ? base.Y : base.N);
+    await this.cachePermissionService.setPublicPermissionInCache(permission, b ? final.Y : final.N);
     return b;
   }
 
@@ -135,14 +135,14 @@ export class AuthService {
       // 接口是否存在
       const menus = await this.mysqlPrismao.sys_menu.findMany({
         where: {
-          if_disabled: base.N,
-          type: MenuTypeEnum.T_IS,
+          if_disabled: final.N,
+          type: base.MenuTypeEnum.T_IS,
           id: {
             in: (
               await this.mysqlPrismao.sys_menu.findMany({
                 where: {
-                  if_disabled: base.N,
-                  type: MenuTypeEnum.T_Inter,
+                  if_disabled: final.N,
+                  type: base.MenuTypeEnum.T_Inter,
                   perms: permission,
                   ...this.prismao.defaultSelArg().where,
                 },
@@ -160,7 +160,7 @@ export class AuthService {
       }
       const ips__ = await this.mysqlPrismao.sys_menu_ip_white_list.findMany({
         where: {
-          type: MenuTypeEnum.T_IS,
+          type: base.MenuTypeEnum.T_IS,
           menu_id: {
             in: menus.map((item) => item.id),
           },
@@ -175,7 +175,7 @@ export class AuthService {
       return true;
     }
     const ipInfoFromRequest = getIpInfoFromRequest(request);
-    const whiteList_ip = ips.filter((item) => item.fromType === TMWLTypeEnum.T_IP).map((item) => item.whiteList);
+    const whiteList_ip = ips.filter((item) => item.fromType === base.TMWLTypeEnum.T_IP).map((item) => item.whiteList);
     if (
       whiteList_ip.findIndex((wip) => {
         return wip.startsWith('http://') || wip.startsWith('https://')
@@ -187,7 +187,7 @@ export class AuthService {
     ) {
       return true;
     }
-    const whiteList_host = ips.filter((item) => item.fromType === TMWLTypeEnum.T_HOST).map((item) => item.whiteList);
+    const whiteList_host = ips.filter((item) => item.fromType === base.TMWLTypeEnum.T_HOST).map((item) => item.whiteList);
     if (
       whiteList_host.findIndex((who) => {
         return who.startsWith('http://') || who.startsWith('https://')
@@ -207,7 +207,7 @@ export class AuthService {
    */
   async systemsOfUser(userId: string, loginRole: string) {
     const retarr = [];
-    const sysPublicSelectParam = { if_disabled: base.N };
+    const sysPublicSelectParam = { if_disabled: final.N };
     const ifTopAdmin = await this.hasTopAdminPermission(loginRole, userId);
     if (ifTopAdmin) {
       const userSyss_ = await this.mysqlPrismao.sys_sys.findMany({
@@ -276,7 +276,7 @@ export class AuthService {
     loginRole,
     permission,
     sysId,
-    menuType = [MenuTypeEnum.T_MENU, MenuTypeEnum.T_COMP, MenuTypeEnum.T_IS, MenuTypeEnum.T_Inter],
+    menuType = [base.MenuTypeEnum.T_MENU, base.MenuTypeEnum.T_COMP, base.MenuTypeEnum.T_IS, base.MenuTypeEnum.T_Inter],
   }: {
     userId: string;
     loginRole: string;
@@ -291,7 +291,7 @@ export class AuthService {
       },
       ...(sysId ? { sys_id: Number(sysId) } : {}),
       ...(permission ? { perms: permission } : {}),
-      if_disabled: base.N,
+      if_disabled: final.N,
     };
     const ifTopAdmin = await this.hasTopAdminPermission(loginRole, userId);
     if (ifTopAdmin) {
@@ -359,7 +359,7 @@ export class AuthService {
     const newVar = await this.mysqlPrismao.sys_menu.findMany({
       where: {
         perms: permission,
-        if_disabled: base.Y,
+        if_disabled: final.Y,
         ...this.prismao.defaultSelArg().where,
       },
     });
@@ -381,14 +381,14 @@ export class AuthService {
     } else {
       const menus = await this.mysqlPrismao.sys_menu.findMany({
         where: {
-          if_disabled: base.N,
-          type: MenuTypeEnum.T_IS,
+          if_disabled: final.N,
+          type: base.MenuTypeEnum.T_IS,
           id: {
             in: (
               await this.mysqlPrismao.sys_menu.findMany({
                 where: {
-                  if_disabled: base.N,
-                  type: MenuTypeEnum.T_Inter,
+                  if_disabled: final.N,
+                  type: base.MenuTypeEnum.T_Inter,
                   perms: permission,
                   ...this.prismao.defaultSelArg().where,
                 },
@@ -409,7 +409,7 @@ export class AuthService {
           menu_id: {
             in: menus.map((item) => item.id),
           },
-          type: MTTypeEnum.T_IP,
+          type: base.MTTypeEnum.T_IP,
           ...this.prismao.defaultSelArg().where,
         },
       });
@@ -430,7 +430,7 @@ export class AuthService {
           gte: new Date(now - menuThrottles[0].ttl),
           lte: new Date(now),
         },
-        if_success: base.Y,
+        if_success: final.Y,
         ...this.prismao.defaultSelArg({ ifDeleted: false }).where,
       },
     });
@@ -478,7 +478,7 @@ export class AuthService {
   async hasSFPermissionByUserid(
     userid: string,
     loginRole: string,
-    authType: AuthTypeEnum,
+    authType: base.AuthTypeEnum,
     ppermission: string,
     permission: string,
     request?: Request,
@@ -504,7 +504,7 @@ export class AuthService {
     const interf = await this.mysqlPrismao.sys_interface.findMany({
       where: {
         perms: permission,
-        if_disabled: base.N,
+        if_disabled: final.N,
         ...this.prismao.defaultSelArg().where,
       },
     });
@@ -523,7 +523,7 @@ export class AuthService {
     }
     if (interf.length > 0) {
       // 是否公共算法
-      if (interf[0].if_public === base.Y) {
+      if (interf[0].if_public === final.Y) {
         await this.insLogAlgorithmCall(
           -1,
           ppermission,
@@ -538,13 +538,13 @@ export class AuthService {
         return true;
       }
       // 是否禁用
-      if (interf[0].if_disabled === base.Y) {
+      if (interf[0].if_disabled === final.Y) {
         throw new Exception('当前算法被禁用。');
       }
     }
     const permissions = await this.getSFPermissionsOfUserid(userid, ppermission, permission, loginRole);
     if (permissions.length === 0) {
-      const permissions2 = await this.getSFPermissionsOfUserid(userid, ppermission, permission, loginRole, base.Y);
+      const permissions2 = await this.getSFPermissionsOfUserid(userid, ppermission, permission, loginRole, final.Y);
       if (permissions2.length > 0) {
         throw new Exception('请求次数已使用完。');
       } else {
@@ -554,7 +554,7 @@ export class AuthService {
     const userGroupPermission = permissions[0] as UserGroupPermissionDto;
     algorithmCallDto.userGroupPermissionId = userGroupPermission.id;
     // 没长期权限，不在时间期限内，则阻止
-    if (userGroupPermission.ifLongTerm === base.N) {
+    if (userGroupPermission.ifLongTerm === final.N) {
       if (
         timeUtils.timestamp() < timeUtils.timestamp(userGroupPermission.permissionStartTime) ||
         timeUtils.timestamp() > timeUtils.timestamp(userGroupPermission.permissionEndTime)
@@ -563,7 +563,7 @@ export class AuthService {
       }
     }
     // 在期限内，且不限制次数，则放行
-    if (userGroupPermission.ifLimitRequestTimes === base.N) {
+    if (userGroupPermission.ifLimitRequestTimes === final.N) {
       await this.insLogAlgorithmCall(
         algorithmCallDto.userGroupPermissionId,
         ppermission,
@@ -598,12 +598,12 @@ export class AuthService {
         algorithmCallDto.remark,
       );
       if (Number(count) === limitRequestTimes - 1) {
-        if (userGroupPermission.ifRejectRequestUseUp === base.N) {
+        if (userGroupPermission.ifRejectRequestUseUp === final.N) {
         } else {
           // 把状态更改为已用完
           await this.mysqlPrismao.$queryRaw`
             update sys_user_group_permission
-            set if_use_up = ${base.Y}
+            set if_use_up = ${final.Y}
             where id = ${userGroupPermission.id};
           `;
         }
@@ -611,7 +611,7 @@ export class AuthService {
       return true;
     }
     // 次数用光后是否停止服务
-    if (userGroupPermission.ifRejectRequestUseUp === base.N) {
+    if (userGroupPermission.ifRejectRequestUseUp === final.N) {
       await this.insLogAlgorithmCall(
         algorithmCallDto.userGroupPermissionId,
         ppermission,
@@ -628,7 +628,7 @@ export class AuthService {
       // 把状态更改为已用完
       await this.mysqlPrismao.$queryRaw`
         update sys_user_group_permission
-        set if_use_up = ${base.Y}
+        set if_use_up = ${final.Y}
         where id = ${userGroupPermission.id};
       `;
       throw new Exception('请求次数已使用完。');
@@ -648,7 +648,7 @@ export class AuthService {
     ppermission: string,
     permission: string,
     loginRole: string,
-    ifIgnoreUseUp = base.N,
+    ifIgnoreUseUp = final.N,
   ): Promise<UserGroupPermissionDto[]> {
     const userSFPermissions: UserGroupPermissionDto[] = await this.mysqlPrismao.$queryRaw`
       select sugp.id                       as id,
@@ -671,26 +671,26 @@ export class AuthService {
              sugp.update_time              as updateTime,
              sugp.deleted                  as deleted
       from sys_user_group_permission sugp
-      where sugp.deleted = ${base.N}
-        and sugp.if_use_up like ${ifIgnoreUseUp === base.Y ? '%%' : `${base.N}`}
+      where sugp.deleted = ${final.N}
+        and sugp.if_use_up like ${ifIgnoreUseUp === final.Y ? '%%' : `${final.N}`}
         and sugp.user_group_id in
             (select suug.user_group_id
              from sys_user_user_group suug
-             where suug.deleted = ${base.N}
+             where suug.deleted = ${final.N}
                and suug.login_role = ${loginRole}
                and suug.user_id = ${userid})
         and sugp.permission_id in
             (select siig.interface_group_id
              from sys_interface_interface_group siig
-             where siig.deleted = ${base.N}
+             where siig.deleted = ${final.N}
                and siig.interface_group_id = (select sig.id
                                               from sys_interface_group sig
-                                              where sig.deleted = ${base.N}
+                                              where sig.deleted = ${final.N}
                                                 and sig.perms = ${ppermission})
                and siig.interface_id = (select si.id
                                         from sys_interface si
-                                        where si.deleted = ${base.N}
-                                          and si.if_disabled = ${base.N}
+                                        where si.deleted = ${final.N}
+                                          and si.if_disabled = ${final.N}
                                           and si.perms = ${permission}))
       order by sugp.order_num;
     `;
@@ -710,12 +710,12 @@ export class AuthService {
              left join
            sys_role sr
            on sur.role_id = sr.id
-      where sur.deleted = ${base.N}
+      where sur.deleted = ${final.N}
         and sur.login_role = ${loginRole}
         and sur.user_id = ${userId}
-        and sr.deleted = ${base.N}
-        and sr.if_admin like ${ifAdmin ? base.Y : '%%'}
-        and sr.if_disabled = ${base.N}
+        and sr.deleted = ${final.N}
+        and sr.if_admin like ${ifAdmin ? final.Y : '%%'}
+        and sr.if_disabled = ${final.N}
       group by sur.role_id;
     `;
     const allDeptIds1: { dept_id: number }[] = await this.mysqlPrismao.$queryRaw`
@@ -724,12 +724,12 @@ export class AuthService {
              left join
            sys_dept sd
            on sud.dept_id = sd.id
-      where sud.deleted = ${base.N}
+      where sud.deleted = ${final.N}
         and sud.login_role = ${loginRole}
         and sud.user_id = ${userId}
-        and sd.deleted = ${base.N}
-        and sd.if_admin like ${ifAdmin ? base.Y : '%%'}
-        and sd.if_disabled = ${base.N}
+        and sd.deleted = ${final.N}
+        and sd.if_admin like ${ifAdmin ? final.Y : '%%'}
+        and sd.if_disabled = ${final.N}
       group by sud.dept_id;
     `;
     const allRoleIds = [...allRoleIds1.map((item) => item.role_id)];
@@ -744,20 +744,20 @@ export class AuthService {
       const sutdps = baseUtils.objToCamelCase<UserTableDefaultPermissionDto[]>(sutdps_);
       const allRoleIds2 = await this.mysqlPrismao.sys_role.findMany({
         where: {
-          ...(ifAdmin ? { if_admin: base.Y } : {}),
-          if_disabled: base.N,
+          ...(ifAdmin ? { if_admin: final.Y } : {}),
+          if_disabled: final.N,
           id: {
-            in: sutdps.filter((item) => item.permType === UTDPTypeEnum.T_ROLE).map((item) => item.permId),
+            in: sutdps.filter((item) => item.permType === base.UTDPTypeEnum.T_ROLE).map((item) => item.permId),
           },
           ...this.prismao.defaultSelArg().where,
         },
       });
       const allDeptIds2 = await this.mysqlPrismao.sys_dept.findMany({
         where: {
-          ...(ifAdmin ? { if_admin: base.Y } : {}),
-          if_disabled: base.N,
+          ...(ifAdmin ? { if_admin: final.Y } : {}),
+          if_disabled: final.N,
           id: {
-            in: sutdps.filter((item) => item.permType === UTDPTypeEnum.T_DEPT).map((item) => item.permId),
+            in: sutdps.filter((item) => item.permType === base.UTDPTypeEnum.T_DEPT).map((item) => item.permId),
           },
           ...this.prismao.defaultSelArg().where,
         },
@@ -775,20 +775,20 @@ export class AuthService {
       const sutdps = baseUtils.objToCamelCase<UserTableDefaultPermissionDto[]>(sutdps_);
       const allRoleIds2 = await this.mysqlPrismao.sys_role.findMany({
         where: {
-          ...(ifAdmin ? { if_admin: base.Y } : {}),
-          if_disabled: base.N,
+          ...(ifAdmin ? { if_admin: final.Y } : {}),
+          if_disabled: final.N,
           id: {
-            in: sutdps.filter((item) => item.permType === UTDPTypeEnum.T_ROLE).map((item) => item.permId),
+            in: sutdps.filter((item) => item.permType === base.UTDPTypeEnum.T_ROLE).map((item) => item.permId),
           },
           ...this.prismao.defaultSelArg().where,
         },
       });
       const allDeptIds2 = await this.mysqlPrismao.sys_dept.findMany({
         where: {
-          ...(ifAdmin ? { if_admin: base.Y } : {}),
-          if_disabled: base.N,
+          ...(ifAdmin ? { if_admin: final.Y } : {}),
+          if_disabled: final.N,
           id: {
-            in: sutdps.filter((item) => item.permType === UTDPTypeEnum.T_DEPT).map((item) => item.permId),
+            in: sutdps.filter((item) => item.permType === base.UTDPTypeEnum.T_DEPT).map((item) => item.permId),
           },
           ...this.prismao.defaultSelArg().where,
         },
@@ -888,7 +888,7 @@ export class AuthService {
       reqId: string;
       userId: string;
       loginRole: string;
-      authType: AuthTypeEnum;
+      authType: base.AuthTypeEnum;
       createTime: Date;
     } = {
       remark: '',
@@ -900,7 +900,7 @@ export class AuthService {
       reqId: '',
       userId: '',
       loginRole: '',
-      authType: AuthTypeEnum.unknown,
+      authType: base.AuthTypeEnum.unknown,
       createTime: new Date(),
     },
   ) {
@@ -918,7 +918,7 @@ export class AuthService {
           : JSON.stringify({ body: reqBody, query: reqQuery, param: reqParam }),
         old_value: '',
         operate_type: reqMethod,
-        if_success: typeof ifSuccess === 'boolean' ? (ifSuccess ? base.Y : base.N) : ifSuccess,
+        if_success: typeof ifSuccess === 'boolean' ? (ifSuccess ? final.Y : final.N) : ifSuccess,
         remark: remark,
         create_time: createTime,
       },
@@ -943,7 +943,7 @@ export class AuthService {
     perms: string,
     userId: string,
     loginRole: string,
-    authType: AuthTypeEnum,
+    authType: base.AuthTypeEnum,
     callIp: string,
     ifSuccess: string,
     remark: string,

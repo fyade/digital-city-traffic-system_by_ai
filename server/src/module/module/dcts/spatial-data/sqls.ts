@@ -1,5 +1,5 @@
 import { NodesWithWaysInPolygonDto, SignalLightGroupsInPolygonDto } from "./dto";
-import { base } from "../../../../util/base";
+import { final } from "../../../../util/base";
 import { publicSqlSelectKey } from "../../../../prisma/custom.dto";
 
 export function nodesWithWaysInPolygon(dto: NodesWithWaysInPolygonDto) {
@@ -71,7 +71,7 @@ export function signalLightGroupsInPolygon(points: SignalLightGroupsInPolygonDto
              description                                             as "description",
              ${publicSqlSelectKey.toString}
       FROM signal_light_group_info
-      WHERE deleted = '${base.N}'
+      WHERE deleted = '${final.N}'
         AND ST_Within(location, ST_SetSRID(ST_GeomFromText('POLYGON((${pointsstring}))'), 4326));
   `
   return sql
@@ -84,7 +84,7 @@ export function signalLightGroupsInPolygon2(ids: number[]) {
              child_light_id as "childLightId",
              ${publicSqlSelectKey.toString}
       from signal_light_group_child_mapping
-      where deleted = '${base.N}'
+      where deleted = '${final.N}'
         and group_id in (${ids.join(', ')});
   `
 }
@@ -97,7 +97,7 @@ export function signalLightGroupsInPolygon3(ids: number[]) {
              description                                             as "description",
              ${publicSqlSelectKey.toString}
       from signal_light_info
-      where deleted = '${base.N}'
+      where deleted = '${final.N}'
         and id in (${ids.join(', ')});
   `
 }

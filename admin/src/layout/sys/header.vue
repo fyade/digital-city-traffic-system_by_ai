@@ -8,6 +8,8 @@ import { fileBaseUrl } from "@/api/request.ts";
 import { useSysStore } from "@/store/module/sys.ts";
 import { allLoginRoles } from "@/utils/base.ts";
 import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
+import { useSysConfigStore } from "@/store/module/sysConfig.ts";
+import { base } from "@dcts/common";
 
 const props = defineProps({
   ifShowBreadcrumb: {
@@ -20,6 +22,7 @@ const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 const sysStore = useSysStore();
+const sysConfigStore = useSysConfigStore();
 
 const userInfo = computed(() => {
   const userinfo = userStore.userinfo;
@@ -111,6 +114,14 @@ if (props.ifShowBreadcrumb) {
     <div class="right">
       <el-button link @click="gotoDashboardHome" style="text-decoration: underline;">前往大屏端</el-button>
       <el-dropdown>
+        <SvgIcon name="theme" color="var(--menu-icon-color)"/>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item v-for="key in base.ColorStyleEnum" :key="key" @click="sysConfigStore.setColorStyle(key)">{{ base.colorStyleDict[key] }}模式</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+      <el-dropdown>
         <div style="display: flex;align-items: center;gap: 8px;">
           <el-image
               style="width: 30px;height: 30px;border-radius: 8px;"
@@ -118,7 +129,7 @@ if (props.ifShowBreadcrumb) {
               :src="sysStore.urlAddAuth(fileBaseUrl+userInfo.avatar)"
               fit="contain"
           ></el-image>
-          <SvgIcon v-else name="user" color="#000000"/>
+          <SvgIcon v-else name="user" color="var(--menu-icon-color)"/>
           <span>{{ userInfo.nickname }}</span>
           <span>(登录身份：{{ userInfo._loginRole }})</span>
         </div>
@@ -142,7 +153,7 @@ if (props.ifShowBreadcrumb) {
   justify-content: space-between;
   width: calc(100% - 10px * 2);
   height: calc(100% - 1px);
-  border-bottom: 1px solid #ddd;
+  border-bottom: var(--table-page-layout-border);
   padding: 0 10px;
 
   a {

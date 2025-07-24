@@ -50,7 +50,7 @@ init()
 </script>
 
 <template>
-  <Header style="height: 60px;background-color: #fff;" :if-show-breadcrumb="false"/>
+  <Header style="height: 60px;" :if-show-breadcrumb="false"/>
   {{ msg }}
 </template>
 

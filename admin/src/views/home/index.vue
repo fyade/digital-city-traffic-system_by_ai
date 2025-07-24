@@ -44,12 +44,12 @@ const goToSystem2 = (item: SysDto) => {
 
 <template>
   <div class="el">
-    <Header style="height: 60px;background-color: #fff;" :if-show-breadcrumb="false"/>
+    <Header class="header" :if-show-breadcrumb="false"/>
     <div class="box">
       <!--我的资源-->
       <div class="wdzy">
         <el-divider content-position="left">
-          <div style="display: flex;gap: 12px;align-items: center;">
+          <div class="divider">
             <span>我的资源</span>
             <el-button :disabled="systemsLoading" size="small" :icon="Refresh" circle plain @click="getData"/>
           </div>
@@ -71,7 +71,12 @@ const goToSystem2 = (item: SysDto) => {
   position: relative;
   min-height: 100vh;
   height: auto;
-  background-color: var(--theme-color-main-bg);
+  background-color: var(--home-bg);
+
+  > .header {
+    height: 60px;
+    background-color: var(--home-box-bg);
+  }
 
   > .box {
     display: flex;
@@ -83,11 +88,17 @@ const goToSystem2 = (item: SysDto) => {
 
     > * {
       padding: 20px;
-      background-color: #fff;
+      background-color: var(--home-box-bg);
     }
   }
 
   .wdzy {
+    .divider {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
     > .boxs {
       display: grid;
       grid-template-columns: repeat(4, 1fr);

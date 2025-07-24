@@ -1,12 +1,22 @@
 <script setup lang="ts">
-import { CONFIG } from "@/utils/base.ts";
 import { BCService } from "@/services/broadcastChannel.ts";
 import { useUserStore } from "@/store/module/user.ts";
 import { ElMessageBox } from 'element-plus'
 import zhCn from "element-plus/es/locale/lang/zh-cn";
-import { zhCN, dateZhCN } from 'naive-ui'
+import { darkTheme, dateZhCN, GlobalThemeOverrides, lightTheme, zhCN } from 'naive-ui'
+import { useSysConfigStore } from "@/store/module/sysConfig.ts";
+import { ref, watch } from "vue";
+import { reCreateDiscrete } from "@/utils/naiveBase.ts";
+import { useDark, useToggle } from "@vueuse/core";
+import { base } from "@dcts/common";
 
-const themeOverrides = {
+const userStore = useUserStore()
+const sysConfigStore = useSysConfigStore();
+
+const isDark = useDark()
+const toggleDark = useToggle(isDark)
+
+const themeOverrides: GlobalThemeOverrides = {
   Notification: {
     containerStyle: {
       pointerEvents: 'none'
@@ -16,8 +26,24 @@ const themeOverrides = {
     }
   }
 }
+const nTheme = ref<typeof lightTheme | typeof darkTheme | null>(null)
 
-const userStore = useUserStore()
+watch(() => sysConfigStore.getColorStyle(), () => {
+  const colorStyle = sysConfigStore.getColorStyle();
+  switch (colorStyle) {
+    case base.ColorStyleEnum.T_LIGHT:
+      nTheme.value = lightTheme
+      toggleDark(false)
+      break;
+    case base.ColorStyleEnum.T_DARK:
+      nTheme.value = darkTheme
+      toggleDark(true)
+      break;
+  }
+  reCreateDiscrete(nTheme.value)
+}, {
+  immediate: true
+})
 
 BCService.on('login', (data) => {
   let username_ = '';
@@ -35,15 +61,7 @@ BCService.on('login', (data) => {
 </script>
 
 <template>
-  <div
-      class="el"
-      :style="{
-        '--theme-color-menu-bg-active': `${CONFIG.theme_color_menu_bg_active}`,
-        '--theme-color-menu-bg-active-lighten': `${CONFIG.theme_color_menu_bg_active_lighten}`,
-        '--theme-color-menu-color': `${CONFIG.theme_color_menu_color}`,
-        '--theme-color-main-bg': `${CONFIG.theme_color_main_bg}`,
-      }"
-  >
+  <div class="el">
     <el-config-provider
         :locale="zhCn"
         :z-index="999999"
@@ -52,6 +70,7 @@ BCService.on('login', (data) => {
           :theme-overrides="themeOverrides"
           :locale="zhCN"
           :date-locale="dateZhCN"
+          :theme="nTheme"
       >
         <n-notification-provider>
           <n-dialog-provider>

@@ -6,6 +6,7 @@ import { computed, useTemplateRef } from "vue";
 import PublicIndex from "@/layout/publicIndex.vue";
 import { useSysConfigStore } from "@/store/module/sysConfig.ts";
 import { useSysStore } from "@/store/module/sys.ts";
+import RootWrapper from "@/components/rootWrapper/rootWrapper.vue";
 
 const route = useRoute()
 const routerStore = useRouterStore();
@@ -109,10 +110,14 @@ const sysConfigStore = useSysConfigStore();
           </el-scrollbar>
         </div>
         <div class="main">
-          <router-view #default="{Component}">
-            <keep-alive :include="routerStore.getMenuListNames">
-              <component :is="Component" :key="route.path"/>
-            </keep-alive>
+          <router-view #default="{Component:c2,route:r2}">
+            <Transition name="component-switch" mode="out-in" appear>
+              <keep-alive :include="routerStore.getMenuListNames">
+                <RootWrapper :key="r2.path">
+                  <component :is="c2"/>
+                </RootWrapper>
+              </keep-alive>
+            </Transition>
           </router-view>
         </div>
       </el-main>
@@ -122,18 +127,17 @@ const sysConfigStore = useSysConfigStore();
 
 <style scoped>
 .aside {
-  transition: width .3s;
+  transition: width .2s;
 }
 
 .content {
   display: flex;
   flex-direction: column;
-  background-color: #fff;
   overflow: auto;
   padding: 0;
 
   .header {
-    border-bottom: 1px solid #eee;
+    border-bottom: var(--table-page-layout-border);
   }
 
   .header2 {
@@ -160,7 +164,7 @@ const sysConfigStore = useSysConfigStore();
     padding: 8px;
     flex: auto;
     overflow: auto;
-    background-color: var(--theme-color-main-bg);;
+    background-color: var(--table-page-bg);
   }
 }
 </style>

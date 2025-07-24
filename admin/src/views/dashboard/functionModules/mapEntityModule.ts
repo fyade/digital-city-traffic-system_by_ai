@@ -4,8 +4,7 @@ import { ID_PREFIX_SIGNAL_LIGHT, ID_PREFIX_SIGNAL_LIGHT_GROUP } from "@/views/da
 import signalLight1Svg from "@/assets/images2/signal-light-1.png";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 import { LayerNotificationModule } from "@/views/dashboard/functionModules/layerNotificationModule.ts";
-import { SignalLightColorEnum, SignalLightUnitStyleEnum, sLSPLTTypeDict, SLSPLTTypeEnum } from "@/utils/base.ts";
-import { numberUtils } from "@dcts/common";
+import { base, numberUtils } from "@dcts/common";
 
 const lightCanvasMap = new Map<string, { canvasWidth: number, canvasHeight: number, canvas: HTMLCanvasElement }>();
 
@@ -16,9 +15,9 @@ const lightCanvasMap = new Map<string, { canvasWidth: number, canvasHeight: numb
  * @param color 当前灯的颜色
  * @param time 时长
  */
-function getLightCanvas(style: SignalLightUnitStyleEnum[] | null, currentLight: SLSPLTTypeEnum[], color: SignalLightColorEnum, time: number) {
+function getLightCanvas(style: base.SignalLightUnitStyleEnum[] | null, currentLight: base.SLSPLTTypeEnum[], color: base.SignalLightColorEnum, time: number) {
   const t0 = numberUtils.addZero(Math.min(time, 99));
-  const style0 = style || [SignalLightUnitStyleEnum.LEFT, SignalLightUnitStyleEnum.ROUND, SignalLightUnitStyleEnum.NUMBER]
+  const style0 = style || [base.SignalLightUnitStyleEnum.LEFT, base.SignalLightUnitStyleEnum.ROUND, base.SignalLightUnitStyleEnum.NUMBER]
   const key = `${style0}.${currentLight}.${color}.${t0}`;
   const canvas0 = lightCanvasMap.get(key);
   if (canvas0) {
@@ -39,7 +38,7 @@ function getLightCanvas(style: SignalLightUnitStyleEnum[] | null, currentLight: 
  * @param color 当前灯的颜色
  * @param time 时长
  */
-function createTrafficLightCanvas(style: SignalLightUnitStyleEnum[], currentLight: SLSPLTTypeEnum[], color: SignalLightColorEnum, time: string) {
+function createTrafficLightCanvas(style: base.SignalLightUnitStyleEnum[], currentLight: base.SLSPLTTypeEnum[], color: base.SignalLightColorEnum, time: string) {
   let canvasWidth = 3
   const canvasHeight = 16
   const canvasCircleDiameter = 10
@@ -47,7 +46,7 @@ function createTrafficLightCanvas(style: SignalLightUnitStyleEnum[], currentLigh
   const canvasPadding = 3
 
   for (const style1 of style) {
-    if (style1 === SignalLightUnitStyleEnum.NUMBER) {
+    if (style1 === base.SignalLightUnitStyleEnum.NUMBER) {
       canvasWidth += (canvasPadding + canvasNumberWidth)
     } else {
       canvasWidth += (canvasPadding + canvasCircleDiameter)
@@ -75,47 +74,47 @@ function createTrafficLightCanvas(style: SignalLightUnitStyleEnum[], currentLigh
   for (let i = 0; i < style.length; i++) {
     const style1 = style[i]
 
-    let _color: string = SignalLightColorEnum.RED
-    if (currentLight.includes(SLSPLTTypeEnum.AROUND)) {
-      if (style.includes(SignalLightUnitStyleEnum.AROUND) && style1 === SignalLightUnitStyleEnum.AROUND) {
+    let _color: string = base.SignalLightColorEnum.RED
+    if (currentLight.includes(base.SLSPLTTypeEnum.AROUND)) {
+      if (style.includes(base.SignalLightUnitStyleEnum.AROUND) && style1 === base.SignalLightUnitStyleEnum.AROUND) {
         _color = color
       }
     }
-    if (currentLight.includes(SLSPLTTypeEnum.LEFT)) {
-      if (style.includes(SignalLightUnitStyleEnum.LEFT) && style1 === SignalLightUnitStyleEnum.LEFT) {
+    if (currentLight.includes(base.SLSPLTTypeEnum.LEFT)) {
+      if (style.includes(base.SignalLightUnitStyleEnum.LEFT) && style1 === base.SignalLightUnitStyleEnum.LEFT) {
         _color = color
       }
-      if (!style.includes(SignalLightUnitStyleEnum.LEFT) && i === style.indexOf(SignalLightUnitStyleEnum.ROUND)) {
+      if (!style.includes(base.SignalLightUnitStyleEnum.LEFT) && i === style.indexOf(base.SignalLightUnitStyleEnum.ROUND)) {
         _color = color
       }
     }
-    if (currentLight.includes(SLSPLTTypeEnum.STRAIGHT)) {
-      if (style.includes(SignalLightUnitStyleEnum.STRAIGHT) && style1 === SignalLightUnitStyleEnum.STRAIGHT) {
+    if (currentLight.includes(base.SLSPLTTypeEnum.STRAIGHT)) {
+      if (style.includes(base.SignalLightUnitStyleEnum.STRAIGHT) && style1 === base.SignalLightUnitStyleEnum.STRAIGHT) {
         _color = color
       }
-      if (!style.includes(SignalLightUnitStyleEnum.STRAIGHT) && style1 === SignalLightUnitStyleEnum.ROUND) {
+      if (!style.includes(base.SignalLightUnitStyleEnum.STRAIGHT) && style1 === base.SignalLightUnitStyleEnum.ROUND) {
         if (
-            style.indexOf(SignalLightUnitStyleEnum.ROUND) <= (style.includes(SignalLightUnitStyleEnum.LEFT) ? i : i + 1)
-            && (style.includes(SignalLightUnitStyleEnum.RIGHT) ? i : i - 1) <= style.lastIndexOf(SignalLightUnitStyleEnum.ROUND)
+            style.indexOf(base.SignalLightUnitStyleEnum.ROUND) <= (style.includes(base.SignalLightUnitStyleEnum.LEFT) ? i : i + 1)
+            && (style.includes(base.SignalLightUnitStyleEnum.RIGHT) ? i : i - 1) <= style.lastIndexOf(base.SignalLightUnitStyleEnum.ROUND)
         ) {
           _color = color
         }
       }
     }
-    if (currentLight.includes(SLSPLTTypeEnum.RIGHT)) {
-      if (style.includes(SignalLightUnitStyleEnum.RIGHT) && style1 === SignalLightUnitStyleEnum.RIGHT) {
+    if (currentLight.includes(base.SLSPLTTypeEnum.RIGHT)) {
+      if (style.includes(base.SignalLightUnitStyleEnum.RIGHT) && style1 === base.SignalLightUnitStyleEnum.RIGHT) {
         _color = color
       }
-      if (!style.includes(SignalLightUnitStyleEnum.RIGHT) && i === style.lastIndexOf(SignalLightUnitStyleEnum.ROUND)) {
+      if (!style.includes(base.SignalLightUnitStyleEnum.RIGHT) && i === style.lastIndexOf(base.SignalLightUnitStyleEnum.ROUND)) {
         _color = color
       }
     }
-    if (_color === SignalLightColorEnum.NONE) {
+    if (_color === base.SignalLightColorEnum.NONE) {
       _color = '#400'
     }
 
     switch (style1) {
-      case SignalLightUnitStyleEnum.AROUND:
+      case base.SignalLightUnitStyleEnum.AROUND:
         ctx.beginPath();
         ctx.moveTo(centerXY.x + 3, centerXY.y + 10)
         ctx.lineTo(centerXY.x + 6, centerXY.y + 7)
@@ -135,7 +134,7 @@ function createTrafficLightCanvas(style: SignalLightUnitStyleEnum[], currentLigh
         ctx.fill();
         centerXY.x += canvasPadding + canvasCircleDiameter
         break
-      case SignalLightUnitStyleEnum.LEFT:
+      case base.SignalLightUnitStyleEnum.LEFT:
         ctx.beginPath();
         ctx.moveTo(centerXY.x, centerXY.y + 5)
         ctx.lineTo(centerXY.x + 5, centerXY.y)
@@ -151,7 +150,7 @@ function createTrafficLightCanvas(style: SignalLightUnitStyleEnum[], currentLigh
         ctx.fill();
         centerXY.x += canvasPadding + canvasCircleDiameter
         break
-      case SignalLightUnitStyleEnum.STRAIGHT:
+      case base.SignalLightUnitStyleEnum.STRAIGHT:
         ctx.beginPath();
         ctx.moveTo(centerXY.x + 5, centerXY.y)
         ctx.lineTo(centerXY.x + 10, centerXY.y + 5)
@@ -169,7 +168,7 @@ function createTrafficLightCanvas(style: SignalLightUnitStyleEnum[], currentLigh
         ctx.fill();
         centerXY.x += canvasPadding + canvasCircleDiameter
         break
-      case SignalLightUnitStyleEnum.RIGHT:
+      case base.SignalLightUnitStyleEnum.RIGHT:
         ctx.beginPath();
         ctx.moveTo(centerXY.x + 10, centerXY.y + 5)
         ctx.lineTo(centerXY.x + 5, centerXY.y + 10)
@@ -185,14 +184,14 @@ function createTrafficLightCanvas(style: SignalLightUnitStyleEnum[], currentLigh
         ctx.fill();
         centerXY.x += canvasPadding + canvasCircleDiameter
         break
-      case SignalLightUnitStyleEnum.ROUND:
+      case base.SignalLightUnitStyleEnum.ROUND:
         ctx.beginPath();
         ctx.arc(centerXY.x + canvasCircleDiameter / 2, canvasHeight / 2, canvasCircleDiameter / 2, 0, Math.PI * 2);
         ctx.fillStyle = _color;
         ctx.fill();
         centerXY.x += canvasPadding + canvasCircleDiameter
         break
-      case SignalLightUnitStyleEnum.NUMBER:
+      case base.SignalLightUnitStyleEnum.NUMBER:
         ctx.font = `${canvasCircleDiameter * 1.2}px Arial`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -359,7 +358,7 @@ export class MapEntityModule {
       this.renderedItemIds.push(d)
       const strings = re.location.split(',').map(Number) as [number, number];
       this.viewer.entities.add({
-        position: Cesium.Cartesian3.fromDegrees(strings[0], strings[1]),
+        position: Cesium.Cartesian3.fromDegrees(strings[0], strings[1], 0),
         billboard: {
           image: signalLight1Svg,
           verticalOrigin: Cesium.VerticalOrigin.CENTER,
@@ -399,7 +398,7 @@ export class MapEntityModule {
       this.renderedItemIds.push(d)
       const strings = re.location.split(',').map(Number) as [number, number];
       this.viewer.entities.add({
-        position: Cesium.Cartesian3.fromDegrees(strings[0], strings[1]),
+        position: Cesium.Cartesian3.fromDegrees(strings[0], strings[1], 0.01),
         billboard: {
           image: signalLight1Svg,
           verticalOrigin: Cesium.VerticalOrigin.CENTER,
@@ -429,7 +428,7 @@ export class MapEntityModule {
     entity.billboard.image = new Cesium.ConstantProperty(signalLight1Svg)
   }
 
-  public setSignalLightColor(id: number, style: SignalLightUnitStyleEnum[] | null, lightTypes: SLSPLTTypeEnum[], color: SignalLightColorEnum, ifHalfSecond: boolean, leftTime: number) {
+  public setSignalLightColor(id: number, style: base.SignalLightUnitStyleEnum[] | null, lightTypes: base.SLSPLTTypeEnum[], color: base.SignalLightColorEnum, ifHalfSecond: boolean, leftTime: number) {
     if (!this.viewer) {
       return
     }
@@ -441,7 +440,7 @@ export class MapEntityModule {
     if (!this.vdModule) {
       return;
     }
-    const color1 = (ifHalfSecond && color === SignalLightColorEnum.YELLOW) ? SignalLightColorEnum.NONE : color;
+    const color1 = (ifHalfSecond && color === base.SignalLightColorEnum.YELLOW) ? base.SignalLightColorEnum.NONE : color;
     const lightCanvas = getLightCanvas(style, lightTypes, color1, leftTime);
     if (!lightCanvas) {
       return;

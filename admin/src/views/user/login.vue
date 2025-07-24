@@ -61,7 +61,7 @@ refreshVerificationCode()
       <el-form-item label="验证码">
         <el-input v-model="form.verificationCode">
           <template #append>
-            <div @click="refreshVerificationCode" style="margin: 0 -20px;min-width: 120px;height: 40px;">
+            <div class="vcodeBox" @click="refreshVerificationCode">
               <div v-html="vcode"></div>
             </div>
           </template>
@@ -83,13 +83,6 @@ refreshVerificationCode()
 
 <style scoped>
 .el {
-  > .title {
-    text-align: center;
-    font-size: 24px;
-    line-height: 2;
-    margin-bottom: 24px;
-  }
-
   position: fixed;
   z-index: 1;
   left: 50%;
@@ -98,6 +91,20 @@ refreshVerificationCode()
   max-width: 500px;
   height: 500px;
   transform: translate(-50%, -50%);
+
+  > .title {
+    text-align: center;
+    font-size: 24px;
+    line-height: 2;
+    margin-bottom: 24px;
+  }
+
+  .vcodeBox {
+    margin: 0 -20px;
+    min-width: 120px;
+    height: 40px;
+    background-color: var(--login-page-code-bg);
+  }
 }
 
 .button-row {

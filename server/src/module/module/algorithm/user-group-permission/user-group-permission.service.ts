@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MysqlPrismaService } from '../../../../prisma/mysql.prisma.service';
 import { R } from '../../../../common/R';
 import { UserGroupPermissionDto, UserGroupPermissionSelListDto, UserGroupPermissionSelAllDto, UserGroupPermissionInsOneDto, UserGroupPermissionUpdOneDto } from './dto';
-import { base } from '../../../../util/base';
+import { final } from '../../../../util/base';
 import { LogAlgorithmCallDto } from '../log-algorithm-call/dto';
 import { BaseContextService } from '../../../base-context/base-context.service';
 
@@ -49,7 +49,7 @@ export class UserGroupPermissionService {
   }
 
   async insUserGroupPermission(dto: UserGroupPermissionInsOneDto): Promise<R> {
-    dto.ifUseUp = base.N;
+    dto.ifUseUp = final.N;
     // const dto1 = await this.mysqlPrisma.findFirst<UserGroupPermissionDto>('sys_user_group_permission', {
     //   userGroupId: dto.userGroupId,
     //   permissionId: dto.permissionId,
