@@ -5,6 +5,9 @@ import { geoserverConfig, tiandituConfig } from "@dcts/config";
 import { NNotification } from "@/utils/naiveBase.ts";
 import { h } from "vue";
 import { deepClone } from "@/utils/ObjectUtils.ts";
+import { useDashboardStore } from "@/store/module/dashboard.ts";
+
+const dashboardStore = useDashboardStore();
 
 /**
  * 图层及通知
@@ -30,6 +33,7 @@ export class LayerNotificationModule {
 
 
   public init() {
+    this.getLayerFromStore()
     this.initLayer()
   }
 
@@ -287,6 +291,7 @@ export class LayerNotificationModule {
     }
     this.hiddenLayer(___delids)
     this.initLayer()
+    this.setLayerToStore()
   }
 
   private hiddenLayer(ids: string[]) {
@@ -301,6 +306,24 @@ export class LayerNotificationModule {
         this.viewer.imageryLayers.remove(data)
       }
     }
+  }
+
+  private getLayerFromStore() {
+    const idsOfBaseMaps = dashboardStore.getIdsOfBaseMaps();
+    console.log(idsOfBaseMaps)
+    if (!idsOfBaseMaps || idsOfBaseMaps.length < 2) {
+      return
+    }
+    this.currentIdOfBaseMap[1] = idsOfBaseMaps[0]
+    this.currentIdOfRoadData[1] = idsOfBaseMaps[1]
+  }
+
+  private setLayerToStore() {
+    const idsOfBaseMaps = [
+      this.currentIdOfBaseMap[1],
+      this.currentIdOfRoadData[1]
+    ]
+    dashboardStore.setIdsOfBaseMaps(idsOfBaseMaps)
   }
 
   private initLayer() {
