@@ -30,39 +30,22 @@ const goHome = () => {
 <template>
   <div class="data-layer">
     <div class="footer">
-      <!--<p>因瓦片调用额度限制，若地图加载异常，请切换图层或次日重试。</p>-->
-      <p>v{{ dashboardConfig.currentVersion }}</p>
-      <p>{{ timeUtils.formatDate(new Date(props.currentTime)) }}</p>
+      <p>因瓦片调用额度限制，若地图加载异常，请切换图层或次日重试。</p>
       <a href="https://beian.miit.gov.cn" target="_blank"><span>苏ICP备2023025698号-1</span></a>
       <p v-for="(item, index) in props.labels" :key="index">
-        {{ item[0] }}来自<a :href="item[2]" target="_blank">{{ item[1] }}</a>
+        {{ item[1] }}来自<a :href="item[3]" target="_blank">{{ item[2] }}</a>
       </p>
-      <!--<p @click="emits('openSettingLayerChange')"><span class="no-underline">设置</span></p>-->
+    </div>
+    <div class="footer footer2">
+      <p>v{{ dashboardConfig.currentVersion }}</p>
+      <p>{{ timeUtils.formatDate(new Date(props.currentTime)) }}</p>
+      <p @click="emits('openSettingLayerChange')"><span class="no-underline">设置</span></p>
       <p v-if="!userStore.ifLogin" @click="goToLogin"><span class="no-underline">登录</span></p>
       <p v-if="userStore.ifLogin" @click="userStore.logOut(false)"><span class="no-underline">退出登录</span></p>
       <p v-if="userStore.ifLogin" @click="goAdminPanel"><span class="no-underline">管理端面板</span></p>
       <p v-if="userStore.ifLogin" @click="goHome"><span class="no-underline">前往管理端</span></p>
       <p v-if="userStore.ifLogin" @click="emits('openDebugPanel')"><span class="no-underline">调试面板</span></p>
     </div>
-    <!--<div class="footer">-->
-    <!--  <div>-->
-    <!--    &lt;!&ndash;<p>因瓦片调用额度限制，若地图加载异常，请切换图层或次日重试。</p>&ndash;&gt;-->
-    <!--    <p>v{{ dashboardConfig.currentVersion }}</p>-->
-    <!--    <p>{{ timeUtils.formatDate(new Date(props.currentTime)) }}</p>-->
-    <!--    &lt;!&ndash;<p @click="emits('openSettingLayerChange')"><span class="no-underline">设置</span></p>&ndash;&gt;-->
-    <!--    <p v-if="!userStore.ifLogin" @click="goToLogin"><span class="no-underline">登录</span></p>-->
-    <!--    <p v-if="userStore.ifLogin" @click="userStore.logOut(false)"><span class="no-underline">退出登录</span></p>-->
-    <!--    <p v-if="userStore.ifLogin" @click="goAdminPanel"><span class="no-underline">管理端面板</span></p>-->
-    <!--    <p v-if="userStore.ifLogin" @click="goHome"><span class="no-underline">前往管理端</span></p>-->
-    <!--    <p v-if="userStore.ifLogin" @click="emits('openDebugPanel')"><span class="no-underline">调试面板</span></p>-->
-    <!--  </div>-->
-    <!--  <div>-->
-    <!--    <a href="https://beian.miit.gov.cn" target="_blank"><span>苏ICP备2023025698号-1</span></a>-->
-    <!--    <p v-for="(item, index) in props.labels" :key="index">-->
-    <!--      {{ item[0] }}来自<a :href="item[2]" target="_blank">{{ item[1] }}</a>-->
-    <!--    </p>-->
-    <!--  </div>-->
-    <!--</div>-->
   </div>
 </template>
 
@@ -109,6 +92,10 @@ const goHome = () => {
         text-decoration: none;
       }
     }
+  }
+
+  > .footer2 {
+    bottom: 32px;
   }
 }
 </style>

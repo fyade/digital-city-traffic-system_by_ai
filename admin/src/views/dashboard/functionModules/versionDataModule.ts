@@ -1,4 +1,5 @@
 import { SignalLightGroupsInPolygonVo } from "@/type/module/dcts/spatialData.ts";
+import { deepClone } from "@/utils/ObjectUtils.ts";
 
 class VersionDataType<T> {
   index!: number
@@ -71,7 +72,7 @@ export class VersionDataModule {
   //
   private __<T>(val: T, sour: VersionDataType<T>[], maxLength = this.MAX_LENGTH) {
     const index = this._(sour)
-    const oldd = JSON.parse(JSON.stringify(sour))
+    const oldd = deepClone(sour)
     sour = [
       ...oldd,
       new VersionDataType(index, val)

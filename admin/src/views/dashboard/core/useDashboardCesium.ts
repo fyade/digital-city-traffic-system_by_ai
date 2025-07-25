@@ -54,6 +54,8 @@ class UseDashboardCesium extends UseCesium {
   public formPanelTitle = this.cmModule.formPanelTitle
 
   public allLabels = this.lnModule.allLabels
+  public allLayers = this.lnModule.allLayers
+  public readonly setLayer = this.lnModule.setLayer.bind(this.lnModule)
 
   public readonly refreshScreenEntities = this.meModule.refreshScreenEntities.bind(this.meModule)
 

@@ -120,7 +120,7 @@ export class SignalLightModule {
     const currentTime = this.cModule.currentTime;
     this.shortTaskDatas = []
     for (const _data of this.datas) {
-      const data = deepClone<typeof _data>(_data);
+      const data = deepClone(_data);
       data.runParam = data.runParam.filter(rp => {
         return (rp.start <= currentTime && rp.end >= currentTime)
             || (rp.start <= currentTime + 1000 * 60 * LONG_TASK_INTERVAL * 2 && rp.end >= currentTime + 1000 * 60 * LONG_TASK_INTERVAL * 2)

@@ -314,7 +314,7 @@ const userGroupHandleCurrentChange2 = () => {
     const interfaceGroupIds = res.map(item => item.permissionId);
     interfaceGroupApi.selectByIds(interfaceGroupIds).then(res => {
       interfaceGroupsOfThisUserGroup.value = userGroupPermissionsOfSelectUserGroupOrSelectInterfaceGroup.value.map(item => {
-        const find = deepClone<InterfaceGroupDto2>(res.find(r => r.id === item.permissionId)!);
+        const find = deepClone(res.find(r => r.id === item.permissionId)!) as InterfaceGroupDto2;
         find.userGroupPermissionId = item.id
         return find
       })
@@ -387,7 +387,7 @@ const interfaceGroupHandleCurrentChange2 = () => {
     const userGroupIds = res.map(item => item.userGroupId);
     userGroupApi.selectByIds(userGroupIds).then(res => {
       userGroupsOfThisInterfaceGroup.value = userGroupPermissionsOfSelectUserGroupOrSelectInterfaceGroup.value.map(item => {
-        const find = deepClone<UserGroupDto2>(res.find(r => r.id === item.userGroupId)!)
+        const find = deepClone(res.find(r => r.id === item.userGroupId)!) as UserGroupDto2
         find.userGroupPermissionId = item.id
         return find
       })

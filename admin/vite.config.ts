@@ -10,7 +10,14 @@ import IconsResolver from 'unplugin-icons/resolver';
 import Inspect from 'vite-plugin-inspect';
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
 import { visualizer } from 'rollup-plugin-visualizer';
-import { adminConfig, geoserverConfig, publicConfig, serverConfig } from '@dcts/config';
+import {
+  adminConfig,
+  geoserverConfig,
+  publicConfig,
+  serverConfig,
+  tiandituConfig,
+  tiandituProdConfig
+} from '@dcts/config';
 
 const root = process.cwd()
 // https://vitejs.dev/config/
@@ -85,6 +92,16 @@ export default defineConfig(({mode}) => {
           target: geoserverConfig.VITE_BASEURL,
           changeOrigin: true,
           rewrite: path => path.substring(geoserverConfig.VITE_API_PREFIX.length)
+        },
+        [tiandituConfig.VITE_API_PREFIX_VEC]: {
+          target: tiandituConfig.VITE_BASEURL_VEC,
+          changeOrigin: true,
+          rewrite: path => path.substring(tiandituConfig.VITE_API_PREFIX_VEC.length) + `&tk=${tiandituProdConfig.tk}`
+        },
+        [tiandituConfig.VITE_API_PREFIX_CVA]: {
+          target: tiandituConfig.VITE_BASEURL_CVA,
+          changeOrigin: true,
+          rewrite: path => path.substring(tiandituConfig.VITE_API_PREFIX_CVA.length) + `&tk=${tiandituProdConfig.tk}`
         }
       },
     },

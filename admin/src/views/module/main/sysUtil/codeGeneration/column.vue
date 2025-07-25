@@ -194,7 +194,7 @@ const d1Con = () => {
   if (activeTabName.value === final.more) {
     state.dialogForms = []
     multipleSelection1.value.forEach((row, rowIndex) => {
-      const obj = deepClone<CodeGenColumnDto>(toRaw(state.dialogForm))
+      const obj = deepClone(toRaw(state.dialogForm))
       obj.colName = row.colName
       obj.colDescr = adict[baseUtils.toCamelCase<keyof AdictInterface>(row.colName)] || ''
       obj.mysqlType = row.colType
@@ -216,7 +216,7 @@ const d1Con = () => {
     })
   }
   if (activeTabName.value === final.one) {
-    const row = deepClone<ChooseTableTableColInterface>(toRaw(multipleSelection1.value[0]))
+    const row = deepClone(toRaw(multipleSelection1.value[0]))
     state.dialogForm.colName = row.colName
     state.dialogForm.colDescr = adict[baseUtils.toCamelCase<keyof AdictInterface>(row.colName)] || ''
     state.dialogForm.mysqlType = row.colType

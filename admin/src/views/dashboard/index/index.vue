@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import DataLayer from "@/views/dashboard/index/dataLayer.vue";
+import SettingPanel from '@/views/dashboard/settingPanel/index.vue'
 import DebugPanel from '@/views/dashboard/debugPanel/index.vue';
 import { useSysStore } from "@/store/module/sys.ts";
 import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
@@ -56,13 +57,13 @@ const openDebugLayerChange = () => {
   />
   <div id="cesiumContainer"></div>
 
-  <n-drawer v-model:show="settingDrawerActive" width="50rem">
+  <n-drawer v-model:show="settingDrawerActive" width="35rem">
     <n-drawer-content title="设置">
-      设置
+      <SettingPanel/>
     </n-drawer-content>
   </n-drawer>
 
-  <n-drawer v-model:show="debugDrawerActive" width="50rem">
+  <n-drawer v-model:show="debugDrawerActive" width="35rem">
     <n-drawer-content title="调试面板">
       <DebugPanel/>
     </n-drawer-content>

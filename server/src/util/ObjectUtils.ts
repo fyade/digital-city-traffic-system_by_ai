@@ -5,11 +5,11 @@ import { objectUtils } from "@dcts/common";
  * @param value
  * @param ignoreKeys
  */
-export function deepClone<T = any>(value: T, {
-                                     ignoreKeys = [],
-                                   }: {
-                                     ignoreKeys?: string[]
-                                   } = {},
+export function deepClone<T>(value: T, {
+                               ignoreKeys = [],
+                             }: {
+                               ignoreKeys?: string[]
+                             } = {},
 ): T {
   return objectUtils._deepClone(value, ignoreKeys);
 }

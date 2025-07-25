@@ -103,7 +103,7 @@ if (selectRole) {
 }
 const multipleTable = useTemplateRef<TableInstance>('multipleTable')
 const handleDataChange = () => {
-  const selects2 = deepClone<Record<string|number, boolean>>(toRaw(selects))
+  const selects2 = deepClone(toRaw(selects))
   for (const role of tableData.value) {
     multipleTable.value?.toggleRowSelection(role, !!selects2[role.id])
   }

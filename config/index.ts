@@ -35,3 +35,5 @@ export {
 }
 
 export { geoserverConfig } from './third-config/geoserver.config.js'
+export { tiandituConfig } from './third-config/tianditu.config.js'
+export { tiandituProdConfig } from './third-config/tianditu-prod.config.js'

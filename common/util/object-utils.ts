@@ -59,8 +59,10 @@ export function ifNotValid(val: any) {
  * @param arr1
  * @param arr2
  */
-export function ifSameArray(arr1: any[], arr2: any[]) {
-  return arr1.length === arr2.length && arr1.every((item, index) => arr2[index] === item)
+export function ifSameArray<T>(arr1: T[], arr2: T[]) {
+  const a1 = _deepClone(arr1).sort();
+  const a2 = _deepClone(arr2).sort();
+  return a1.length === a2.length && a1.every((item, index) => a2[index] === item)
 }
 
 /**
@@ -76,7 +78,7 @@ export function ifHasKey(obj: object, key: string) {
  * 数组不重复
  * @param arr
  */
-export function arrNoRepeat<T = any>(arr: T[]): T[] {
+export function arrNoRepeat<T>(arr: T[]): T[] {
   return Array.from(new Set(arr));
 }
 
@@ -85,7 +87,7 @@ export function arrNoRepeat<T = any>(arr: T[]): T[] {
  * @param value
  * @param ignoreKeys
  */
-export function _deepClone(value: any, ignoreKeys: string[] = []) {
+export function _deepClone<T>(value: T, ignoreKeys: string[] = []): T {
   function _(value: any, key?: string) {
     if ((key && ignoreKeys.includes(key)) || value === null || !['array', 'object'].includes(typeOf(value))) {
       return value;
