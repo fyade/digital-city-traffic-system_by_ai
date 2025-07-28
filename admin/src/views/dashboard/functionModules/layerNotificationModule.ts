@@ -310,7 +310,6 @@ export class LayerNotificationModule {
 
   private getLayerFromStore() {
     const idsOfBaseMaps = dashboardStore.getIdsOfBaseMaps();
-    console.log(idsOfBaseMaps)
     if (!idsOfBaseMaps || idsOfBaseMaps.length < 2) {
       return
     }

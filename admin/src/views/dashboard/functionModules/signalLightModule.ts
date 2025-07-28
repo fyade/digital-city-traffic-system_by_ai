@@ -6,8 +6,7 @@ import { deepClone } from "@/utils/ObjectUtils.ts";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
 import { base } from "@dcts/common";
-
-const LONG_TASK_INTERVAL = 10; // 长任务执行间隔（分钟）
+import { dashboardConfig } from "@dcts/config";
 
 /**
  * 信号灯模块
@@ -43,7 +42,7 @@ export class SignalLightModule {
   public init() {
     // 长间隔任务
     const job = new CronJob(
-        `0 */${LONG_TASK_INTERVAL} * * * *`,
+        `0 */${dashboardConfig.LONG_TASK_INTERVAL} * * * *`,
         this.longIntervalTask.bind(this),
         null,
         true
@@ -123,9 +122,9 @@ export class SignalLightModule {
       const data = deepClone(_data);
       data.runParam = data.runParam.filter(rp => {
         return (rp.start <= currentTime && rp.end >= currentTime)
-            || (rp.start <= currentTime + 1000 * 60 * LONG_TASK_INTERVAL * 2 && rp.end >= currentTime + 1000 * 60 * LONG_TASK_INTERVAL * 2)
-            || (currentTime <= rp.start && rp.end <= currentTime + 1000 * 60 * LONG_TASK_INTERVAL * 2)
-            || (rp.start <= currentTime && currentTime + 1000 * 60 * LONG_TASK_INTERVAL * 2 <= rp.end)
+            || (rp.start <= currentTime + 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL * 2 && rp.end >= currentTime + 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL * 2)
+            || (currentTime <= rp.start && rp.end <= currentTime + 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL * 2)
+            || (rp.start <= currentTime && currentTime + 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL * 2 <= rp.end)
       })
       this.shortTaskDatas.push(data)
     }
@@ -192,7 +191,7 @@ export class SignalLightModule {
       }
       if (
           shortTaskData.runParam.length === 0
-          || (shortTaskData.runParam.length > 0 && shortTaskData.runParam[shortTaskData.runParam.length - 1].end - currentTime <= 1000 * 60 * LONG_TASK_INTERVAL)
+          || (shortTaskData.runParam.length > 0 && shortTaskData.runParam[shortTaskData.runParam.length - 1].end - currentTime <= 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL)
       ) {
         if (!this.needRefreshGroupIds.includes(shortTaskData.signalLightGroupId)) {
           this.needRefreshGroupIds.push(shortTaskData.signalLightGroupId)
