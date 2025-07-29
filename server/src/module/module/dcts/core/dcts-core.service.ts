@@ -295,6 +295,7 @@ export class DctsCoreService {
         let ifCalculateEnd = false
         let i2 = Math.max(0, Math.floor((now0 - _startt) / stD[1]))
         do {
+          console.log('do')
           const start1 = _startt + stD[1] * i2
           let _duration = 0
           const rounds = objectUtils.arrNoRepeat(sp0.map(item => item.round)).sort((a, b) => a - b);
@@ -309,7 +310,7 @@ export class DctsCoreService {
             if (_start > _end) {
               continue
             }
-            // console.log(timeUtils.formatDate(new Date(_start)), timeUtils.formatDate(new Date(_end)))
+            console.log(timeUtils.formatDate(new Date(_start)), timeUtils.formatDate(new Date(_end)))
             const stids_ft = strategyTypeIds_fineTuning.filter(id => {
               const find = modifiedStartEndTime.find(ar => ar[0] === id);
               return objectUtils.ifHasOverlap([_start, _end], [find[1], find[2]])
@@ -329,7 +330,7 @@ export class DctsCoreService {
                     && objectUtils.ifSameArray(sp.lightType.split('-').filter(_ => _), param.lightType.split('-').filter(_ => _))
               });
               const ft_time = sps_ft_1.reduce((a, b) => a + b.duration, 0);
-              // console.log('微调时间', ft_time)
+              console.log('微调时间', ft_time)
 
               let _end2 = _end
               if (sp.duration < duration) {
@@ -371,7 +372,7 @@ export class DctsCoreService {
                 }
               }
             }
-            if (_end >= now02) {
+            if (_end >= now02 || ifWillEnd) {
               ifCalculateEnd = true
             }
           }
