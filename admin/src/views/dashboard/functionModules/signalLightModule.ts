@@ -5,7 +5,7 @@ import { ClockModule } from "@/views/dashboard/functionModules/clockModule.ts";
 import { deepClone } from "@/utils/ObjectUtils.ts";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
-import { base } from "@dcts/common";
+import { base, objectUtils } from "@dcts/common";
 import { dashboardConfig } from "@dcts/config";
 
 /**
@@ -70,6 +70,7 @@ export class SignalLightModule {
   private ifRunLongTask = false
 
   public addTask(calculateLightResult: CalculateLightsInPolygonVo[]) {
+    console.log('addTask', calculateLightResult)
     this.datas = calculateLightResult
     this.longIntervalTask()
     if (!this.vdModule) {
@@ -121,10 +122,7 @@ export class SignalLightModule {
     for (const _data of this.datas) {
       const data = deepClone(_data);
       data.runParam = data.runParam.filter(rp => {
-        return (rp.start <= currentTime && rp.end >= currentTime)
-            || (rp.start <= currentTime + 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL * 2 && rp.end >= currentTime + 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL * 2)
-            || (currentTime <= rp.start && rp.end <= currentTime + 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL * 2)
-            || (rp.start <= currentTime && currentTime + 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL * 2 <= rp.end)
+        return objectUtils.ifHasOverlap([rp.start, rp.end], [currentTime, currentTime + 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL * 2])
       })
       this.shortTaskDatas.push(data)
     }

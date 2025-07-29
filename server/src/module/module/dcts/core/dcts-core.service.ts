@@ -25,6 +25,7 @@ import { SignalLightStrategyParamDto } from "../signal-light-strategy/signal-lig
 import { PrismaoService } from "../../../../prisma/prismao.service";
 import { SignalLightRunParam, SignalLightRunParamDParam } from "./dto";
 import { dashboardConfig } from "@dcts/config";
+import { SLSTTTypeEnum } from "@dcts/common/dist/util/base";
 
 @Injectable()
 export class DctsCoreService {
@@ -49,8 +50,6 @@ export class DctsCoreService {
   private async calculateLight(signalLightGroupIds: number[]) {
     const start = performance.now();
     const defaultSelArg = this.prismao.defaultSelArg();
-    // 查询信号灯组下的子信号灯、策略类型、策略调度、策略参数
-    // 查询所有信号灯组
     const allSignalLightGroups = (await this.pgsqlPrismao.signal_light_group_info.findMany({
       where: {
         id: {
@@ -59,7 +58,6 @@ export class DctsCoreService {
         ...defaultSelArg.where
       }
     })).map(baseUtils.objToCamelCase<SignalLightGroupInfoDto>)
-    // 查询信号灯组下的子信号灯
     const _signalLightGroup_signalLight = (await this.pgsqlPrismao.signal_light_group_child_mapping.findMany({
       where: {
         group_id: {
@@ -76,7 +74,6 @@ export class DctsCoreService {
         ...defaultSelArg.where
       }
     })).map(baseUtils.objToCamelCase<SignalLightInfoDto>)
-    // 查询信号灯组下的策略类型
     const _signalLightGroup_strategyType = (await this.pgsqlPrismao.signal_light_group_strategy_type_mapping.findMany({
       where: {
         group_id: {
@@ -98,7 +95,6 @@ export class DctsCoreService {
         {create_time: 'desc'}
       ]
     })).map(baseUtils.objToCamelCase<SignalLightStrategyTypeDto>)
-    // 查询子信号灯与策略类型下的策略调度
     const _signalLight_strategySchedule = (await this.pgsqlPrismao.signal_light_child_strategy_schedule_mapping.findMany({
       where: {
         child_light_id: {
@@ -131,7 +127,6 @@ export class DctsCoreService {
         {create_time: 'desc'}
       ]
     })).map(baseUtils.objToCamelCase<SignalLightStrategyScheduleDto>)
-    // 查询策略调度下的策略参数
     const _strategySchedule_strategyParam = (await this.pgsqlPrismao.signal_light_strategy_schedule_strategy_param_mapping.findMany({
       where: {
         strategy_schedule_id: {
@@ -159,9 +154,11 @@ export class DctsCoreService {
 
     const allSignalLightRunParam: SignalLightRunParam[] = []
     const now0 = Math.floor(Date.now() / 1000) * 1000
+    const now01 = now0 - 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL * 3;
+    const now02 = now0 + 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL * 3;
 
-    // 策略类型-策略调度-策略参数 关系 [strategyType, strategySchedule, strategyParam][]
-    const relation: [SignalLightStrategyTypeDto, SignalLightStrategyScheduleDto, SignalLightStrategyParamDto][] = []
+    // 策略类型-策略调度-策略参数 关系 [strategyTypeId, strategyScheduleId, strategyParamId][]
+    const relation: [number, number, number][] = []
     // 策略类型-一个周期时长（ms） [strategyTypeId, duration][]
     const strategyTypeIdDuration: [number, number][] = []
     // 策略类型-开始时间-结束时间 [strategyTypeId, startTime, endTime][]
@@ -170,21 +167,27 @@ export class DctsCoreService {
     for (const strategyType of allStrategyTypes) {
       const strategyScheduleIdsOfThisType = _strategyType_strategySchedule.filter(item => item.strategyTypeId === strategyType.id).map(item => item.strategyScheduleId);
       const strategySchedules = allStrategySchedules.filter(schedule => strategyScheduleIdsOfThisType.includes(schedule.id));
-      let duration = 0
+      const strategyParamIdsOfThisType = _strategySchedule_strategyParam.filter(item => strategyScheduleIdsOfThisType.includes(item.strategyScheduleId)).map(item => item.strategyParamId);
+      const strategyParams = allStrategyParams.filter(param => strategyParamIdsOfThisType.includes(param.id))
+
       for (const strategySchedule of strategySchedules) {
         const strategyParamIdsOfThisSchedule = _strategySchedule_strategyParam.filter(item => item.strategyScheduleId === strategySchedule.id).map(item => item.strategyParamId);
         const strategyParams = allStrategyParams.filter(param => strategyParamIdsOfThisSchedule.includes(param.id));
         for (const strategyParam of strategyParams) {
-          relation.push([strategyType, strategySchedule, strategyParam])
-        }
-        const rounds = objectUtils.arrNoRepeat(strategyParams.map(item => item.round)).sort((a, b) => a - b);
-        for (const round of rounds) {
-          const f = strategyParams.filter(param => param.round === round);
-          const d = f.map(item => item.duration).sort((a, b) => b - a)[0];
-          duration += d * 1000
+          relation.push([strategyType.id, strategySchedule.id, strategyParam.id])
         }
       }
-      strategyTypeIdDuration.push([strategyType.id, duration])
+
+      let duration = 0
+      const rounds = objectUtils.arrNoRepeat(strategyParams.map(item => item.round)).sort((a, b) => a - b);
+      for (const round of rounds) {
+        const f = strategyParams.filter(param => param.round === round);
+        const d = f.map(item => item.duration).sort((a, b) => b - a)[0];
+        duration += d * 1000
+      }
+      if (strategyType.strategyType === SLSTTTypeEnum.T_CUSTOM) {
+        strategyTypeIdDuration.push([strategyType.id, duration])
+      }
 
       let start = new Date(0).getTime()
       let end = new Date(0).getTime()
@@ -205,29 +208,23 @@ export class DctsCoreService {
     }
 
     for (const signalLightGroup of allSignalLightGroups) {
-      // 查询所有子信号灯下的策略调度、策略参数
-      // 该信号灯组下的子信号灯
       const lights = allSignalLights.filter(light => {
         return _signalLightGroup_signalLight.some(item => item.groupId === signalLightGroup.id && item.childLightId === light.id)
       })
       const lightIds = lights.map(item => item.id)
-      // 该信号灯组下的策略类型
       const strategyTypes = allStrategyTypes.filter(type => {
         return _signalLightGroup_strategyType.some(item => item.groupId === signalLightGroup.id && item.strategyTypeId === type.id)
       })
       const strategyTypeIds = strategyTypes.map(item => item.id)
-      // 该子信号灯且该策略类型下的策略调度
       const strategySchedules = allStrategySchedules.filter(schedule => {
         return _signalLight_strategySchedule.some(item => lightIds.includes(item.childLightId) && item.strategyScheduleId === schedule.id)
             && _strategyType_strategySchedule.some(item => strategyTypeIds.includes(item.strategyTypeId) && item.strategyScheduleId === schedule.id)
       })
       const strategyScheduleIds = strategySchedules.map(item => item.id)
-      // 该策略调度下的策略参数
       const strategyParams = allStrategyParams.filter(param => {
         return _strategySchedule_strategyParam.some(item => strategyScheduleIds.includes(item.strategyScheduleId) && item.strategyParamId === param.id)
       })
       const strategyParamIds = strategyParams.map(item => item.id)
-
       if (lights.length === 0 || strategyTypes.length === 0 || strategySchedules.length === 0 || strategyParams.length === 0) {
         continue
       }
@@ -235,24 +232,31 @@ export class DctsCoreService {
       // 策略类型为固定策略的
       const strategyTypes_custom = strategyTypes.filter(item => item.strategyType === base.SLSTTTypeEnum.T_CUSTOM)
       const strategyTypeIds_custom = strategyTypes_custom.map(item => item.id)
-      // 这些策略类型下的策略调度
       const strategySchedules_custom = strategySchedules.filter(schedule => {
         return _strategyType_strategySchedule.some(item => strategyTypeIds_custom.includes(item.strategyTypeId) && item.strategyScheduleId === schedule.id)
       })
       const strategyScheduleIds_custom = strategySchedules_custom.map(item => item.id)
-      // 这些策略调度下的策略参数
       const strategyParams_custom = strategyParams.filter(param => {
         return _strategySchedule_strategyParam.some(item => strategyScheduleIds_custom.includes(item.strategyScheduleId) && item.strategyParamId === param.id)
       })
       const strategyParamIds_custom = strategyParams_custom.map(item => item.id)
 
-      // 在此基础上，处于当前时段的
+      // 策略类型为微调策略的
+      const strategyTypes_fineTuning = strategyTypes.filter(item => item.strategyType === base.SLSTTTypeEnum.T_FINE_TUNING)
+      const strategyTypeIds_fineTuning = strategyTypes_fineTuning.map(item => item.id)
+      const strategySchedules_fineTuning = strategySchedules.filter(schedule => {
+        return _strategyType_strategySchedule.some(item => strategyTypeIds_fineTuning.includes(item.strategyTypeId) && item.strategyScheduleId === schedule.id)
+      })
+      const strategyScheduleIds_fineTuning = strategySchedules_fineTuning.map(item => item.id)
+      const strategyParams_fineTuning = strategyParams.filter(param => {
+        return _strategySchedule_strategyParam.some(item => strategyScheduleIds_fineTuning.includes(item.strategyScheduleId) && item.strategyParamId === param.id)
+      })
+      const strategyParamIds_fineTuning = strategyParams_fineTuning.map(item => item.id)
+
+      // 处于当前时段的固定策略
       const strategyTypes_custom_now = strategyTypes_custom.filter(type => {
         const find = modifiedStartEndTime.find(item => item[0] === type.id);
-        if (!find) {
-          return false
-        }
-        return find[1] <= now0
+        return objectUtils.ifHasOverlap([now01, now02], [find[1], find[2]])
       }).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
       if (strategyTypes_custom_now.length === 0) {
         continue
@@ -270,12 +274,11 @@ export class DctsCoreService {
       const _startTimes: number[] = []
       for (let i = 0; i < strategyTypes_custom_now.length; i++) {
         const st0 = strategyTypes_custom_now[i]
-        // 这个策略类型下的策略调度
+        console.log(st0)
         const ss0 = strategySchedules_custom.filter(schedule => {
           return _strategyType_strategySchedule.some(item => item.strategyTypeId === st0.id && item.strategyScheduleId === schedule.id)
         })
         const ssId0 = ss0.map(item => item.id)
-        // 这个策略调度下的策略参数
         const sp0 = strategyParams_custom.filter(param => {
           return _strategySchedule_strategyParam.some(item => ssId0.includes(item.strategyScheduleId) && item.strategyParamId === param.id)
         })
@@ -283,31 +286,56 @@ export class DctsCoreService {
 
         const mseTime = modifiedStartEndTime.find(arr => arr[0] === st0.id);
         const stD = strategyTypeIdDuration.find(arr => arr[0] === st0.id);
-        if (!mseTime || !stD) {
-          continue
-        }
 
         const _startt = i > 0 ? _startTimes[i - 1] : mseTime[1];
-        const _endt = Math.min(mseTime[2], now0 + 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL * 3);
+        const _endt = Math.min(mseTime[2], now02);
         _startTimes.push(_endt)
 
-        const count = Math.ceil((_endt - _startt) / stD[1]);
-        const _i = Math.max(0, Math.floor((now0 - _startt) / stD[1]));
-        for (let i2 = _i; i2 < count; i2++) {
+        let fineTuningTime = 0
+        let ifCalculateEnd = false
+        let i2 = Math.max(0, Math.floor((now0 - _startt) / stD[1]))
+        do {
           const start1 = _startt + stD[1] * i2
           let _duration = 0
           const rounds = objectUtils.arrNoRepeat(sp0.map(item => item.round)).sort((a, b) => a - b);
           for (const round of rounds) {
-            const spf = sp0.filter(item => item.round === round);
-            const duration = spf.map(item => item.duration).sort((a, b) => b - a)[0];
+            const spr = sp0.filter(item => item.round === round);
+            const duration = spr.map(item => item.duration).sort((a, b) => b - a)[0];
             const _start = start1 + _duration
             _duration += duration * 1000
-            const ifWillEnd = mseTime[2] < (start1 + _duration)
-            const _end = ifWillEnd ? mseTime[2] : (start1 + _duration)
+            const __end = start1 + _duration
+            const ifWillEnd = mseTime[2] < __end
+            const _end = ifWillEnd ? mseTime[2] : __end
             if (_start > _end) {
               continue
             }
-            for (const sp of spf) {
+            // console.log(timeUtils.formatDate(new Date(_start)), timeUtils.formatDate(new Date(_end)))
+            const stids_ft = strategyTypeIds_fineTuning.filter(id => {
+              const find = modifiedStartEndTime.find(ar => ar[0] === id);
+              return objectUtils.ifHasOverlap([_start, _end], [find[1], find[2]])
+            });
+            const sss_ft = strategySchedules.filter(schedule => {
+              return _strategyType_strategySchedule.some(item => stids_ft.includes(item.strategyTypeId) && item.strategyScheduleId === schedule.id)
+            });
+            const ssids_ft = sss_ft.map(item => item.id)
+            const sps_ft = strategyParams.filter(param => {
+              return _strategySchedule_strategyParam.some(item => ssids_ft.includes(item.strategyScheduleId) && item.strategyParamId === param.id)
+            })
+            const spids_ft = sps_ft.map(item => item.id)
+            for (const sp of spr) {
+              const sps_ft_1 = sps_ft.filter(param => {
+                return round === param.round
+                    && sp.currentLight === param.currentLight
+                    && objectUtils.ifSameArray(sp.lightType.split('-').filter(_ => _), param.lightType.split('-').filter(_ => _))
+              });
+              const ft_time = sps_ft_1.reduce((a, b) => a + b.duration, 0);
+              // console.log('微调时间', ft_time)
+
+              let _end2 = _end
+              if (sp.duration < duration) {
+                _end2 -= (duration - sp.duration) * 1000
+              }
+
               const ssf = ss0.filter(ss => {
                 return _strategySchedule_strategyParam.some(item => item.strategyScheduleId === ss.id && sp.id === item.strategyParamId)
               });
@@ -318,16 +346,16 @@ export class DctsCoreService {
               for (const l of lf) {
                 const param2 = signalLightRunParams.get(l.id);
                 if (ifWillEnd && sp.currentLight === base.SignalLightColorEnum.GREEN) {
-                  const _end2 = _end - 3 * 1000
+                  const __end = _end2 - 3 * 1000
                   const dParam = new SignalLightRunParamDParam(
                       _start,
-                      _end2,
+                      __end,
                       base.SignalLightColorEnum.GREEN,
                       sp.lightType.split('-').filter(_ => _) as base.SLSPLTTypeEnum[]
                   );
                   const dParam2 = new SignalLightRunParamDParam(
+                      __end,
                       _end2,
-                      _end,
                       base.SignalLightColorEnum.YELLOW,
                       sp.lightType.split('-').filter(_ => _) as base.SLSPLTTypeEnum[]
                   );
@@ -335,7 +363,7 @@ export class DctsCoreService {
                 } else {
                   const dParam = new SignalLightRunParamDParam(
                       _start,
-                      _end,
+                      _end2,
                       sp.currentLight as base.SignalLightColorEnum,
                       sp.lightType.split('-').filter(_ => _) as base.SLSPLTTypeEnum[]
                   );
@@ -343,8 +371,12 @@ export class DctsCoreService {
                 }
               }
             }
+            if (_end >= now02) {
+              ifCalculateEnd = true
+            }
           }
-        }
+          i2++
+        } while (!ifCalculateEnd)
       }
 
       for (const key of signalLightRunParams.keys()) {
@@ -367,7 +399,32 @@ export class DctsCoreService {
         signalLightRunParam.runParam.unshift(dParam1)
       }
       for (let i = signalLightRunParam.runParam.length - 1; i > 0; i--) {
-        if (signalLightRunParam.runParam[i - 1].end < signalLightRunParam.runParam[i].start) {
+        if (
+            signalLightRunParam.runParam[i - 1].end < signalLightRunParam.runParam[i].start
+            && signalLightRunParam.runParam[i - 1].color === base.SignalLightColorEnum.GREEN
+            && signalLightRunParam.runParam[i].color === base.SignalLightColorEnum.YELLOW
+            && signalLightRunParam.runParam[i].end - signalLightRunParam.runParam[i - 1].end > 3 * 1000
+        ) {
+          const t0 = signalLightRunParam.runParam[i - 1].end
+          const t1 = signalLightRunParam.runParam[i - 1].end + 3 * 1000
+          const t2 = signalLightRunParam.runParam[i].end
+          const dParam1 = new SignalLightRunParamDParam(
+              t0,
+              t1,
+              base.SignalLightColorEnum.YELLOW,
+              signalLightRunParam.runParam[i].lightType
+          );
+          const dParam2 = new SignalLightRunParamDParam(
+              t1,
+              t2,
+              base.SignalLightColorEnum.RED,
+              [base.SLSPLTTypeEnum.AROUND, base.SLSPLTTypeEnum.LEFT, base.SLSPLTTypeEnum.STRAIGHT, base.SLSPLTTypeEnum.RIGHT]
+          );
+          signalLightRunParam.runParam[i] = dParam1
+          signalLightRunParam.runParam.push(dParam2)
+        } else if (
+            signalLightRunParam.runParam[i - 1].end < signalLightRunParam.runParam[i].start
+        ) {
           const dParam1 = new SignalLightRunParamDParam(
               signalLightRunParam.runParam[i - 1].end,
               signalLightRunParam.runParam[i].start,
@@ -391,25 +448,6 @@ export class DctsCoreService {
           );
           signalLightRunParam.runParam.push(dParam3)
           signalLightRunParam.runParam.splice(i, 2)
-        }
-      }
-      signalLightRunParam.runParam.sort((a, b) => a.start - b.start)
-      for (let i = signalLightRunParam.runParam.length - 3; i >= 0; i--) {
-        if (
-            signalLightRunParam.runParam[i].color === base.SignalLightColorEnum.GREEN
-            && signalLightRunParam.runParam[i + 1].color === base.SignalLightColorEnum.YELLOW
-            && signalLightRunParam.runParam[i + 2].color === base.SignalLightColorEnum.GREEN
-            && objectUtils.ifSameArray(signalLightRunParam.runParam[i].lightType, signalLightRunParam.runParam[i + 1].lightType)
-            && objectUtils.ifSameArray(signalLightRunParam.runParam[i + 1].lightType, signalLightRunParam.runParam[i + 2].lightType)
-        ) {
-          const dParam3 = new SignalLightRunParamDParam(
-              signalLightRunParam.runParam[i].start,
-              signalLightRunParam.runParam[i + 2].end,
-              base.SignalLightColorEnum.GREEN,
-              signalLightRunParam.runParam[i].lightType
-          );
-          signalLightRunParam.runParam.push(dParam3)
-          signalLightRunParam.runParam.splice(i, 3)
         }
       }
       signalLightRunParam.runParam.sort((a, b) => a.start - b.start)

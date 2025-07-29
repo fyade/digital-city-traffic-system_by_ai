@@ -55,6 +55,15 @@ export function ifNotValid(val: any) {
 }
 
 /**
+ * 对象是否有某键
+ * @param obj
+ * @param key
+ */
+export function ifHasKey(obj: object, key: string) {
+  return Object.keys(obj).includes(key)
+}
+
+/**
  * 两数组是否一样
  * @param arr1
  * @param arr2
@@ -66,12 +75,15 @@ export function ifSameArray<T>(arr1: T[], arr2: T[]) {
 }
 
 /**
- * 对象是否有某键
- * @param obj
- * @param key
+ * 两个数段是否含有交集
+ * @param arr1
+ * @param arr2
  */
-export function ifHasKey(obj: object, key: string) {
-  return Object.keys(obj).includes(key)
+export function ifHasOverlap<T>(arr1: [T, T], arr2: [T, T]) {
+  return (arr1[0] <= arr2[0] && arr2[0] <= arr1[1])
+      || (arr1[0] <= arr2[1] && arr2[1] <= arr1[1])
+      || (arr1[0] <= arr2[0] && arr2[1] <= arr1[1])
+      || (arr2[0] <= arr1[0] && arr1[1] <= arr2[1])
 }
 
 /**
