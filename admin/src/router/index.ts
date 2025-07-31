@@ -101,6 +101,11 @@ export const routes: RouteRecordRaw[] = [
                 component: () => import('@/views/dashboard/formPanel/signalLight/index.vue'),
                 children: [
                   {
+                    path: 'runtime-diagram',
+                    name: '~fp~:signalLight:runtimeDiagram',
+                    component: () => import('@/views/dashboard/formPanel/signalLight/runtimeDiagram/index.vue')
+                  },
+                  {
                     path: 'signal-light-group-info',
                     name: '~fp~:signalLight:signalLightGroupInfo',
                     component: () => import('@/views/dashboard/formPanel/signalLight/signalLightGroupInfo/index.vue'),

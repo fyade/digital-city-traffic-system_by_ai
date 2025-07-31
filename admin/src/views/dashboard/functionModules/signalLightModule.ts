@@ -70,7 +70,6 @@ export class SignalLightModule {
   private ifRunLongTask = false
 
   public addTask(calculateLightResult: CalculateLightsInPolygonVo[]) {
-    console.log('addTask', calculateLightResult)
     this.datas = calculateLightResult
     this.longIntervalTask()
     if (!this.vdModule) {

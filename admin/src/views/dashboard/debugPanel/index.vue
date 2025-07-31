@@ -12,10 +12,7 @@ const a1 = () => {
     return
   }
   coordinates.push(coordinates[0])
-  nodesWithWaysInPolygonApi({
-    version: '1.0',
-    points: coordinates
-  }).then((res) => {
+  nodesWithWaysInPolygonApi({points: coordinates}).then((res) => {
     const map = res.allNodes.map((node) => useCesium.addPoint(new CesiumPoint({lon: node.lon, lat: node.lat})));
     setTimeout(() => {
       map.forEach(node => {
@@ -37,10 +34,7 @@ const a2 = () => {
     return
   }
   coordinates.push(coordinates[0])
-  calculateLightsInPolygonApi({
-    version: '1.0',
-    points: coordinates
-  })
+  calculateLightsInPolygonApi({points: coordinates})
 }
 </script>
 

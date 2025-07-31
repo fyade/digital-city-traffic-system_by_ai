@@ -319,11 +319,7 @@ export class MapEntityModule {
       return
     }
     viewCornerCoordinates.push(viewCornerCoordinates[0])
-    const res = await signalLightGroupsInPolygonApi({
-      version: '1.0',
-      ifChild: true,
-      points: viewCornerCoordinates
-    })
+    const res = await signalLightGroupsInPolygonApi({points: viewCornerCoordinates})
     if (this.vdModule) {
       this.vdModule.setHistorySignalLightGroupsInPolygonVo(res)
     }
@@ -409,10 +405,7 @@ export class MapEntityModule {
       });
     }
 
-    await calculateLightsInPolygonApi({
-      version: '1.0',
-      points: viewCornerCoordinates
-    })
+    await calculateLightsInPolygonApi({points: viewCornerCoordinates})
   }
 
   public setSignalLightToPic(id: number) {

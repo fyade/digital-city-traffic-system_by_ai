@@ -53,7 +53,7 @@ const submitCallback = () => {
 </script>
 
 <template>
-  <template v-if="props.ifIns || props.ifUpd">
+  <template v-if="props.ifIns || props.ifUpd || (!props.ifIns && !props.ifUpd && !props.ifDel)">
     <n-modal
         show
         preset="dialog"

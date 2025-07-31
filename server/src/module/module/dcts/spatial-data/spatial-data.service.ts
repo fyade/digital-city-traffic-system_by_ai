@@ -81,11 +81,21 @@ export class SpatialDataService {
   }
 
   async calculateLightsInPolygon(dto: CalculateLightsInPolygonDto): Promise<R> {
-    const s = signalLightGroupsInPolygon(dto.points);
-    const slgs = await this.pgsqlPrismao.$queryRawUnsafe<SignalLightGroupInfoDto[]>(s);
-    const slgIds = slgs.map(item => item.id);
+    const ids: number[] = []
+    if (dto.groupIds) {
+      ids.push(...dto.groupIds)
+    } else {
+      const s = signalLightGroupsInPolygon(dto.points);
+      const slgs = await this.pgsqlPrismao.$queryRawUnsafe<SignalLightGroupInfoDto[]>(s);
+      const slgIds = slgs.map(item => item.id);
+      ids.push(...slgIds)
+    }
     const userData = this.bcs.getUserData();
-    await this.dctsCoreService.calculateLightsInPolygon(slgIds, userData.loginRole, userData.userId)
-    return R.ok(true)
+    const ret = await this.dctsCoreService.calculateLightsInPolygon(ids, userData.loginRole, userData.userId);
+    if (dto.ifReturn) {
+      return R.ok(ret)
+    } else {
+      return R.ok(true)
+    }
   }
 }

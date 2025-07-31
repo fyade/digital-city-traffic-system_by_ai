@@ -49,7 +49,7 @@ export class PermissionModule {
           }
         }
       }
-      return userStore.ifLogin && dctsButtons.includes(perm) && entityPermission
+      return userStore.ifLogin && (!perm || dctsButtons.includes(perm)) && entityPermission
     }
     return false
   }

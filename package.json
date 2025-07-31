@@ -22,6 +22,7 @@
   "author": "",
   "packageManager": "pnpm@10.13.0",
   "dependencies": {
+    "@antv/g2": "^5.3.5",
     "@dcts/common": "workspace:^",
     "@dcts/config": "workspace:^",
     "@element-plus/icons-vue": "^2.3.1",

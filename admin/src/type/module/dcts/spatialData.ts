@@ -11,7 +11,7 @@ class PolygonPointDto {
 }
 
 export class NodesWithWaysInPolygonDto {
-  version!: string
+  version?: string
   points!: PolygonPointDto[]
 }
 
@@ -21,8 +21,8 @@ export class NodesWithWaysInPolygonVo {
 }
 
 export class SignalLightGroupsInPolygonDto {
-  version!: string
-  ifChild!: boolean
+  version?: string
+  ifChild?: boolean
   points!: PolygonPointDto[]
 }
 
@@ -35,8 +35,10 @@ export class SignalLightGroupsInPolygonVo {
 }
 
 export class CalculateLightsInPolygonDto {
-  version!: string
-  points!: PolygonPointDto[]
+  version?: string
+  ifReturn?: boolean;
+  groupIds?: number[]
+  points?: PolygonPointDto[]
 }
 
 class CalculateLightsInPolygonVoDParam {

@@ -5,6 +5,7 @@ import { Authorize } from "../../../../decorator/authorize.decorator";
 import { R } from "../../../../common/R";
 import { CalculateLightsInPolygonDto, NodesWithWaysInPolygonDto, SignalLightGroupsInPolygonDto } from "./dto";
 import { publicConfig } from "@dcts/config";
+import { Exception } from "../../../../exception/exception";
 
 @Controller('/dcts/spatial-data')
 @ApiTags(`${publicConfig.APP_NAME}/空间数据`)
@@ -47,6 +48,9 @@ export class SpatialDataController {
     label: '计算多边形内的所有信号灯'
   })
   async calculateLightsInPolygon(@Body() dto: CalculateLightsInPolygonDto): Promise<R> {
+    if (!dto.groupIds && (!dto.points || dto.points.length < 3)) {
+      throw new Exception('多边形至少需要 3 个顶点。')
+    }
     return this.spatialDataService.calculateLightsInPolygon(dto);
   }
 }

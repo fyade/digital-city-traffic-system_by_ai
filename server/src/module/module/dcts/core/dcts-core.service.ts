@@ -41,6 +41,7 @@ export class DctsCoreService {
   public async calculateLightsInPolygon(signalLightGroupIds: number[], loginRole: string, userId: string) {
     const signalLightRunParams = await this.calculateLight(signalLightGroupIds);
     this.wsService.sendMsg(loginRole, userId, 'dcts:spatialData:calculateLightsInPolygon', JSON.stringify(signalLightRunParams))
+    return signalLightRunParams
   }
 
   /**
@@ -274,7 +275,6 @@ export class DctsCoreService {
       const _startTimes: number[] = []
       for (let i = 0; i < strategyTypes_custom_now.length; i++) {
         const st0 = strategyTypes_custom_now[i]
-        console.log(st0)
         const ss0 = strategySchedules_custom.filter(schedule => {
           return _strategyType_strategySchedule.some(item => item.strategyTypeId === st0.id && item.strategyScheduleId === schedule.id)
         })
@@ -295,22 +295,20 @@ export class DctsCoreService {
         let ifCalculateEnd = false
         let i2 = Math.max(0, Math.floor((now0 - _startt) / stD[1]))
         do {
-          console.log('do')
           const start1 = _startt + stD[1] * i2
           let _duration = 0
           const rounds = objectUtils.arrNoRepeat(sp0.map(item => item.round)).sort((a, b) => a - b);
           for (const round of rounds) {
             const spr = sp0.filter(item => item.round === round);
             const duration = spr.map(item => item.duration).sort((a, b) => b - a)[0];
-            const _start = start1 + _duration
+            const _start = start1 + _duration + fineTuningTime
             _duration += duration * 1000
-            const __end = start1 + _duration
+            const __end = start1 + _duration + fineTuningTime
             const ifWillEnd = mseTime[2] < __end
             const _end = ifWillEnd ? mseTime[2] : __end
             if (_start > _end) {
               continue
             }
-            console.log(timeUtils.formatDate(new Date(_start)), timeUtils.formatDate(new Date(_end)))
             const stids_ft = strategyTypeIds_fineTuning.filter(id => {
               const find = modifiedStartEndTime.find(ar => ar[0] === id);
               return objectUtils.ifHasOverlap([_start, _end], [find[1], find[2]])
@@ -323,17 +321,18 @@ export class DctsCoreService {
               return _strategySchedule_strategyParam.some(item => ssids_ft.includes(item.strategyScheduleId) && item.strategyParamId === param.id)
             })
             const spids_ft = sps_ft.map(item => item.id)
+            const aaaa: number[] = []
             for (const sp of spr) {
               const sps_ft_1 = sps_ft.filter(param => {
                 return round === param.round
                     && sp.currentLight === param.currentLight
                     && objectUtils.ifSameArray(sp.lightType.split('-').filter(_ => _), param.lightType.split('-').filter(_ => _))
               });
-              const ft_time = sps_ft_1.reduce((a, b) => a + b.duration, 0);
-              console.log('微调时间', ft_time)
+              const ft_time = sps_ft_1.reduce((a, b) => a + b.duration, 0) * 1000;
+              aaaa.push(ft_time + sp.duration * 1000)
 
-              let _end2 = _end
-              if (sp.duration < duration) {
+              let _end2 = _end + ft_time
+              if (sp.duration * 1000 < duration * 1000) {
                 _end2 -= (duration - sp.duration) * 1000
               }
 
@@ -372,11 +371,18 @@ export class DctsCoreService {
                 }
               }
             }
-            if (_end >= now02 || ifWillEnd) {
+
+            const d = Math.max(...aaaa) - duration * 1000
+            fineTuningTime += d
+
+            if (_end + Math.min(...aaaa) >= now02 || ifWillEnd) {
               ifCalculateEnd = true
             }
           }
           i2++
+          if (start1 > now02) {
+            ifCalculateEnd = true
+          }
         } while (!ifCalculateEnd)
       }
 

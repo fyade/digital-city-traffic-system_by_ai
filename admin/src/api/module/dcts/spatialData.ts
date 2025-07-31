@@ -1,5 +1,5 @@
 import {
-  CalculateLightsInPolygonDto,
+  CalculateLightsInPolygonDto, CalculateLightsInPolygonVo,
   NodesWithWaysInPolygonDto,
   NodesWithWaysInPolygonVo,
   SignalLightGroupsInPolygonDto,
@@ -36,7 +36,7 @@ export function signalLightGroupsInPolygonApi(data: SignalLightGroupsInPolygonDt
  * @param data
  */
 export function calculateLightsInPolygonApi(data: CalculateLightsInPolygonDto) {
-  return request({
+  return request<CalculateLightsInPolygonVo[]>({
     url: '/dcts/spatial-data/calculate-lights-in-polygon',
     method: 'POST',
     data: data,

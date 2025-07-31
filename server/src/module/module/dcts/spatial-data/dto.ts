@@ -1,6 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { ArrayMinSize, IsArray, IsBoolean, IsIn, IsNotEmpty, IsNumber, ValidateNested } from "class-validator";
+import {
+  ArrayMinSize,
+  IsArray,
+  IsBoolean,
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  ValidateNested
+} from "class-validator";
 
 class PolygonPointDto {
   @ApiProperty({description: '经度', required: true})
@@ -17,10 +26,10 @@ class PolygonPointDto {
 }
 
 export class NodesWithWaysInPolygonDto {
-  @ApiProperty({description: '参数版本', required: true})
-  @IsNotEmpty({message: '参数版本不能为空'})
+  @ApiProperty({description: '参数版本', default: '1.0'})
+  @IsOptional()
   @IsIn(['1.0'], {message: '参数版本值不在允许的值中'})
-  version: string;
+  version: string = '1.0';
 
   @ApiProperty({description: '多边形', required: true, type: [PolygonPointDto]})
   @IsNotEmpty({message: '多边形不能为空'})
@@ -32,15 +41,15 @@ export class NodesWithWaysInPolygonDto {
 }
 
 export class SignalLightGroupsInPolygonDto {
-  @ApiProperty({description: '参数版本', required: true})
-  @IsNotEmpty({message: '参数版本不能为空'})
+  @ApiProperty({description: '参数版本', default: '1.0'})
+  @IsOptional()
   @IsIn(['1.0'], {message: '参数版本值不在允许的值中'})
-  version: string;
+  version: string = '1.0';
 
-  @ApiProperty({description: '是否需要一并返回子信号灯', required: true})
-  @IsNotEmpty({message: '是否需要一并返回子信号灯不能为空'})
+  @ApiProperty({description: '是否需要一并返回子信号灯', default: true})
+  @IsOptional()
   @IsBoolean()
-  ifChild: boolean;
+  ifChild: boolean = true;
 
   @ApiProperty({description: '多边形', required: true, type: [PolygonPointDto]})
   @IsNotEmpty({message: '多边形不能为空'})
@@ -52,16 +61,26 @@ export class SignalLightGroupsInPolygonDto {
 }
 
 export class CalculateLightsInPolygonDto {
-  @ApiProperty({description: '参数版本', required: true})
-  @IsNotEmpty({message: '参数版本不能为空'})
+  @ApiProperty({description: '参数版本', default: '1.0'})
+  @IsOptional()
   @IsIn(['1.0'], {message: '参数版本值不在允许的值中'})
-  version: string;
+  version: string = '1.0';
 
-  @ApiProperty({description: '多边形', required: true, type: [PolygonPointDto]})
-  @IsNotEmpty({message: '多边形不能为空'})
+  @ApiProperty({description: '是否直接返回数据', default: false})
+  @IsOptional()
+  @IsBoolean()
+  ifReturn: boolean = false;
+
+  @ApiProperty({description: '信号灯组id数组', type: [Number], default: null, nullable: true})
+  @IsOptional()
+  @IsArray({message: '信号灯组id数组必须为数组'})
+  @IsNumber({}, {each: true, message: '信号灯组id数组的每个元素必须是数值类型'})
+  groupIds: number[] | null = null
+
+  @ApiProperty({description: '多边形', type: [PolygonPointDto], default: null, nullable: true})
+  @IsOptional()
   @IsArray({message: '多边形必须为数组'})
-  @ArrayMinSize(3, {message: '多边形至少需要 3 个顶点'})
   @ValidateNested({each: true})
   @Type(() => PolygonPointDto)
-  points: PolygonPointDto[]
+  points: PolygonPointDto[] | null = null
 }

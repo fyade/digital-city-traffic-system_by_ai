@@ -11,6 +11,7 @@ $themes: (
                 table-page-box-bg: #fff,
                 menu-icon-color: #000,
                 table-page-layout-border: 1px solid #ddd,
+                common-page-bg: #fff,
         ),
         dark: (
                 login-page-code-bg: #fff,
@@ -24,6 +25,7 @@ $themes: (
                 table-page-box-bg: #1d1e1f,
                 menu-icon-color: #fff,
                 table-page-layout-border: 1px solid #333,
+                common-page-bg: #1d1e1f,
         )
 );
 
@@ -48,6 +50,8 @@ $themes: (
   --menu-icon-color: none;
   // 后台布局页边框
   --table-page-layout-border: none;
+  // 通用页面背景
+  --common-page-bg: none;
 }
 
 :root {
