@@ -38,9 +38,11 @@ export class DctsCoreService {
     this.scheduleService.addScheduleFunc('sys:dcts:runCoreSchedule', this.runCoreSchedule.bind(this))
   }
 
-  public async calculateLightsInPolygon(signalLightGroupIds: number[], loginRole: string, userId: string) {
+  public async calculateLightsInPolygon(signalLightGroupIds: number[], loginRole: string, userId: string, ifSendWs: boolean) {
     const signalLightRunParams = await this.calculateLight(signalLightGroupIds);
-    this.wsService.sendMsg(loginRole, userId, 'dcts:spatialData:calculateLightsInPolygon', JSON.stringify(signalLightRunParams))
+    if (ifSendWs) {
+      this.wsService.sendMsg(loginRole, userId, 'dcts:spatialData:calculateLightsInPolygon', JSON.stringify(signalLightRunParams))
+    }
     return signalLightRunParams
   }
 

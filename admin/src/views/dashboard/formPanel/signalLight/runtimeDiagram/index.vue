@@ -64,66 +64,68 @@ const init = () => {
       :run-init="init"
       wider
   >
-    <div class="ellll">
-      <div class="lleft">
-        <div
-            v-for="(dat, index) in objectUtils.arrNoRepeat(data.map(d => d.signalLightGroupId))"
-            :key="index"
-            :style="{
-              height: `calc(var(--height-unit-of-this-page) * 4 * ${data.filter(d => d.signalLightGroupId === dat).length})`
-            }"
-        >
-          {{ allSLG.find(item => item.id === dat)?.name || dat }}
-        </div>
-      </div>
-      <div class="left">
-        <div v-for="(dat, index) in data" :key="index">
-          <div class="left">
-            {{ allSLC.find(item => item.id === dat.signalLightChildId)?.name || dat.signalLightChildId }}
-          </div>
-          <div class="right">
-            <div>{{ base.sLSPLTTypeDict[base.SLSPLTTypeEnum.AROUND] }}</div>
-            <div>{{ base.sLSPLTTypeDict[base.SLSPLTTypeEnum.LEFT] }}</div>
-            <div>{{ base.sLSPLTTypeDict[base.SLSPLTTypeEnum.STRAIGHT] }}</div>
-            <div>{{ base.sLSPLTTypeDict[base.SLSPLTTypeEnum.RIGHT] }}</div>
+    <n-spin :show="loading">
+      <div class="ellll">
+        <div class="lleft">
+          <div
+              v-for="(dat, index) in objectUtils.arrNoRepeat(data.map(d => d.signalLightGroupId))"
+              :key="index"
+              :style="{
+                height: `calc(var(--height-unit-of-this-page) * 4 * ${data.filter(d => d.signalLightGroupId === dat).length})`
+              }"
+          >
+            {{ allSLG.find(item => item.id === dat)?.name || dat }}
           </div>
         </div>
-      </div>
-      <div class="main">
-        <div v-for="(dat, index) in data" :key="index" class="data">
-          <div v-for="(da, inde) in dat.runParam" :key="inde" :style="{
-            paddingLeft: `${inde === 0 ? (da.start - startTime) / 1000 * 8 : 0}px`,
-            width: `${(da.end - da.start) / 1000 * 8}px`
+        <div class="left">
+          <div v-for="(dat, index) in data" :key="index">
+            <div class="left">
+              {{ allSLC.find(item => item.id === dat.signalLightChildId)?.name || dat.signalLightChildId }}
+            </div>
+            <div class="right">
+              <div>{{ base.sLSPLTTypeDict[base.SLSPLTTypeEnum.AROUND] }}</div>
+              <div>{{ base.sLSPLTTypeDict[base.SLSPLTTypeEnum.LEFT] }}</div>
+              <div>{{ base.sLSPLTTypeDict[base.SLSPLTTypeEnum.STRAIGHT] }}</div>
+              <div>{{ base.sLSPLTTypeDict[base.SLSPLTTypeEnum.RIGHT] }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="main">
+          <div v-for="(dat, index) in data" :key="index" class="data">
+            <div v-for="(da, inde) in dat.runParam" :key="inde" :style="{
+              paddingLeft: `${inde === 0 ? (da.start - startTime) / 1000 * 8 : 0}px`,
+              width: `${(da.end - da.start) / 1000 * 8}px`
+            }">
+              <div :style="{
+                backgroundColor:da.lightType.includes(base.SLSPLTTypeEnum.AROUND) ? da.color : base.SignalLightColorEnum.RED
+              }"></div>
+              <div :style="{
+                backgroundColor:da.lightType.includes(base.SLSPLTTypeEnum.LEFT) ? da.color : base.SignalLightColorEnum.RED
+              }"></div>
+              <div :style="{
+                backgroundColor:da.lightType.includes(base.SLSPLTTypeEnum.STRAIGHT) ? da.color : base.SignalLightColorEnum.RED
+              }"></div>
+              <div :style="{
+                backgroundColor:da.lightType.includes(base.SLSPLTTypeEnum.RIGHT) ? da.color : base.SignalLightColorEnum.RED
+              }"></div>
+            </div>
+          </div>
+          <div class="timeline" :style="{
+            width: `${(endTime - startTime) / 1000 * 8}px`
           }">
-            <div :style="{
-              backgroundColor:da.lightType.includes(base.SLSPLTTypeEnum.AROUND) ? da.color : base.SignalLightColorEnum.RED
-            }"></div>
-            <div :style="{
-              backgroundColor:da.lightType.includes(base.SLSPLTTypeEnum.LEFT) ? da.color : base.SignalLightColorEnum.RED
-            }"></div>
-            <div :style="{
-              backgroundColor:da.lightType.includes(base.SLSPLTTypeEnum.STRAIGHT) ? da.color : base.SignalLightColorEnum.RED
-            }"></div>
-            <div :style="{
-              backgroundColor:da.lightType.includes(base.SLSPLTTypeEnum.RIGHT) ? da.color : base.SignalLightColorEnum.RED
-            }"></div>
+            <div v-for="(time, index) in timelines" :key="index" :style="{
+              left: `${(time - startTime) / 1000 * 8}px`
+            }">
+              {{ timeUtils.formatDate(new Date(time)) }}
+            </div>
           </div>
         </div>
-        <div class="timeline" :style="{
-          width: `${(endTime - startTime) / 1000 * 8}px`
-        }">
-          <div v-for="(time, index) in timelines" :key="index" :style="{
-            left: `${(time - startTime) / 1000 * 8}px`
-          }">
-            {{ timeUtils.formatDate(new Date(time)) }}
-          </div>
-        </div>
-      </div>
 
-      <div class="currentTime" :style="{
-        left: `${250 + (currentTime - startTime) / 1000 * 8}px`
-      }"></div>
-    </div>
+        <div class="currentTime" :style="{
+          left: `${250 + (currentTime - startTime) / 1000 * 8}px`
+        }"></div>
+      </div>
+    </n-spin>
   </FormPanelCard>
 </template>
 
@@ -132,6 +134,7 @@ const init = () => {
   position: relative;
   display: flex;
   overflow: auto;
+  min-height: 200px;
   --height-unit-of-this-page: 24px;
 
   > .lleft {

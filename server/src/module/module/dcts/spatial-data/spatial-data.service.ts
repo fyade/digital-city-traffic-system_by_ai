@@ -91,7 +91,7 @@ export class SpatialDataService {
       ids.push(...slgIds)
     }
     const userData = this.bcs.getUserData();
-    const ret = await this.dctsCoreService.calculateLightsInPolygon(ids, userData.loginRole, userData.userId);
+    const ret = await this.dctsCoreService.calculateLightsInPolygon(ids, userData.loginRole, userData.userId, !dto.ifReturn);
     if (dto.ifReturn) {
       return R.ok(ret)
     } else {
