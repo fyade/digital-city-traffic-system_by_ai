@@ -6,7 +6,7 @@ interface EventMap {
 
 class BroadcastChannelService {
   private channel: BroadcastChannel
-  private events = new Map<string, EventCallback<any>[]>()
+  private events = new Map<string, EventCallback<EventMap[keyof EventMap]>[]>()
 
   constructor() {
     this.channel = new BroadcastChannel('custom-channel')

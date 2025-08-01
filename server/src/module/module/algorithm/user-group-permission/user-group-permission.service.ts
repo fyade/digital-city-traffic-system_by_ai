@@ -44,8 +44,11 @@ export class UserGroupPermissionService {
     const count = await this.mysqlPrisma.count<LogAlgorithmCallDto>('log_algorithm_call', {
       data: { userGroupPermissionId: id },
     });
-    (res as any).count = count;
-    return R.ok(res);
+    const res2 = {
+      ...res,
+      count: count,
+    }
+    return R.ok(res2);
   }
 
   async insUserGroupPermission(dto: UserGroupPermissionInsOneDto): Promise<R> {

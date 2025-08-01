@@ -1,12 +1,12 @@
-import { RouteRecordNormalized } from "vue-router";
+import { RouteRecordRaw } from "vue-router";
 import { getPages, getSystems } from "@/api/common/sys.ts";
-import { MenuDto } from "@/type/module/main/sysManage/menu.ts";
 import { arr2ToDiguiObj } from "@/utils/baseUtils.ts";
 import router from "@/router";
 import { base } from "@dcts/common";
+import { Component } from "vue";
 
 // 引入资源
-const modules = {
+const modules: Record<string, () => Promise<{ default: Component }>> = {
   ...import.meta.glob(`../../module/**/**/**/**.vue`),
   ...import.meta.glob(`../../module/**/**/**.vue`),
 }
@@ -27,30 +27,31 @@ export const goToAdminPanelSystem = async (callback: (path: string) => void) => 
       }
     }
     if (!ifHasAddRoutes) {
-      const permissions: (RouteRecordNormalized & MenuDto & { component: any })[] = [];
+      const permissions: RouteRecordRaw[] = [];
       for (const page of pages) {
         if (![base.MenuTypeEnum.T_MENU, base.MenuTypeEnum.T_COMP].includes(page.type)) {
           continue
         }
-        const permission = {
-          ...page,
+        const permission: RouteRecordRaw = {
+          path: page.path,
           name: `${page.perms}-dashboardPage`,
           meta: {
             ...page,
             asideMenu: false,
             sysPerms: 'sys:dcts'
-          }
-        } as unknown as (RouteRecordNormalized & MenuDto & { component: any })
-        if (permission.type === base.MenuTypeEnum.T_COMP) {
-          const component = await modules[`../../module/${system.path}${permission.component}`]()
+          },
+          children: []
+        }
+        if (page.type === base.MenuTypeEnum.T_COMP) {
+          const component = await modules[`../../module/${system.path}${page.component}`]()
           permission.component = component.default
         } else {
           delete permission.component
         }
         permissions.push(permission)
       }
-      const permissionObj = arr2ToDiguiObj(permissions, {ifDeepClone: false})
-          .sort((m1, m2) => m1.orderNum - m2.orderNum)
+      const permissionObj = arr2ToDiguiObj(permissions, {ifDeepClone: false, childrenKey: 'meta'})
+          .sort((m1, m2) => (typeof m1.meta?.orderNum === 'number' && typeof m2.meta?.orderNum === 'number') ? (m1.meta.orderNum - m2.meta.orderNum) : 0)
       for (let i = 0; i < permissionObj.length; i++) {
         router.addRoute('~dashboard/adminPanel', permissionObj[i])
       }

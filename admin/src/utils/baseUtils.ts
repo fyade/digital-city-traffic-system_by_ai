@@ -28,28 +28,42 @@ export function arr2ToDiguiObj2<T = any>(list: T[], {
  * 二维数组转递归对象
  * @param list
  * @param key
+ * @param childrenKey
  * @param defaultParent
  * @param ifDeepClone
  */
-export function arr2ToDiguiObj<T = any>(list: T[], {
-                                          key = 'parentId',
-                                          defaultParent = final.DEFAULT_PARENT_ID,
-                                          ifDeepClone = true
-                                        }: {
-                                          key?: string,
-                                          defaultParent?: number,
-                                          ifDeepClone?: boolean
-                                        } = {}
+export function arr2ToDiguiObj<T>(list: T[], {
+                                    key = 'parentId',
+                                    childrenKey = '',
+                                    defaultParent = final.DEFAULT_PARENT_ID,
+                                    ifDeepClone = true
+                                  }: {
+                                    key?: string,
+                                    childrenKey?: string,
+                                    defaultParent?: number,
+                                    ifDeepClone?: boolean
+                                  } = {}
 ): Arr2ToDiguiObjI<T, typeof key, number>[] {
   const list2 = (ifDeepClone ? deepClone(list) : list) as any[]
   if (list2.length === 0) {
     return []
   }
-  const lis = list2.filter(item => item[key] === defaultParent)
+  const lis = list2.filter(item => (childrenKey ? item[childrenKey][key] : item[key]) === defaultParent)
   const cachrarr = [lis]
   let finish = false
   while (!finish) {
-    const ar = list2.filter(item => cachrarr.flat().map(item => item.id).indexOf(item.id) === -1).filter(item => cachrarr[cachrarr.length - 1].map(item => item.id).indexOf(item[key]) > -1)
+    const ar = list2
+        .filter(item => {
+          return cachrarr
+              .flat()
+              .map(item => (childrenKey ? item[childrenKey].id : item.id))
+              .indexOf((childrenKey ? item[childrenKey].id : item.id)) === -1
+        })
+        .filter(item => {
+          return cachrarr[cachrarr.length - 1]
+              .map(item => (childrenKey ? item[childrenKey].id : item.id))
+              .indexOf(childrenKey ? item[childrenKey][key] : item[key]) > -1
+        })
     if (ar.length === 0) {
       finish = true
     } else {
@@ -63,7 +77,7 @@ export function arr2ToDiguiObj<T = any>(list: T[], {
   for (let i = cachrarr.length - 1; i >= 0; i--) {
     if (i !== 0) {
       cachrarr[i - 1].forEach(obj => {
-        obj.children = cachrarr[i].filter(item => item[key] === obj.id)
+        obj.children = cachrarr[i].filter(item => (childrenKey ? item[childrenKey][key] : item[key]) === (childrenKey ? obj[childrenKey].id : obj.id))
       })
     } else {
       ret.push(...cachrarr[0])

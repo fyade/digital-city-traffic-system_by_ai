@@ -4,7 +4,7 @@ import noMoreClick from "@/dicevtive/modules/noMoreClick.ts";
 import resizeObserver from "@/dicevtive/modules/resizeObserver.ts";
 import { App } from "vue";
 
-export interface directiveBinding<T = any> {
+export interface directiveBinding<T> {
   value: T
 }
 

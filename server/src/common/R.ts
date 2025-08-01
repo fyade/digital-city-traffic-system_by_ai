@@ -9,7 +9,7 @@ export class R<T = any> {
   private timestamp: number;
   private reqId: string;
 
-  constructor(code: number, data: any, msg: string, reqId: string = '') {
+  constructor(code: number, data: T, msg: string, reqId: string = '') {
     this.code = code;
     this.data = data;
     this.msg = msg;
@@ -18,7 +18,7 @@ export class R<T = any> {
     this.reqId = reqId;
   }
 
-  static ok(data: any) {
+  static ok<T>(data: T) {
     return new R(HTTP.SUCCESS().code, data, HTTP.SUCCESS().msg);
   }
 }

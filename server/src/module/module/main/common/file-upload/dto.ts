@@ -4,6 +4,18 @@ import { IsNotEmpty } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
+interface MulterFile {
+  fieldname: string;      // 表单字段名（如 "file"）
+  originalname: string;   // 原始文件名（用户上传时的名字）
+  encoding: string;       // 文件编码（如 '7bit'）
+  mimetype: string;       // MIME 类型（如 'image/jpeg'）
+  size: number;           // 文件大小（字节）
+  destination: string;    // 存储目录（由 multer 配置决定）
+  filename: string;       // 服务器上的文件名（可能被哈希重命名）
+  path: string;           // 文件的完整存储路径
+  buffer?: Buffer;        // 如果使用内存存储（memoryStorage），会有 buffer
+}
+
 export class FileDto extends BaseDto {
   id: string;
 
@@ -166,7 +178,7 @@ export class FileUploadOneFull_upload {
   fileName: string;
 
   @ApiProperty({ description: '文件', required: false })
-  file: any;
+  file: MulterFile;
 }
 
 export class FileUploadOneChunk_check {
@@ -194,7 +206,7 @@ export class FileUploadOneChunk_upload {
   chunkIndex: number;
 
   @ApiProperty({ description: '文件', required: false })
-  file: any;
+  file: MulterFile;
 }
 
 export class FileUploadOneChunk_merge {

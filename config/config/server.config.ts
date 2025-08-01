@@ -63,10 +63,10 @@ const config = {
   prod: configProd,
 };
 
-export function getMysqlUrlFromEnv(env: any): string {
+export function getMysqlUrlFromEnv(env: typeof config.dev): string {
   return `mysql://${env.database.username}:${env.database.password}@${env.database.host}:${env.database.port}/${env.database.database}`;
 }
 
-export function getPostgresqlUrlFromEnv(env: any) {
+export function getPostgresqlUrlFromEnv(env: typeof config.dev) {
   return `postgresql://${env.postgresql.username}:${env.postgresql.password}@${env.postgresql.host}:${env.postgresql.port}/${env.postgresql.database}?schema=${env.postgresql.schema}`
 }

@@ -7,7 +7,7 @@ import { ElMessage } from "element-plus"
 import { FileUploadInterfaceOneChunk } from "@/type/common/fileUpload.ts";
 import { selectFiles } from "@/utils/FileUtils.ts";
 import { adminConfig } from '@dcts/config';
-import { objectUtils } from "@dcts/common";
+import { arrayUtils } from "@dcts/common";
 
 let pageNotUnmounted = true
 onBeforeUnmount(() => {
@@ -65,8 +65,8 @@ const upload3 = async () => {
     uploadSuccess()
     return
   }
-  const indexs = objectUtils.removeElementsByIndices(new Array(chunks.length).fill(null).map((item, i) => i), ...res1.uploadedIndexs)
-  const newChunks = objectUtils.removeElementsByIndices(chunks, ...res1.uploadedIndexs);
+  const indexs = arrayUtils.removeElementsByIndices(new Array(chunks.length).fill(null).map((item, i) => i), ...res1.uploadedIndexs)
+  const newChunks = arrayUtils.removeElementsByIndices(chunks, ...res1.uploadedIndexs);
   // 开始分片上传
   state.currentStage = 'c'
   state.fileNewName = res1.fileNewName

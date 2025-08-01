@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { CONFIG, final } from "@/utils/base.ts";
 import { computed } from "vue";
-import { RouteRecordNormalized, useRoute } from "vue-router";
+import { type RouteRecord, RouteRecordNormalized, RouteRecordRaw, useRoute } from "vue-router";
 import { useSysConfigStore } from "@/store/module/sysConfig.ts";
 import { objectUtils } from "@dcts/common";
 
 const route = useRoute()
 const props = defineProps({
   menus: {
-    type: Array as () => RouteRecordNormalized[],
+    type: Array as () => RouteRecord[],
     required: true
   },
   parentPath: {
@@ -59,7 +59,7 @@ const ifParentMenuItem = (item: RouteRecordNormalized) => {
           </el-space>
         </template>
         <AsideMenu
-            :menus="item.children as  RouteRecordNormalized[]"
+            :menus="item.children as RouteRecord[]"
             :parent-path="`${props.parentPath}/${item.path}`"
             @gotoMenu="menuClick"
         ></AsideMenu>

@@ -5,7 +5,7 @@ import { ClockModule } from "@/views/dashboard/functionModules/clockModule.ts";
 import { deepClone } from "@/utils/ObjectUtils.ts";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
-import { base, objectUtils } from "@dcts/common";
+import { arrayUtils, base } from "@dcts/common";
 import { dashboardConfig } from "@dcts/config";
 
 /**
@@ -121,7 +121,7 @@ export class SignalLightModule {
     for (const _data of this.datas) {
       const data = deepClone(_data);
       data.runParam = data.runParam.filter(rp => {
-        return objectUtils.ifHasOverlap([rp.start, rp.end], [currentTime, currentTime + 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL * 2])
+        return arrayUtils.ifHasOverlap([rp.start, rp.end], [currentTime, currentTime + 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL * 2])
       })
       this.shortTaskDatas.push(data)
     }

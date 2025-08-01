@@ -2,7 +2,7 @@
 import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
 import { ref } from "vue";
 import { deepClone } from "@/utils/ObjectUtils.ts";
-import { objectUtils } from "@dcts/common";
+import { arrayUtils } from "@dcts/common";
 
 const useCesium = useDashboardCesium;
 const allLayers = useCesium.allLayers;
@@ -24,7 +24,7 @@ const submit = () => {
   if (form.value.mapLayer !== form2.mapLayer) {
     useCesium.setLayer('baseMap', [form.value.mapLayer])
   }
-  if (!objectUtils.ifSameArray(form.value.dataLayer, form2.dataLayer)) {
+  if (!arrayUtils.ifSameArray(form.value.dataLayer, form2.dataLayer)) {
     useCesium.setLayer('roadData', form.value.dataLayer)
   }
   form2 = deepClone(form.value)

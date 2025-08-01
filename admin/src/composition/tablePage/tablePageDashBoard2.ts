@@ -61,7 +61,7 @@ export const funcTablePageDashBoard = <T extends { id: string | number }, T2 = T
     }
     if (!ifByPage) {
       config.beforeSelectListCallback && config.beforeSelectListCallback()
-      api.selectAll({...state.filterForm, ...(config.selectParam || {})} as any).then(res => {
+      api.selectAll({...state.filterForm, ...(config.selectParam || {})}).then(res => {
         tableData.value = res
         config.selectListCallback && config.selectListCallback()
       }).catch(() => {

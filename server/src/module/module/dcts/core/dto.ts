@@ -1,12 +1,6 @@
 import { base } from "@dcts/common";
 import { SignalLightColorEnum, SLSPLTTypeEnum } from "@dcts/common/dist/util/base";
 
-export class SignalLightRunParam {
-  signalLightGroupId: number
-  signalLightChildId: number
-  runParam: SignalLightRunParamDParam[]
-}
-
 export class SignalLightRunParamDParam {
   start: number
   end: number
@@ -19,4 +13,10 @@ export class SignalLightRunParamDParam {
     this.color = color;
     this.lightType = lightType;
   }
+}
+
+export class SignalLightRunParam {
+  signalLightGroupId: number
+  signalLightChildId: number
+  runParam: SignalLightRunParamDParam[]
 }

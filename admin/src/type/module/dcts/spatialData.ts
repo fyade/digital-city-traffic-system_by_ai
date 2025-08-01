@@ -15,8 +15,11 @@ export class NodesWithWaysInPolygonDto {
   points!: PolygonPointDto[]
 }
 
+class NodesWithWaysInPolygonVoTags {
+}
+
 export class NodesWithWaysInPolygonVo {
-  allNodes!: { id: string, lon: number, lat: number, tags: any }[]
+  allNodes!: { id: string, lon: number, lat: number, tags: NodesWithWaysInPolygonVoTags | null }[]
   allRoads!: { osm_id: string, name: string | null, highway: string | null, motorcar: null, way: string }[]
 }
 
@@ -41,7 +44,7 @@ export class CalculateLightsInPolygonDto {
   points?: PolygonPointDto[]
 }
 
-class CalculateLightsInPolygonVoDParam {
+class SignalLightRunParamDParam {
   start!: number
   end!: number
   color!: base.SignalLightColorEnum
@@ -51,5 +54,5 @@ class CalculateLightsInPolygonVoDParam {
 export class CalculateLightsInPolygonVo {
   signalLightGroupId!: number
   signalLightChildId!: number
-  runParam!: CalculateLightsInPolygonVoDParam[]
+  runParam!: SignalLightRunParamDParam[]
 }

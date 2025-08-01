@@ -20,7 +20,7 @@ import { arr2ToDiguiObj } from "@/utils/baseUtils.ts";
 import { SysDto } from "@/type/module/main/sysManage/sys.ts";
 import { sysApi } from "@/api/module/main/sysManage/sys.ts";
 import MenuIpWhiteList from "@/views/module/main/sysManage/menu/menuIpWhiteList.vue";
-import { base, objectUtils } from "@dcts/common";
+import { arrayUtils, base, objectUtils } from "@dcts/common";
 import MenuThrottle from "@/views/module/main/sysManage/menu/menuThrottle.vue";
 
 const state = reactive<State2<MenuDto, MenuUpdDto>>({
@@ -294,14 +294,14 @@ const expandRowKeys = ref<number[]>([])
 const expandRowKeys2 = ref<number[]>([])
 const expendAll = () => {
   if (expandRowKeys.value.length === 0) {
-    expandRowKeys.value = objectUtils.arrNoRepeat(tableData.value.map(item => item.parentId)).filter(item => item !== final.DEFAULT_PARENT_ID)
+    expandRowKeys.value = arrayUtils.arrNoRepeat(tableData.value.map(item => item.parentId)).filter(item => item !== final.DEFAULT_PARENT_ID)
   } else {
     expandRowKeys.value = []
   }
 }
 const expendAll2 = () => {
   if (expandRowKeys2.value.length === 0) {
-    expandRowKeys2.value = objectUtils.arrNoRepeat(tableDataInter.value.map(item => item.parentId)).filter(item => item !== final.DEFAULT_PARENT_ID)
+    expandRowKeys2.value = arrayUtils.arrNoRepeat(tableDataInter.value.map(item => item.parentId)).filter(item => item !== final.DEFAULT_PARENT_ID)
   } else {
     expandRowKeys2.value = []
   }

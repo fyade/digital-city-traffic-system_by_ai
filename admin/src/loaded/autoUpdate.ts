@@ -1,5 +1,5 @@
 import { getScriptTagFromHtmlText } from "@/utils/RegularUtils.ts";
-import { baseUtils, objectUtils } from "@dcts/common";
+import { arrayUtils, baseUtils } from "@dcts/common";
 import { adminConfig } from "@dcts/config";
 
 const whiteList = [
@@ -33,7 +33,7 @@ async function main() {
   if (currentConfig.VITE_MODE === 'dev') {
     console.log(oldTag, newTag)
   }
-  const ifNeedUpdate = !objectUtils.ifSameArray(oldTag, newTag)
+  const ifNeedUpdate = !arrayUtils.ifSameArray(oldTag, newTag)
   if (ifNeedUpdate) {
     const result = confirm('检测到新版本，请点击确定更新。')
     if (result) {

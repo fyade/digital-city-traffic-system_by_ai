@@ -9,7 +9,7 @@ export class UserGroupPermissionDto extends BaseClass {
   ifRejectRequestUseUp!: string;
   permissionStartTime!: Date;
   permissionEndTime!: Date;
-  permissionTime?: any;
+  permissionTime?: string | [Date, Date];
   limitRequestTimes!: number;
   ifUseUp!: string;
   orderNum!: number;
@@ -31,7 +31,7 @@ export class UserGroupPermissionInsDto {
   ifRejectRequestUseUp!: string;
   permissionStartTime!: Date;
   permissionEndTime!: Date;
-  permissionTime?: any;
+  permissionTime?: string | [Date, Date];
   limitRequestTimes!: number;
   ifUseUp!: string;
   orderNum!: number;

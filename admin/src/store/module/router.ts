@@ -1,15 +1,16 @@
 import { defineStore } from 'pinia'
 import { computed, Ref, ref } from "vue";
 import { diguiObjToArr2 } from "@/utils/baseUtils.ts";
-import { RouteRecordName, RouteRecordNormalized, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
+import type { RouteMeta, RouteRecord, RouteRecordName } from "vue-router";
 import { useSysStore } from "@/store/module/sys.ts";
 import { final } from "@/utils/base.ts";
 
 export interface AllMenus2I {
   path: string
   name: RouteRecordName
-  meta: RouteRecordNormalized['meta']
-  ar: RouteRecordNormalized[]
+  meta: RouteMeta
+  ar: RouteRecord[]
 }
 
 const sysStore = useSysStore();
@@ -25,11 +26,11 @@ const getFixedMenus = (sysPerm: string) => {
 
 export const useRouterStore = defineStore('routerStore', () => {
   const router = useRouter()
-  const allMenus1 = ref<RouteRecordNormalized[]>([])
+  const allMenus1 = ref<RouteRecord[]>([])
   const allMenus2 = computed(() => {
-    return diguiObjToArr2<RouteRecordNormalized>(allMenus1.value).map(ar => {
+    return diguiObjToArr2(allMenus1.value).map(ar => {
       const meta = ar[ar.length - 1].meta;
-      meta.fullPath = ar.map(item => item.path).join('/')
+      meta['fullPath'] = ar.map(item => item.path).join('/')
       return {
         path: ar.map((item, index) => (item.path.startsWith('/') || (index === 0 || ar[index - 1].path.endsWith('/'))) ? item.path : `/${item.path}`).join(''),
         name: ar[ar.length - 1].name || '',

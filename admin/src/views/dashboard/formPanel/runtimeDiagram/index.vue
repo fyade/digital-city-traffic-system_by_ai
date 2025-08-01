@@ -5,7 +5,7 @@ import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
 import { ref, watch } from "vue";
 import { calculateLightsInPolygonApi } from "@/api/module/dcts/spatialData.ts";
 import { CalculateLightsInPolygonVo } from "@/type/module/dcts/spatialData.ts";
-import { base, objectUtils, timeUtils } from "@dcts/common";
+import { arrayUtils, base, timeUtils } from "@dcts/common";
 import { signalLightGroupInfoApi } from "@/api/module/dcts/signalLight/signalLightGroupInfo.ts";
 import { signalLightGroupChildMappingApi } from "@/api/module/dcts/signalLight/signalLightGroupChildMapping.ts";
 import { SignalLightGroupInfoDto } from "@/type/module/dcts/signalLight/signalLightGroupInfo.ts";
@@ -40,7 +40,7 @@ const init = () => {
     signalLightGroupChildMappingApi.selectAll({groupId: {in: {value: [Number(itemId)]}}})
   ]).then(ress => {
     data.value = ress[0].sort((a, b) => a.signalLightGroupId !== b.signalLightGroupId ? a.signalLightGroupId - b.signalLightGroupId : a.signalLightChildId - b.signalLightChildId)
-    timelines.value = objectUtils.arrNoRepeat(data.value.map(item => item.runParam.map(itm => [itm.start, itm.end]).flat()).flat()).sort((a, b) => a - b)
+    timelines.value = arrayUtils.arrNoRepeat(data.value.map(item => item.runParam.map(itm => [itm.start, itm.end]).flat()).flat()).sort((a, b) => a - b)
     startTime.value = timelines.value[0];
     endTime.value = timelines.value[timelines.value.length - 1];
     allSLG.value = ress[1]
@@ -68,7 +68,7 @@ const init = () => {
       <div class="ellll">
         <div class="lleft">
           <div
-              v-for="(dat, index) in objectUtils.arrNoRepeat(data.map(d => d.signalLightGroupId))"
+              v-for="(dat, index) in arrayUtils.arrNoRepeat(data.map(d => d.signalLightGroupId))"
               :key="index"
               :style="{
                 height: `calc(var(--height-unit-of-this-page) * 4 * ${data.filter(d => d.signalLightGroupId === dat).length})`

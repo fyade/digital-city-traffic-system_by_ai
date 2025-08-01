@@ -82,7 +82,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
     }
     if (!ifByPage) {
       config.beforeSelectListCallback && config.beforeSelectListCallback()
-      api.selectAll({...state.filterForm, ...(config.selectParam || {})} as any).then(res => {
+      api.selectAll({...state.filterForm, ...(config.selectParam || {})}).then(res => {
         tableData.value = res
         config.selectListCallback && config.selectListCallback()
       }).catch(() => {
@@ -492,7 +492,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
             state.dialogForms![i] = structuredClone(initialStateDialogForm)
             try {
               const obj = await api.selectById(multipleSelection.value[i].id)
-              datas.push(obj as any)
+              datas.push(obj as unknown as T2)
             } catch (e) {
               dialogVisible.value = false
             } finally {

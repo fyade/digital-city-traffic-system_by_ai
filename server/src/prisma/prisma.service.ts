@@ -110,11 +110,6 @@ export class PrismaService {
   // }
 
   protected getModel(model: string): any {
-    // const modelInstance = this.getOrigin()[model];
-    // if (!modelInstance) {
-    //   throw new UnknownException(this.bcs.getUserData().reqId);
-    // }
-    // return modelInstance;
     return null;
   }
 

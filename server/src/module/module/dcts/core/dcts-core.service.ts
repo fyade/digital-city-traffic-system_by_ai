@@ -3,7 +3,7 @@ import { ScheduleService } from "../../../schedule/schedule.service";
 import { WsService } from "../../../ws/ws.service";
 import { PostgresqlPrismaoService } from "../../../../prisma/postgresql.prismao.service";
 import { final } from "../../../../util/base";
-import { base, baseUtils, objectUtils, timeUtils } from "@dcts/common";
+import { arrayUtils, base, baseUtils, timeUtils } from "@dcts/common";
 import { SignalLightGroupInfoDto } from "../signal-light/signal-light-group-info/dto";
 import { SignalLightGroupChildMappingDto } from "../signal-light/signal-light-group-child-mapping/dto";
 import { SignalLightInfoDto } from "../signal-light/signal-light-info/dto";
@@ -182,7 +182,7 @@ export class DctsCoreService {
       }
 
       let duration = 0
-      const rounds = objectUtils.arrNoRepeat(strategyParams.map(item => item.round)).sort((a, b) => a - b);
+      const rounds = arrayUtils.arrNoRepeat(strategyParams.map(item => item.round)).sort((a, b) => a - b);
       for (const round of rounds) {
         const f = strategyParams.filter(param => param.round === round);
         const d = f.map(item => item.duration).sort((a, b) => b - a)[0];
@@ -346,7 +346,7 @@ export class DctsCoreService {
       // 处于当前时段的固定策略
       const strategyTypes_custom_now = strategyTypes_custom.filter(type => {
         const find = modifiedStartEndTime.find(item => item[0] === type.id);
-        return objectUtils.ifHasOverlap([now01, now02], [find[1], find[2]])
+        return arrayUtils.ifHasOverlap([now01, now02], [find[1], find[2]])
       }).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
       if (strategyTypes_custom_now.length === 0) {
         continue
@@ -386,7 +386,7 @@ export class DctsCoreService {
         do {
           const start1 = _startt + stD[1] * i2
           let _duration = 0
-          const rounds = objectUtils.arrNoRepeat(sp0.map(item => item.round)).sort((a, b) => a - b);
+          const rounds = arrayUtils.arrNoRepeat(sp0.map(item => item.round)).sort((a, b) => a - b);
           for (const round of rounds) {
             const spr = sp0.filter(item => item.round === round);
             const duration = spr.map(item => item.duration).sort((a, b) => b - a)[0];
@@ -400,7 +400,7 @@ export class DctsCoreService {
             }
             const stids_ft = strategyTypeIds_fineTuning.filter(id => {
               const find = modifiedStartEndTime.find(ar => ar[0] === id);
-              return objectUtils.ifHasOverlap([_start, _end], [find[1], find[2]])
+              return arrayUtils.ifHasOverlap([_start, _end], [find[1], find[2]])
             });
             const sss_ft = strategySchedules.filter(schedule => {
               return _strategyType_strategySchedule.some(item => stids_ft.includes(item.strategyTypeId) && item.strategyScheduleId === schedule.id)
@@ -415,7 +415,7 @@ export class DctsCoreService {
               const sps_ft_1 = sps_ft.filter(param => {
                 return round === param.round
                     && sp.currentLight === param.currentLight
-                    && objectUtils.ifSameArray(sp.lightType.split('-').filter(_ => _), param.lightType.split('-').filter(_ => _))
+                    && arrayUtils.ifSameArray(sp.lightType.split('-').filter(_ => _), param.lightType.split('-').filter(_ => _))
               });
               const ft_time = sps_ft_1.reduce((a, b) => a + b.duration, 0) * 1000;
               aaaa.push(ft_time + sp.duration * 1000)
@@ -534,7 +534,7 @@ export class DctsCoreService {
       for (let i = signalLightRunParam.runParam.length - 2; i >= 0; i--) {
         if (
             signalLightRunParam.runParam[i].color === signalLightRunParam.runParam[i + 1].color
-            && objectUtils.ifSameArray(signalLightRunParam.runParam[i].lightType, signalLightRunParam.runParam[i + 1].lightType)
+            && arrayUtils.ifSameArray(signalLightRunParam.runParam[i].lightType, signalLightRunParam.runParam[i + 1].lightType)
         ) {
           const dParam3 = new SignalLightRunParamDParam(
               signalLightRunParam.runParam[i].start,
