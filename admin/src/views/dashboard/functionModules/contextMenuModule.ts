@@ -124,20 +124,6 @@ export class ContextMenuModule {
         routerPushByName('~fp~:signalLight:signalLightGroupInfo:del', {id: itemId})
       }
     },
-    {
-      id: 's:queryRuntimeDiagram',
-      func: () => {
-        if (!this.meModule) {
-          return
-        }
-        let itemId = ''
-        const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
-        if (seidsByGroup.signalLightGroupInfoCount > 0) {
-          itemId = seidsByGroup.signalLightGroupInfo.join(',')
-        }
-        routerPushByName('~fp~:signalLight:runtimeDiagram', {id: itemId})
-      }
-    },
     // 子信号灯
     {
       id: 'dcts:signalLight:signalLightInfo:ins',
@@ -220,6 +206,20 @@ export class ContextMenuModule {
       }
     },
     {
+      id: 's:queryRuntimeDiagram',
+      func: () => {
+        if (!this.meModule) {
+          return
+        }
+        let itemId = ''
+        const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
+        if (seidsByGroup.signalLightGroupInfoCount > 0) {
+          itemId = seidsByGroup.signalLightGroupInfo.join(',')
+        }
+        routerPushByName('~fp~:runtimeDiagram', {id: itemId})
+      }
+    },
+    {
       id: 'cmModule:menuOption:refreshSignalLight',
       func: () => {
         if (!this.meModule) {
@@ -258,11 +258,6 @@ export class ContextMenuModule {
         key: 'i:dcts:signalLight',
         show: !this.pModule || this.pModule.cmihp('i:dcts:signalLight'),
         children: [
-          {
-            label: '查看运行时刻图',
-            key: 's:queryRuntimeDiagram',
-            show: !this.pModule || this.pModule.cmihp('', [ID_PREFIX_SIGNAL_LIGHT_GROUP])
-          },
           {
             label: '信号灯组信息管理',
             key: 'i:dcts:signalLight:signalLightGroupInfo',
@@ -354,6 +349,11 @@ export class ContextMenuModule {
       },
       {
         type: 'divider'
+      },
+      {
+        label: '查看运行时刻图',
+        key: 's:queryRuntimeDiagram',
+        show: !this.pModule || this.pModule.cmihp('', [ID_PREFIX_SIGNAL_LIGHT_GROUP])
       },
       {
         label: '刷新信号灯状态',

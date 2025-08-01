@@ -178,6 +178,10 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
               <!--<el-input v-model="state.dialogForm.scheduleType" :placeholder="signalLightStrategyTypeDict.scheduleType"/>-->
               <el-radio-group v-model="state.dialogForm.scheduleType">
                 <el-radio :value="base.SLSSTTypeEnum.T_DAY">{{ base.sLSSTTypeDict[base.SLSSTTypeEnum.T_DAY] }}</el-radio>
+                <el-radio :value="base.SLSSTTypeEnum.T_WEEK">{{ base.sLSSTTypeDict[base.SLSSTTypeEnum.T_WEEK] }}</el-radio>
+                <el-radio :value="base.SLSSTTypeEnum.T_MONTH">{{ base.sLSSTTypeDict[base.SLSSTTypeEnum.T_MONTH] }}</el-radio>
+                <el-radio :value="base.SLSSTTypeEnum.T_YEAR">{{ base.sLSSTTypeDict[base.SLSSTTypeEnum.T_YEAR] }}</el-radio>
+                <el-radio :value="base.SLSSTTypeEnum.T_FIXED_TIME_PERIOD">{{ base.sLSSTTypeDict[base.SLSSTTypeEnum.T_FIXED_TIME_PERIOD] }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -296,6 +300,10 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
                 <!--<el-input v-model="state.dialogForms[$index].scheduleType" :placeholder="signalLightStrategyTypeDict.scheduleType"/>-->
                 <el-radio-group v-model="state.dialogForms[$index].scheduleType">
                   <el-radio :value="base.SLSSTTypeEnum.T_DAY">{{ base.sLSSTTypeDict[base.SLSSTTypeEnum.T_DAY] }}</el-radio>
+                  <el-radio :value="base.SLSSTTypeEnum.T_WEEK">{{ base.sLSSTTypeDict[base.SLSSTTypeEnum.T_WEEK] }}</el-radio>
+                  <el-radio :value="base.SLSSTTypeEnum.T_MONTH">{{ base.sLSSTTypeDict[base.SLSSTTypeEnum.T_MONTH] }}</el-radio>
+                  <el-radio :value="base.SLSSTTypeEnum.T_YEAR">{{ base.sLSSTTypeDict[base.SLSSTTypeEnum.T_YEAR] }}</el-radio>
+                  <el-radio :value="base.SLSSTTypeEnum.T_FIXED_TIME_PERIOD">{{ base.sLSSTTypeDict[base.SLSSTTypeEnum.T_FIXED_TIME_PERIOD] }}</el-radio>
                 </el-radio-group>
               </div>
             </template>
@@ -400,6 +408,10 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
         <!--<el-input v-model="state.filterForm.scheduleType" :placeholder="signalLightStrategyTypeDict.scheduleType"/>-->
         <el-select  v-model="state.filterForm.scheduleType" :placeholder="signalLightStrategyTypeDict.scheduleType" clearable filterable>
           <el-option :label="base.sLSSTTypeDict[base.SLSSTTypeEnum.T_DAY]" :value="base.SLSSTTypeEnum.T_DAY"/>
+          <el-option :label="base.sLSSTTypeDict[base.SLSSTTypeEnum.T_WEEK]" :value="base.SLSSTTypeEnum.T_WEEK"/>
+          <el-option :label="base.sLSSTTypeDict[base.SLSSTTypeEnum.T_MONTH]" :value="base.SLSSTTypeEnum.T_MONTH"/>
+          <el-option :label="base.sLSSTTypeDict[base.SLSSTTypeEnum.T_YEAR]" :value="base.SLSSTTypeEnum.T_YEAR"/>
+          <el-option :label="base.sLSSTTypeDict[base.SLSSTTypeEnum.T_FIXED_TIME_PERIOD]" :value="base.SLSSTTypeEnum.T_FIXED_TIME_PERIOD"/>
         </el-select>
       </el-form-item>
       <el-form-item :label="signalLightStrategyTypeDict.ifDisabled" prop="ifDisabled">

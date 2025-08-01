@@ -72,10 +72,18 @@ export const sLSTTTypeDict = {
 // 信号灯策略调度类型
 export enum SLSSTTypeEnum {
   T_DAY = 'day',
+  T_WEEK = 'week',
+  T_MONTH = 'month',
+  T_YEAR = 'year',
+  T_FIXED_TIME_PERIOD = 'ftp',
 }
 
 export const sLSSTTypeDict = {
   [SLSSTTypeEnum.T_DAY]: '日循环',
+  [SLSSTTypeEnum.T_WEEK]: '周循环',
+  [SLSSTTypeEnum.T_MONTH]: '月循环',
+  [SLSSTTypeEnum.T_YEAR]: '年循环',
+  [SLSSTTypeEnum.T_FIXED_TIME_PERIOD]: '固定时间段',
 }
 
 // 信号灯策略参数灯类型

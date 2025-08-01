@@ -39,6 +39,10 @@ export const nOptionSLSTT: Array<SelectOption | SelectGroupOption> = [
 ]
 export const nOptionSLSST: Array<SelectOption | SelectGroupOption> = [
   {label: base.sLSSTTypeDict[base.SLSSTTypeEnum.T_DAY], value: base.SLSSTTypeEnum.T_DAY},
+  {label: base.sLSSTTypeDict[base.SLSSTTypeEnum.T_WEEK], value: base.SLSSTTypeEnum.T_WEEK},
+  {label: base.sLSSTTypeDict[base.SLSSTTypeEnum.T_MONTH], value: base.SLSSTTypeEnum.T_MONTH},
+  {label: base.sLSSTTypeDict[base.SLSSTTypeEnum.T_YEAR], value: base.SLSSTTypeEnum.T_YEAR},
+  {label: base.sLSSTTypeDict[base.SLSSTTypeEnum.T_FIXED_TIME_PERIOD], value: base.SLSSTTypeEnum.T_FIXED_TIME_PERIOD},
 ]
 export const nOptionIfDisabled: Array<SelectOption | SelectGroupOption> = [
   {label: '是', value: final.Y},

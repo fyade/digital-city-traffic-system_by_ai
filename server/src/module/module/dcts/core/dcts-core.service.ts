@@ -192,20 +192,107 @@ export class DctsCoreService {
         strategyTypeIdDuration.push([strategyType.id, duration])
       }
 
-      let start = new Date(0).getTime()
-      let end = new Date(0).getTime()
-      if (strategyType.scheduleType === base.SLSSTTypeEnum.T_DAY) {
-        start = new Date(strategyType.startTime).getTime()
-        end = new Date(strategyType.endTime).getTime()
-        if (start < now0 && end < now0) {
-          const addDay = Math.ceil((now0 - end) / (1000 * 60 * 60 * 24))
-          start += addDay * 1000 * 60 * 60 * 24
-          end += addDay * 1000 * 60 * 60 * 24
-        } else if (start > now0 && end > now0) {
-          const subDay = Math.ceil((start - now0) / (1000 * 60 * 60 * 24))
-          start -= subDay * 1000 * 60 * 60 * 24
-          end -= subDay * 1000 * 60 * 60 * 24
-        }
+      let startDate = new Date(strategyType.startTime);
+      let endDate = new Date(strategyType.endTime);
+      let start = startDate.getTime()
+      let end = endDate.getTime()
+      switch (strategyType.scheduleType) {
+        case base.SLSSTTypeEnum.T_DAY:
+          if (start < now0 && end < now0) {
+            const addDay = Math.ceil((now0 - end) / (1000 * 60 * 60 * 24))
+            start += addDay * 1000 * 60 * 60 * 24
+            end += addDay * 1000 * 60 * 60 * 24
+          } else if (start > now0 && end > now0) {
+            const subDay = Math.ceil((start - now0) / (1000 * 60 * 60 * 24))
+            start -= subDay * 1000 * 60 * 60 * 24
+            end -= subDay * 1000 * 60 * 60 * 24
+          }
+          break
+        case base.SLSSTTypeEnum.T_WEEK:
+          if (start < now0 && end < now0) {
+            const addWeek = Math.ceil((now0 - end) / (1000 * 60 * 60 * 24 * 7))
+            start += addWeek * 1000 * 60 * 60 * 24 * 7
+            end += addWeek * 1000 * 60 * 60 * 24 * 7
+          } else if (start > now0 && end > now0) {
+            const subWeek = Math.ceil((start - now0) / (1000 * 60 * 60 * 24 * 7))
+            start -= subWeek * 1000 * 60 * 60 * 24 * 7
+            end -= subWeek * 1000 * 60 * 60 * 24 * 7
+          }
+          break
+        case base.SLSSTTypeEnum.T_MONTH:
+          if (start < now0 && end < now0) {
+            do {
+              const s1 = timeUtils.formatDate(startDate)
+              let year1 = startDate.getFullYear()
+              let month1 = startDate.getMonth() + 1 + 1
+              if (month1 > 12) {
+                year1++
+                month1 = month1 % 12
+              }
+              const ss1 = `${year1}-${month1}` + s1.substring(7, s1.length)
+              startDate = new Date(ss1)
+              start = startDate.getTime()
+              const s2 = timeUtils.formatDate(endDate)
+              let year2 = endDate.getFullYear()
+              let month2 = endDate.getMonth() + 1 + 1
+              if (month2 > 12) {
+                year2++
+                month2 = month2 % 12
+              }
+              const ss2 = `${year2}-${month2}` + s2.substring(7, s2.length)
+              endDate = new Date(ss2)
+              end = endDate.getTime()
+            } while (end <= now0)
+          } else if (start > now0 && end > now0) {
+            do {
+              const s1 = timeUtils.formatDate(startDate)
+              let year1 = startDate.getFullYear()
+              let month1 = startDate.getMonth() - 1 + 1
+              if (month1 <= 0) {
+                year1--
+                month1 += 12
+              }
+              const ss1 = `${year1}-${month1}` + s1.substring(7, s1.length)
+              startDate = new Date(ss1)
+              start = startDate.getTime()
+              const s2 = timeUtils.formatDate(endDate)
+              let year2 = endDate.getFullYear()
+              let month2 = endDate.getMonth() - 1 + 1
+              if (month2 <= 0) {
+                year2--
+                month2 += 12
+              }
+              const ss2 = `${year2}-${month2}` + s2.substring(7, s2.length)
+              endDate = new Date(ss2)
+              end = endDate.getTime()
+            } while (start > now0)
+          }
+          break
+        case base.SLSSTTypeEnum.T_YEAR:
+          if (start < now0 && end < now0) {
+            do {
+              const s1 = timeUtils.formatDate(startDate);
+              const ss1 = `${startDate.getFullYear() + 1}` + s1.substring(4, s1.length)
+              startDate = new Date(ss1)
+              start = startDate.getTime()
+              const s2 = timeUtils.formatDate(endDate)
+              const ss2 = `${endDate.getFullYear() + 1}` + s2.substring(4, s2.length)
+              endDate = new Date(ss2)
+              end = endDate.getTime()
+            } while (end <= now0)
+          } else if (start > now0 && end > now0) {
+            do {
+              const s1 = timeUtils.formatDate(startDate);
+              const ss1 = `${startDate.getFullYear() - 1}` + s1.substring(4, s1.length)
+              startDate = new Date(ss1)
+              start = startDate.getTime()
+              const s2 = timeUtils.formatDate(endDate)
+              const ss2 = `${endDate.getFullYear() - 1}` + s2.substring(4, s2.length)
+              endDate = new Date(ss2)
+              end = endDate.getTime()
+            } while (start > now0)
+          }
+          break
       }
       modifiedStartEndTime.push([strategyType.id, start, end])
     }
