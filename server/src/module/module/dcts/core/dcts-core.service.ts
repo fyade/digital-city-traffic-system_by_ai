@@ -603,6 +603,21 @@ export class DctsCoreService {
         ) {
           signalLightRunParam.runParam[i].end = signalLightRunParam.runParam[i + 2].end
           signalLightRunParam.runParam.splice(i + 1, 2)
+        } else if (
+            (
+                signalLightRunParam.runParam[i].color === base.SignalLightColorEnum.RED
+                && signalLightRunParam.runParam[i + 1].color === base.SignalLightColorEnum.YELLOW
+                && signalLightRunParam.runParam[i + 2].color === base.SignalLightColorEnum.RED
+            )
+            || (
+                signalLightRunParam.runParam[i].color === base.SignalLightColorEnum.RED
+                && signalLightRunParam.runParam[i + 1].color === base.SignalLightColorEnum.YELLOW
+                && signalLightRunParam.runParam[i + 2].color === base.SignalLightColorEnum.GREEN
+                && !arrayUtils.ifSameArray(signalLightRunParam.runParam[i + 1].lightType, signalLightRunParam.runParam[i + 2].lightType)
+            )
+        ) {
+          signalLightRunParam.runParam[i + 1].color = base.SignalLightColorEnum.RED
+          signalLightRunParam.runParam[i + 1].lightType = [base.SLSPLTTypeEnum.AROUND, base.SLSPLTTypeEnum.LEFT, base.SLSPLTTypeEnum.STRAIGHT, base.SLSPLTTypeEnum.RIGHT]
         }
       }
       signalLightRunParam.runParam.sort((a, b) => a.start - b.start)
