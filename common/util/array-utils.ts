@@ -32,6 +32,15 @@ export function ifHasOverlap<T>(arr1: [T, T], arr2: [T, T]) {
 }
 
 /**
+ * 数组1是否完全位于数组2内
+ * @param arr1
+ * @param arr2
+ */
+export function ifArr1InArr2<T>(arr1: [T, T], arr2: [T, T]) {
+  return arr2[0] <= arr1[0] && arr1[1] <= arr2[1]
+}
+
+/**
  * 两数值数值差值
  * @param arr1
  * @param arr2

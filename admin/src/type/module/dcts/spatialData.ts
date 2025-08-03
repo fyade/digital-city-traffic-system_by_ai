@@ -45,6 +45,7 @@ export class CalculateLightsInPolygonDto {
 }
 
 class SignalLightRunParamDParam {
+  id!: string
   start!: number
   end!: number
   color!: base.SignalLightColorEnum

@@ -25,7 +25,6 @@ import { SignalLightStrategyParamDto } from "../signal-light-strategy/signal-lig
 import { PrismaoService } from "../../../../prisma/prismao.service";
 import { SignalLightRunParam, SignalLightRunParamDParam } from "./dto";
 import { dashboardConfig } from "@dcts/config";
-import { SLSTTTypeEnum } from "@dcts/common/dist/util/base";
 
 @Injectable()
 export class DctsCoreService {
@@ -188,7 +187,7 @@ export class DctsCoreService {
         const d = f.map(item => item.duration).sort((a, b) => b - a)[0];
         duration += d * 1000
       }
-      if (strategyType.strategyType === SLSTTTypeEnum.T_CUSTOM) {
+      if (strategyType.strategyType === base.SLSTTTypeEnum.T_CUSTOM || strategyType.strategyType === base.SLSTTTypeEnum.T_TOP) {
         strategyTypeIdDuration.push([strategyType.id, duration])
       }
 
@@ -319,17 +318,22 @@ export class DctsCoreService {
         continue
       }
 
-      // 策略类型为固定策略的
-      const strategyTypes_custom = strategyTypes.filter(item => item.strategyType === base.SLSTTTypeEnum.T_CUSTOM)
-      const strategyTypeIds_custom = strategyTypes_custom.map(item => item.id)
-      const strategySchedules_custom = strategySchedules.filter(schedule => {
-        return _strategyType_strategySchedule.some(item => strategyTypeIds_custom.includes(item.strategyTypeId) && item.strategyScheduleId === schedule.id)
+      // 策略类型为固定策略或紧急策略的
+      const strategyTypes_ct = strategyTypes.filter(item => item.strategyType === base.SLSTTTypeEnum.T_CUSTOM || item.strategyType === base.SLSTTTypeEnum.T_TOP)
+      const strategyTypeIds_ct = strategyTypes_ct.map(item => item.id)
+      const strategySchedules_ct = strategySchedules.filter(schedule => {
+        return _strategyType_strategySchedule.some(item => strategyTypeIds_ct.includes(item.strategyTypeId) && item.strategyScheduleId === schedule.id)
       })
-      const strategyScheduleIds_custom = strategySchedules_custom.map(item => item.id)
-      const strategyParams_custom = strategyParams.filter(param => {
-        return _strategySchedule_strategyParam.some(item => strategyScheduleIds_custom.includes(item.strategyScheduleId) && item.strategyParamId === param.id)
+      const strategyScheduleIds_ct = strategySchedules_ct.map(item => item.id)
+      const strategyParams_ct = strategyParams.filter(param => {
+        return _strategySchedule_strategyParam.some(item => strategyScheduleIds_ct.includes(item.strategyScheduleId) && item.strategyParamId === param.id)
       })
-      const strategyParamIds_custom = strategyParams_custom.map(item => item.id)
+      const strategyParamIds_ct = strategyParams_ct.map(item => item.id)
+
+      const strategyTypes_t = strategyTypes_ct.filter(type => type.strategyType === base.SLSTTTypeEnum.T_TOP)
+      const strategyTypes_mset = strategyTypes_t.map(item => modifiedStartEndTime.find(m => m[0] === item.id));
+      const minStartTimeOfT = strategyTypes_mset.length > 0 ? Math.min(...strategyTypes_mset.map(item => item[1])) : 0
+      const maxEndTimeOfT = strategyTypes_mset.length > 0 ? Math.max(...strategyTypes_mset.map(item => item[2])) : 0
 
       // 策略类型为微调策略的
       const strategyTypes_fineTuning = strategyTypes.filter(item => item.strategyType === base.SLSTTTypeEnum.T_FINE_TUNING)
@@ -343,12 +347,20 @@ export class DctsCoreService {
       })
       const strategyParamIds_fineTuning = strategyParams_fineTuning.map(item => item.id)
 
-      // 处于当前时段的固定策略
-      const strategyTypes_custom_now = strategyTypes_custom.filter(type => {
+      // 处于当前时段的
+      const strategyTypes_ct_now = strategyTypes_ct.filter(type => {
         const find = modifiedStartEndTime.find(item => item[0] === type.id);
         return arrayUtils.ifHasOverlap([now01, now02], [find[1], find[2]])
-      }).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
-      if (strategyTypes_custom_now.length === 0) {
+      }).sort((a, b) => {
+        if (a.strategyType === base.SLSTTTypeEnum.T_TOP && b.strategyType !== base.SLSTTTypeEnum.T_TOP) {
+          return -1
+        }
+        if (a.strategyType !== base.SLSTTTypeEnum.T_TOP && b.strategyType === base.SLSTTTypeEnum.T_TOP) {
+          return 1
+        }
+        return new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+      })
+      if (strategyTypes_ct_now.length === 0) {
         continue
       }
 
@@ -362,13 +374,17 @@ export class DctsCoreService {
       }
 
       const _startTimes: number[] = []
-      for (let i = 0; i < strategyTypes_custom_now.length; i++) {
-        const st0 = strategyTypes_custom_now[i]
-        const ss0 = strategySchedules_custom.filter(schedule => {
+      let _lastIfT = false
+      for (let i = 0; i < strategyTypes_ct_now.length; i++) {
+        const st0 = strategyTypes_ct_now[i]
+        const ifCustom = st0.strategyType === base.SLSTTTypeEnum.T_CUSTOM;
+        const ifTop = st0.strategyType === base.SLSTTTypeEnum.T_TOP;
+
+        const ss0 = strategySchedules_ct.filter(schedule => {
           return _strategyType_strategySchedule.some(item => item.strategyTypeId === st0.id && item.strategyScheduleId === schedule.id)
         })
         const ssId0 = ss0.map(item => item.id)
-        const sp0 = strategyParams_custom.filter(param => {
+        const sp0 = strategyParams_ct.filter(param => {
           return _strategySchedule_strategyParam.some(item => ssId0.includes(item.strategyScheduleId) && item.strategyParamId === param.id)
         })
         const spId0 = sp0.map(item => item.id)
@@ -376,13 +392,14 @@ export class DctsCoreService {
         const mseTime = modifiedStartEndTime.find(arr => arr[0] === st0.id);
         const stD = strategyTypeIdDuration.find(arr => arr[0] === st0.id);
 
-        const _startt = i > 0 ? _startTimes[i - 1] : mseTime[1];
+        const _startt = (i > 0 && !_lastIfT) ? _startTimes[i - 1] : mseTime[1];
         const _endt = Math.min(mseTime[2], now02);
         _startTimes.push(_endt)
 
         let fineTuningTime = 0
         let ifCalculateEnd = false
-        let i2 = Math.max(0, Math.floor((now0 - _startt) / stD[1]))
+        let i2 = 0
+        const i3 = Math.max(0, Math.floor((now0 - _startt) / stD[1]))
         do {
           const start1 = _startt + stD[1] * i2
           let _duration = 0
@@ -390,7 +407,7 @@ export class DctsCoreService {
           for (const round of rounds) {
             const spr = sp0.filter(item => item.round === round);
             const duration = spr.map(item => item.duration).sort((a, b) => b - a)[0];
-            const _start = start1 + _duration + fineTuningTime
+            let _start = start1 + _duration + fineTuningTime
             _duration += duration * 1000
             const __end = start1 + _duration + fineTuningTime
             const ifWillEnd = mseTime[2] < __end
@@ -410,7 +427,7 @@ export class DctsCoreService {
               return _strategySchedule_strategyParam.some(item => ssids_ft.includes(item.strategyScheduleId) && item.strategyParamId === param.id)
             })
             const spids_ft = sps_ft.map(item => item.id)
-            const aaaa: number[] = []
+            const durationPlusFtTime: number[] = []
             for (const sp of spr) {
               const sps_ft_1 = sps_ft.filter(param => {
                 return round === param.round
@@ -418,11 +435,25 @@ export class DctsCoreService {
                     && arrayUtils.ifSameArray(sp.lightType.split('-').filter(_ => _), param.lightType.split('-').filter(_ => _))
               });
               const ft_time = sps_ft_1.reduce((a, b) => a + b.duration, 0) * 1000;
-              aaaa.push(ft_time + sp.duration * 1000)
+              durationPlusFtTime.push(ft_time + sp.duration * 1000)
 
               let _end2 = _end + ft_time
               if (sp.duration * 1000 < duration * 1000) {
-                _end2 -= (duration - sp.duration) * 1000
+                _end2 = Math.max(_start, _end2 - (duration - sp.duration) * 1000)
+              }
+
+              if (!ifTop && strategyTypes_mset.length > 0) {
+                if (arrayUtils.ifArr1InArr2([_start, _end2], [minStartTimeOfT, maxEndTimeOfT])) {
+                  continue
+                } else if (_start < minStartTimeOfT && minStartTimeOfT < _end2) {
+                  _end2 = minStartTimeOfT
+                } else if (_start < maxEndTimeOfT && maxEndTimeOfT < _end2) {
+                  _start = maxEndTimeOfT
+                }
+              }
+
+              if (_end2 < now0) {
+                continue
               }
 
               const ssf = ss0.filter(ss => {
@@ -461,10 +492,12 @@ export class DctsCoreService {
               }
             }
 
-            const d = Math.max(...aaaa) - duration * 1000
-            fineTuningTime += d
+            const d = Math.max(...durationPlusFtTime) - duration * 1000
+            if (!ifTop) {
+              fineTuningTime += d
+            }
 
-            if (_end + Math.min(...aaaa) >= now02 || ifWillEnd) {
+            if (_end + Math.min(...durationPlusFtTime) >= now02 || ifWillEnd) {
               ifCalculateEnd = true
             }
           }
@@ -473,6 +506,7 @@ export class DctsCoreService {
             ifCalculateEnd = true
           }
         } while (!ifCalculateEnd)
+        _lastIfT = ifTop
       }
 
       for (const key of signalLightRunParams.keys()) {
@@ -494,21 +528,28 @@ export class DctsCoreService {
         );
         signalLightRunParam.runParam.unshift(dParam1)
       }
-      for (let i = signalLightRunParam.runParam.length - 1; i > 0; i--) {
+      for (let i = signalLightRunParam.runParam.length - 1; i >= 0; i--) {
+        const rpi = signalLightRunParam.runParam[i];
+        if (rpi.start === rpi.end) {
+          signalLightRunParam.runParam.splice(i, 1)
+        }
+      }
+      signalLightRunParam.runParam.sort((a, b) => a.start - b.start)
+      for (let i = signalLightRunParam.runParam.length - 2; i >= 0; i--) {
         if (
-            signalLightRunParam.runParam[i - 1].end < signalLightRunParam.runParam[i].start
-            && signalLightRunParam.runParam[i - 1].color === base.SignalLightColorEnum.GREEN
-            && signalLightRunParam.runParam[i].color === base.SignalLightColorEnum.YELLOW
-            && signalLightRunParam.runParam[i].end - signalLightRunParam.runParam[i - 1].end > 3 * 1000
+            signalLightRunParam.runParam[i].end < signalLightRunParam.runParam[i + 1].start
+            && signalLightRunParam.runParam[i].color === base.SignalLightColorEnum.GREEN
+            && signalLightRunParam.runParam[i + 1].color === base.SignalLightColorEnum.YELLOW
+            && signalLightRunParam.runParam[i + 1].end - signalLightRunParam.runParam[i].end > 3 * 1000
         ) {
-          const t0 = signalLightRunParam.runParam[i - 1].end
-          const t1 = signalLightRunParam.runParam[i - 1].end + 3 * 1000
-          const t2 = signalLightRunParam.runParam[i].end
+          const t0 = signalLightRunParam.runParam[i].end
+          const t1 = signalLightRunParam.runParam[i].end + 3 * 1000
+          const t2 = signalLightRunParam.runParam[i + 1].end
           const dParam1 = new SignalLightRunParamDParam(
               t0,
               t1,
               base.SignalLightColorEnum.YELLOW,
-              signalLightRunParam.runParam[i].lightType
+              signalLightRunParam.runParam[i + 1].lightType
           );
           const dParam2 = new SignalLightRunParamDParam(
               t1,
@@ -516,14 +557,14 @@ export class DctsCoreService {
               base.SignalLightColorEnum.RED,
               [base.SLSPLTTypeEnum.AROUND, base.SLSPLTTypeEnum.LEFT, base.SLSPLTTypeEnum.STRAIGHT, base.SLSPLTTypeEnum.RIGHT]
           );
-          signalLightRunParam.runParam[i] = dParam1
+          signalLightRunParam.runParam[i + 1] = dParam1
           signalLightRunParam.runParam.push(dParam2)
         } else if (
-            signalLightRunParam.runParam[i - 1].end < signalLightRunParam.runParam[i].start
+            signalLightRunParam.runParam[i].end < signalLightRunParam.runParam[i + 1].start
         ) {
           const dParam1 = new SignalLightRunParamDParam(
-              signalLightRunParam.runParam[i - 1].end,
-              signalLightRunParam.runParam[i].start,
+              signalLightRunParam.runParam[i].end,
+              signalLightRunParam.runParam[i + 1].start,
               base.SignalLightColorEnum.RED,
               [base.SLSPLTTypeEnum.AROUND, base.SLSPLTTypeEnum.LEFT, base.SLSPLTTypeEnum.STRAIGHT, base.SLSPLTTypeEnum.RIGHT]
           );
@@ -553,14 +594,6 @@ export class DctsCoreService {
     const t1 = Math.round(start2 - start);
     const t2 = Math.round(end - start2);
     console.info(`calculateLight查询所需时间 ${t1} ms，计算所需时间 ${t2} ms，共 ${t1 + t2} ms。`)
-
-    // 开发阶段临时用，生产环境记得删掉
-    for (const slrp of allSignalLightRunParam) {
-      for (const slrprp of slrp.runParam) {
-        slrprp['startRndStr'] = [timeUtils.formatDate(new Date(slrprp.start)), timeUtils.formatDate(new Date(slrprp.end))]
-        slrprp['startRndStr2'] = [new Date(slrprp.start), new Date(slrprp.end)]
-      }
-    }
 
     return allSignalLightRunParam
   }

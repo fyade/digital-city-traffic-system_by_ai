@@ -3,10 +3,9 @@ import {
   baseInterfaceColumns,
   baseInterfaceColumns2
 } from "../module/module/main/sys-util/code-generation/codeGeneration";
-import { objectUtils } from "@dcts/common";
+import { baseUtils, objectUtils } from "@dcts/common";
 import { final } from "../util/base";
 import { GenSqlDto, publicSqlSelectKey } from "./custom.dto";
-import { toCamelCase, toSnakeCase } from "@dcts/common/dist/util/base-utils";
 import { Injectable } from "@nestjs/common";
 import { PrismaoService } from "./prismao.service";
 
@@ -44,7 +43,7 @@ export class CommonPostgresqlPrismaoService {
 
     const sql_select_keys = !dto.clas ? '' : Object.keys(dto.clas)
         .map(key => {
-          const as1 = notSampleSelParam[key] || dto?.selfDefineSelKey?.[key] || toSnakeCase(key)
+          const as1 = notSampleSelParam[key] || dto?.selfDefineSelKey?.[key] || baseUtils.toSnakeCase(key)
           return ` ${as1} as "${key}" `
         })
         .join(',');
@@ -88,7 +87,7 @@ export class CommonPostgresqlPrismaoService {
       } else {
         for (const key of Object.keys(dto.selParam)) {
           if (dto.selParam[key]) {
-            sql += ` and ${toSnakeCase(key)} like '%${dto.selParam[key]}%' `
+            sql += ` and ${baseUtils.toSnakeCase(key)} like '%${dto.selParam[key]}%' `
           }
         }
       }
@@ -110,7 +109,7 @@ export class CommonPostgresqlPrismaoService {
         const keys: string[] = []
         const values: (string | number)[] = []
         for (const key of Object.keys(data)) {
-          keys.push(toSnakeCase(key))
+          keys.push(baseUtils.toSnakeCase(key))
           const _ = dto.selfDefineInsUpdKey[key];
           if (_) {
             values.push(_(data[key]))
@@ -119,7 +118,7 @@ export class CommonPostgresqlPrismaoService {
           }
         }
         for (const key of Object.keys(defaultInsArg1.data)) {
-          if (notInsertKeys.includes(toCamelCase(key))) {
+          if (notInsertKeys.includes(baseUtils.toCamelCase(key))) {
             continue
           }
           keys.push(key)
@@ -132,8 +131,8 @@ export class CommonPostgresqlPrismaoService {
             values
                 .map((val, index) => {
                   if (
-                      !numberKeys.includes(toCamelCase(keys[index]))
-                      && !Object.keys(dto.selfDefineInsUpdKey).includes(toCamelCase(keys[index]))
+                      !numberKeys.includes(baseUtils.toCamelCase(keys[index]))
+                      && !Object.keys(dto.selfDefineInsUpdKey).includes(baseUtils.toCamelCase(keys[index]))
                   ) {
                     return `'${val}'`;
                   }
@@ -157,7 +156,7 @@ export class CommonPostgresqlPrismaoService {
       const allCols: string[] = [];
       const allVals: (string | number)[] = [];
       for (const key of Object.keys(defaultUpdArg1.data)) {
-        if (notInsertKeys.includes(toCamelCase(key))) {
+        if (notInsertKeys.includes(baseUtils.toCamelCase(key))) {
           continue
         }
         allCols.push(key)
@@ -188,7 +187,7 @@ export class CommonPostgresqlPrismaoService {
             if (key === 'id') {
               continue
             }
-            _allCols.push(toSnakeCase(key))
+            _allCols.push(baseUtils.toSnakeCase(key))
             const _ = dto.selfDefineInsUpdKey[key]
             if (_) {
               _allVals.push(_(data[key]))
@@ -203,8 +202,8 @@ export class CommonPostgresqlPrismaoService {
             const key = _allCols[index]
             let val = _allVals[index]
             if (
-                !numberKeys.includes(toCamelCase(key))
-                && !Object.keys(dto.selfDefineInsUpdKey).includes(toCamelCase(key))
+                !numberKeys.includes(baseUtils.toCamelCase(key))
+                && !Object.keys(dto.selfDefineInsUpdKey).includes(baseUtils.toCamelCase(key))
             ) {
               val = `'${val}'`
             }
@@ -272,7 +271,7 @@ export class CommonPostgresqlPrismaoService {
       if (ifUndefined) {
         continue;
       }
-      param += ` and ${toSnakeCase(key)} like '%${dto[key]}%' `
+      param += ` and ${baseUtils.toSnakeCase(key)} like '%${dto[key]}%' `
     }
     return param;
   }

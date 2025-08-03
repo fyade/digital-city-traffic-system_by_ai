@@ -18,7 +18,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
     const reqId = this.bcs.getUserData().reqId;
-    this.winston.error(reqId, exception);
+    this.winston.error(`${reqId}\n${exception}\n${exception.stack}`);
     let status = 0;
     let message = '';
     if (exception instanceof BadRequestException) {
