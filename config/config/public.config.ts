@@ -2,7 +2,7 @@ import { getCurrentConfig } from "../index.js";
 import { configProd } from "./public-prod.config.js";
 
 export const APP_NAME = '数智交通全域调度系统(测试版)'
-export const currentVersion = '0.8.2';
+export const currentVersion = '0.8.3';
 
 export const currentConfig = () => {
   return getCurrentConfig(config) as unknown as typeof config.dev

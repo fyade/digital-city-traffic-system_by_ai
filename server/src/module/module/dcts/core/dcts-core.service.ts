@@ -528,19 +528,14 @@ export class DctsCoreService {
         );
         signalLightRunParam.runParam.unshift(dParam1)
       }
-      for (let i = signalLightRunParam.runParam.length - 1; i >= 0; i--) {
-        const rpi = signalLightRunParam.runParam[i];
-        if (rpi.start === rpi.end) {
-          signalLightRunParam.runParam.splice(i, 1)
-        }
-      }
       signalLightRunParam.runParam.sort((a, b) => a.start - b.start)
       for (let i = signalLightRunParam.runParam.length - 2; i >= 0; i--) {
         if (
             signalLightRunParam.runParam[i].end < signalLightRunParam.runParam[i + 1].start
+            && signalLightRunParam.runParam[i + 1].end - signalLightRunParam.runParam[i].end > 3 * 1000
             && signalLightRunParam.runParam[i].color === base.SignalLightColorEnum.GREEN
             && signalLightRunParam.runParam[i + 1].color === base.SignalLightColorEnum.YELLOW
-            && signalLightRunParam.runParam[i + 1].end - signalLightRunParam.runParam[i].end > 3 * 1000
+            && arrayUtils.ifSameArray(signalLightRunParam.runParam[i].lightType, signalLightRunParam.runParam[i + 1].lightType)
         ) {
           const t0 = signalLightRunParam.runParam[i].end
           const t1 = signalLightRunParam.runParam[i].end + 3 * 1000
@@ -574,17 +569,50 @@ export class DctsCoreService {
       signalLightRunParam.runParam.sort((a, b) => a.start - b.start)
       for (let i = signalLightRunParam.runParam.length - 2; i >= 0; i--) {
         if (
+            signalLightRunParam.runParam[i].color === base.SignalLightColorEnum.GREEN
+            && signalLightRunParam.runParam[i + 1].color !== base.SignalLightColorEnum.YELLOW
+            && !arrayUtils.ifSameArray(signalLightRunParam.runParam[i].lightType, signalLightRunParam.runParam[i + 1].lightType)
+        ) {
+          if (
+              signalLightRunParam.runParam[i].end - signalLightRunParam.runParam[i].start <= 3000
+          ) {
+            signalLightRunParam.runParam[i].color = base.SignalLightColorEnum.RED
+            signalLightRunParam.runParam[i].lightType = [base.SLSPLTTypeEnum.AROUND, base.SLSPLTTypeEnum.LEFT, base.SLSPLTTypeEnum.STRAIGHT, base.SLSPLTTypeEnum.RIGHT]
+          } else {
+            signalLightRunParam.runParam[i].end = signalLightRunParam.runParam[i].end - 3000
+            const dParam3 = new SignalLightRunParamDParam(
+                signalLightRunParam.runParam[i].end,
+                signalLightRunParam.runParam[i].end + 3000,
+                base.SignalLightColorEnum.YELLOW,
+                signalLightRunParam.runParam[i].lightType
+            );
+            signalLightRunParam.runParam.push(dParam3)
+          }
+        }
+      }
+      signalLightRunParam.runParam.sort((a, b) => a.start - b.start)
+      for (let i = signalLightRunParam.runParam.length - 3; i >= 0; i--) {
+        if (
+            signalLightRunParam.runParam[i].color === base.SignalLightColorEnum.GREEN
+            && signalLightRunParam.runParam[i + 1].color === base.SignalLightColorEnum.YELLOW
+            && signalLightRunParam.runParam[i + 2].color === base.SignalLightColorEnum.GREEN
+            && signalLightRunParam.runParam[i].end === signalLightRunParam.runParam[i + 1].start
+            && signalLightRunParam.runParam[i + 1].end === signalLightRunParam.runParam[i + 2].start
+            && arrayUtils.ifSameArray(signalLightRunParam.runParam[i].lightType, signalLightRunParam.runParam[i + 1].lightType)
+            && arrayUtils.ifSameArray(signalLightRunParam.runParam[i + 1].lightType, signalLightRunParam.runParam[i + 2].lightType)
+        ) {
+          signalLightRunParam.runParam[i].end = signalLightRunParam.runParam[i + 2].end
+          signalLightRunParam.runParam.splice(i + 1, 2)
+        }
+      }
+      signalLightRunParam.runParam.sort((a, b) => a.start - b.start)
+      for (let i = signalLightRunParam.runParam.length - 2; i >= 0; i--) {
+        if (
             signalLightRunParam.runParam[i].color === signalLightRunParam.runParam[i + 1].color
             && arrayUtils.ifSameArray(signalLightRunParam.runParam[i].lightType, signalLightRunParam.runParam[i + 1].lightType)
         ) {
-          const dParam3 = new SignalLightRunParamDParam(
-              signalLightRunParam.runParam[i].start,
-              signalLightRunParam.runParam[i + 1].end,
-              signalLightRunParam.runParam[i].color,
-              signalLightRunParam.runParam[i].lightType
-          );
-          signalLightRunParam.runParam.push(dParam3)
-          signalLightRunParam.runParam.splice(i, 2)
+          signalLightRunParam.runParam[i].end = signalLightRunParam.runParam[i + 1].end
+          signalLightRunParam.runParam.splice(i + 1, 1)
         }
       }
       signalLightRunParam.runParam.sort((a, b) => a.start - b.start)
