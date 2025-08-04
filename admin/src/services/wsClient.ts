@@ -28,38 +28,53 @@ export class WsClient {
   private socket: Socket | null = null;
   private events = new Map<string, [string, (data: EventDataType) => Promise<void>][]>();
 
-  constructor() {
-    if (!WsClient.instance) {
-      this.socket = io(location.origin, {
-        path: currentConfig.VITE_API_WS_PREFIX,
-        auth: {
-          token: `Bearer ${useUserStore().token}`
-        }
-      });
-      if (!this.socket) {
-        return;
-      }
-      this.socket.on('connect', () => {
-        NMessage.success('WS连接成功。')
+  constructor(ifInit = true) {
+    this.init(ifInit)
+  }
+
+  public init(ifInit = true) {
+    if (ifInit) {
+      if (!WsClient.instance) {
+        this.socket = io(location.origin, {
+          path: currentConfig.VITE_API_WS_PREFIX,
+          auth: {
+            token: `Bearer ${useUserStore().token}`
+          }
+        });
         if (!this.socket) {
           return;
         }
-      });
-      this.socket.on('message', async (data) => {
-        const parse = JSON.parse(data) as EventDataType;
-        await this.runEvent(parse)
-      });
-      this.socket.on('disconnect', () => {
-        NMessage.error('WS连接断开。')
-        this.socket = null
-      });
-      this.socket.on('connect_error', (err) => {
-        NMessage.error('WS连接发生错误。')
-        console.error('WS错误', err);
-      })
-      WsClient.instance = this
+        this.socket.on('connect', () => {
+          NMessage.success('服务端实时通信连接成功。')
+          if (!this.socket) {
+            return;
+          }
+        });
+        this.socket.on('message', async (data) => {
+          const parse = JSON.parse(data) as EventDataType;
+          await this.runEvent(parse)
+        });
+        this.socket.on('disconnect', () => {
+          NMessage.error('服务端实时通信连接断开。')
+          this.socket = null
+        });
+        this.socket.on('connect_error', (err) => {
+          NMessage.error('服务端实时通信连接发生错误。')
+          console.error('服务端实时通信错误', err);
+        })
+        WsClient.instance = this
+      }
     }
     return WsClient.instance
+  }
+
+  public destroy() {
+    if (this.socket) {
+      this.socket.io.reconnection(false)
+      this.socket.disconnect()
+      this.socket = null
+    }
+    WsClient.instance = null
   }
 
   /**

@@ -36,6 +36,10 @@ class UseDashboardCesium extends UseCesium {
       private readonly vdModule: VersionDataModule,
   ) {
     super();
+  }
+
+  public init2() {
+    this.wsClient.init()
     this.wsClient.addEventListener('dcts:spatialData:calculateLightsInPolygon', async data => {
       const calculateLightResult = JSON.parse(data.msg) as CalculateLightsInPolygonVo[];
       this.slModule.addTask(calculateLightResult)
@@ -124,6 +128,7 @@ class UseDashboardCesium extends UseCesium {
     this.lnModule.closeLayerLoading().then(() => {
       useDashboardCesium = createDashboardCesium()
     })
+    this.wsClient.destroy()
   }
 
   protected async globeTileLoadProgressEventCB(queuedTileCount: number) {
@@ -226,7 +231,7 @@ class UseDashboardCesium extends UseCesium {
 }
 
 export function createDashboardCesium() {
-  const wsClient = new WsClient();
+  const wsClient = new WsClient(false);
   const cModule = new ClockModule();
   const cmModule = new ContextMenuModule();
   const lmModule = new LayerNotificationModule();

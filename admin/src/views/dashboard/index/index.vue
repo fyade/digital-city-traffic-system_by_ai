@@ -26,6 +26,7 @@ const init = async () => {
   console.info('开始加载');
 
   cesiumClass.value.setContainer('cesiumContainer')
+  cesiumClass.value.init2()
   const viewer = cesiumClass.value.getViewer();
   if (!viewer) {
     return
