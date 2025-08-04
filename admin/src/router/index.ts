@@ -4,6 +4,7 @@ import { ifWebsiteLink } from "@/utils/LinkUtils.ts";
 import { adminConfig } from "@dcts/config";
 import { goToLogin } from "@/utils/baseUtils.ts";
 import { ifDashboardPage } from "@/utils/DashboardUtils.ts";
+import { final } from "@/utils/base.ts";
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -223,7 +224,7 @@ const currentConfig = adminConfig.currentConfig();
 
 const whitelist = ['/login']
 router.beforeEach((to, from, next) => {
-  if (currentConfig.VITE_MODE === 'dev') {
+  if (currentConfig.VITE_MODE === final.DEV) {
     console.log(from.path, `\n${to.path}`)
   }
   if (ifWebsiteLink(to.path, '/')) {

@@ -5,6 +5,7 @@ import { useSysStore } from "@/store/module/sys.ts";
 import { WsClient } from "@/services/wsClient.ts";
 import { ClockModule } from "@/views/dashboard/functionModules/clockModule.ts";
 import { ContextMenuModule } from "@/views/dashboard/functionModules/contextMenuModule.ts";
+import { DebugModule } from "@/views/dashboard/functionModules/debugModule.ts";
 import { LayerNotificationModule } from "@/views/dashboard/functionModules/layerNotificationModule.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
 import { MapInteractionModule } from "@/views/dashboard/functionModules/mapInteractionModule.ts";
@@ -13,6 +14,7 @@ import { SignalLightModule } from "@/views/dashboard/functionModules/signalLight
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 import { adminConfig } from "@dcts/config";
 import { CalculateLightsInPolygonVo } from "@/type/module/dcts/spatialData.ts";
+import { final } from "@/utils/base.ts";
 
 const currentConfig = adminConfig.currentConfig()
 
@@ -28,6 +30,7 @@ class UseDashboardCesium extends UseCesium {
       private readonly wsClient: WsClient,
       private readonly cModule: ClockModule,
       private readonly cmModule: ContextMenuModule,
+      private readonly debugModule: DebugModule,
       private readonly lnModule: LayerNotificationModule,
       private readonly meModule: MapEntityModule,
       private readonly miModule: MapInteractionModule,
@@ -39,11 +42,14 @@ class UseDashboardCesium extends UseCesium {
   }
 
   public init2() {
-    this.wsClient.init()
+    this.wsClient.init({ifInit: true, pageContext: 'dashboard'})
     this.wsClient.addEventListener('dcts:spatialData:calculateLightsInPolygon', async data => {
       const calculateLightResult = JSON.parse(data.msg) as CalculateLightsInPolygonVo[];
       this.slModule.addTask(calculateLightResult)
       this.lnModule.closeSignalLightLoading()
+    })
+    this.wsClient.addEventListener('dcts:spatialData:refreshLightWhenDatabaseChange', async data => {
+      await this.refreshScreenEntities()
     })
   }
 
@@ -56,6 +62,8 @@ class UseDashboardCesium extends UseCesium {
   public contextMenuOption = this.cmModule.contextMenuOption
   public readonly contextMenuSelect = this.cmModule.contextMenuSelect.bind(this.cmModule)
   public formPanelTitle = this.cmModule.formPanelTitle
+
+  public readonly CesiumModelPathAnimation = this.debugModule.CesiumModelPathAnimation.bind(this.debugModule)
 
   public allLabels = this.lnModule.allLabels
   public allLayers = this.lnModule.allLayers
@@ -90,6 +98,8 @@ class UseDashboardCesium extends UseCesium {
     this.cmModule.setSetFormPanelTitleCB(() => {
       this.formPanelTitle = this.cmModule.formPanelTitle
     })
+
+    this.debugModule.setViewer(this.viewer)
 
     this.lnModule.setViewer(this.viewer)
     this.lnModule.setSetAllLabelsCB(() => {
@@ -191,7 +201,7 @@ class UseDashboardCesium extends UseCesium {
 
   protected ScreenSpaceEventTypeClickCB() {
     super.ScreenSpaceEventTypeClickCB();
-    if (currentConfig.VITE_MODE === 'dev') {
+    if (currentConfig.VITE_MODE === final.DEV) {
       console.log(this.mouseClickPosition)
     }
     // 拾取该位置的物体
@@ -231,9 +241,10 @@ class UseDashboardCesium extends UseCesium {
 }
 
 export function createDashboardCesium() {
-  const wsClient = new WsClient(false);
+  const wsClient = new WsClient({ifInit: false, pageContext: 'dashboard'});
   const cModule = new ClockModule();
   const cmModule = new ContextMenuModule();
+  const debugModule = new DebugModule();
   const lmModule = new LayerNotificationModule();
   const meModule = new MapEntityModule();
   const miModule = new MapInteractionModule();
@@ -244,6 +255,7 @@ export function createDashboardCesium() {
       wsClient,
       cModule,
       cmModule,
+      debugModule,
       lmModule,
       meModule,
       miModule,

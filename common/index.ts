@@ -4,6 +4,7 @@ import * as baseUtils from './util/base-utils.js'
 import * as cryptUtils from './util/crypt-utils.js'
 import * as encryptUtils from './util/encrypt-utils.js'
 import * as funcUtils from './util/func-utils.js'
+import * as geoUtils from './util/geo-utils.js'
 import * as idUtils from './util/id-utils.js'
 import * as numberUtils from './util/number-utils.js'
 import * as objectUtils from './util/object-utils.js'
@@ -16,6 +17,7 @@ export {
   cryptUtils,
   encryptUtils,
   funcUtils,
+  geoUtils,
   idUtils,
   numberUtils,
   objectUtils,

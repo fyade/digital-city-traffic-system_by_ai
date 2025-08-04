@@ -33,9 +33,11 @@ export class SpatialDataService {
     const polygon = nodesWithWaysInPolygon(dto);
     const allRoads = await this.pgsqlPrismao.$queryRawUnsafe<NodesWithWaysInPolygonVo['allRoads']>(polygon.selAllRoadsSql);
     const allNodes = await this.pgsqlPrismao.$queryRawUnsafe<NodesWithWaysInPolygonVo['allNodes']>(polygon.selAllNodesSql);
+    const allRelation = await this.pgsqlPrismao.$queryRawUnsafe<NodesWithWaysInPolygonVo['relation']>(polygon.relation(allRoads.map(item => item.osm_id)));
     const vo = new NodesWithWaysInPolygonVo();
     vo.allRoads = allRoads
     vo.allNodes = allNodes
+    vo.relation = allRelation
     return R.ok(vo);
   }
 

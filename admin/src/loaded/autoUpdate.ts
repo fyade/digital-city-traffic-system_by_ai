@@ -1,6 +1,7 @@
 import { getScriptTagFromHtmlText } from "@/utils/RegularUtils.ts";
 import { arrayUtils, baseUtils } from "@dcts/common";
 import { adminConfig } from "@dcts/config";
+import { final } from "@/utils/base.ts";
 
 const whiteList = [
   {
@@ -30,7 +31,7 @@ async function main() {
   const html = await fetch(`/?timestamp=${new Date().getTime()}`).then(res => res.text())
   const newTag = getScriptTagFromHtmlText(html)
   const currentConfig = adminConfig.currentConfig();
-  if (currentConfig.VITE_MODE === 'dev') {
+  if (currentConfig.VITE_MODE === final.DEV) {
     console.log(oldTag, newTag)
   }
   const ifNeedUpdate = !arrayUtils.ifSameArray(oldTag, newTag)

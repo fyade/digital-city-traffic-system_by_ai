@@ -10,6 +10,7 @@ class NodesWithWaysInPolygonVoTags {
 export class NodesWithWaysInPolygonVo {
   allNodes: { id: string, lon: number, lat: number, tags: NodesWithWaysInPolygonVoTags | null }[]
   allRoads: { osm_id: string, name: string | null, highway: string | null, motorcar: null, way: string }[]
+  relation: { id: string, nodes: string[], tags: NodesWithWaysInPolygonVoTags | null }[]
 }
 
 export class SignalLightGroupsInPolygonVo {

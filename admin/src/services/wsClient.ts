@@ -28,17 +28,32 @@ export class WsClient {
   private socket: Socket | null = null;
   private events = new Map<string, [string, (data: EventDataType) => Promise<void>][]>();
 
-  constructor(ifInit = true) {
-    this.init(ifInit)
+  constructor({
+                ifInit = true,
+                pageContext = ''
+              }: {
+                ifInit?: boolean,
+                pageContext?: string
+              } = {}
+  ) {
+    this.init({ifInit, pageContext})
   }
 
-  public init(ifInit = true) {
+  public init({
+                ifInit = true,
+                pageContext = ''
+              }: {
+                ifInit?: boolean,
+                pageContext?: string
+              } = {}
+  ) {
     if (ifInit) {
       if (!WsClient.instance) {
         this.socket = io(location.origin, {
           path: currentConfig.VITE_API_WS_PREFIX,
           auth: {
-            token: `Bearer ${useUserStore().token}`
+            token: `Bearer ${useUserStore().token}`,
+            pageContext: pageContext
           }
         });
         if (!this.socket) {

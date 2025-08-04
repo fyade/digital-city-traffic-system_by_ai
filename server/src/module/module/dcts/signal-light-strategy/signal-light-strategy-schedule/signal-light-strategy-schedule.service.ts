@@ -3,12 +3,14 @@ import { R } from '../../../../../common/R';
 import { SignalLightStrategyScheduleDto, SignalLightStrategyScheduleSelListDto, SignalLightStrategyScheduleSelAllDto, SignalLightStrategyScheduleInsOneDto, SignalLightStrategyScheduleUpdOneDto } from './dto';
 import { BaseContextService } from '../../../../base-context/base-context.service';
 import { PostgresqlPrismaService } from "../../../../../prisma/postgresql.prisma.service";
+import { DctsCoreService } from "../../core/dcts-core.service";
 
 @Injectable()
 export class SignalLightStrategyScheduleService {
   constructor(
       private readonly pgsqlPrisma: PostgresqlPrismaService,
       private readonly bcs: BaseContextService,
+      private readonly dctsCoreService: DctsCoreService,
   ) {
     this.bcs.setFieldSelectParam('signal_light_strategy_schedule', {
       notNullKeys: ['name', 'description', 'ifDisabled', 'orderNum'],
@@ -43,26 +45,31 @@ export class SignalLightStrategyScheduleService {
   }
 
   async insSignalLightStrategySchedule(dto: SignalLightStrategyScheduleInsOneDto): Promise<R> {
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.create<SignalLightStrategyScheduleDto>('signal_light_strategy_schedule', dto);
     return R.ok(res);
   }
 
   async insSignalLightStrategySchedules(dtos: SignalLightStrategyScheduleInsOneDto[]): Promise<R> {
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.createMany<SignalLightStrategyScheduleDto>('signal_light_strategy_schedule', dtos);
     return R.ok(res);
   }
 
   async updSignalLightStrategySchedule(dto: SignalLightStrategyScheduleUpdOneDto): Promise<R> {
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.updateById<SignalLightStrategyScheduleDto>('signal_light_strategy_schedule', dto);
     return R.ok(res);
   }
 
   async updSignalLightStrategySchedules(dtos: SignalLightStrategyScheduleUpdOneDto[]): Promise<R> {
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.updateMany<SignalLightStrategyScheduleDto>('signal_light_strategy_schedule', dtos);
     return R.ok(res);
   }
 
   async delSignalLightStrategySchedule(ids: number[]): Promise<R> {
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.deleteById<SignalLightStrategyScheduleDto>('signal_light_strategy_schedule', ids);
     return R.ok(res);
   }

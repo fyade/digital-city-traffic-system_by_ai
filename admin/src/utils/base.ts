@@ -50,6 +50,9 @@ export const publicDict = {
 export const final: {
   Y: Y;
   N: N;
+  DEV: 'dev';
+  TEST: 'test';
+  PROD: 'prod';
   DEFAULT_PARENT_ID: 0;
   DEFAULT_ORDER_NUM: 0;
   one: ONE;
@@ -59,6 +62,9 @@ export const final: {
 } = {
   Y: "Y",
   N: "N",
+  DEV: 'dev',
+  TEST: 'test',
+  PROD: 'prod',
   DEFAULT_PARENT_ID: 0,
   DEFAULT_ORDER_NUM: 0,
   one: "ONE",

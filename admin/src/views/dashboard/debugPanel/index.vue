@@ -14,13 +14,6 @@ const a1 = () => {
   coordinates.push(coordinates[0])
   nodesWithWaysInPolygonApi({points: coordinates}).then((res) => {
     const map = res.allNodes.map((node) => useCesium.addPoint(new CesiumPoint({lon: node.lon, lat: node.lat})));
-    setTimeout(() => {
-      map.forEach(node => {
-        if (node)
-          useCesium.updPoint(node)
-      })
-    }, 2000)
-
     const map1 = res.allRoads.map(road => {
       const linestring = getLonlatFromLinestring(road.way);
       return new CesiumLine({points: linestring.map(p => new CesiumPoint(p))})
@@ -39,8 +32,11 @@ const a2 = () => {
 </script>
 
 <template>
-  <n-button @click="a1">查询可视区域内的路网信息</n-button>
-  <n-button @click="a2">计算多边形内的所有信号灯</n-button>
+  <n-space vertical>
+    <n-button @click="a1">查询可视区域内的路网信息</n-button>
+    <n-button @click="a2">计算多边形内的所有信号灯</n-button>
+    <n-button @click="useCesium.CesiumModelPathAnimation">test</n-button>
+  </n-space>
 </template>
 
 <style scoped>

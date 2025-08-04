@@ -3,12 +3,14 @@ import { R } from '../../../../../common/R';
 import { SignalLightStrategyScheduleStrategyParamMappingDto, SignalLightStrategyScheduleStrategyParamMappingSelListDto, SignalLightStrategyScheduleStrategyParamMappingSelAllDto, SignalLightStrategyScheduleStrategyParamMappingInsOneDto, SignalLightStrategyScheduleStrategyParamMappingUpdOneDto } from './dto';
 import { BaseContextService } from '../../../../base-context/base-context.service';
 import { PostgresqlPrismaService } from "../../../../../prisma/postgresql.prisma.service";
+import { DctsCoreService } from "../../core/dcts-core.service";
 
 @Injectable()
 export class SignalLightStrategyScheduleStrategyParamMappingService {
   constructor(
       private readonly pgsqlPrisma: PostgresqlPrismaService,
       private readonly bcs: BaseContextService,
+      private readonly dctsCoreService: DctsCoreService,
   ) {
     this.bcs.setFieldSelectParam('signal_light_strategy_schedule_strategy_param_mapping', {
       notNullKeys: ['strategyScheduleId', 'strategyParamId'],
@@ -43,26 +45,31 @@ export class SignalLightStrategyScheduleStrategyParamMappingService {
   }
 
   async insSignalLightStrategyScheduleStrategyParamMapping(dto: SignalLightStrategyScheduleStrategyParamMappingInsOneDto): Promise<R> {
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.create<SignalLightStrategyScheduleStrategyParamMappingDto>('signal_light_strategy_schedule_strategy_param_mapping', dto);
     return R.ok(res);
   }
 
   async insSignalLightStrategyScheduleStrategyParamMappings(dtos: SignalLightStrategyScheduleStrategyParamMappingInsOneDto[]): Promise<R> {
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.createMany<SignalLightStrategyScheduleStrategyParamMappingDto>('signal_light_strategy_schedule_strategy_param_mapping', dtos);
     return R.ok(res);
   }
 
   async updSignalLightStrategyScheduleStrategyParamMapping(dto: SignalLightStrategyScheduleStrategyParamMappingUpdOneDto): Promise<R> {
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.updateById<SignalLightStrategyScheduleStrategyParamMappingDto>('signal_light_strategy_schedule_strategy_param_mapping', dto);
     return R.ok(res);
   }
 
   async updSignalLightStrategyScheduleStrategyParamMappings(dtos: SignalLightStrategyScheduleStrategyParamMappingUpdOneDto[]): Promise<R> {
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.updateMany<SignalLightStrategyScheduleStrategyParamMappingDto>('signal_light_strategy_schedule_strategy_param_mapping', dtos);
     return R.ok(res);
   }
 
   async delSignalLightStrategyScheduleStrategyParamMapping(ids: number[]): Promise<R> {
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.deleteById<SignalLightStrategyScheduleStrategyParamMappingDto>('signal_light_strategy_schedule_strategy_param_mapping', ids);
     return R.ok(res);
   }

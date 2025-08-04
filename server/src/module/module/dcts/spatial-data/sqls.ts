@@ -54,9 +54,15 @@ export function nodesWithWaysInPolygon(dto: NodesWithWaysInPolygonDto) {
       SELECT id, CAST((lon / 10000000.0) AS FLOAT) AS lon, CAST((lat / 10000000.0) AS FLOAT) AS lat, tags
       FROM node_road_connections;
   `
+  const relation = (ids: string[]) => `
+      select id, nodes, tags
+      from planet_osm_ways
+      where id in (${ids.join(', ')});
+  `
   return {
     selAllRoadsSql,
-    selAllNodesSql
+    selAllNodesSql,
+    relation
   }
 }
 

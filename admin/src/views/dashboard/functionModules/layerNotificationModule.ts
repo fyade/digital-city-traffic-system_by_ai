@@ -71,7 +71,7 @@ export class LayerNotificationModule {
     }
   }
 
-  public async closeLayerLoading(ifLoadEnd = false) {
+  private async _closeLayerLoading(ifLoadEnd = false) {
     if (!this.layerLoading) {
       return
     }
@@ -98,6 +98,18 @@ export class LayerNotificationModule {
     }
   }
 
+  timeout_cll: NodeJS.Timeout | null = null
+
+  public async closeLayerLoading(ifLoadEnd = false) {
+    if (this.timeout_cll !== null) {
+      return
+    }
+    this.timeout_cll = setTimeout(async () => {
+      await this._closeLayerLoading(ifLoadEnd)
+      this.timeout_cll = null
+    }, 1000)
+  }
+
 
   private signalLightLoading = false
   private signalLightLoadingNotification: NotificationReactive | null = null
@@ -119,7 +131,7 @@ export class LayerNotificationModule {
     });
   }
 
-  public closeSignalLightLoading() {
+  private _closeSignalLightLoading() {
     if (!this.signalLightLoading) {
       return
     }
@@ -133,6 +145,18 @@ export class LayerNotificationModule {
       content: '信号灯等地图实体加载完成',
       duration: 3000
     })
+  }
+
+  timeout_csll: NodeJS.Timeout | null = null
+
+  public closeSignalLightLoading() {
+    if (this.timeout_csll !== null) {
+      return
+    }
+    this.timeout_csll = setTimeout(() => {
+      this._closeSignalLightLoading()
+      this.timeout_csll = null
+    }, 1000)
   }
 
 

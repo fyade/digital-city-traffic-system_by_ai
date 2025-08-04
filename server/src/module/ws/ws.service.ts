@@ -5,7 +5,7 @@ import { serverConfig } from "@dcts/config";
 import { CacheTokenService } from "../cache/cache.token.service";
 import { getTokenUuidFromAuth } from "../../util/RequestUtils";
 import { TokenDto } from "../../common/token";
-import { idUtils, timeUtils } from "@dcts/common";
+import { idUtils, objectUtils, timeUtils } from "@dcts/common";
 import { QueueoService } from "../queue/queueo.service";
 
 const currentConfig = serverConfig.currentConfig();
@@ -42,6 +42,7 @@ class WsEventDataFuncParamType extends EventDataType {
 export class WsService implements OnModuleInit {
   private sidTokenMap = new Map<string, TokenDto>();
   private userroleidSocketMap = new Map<string, Socket>();
+  private userPageContextMap: { user: string, pcs: string[] }[] = [];
   private events = new Map<string, [string, (data: WsEventDataFuncParamType) => Promise<void>][]>();
 
   constructor(
@@ -69,12 +70,22 @@ export class WsService implements OnModuleInit {
       if (!token) {
         next(new Error('WS连接未提供token'));
       }
+      const pageContext: string | undefined = socket.handshake.auth.pageContext
       const decoded = await this.cacheTokenService.verifyToken(getTokenUuidFromAuth(token));
       if (!decoded) {
         next(new Error('WS连接token无效'));
       }
       this.sidTokenMap.set(socket.id, decoded)
-      this.userroleidSocketMap.set(`${decoded.loginRole}---${decoded.userid}`, socket)
+      const key = `${decoded.loginRole}---${decoded.userid}`;
+      this.userroleidSocketMap.set(key, socket)
+      if (objectUtils.ifValid(pageContext)) {
+        const find = this.userPageContextMap.find(item => item.user === key);
+        if (find) {
+          find.pcs.push(pageContext)
+        } else {
+          this.userPageContextMap.push({user: key, pcs: [pageContext]})
+        }
+      }
       next()
     })
     io.on('connection', async (socket) => {
@@ -86,7 +97,12 @@ export class WsService implements OnModuleInit {
       socket.on('disconnect', () => {
         const tokenDto = this.sidTokenMap.get(socket.id);
         if (tokenDto) {
-          this.userroleidSocketMap.delete(`${tokenDto.loginRole}---${tokenDto.userid}`)
+          const key = `${tokenDto.loginRole}---${tokenDto.userid}`;
+          this.userroleidSocketMap.delete(key)
+          const index = this.userPageContextMap.findIndex(item => item.user === key);
+          if (index > -1) {
+            this.userPageContextMap.splice(index, 1)
+          }
         }
         this.sidTokenMap.delete(socket.id);
       });
@@ -94,6 +110,18 @@ export class WsService implements OnModuleInit {
     httpServer.listen(currentConfig.wsPort, () => {
       console.info(`后端 Socket.IO 服务启动，监听端口${currentConfig.wsPort}`);
     });
+  }
+
+  public getUsersByPageContext(pageContext: string) {
+    return this.userPageContextMap
+        .filter(item => item.pcs.includes(pageContext))
+        .map(item => {
+          const strings = item.user.split('---');
+          return {
+            loginRole: strings[0],
+            userId: strings[1],
+          }
+        })
   }
 
   /**
