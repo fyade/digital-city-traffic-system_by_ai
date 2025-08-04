@@ -9,6 +9,8 @@ packages:
   - 'packages/*'
   # prisma 生成的文件
   - 'prisma-generated'
+  # 脚本
+  - 'script'
   # 后端
   - 'server'
   # test

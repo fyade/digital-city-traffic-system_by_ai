@@ -1,7 +1,8 @@
 import * as adminConfig from './config/admin.config.js'
-import * as serverConfig from './config/server.config.js'
-import * as publicConfig from './config/public.config.js'
 import * as dashboardConfig from './config/dashboard.config.js'
+import * as publicConfig from './config/public.config.js'
+import * as scriptConfig from './config/script.config.js'
+import * as serverConfig from './config/server.config.js'
 import * as process from "process";
 
 export function getCurrentConfig<T extends object>(config: T) {
@@ -29,9 +30,10 @@ export interface ImportMeta {
 
 export {
   adminConfig,
-  serverConfig,
-  publicConfig,
   dashboardConfig,
+  publicConfig,
+  scriptConfig,
+  serverConfig,
 }
 
 export { geoserverConfig } from './third-config/geoserver.config.js'
