@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { R } from "../../../common/R";
-import { HelloDto } from "./dto";
+import { AddRouteInformationDto } from "./dto";
 
 @Injectable()
 export class ExternalService {
-  async hello(dto: HelloDto): Promise<R> {
+  async addRouteInformation(dto: AddRouteInformationDto): Promise<R> {
+    console.log('dto', dto)
     return R.ok('hello world')
   }
 }

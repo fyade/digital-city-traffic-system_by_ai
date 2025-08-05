@@ -697,7 +697,7 @@ ${`  id!: ${columns.find(item => item.colName === 'id').tsType};`}
 ${`}`}
 `;
   const qd2 =
-`${`import { publicDict } from "@/utils/final.ts";`}
+`${`import { publicDict } from "@/utils/base.ts";`}
 ${`import { ${moduleName2}Dto } from "@/type/module/${sysPath}${isBusiness?`/${businessName1}`:''}/${moduleName1}.ts";`}
 ${``}
 ${`export const ${moduleName1}Dict: { [P in keyof ${moduleName2}Dto]: string } = {`}
@@ -811,7 +811,7 @@ ${`</script>`}
 ` + `
 ${`<script setup lang="ts">`}
 ${`import { reactive } from "vue";`}
-${`import { CONFIG, final } from "@/utils/final.ts";`}
+${`import { CONFIG, final } from "@/utils/base.ts";`}
 ${`import Pagination from "@/components/pagination/pagination.vue";`}
 ${`import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";`}
 ${`import { State2, TablePageConfig } from "@/type/tablePage.ts";`}

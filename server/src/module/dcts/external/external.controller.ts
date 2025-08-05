@@ -4,7 +4,7 @@ import { publicConfig } from "@dcts/config";
 import { R } from "../../../common/R";
 import { ExternalService } from "./external.service";
 import { Authorize } from "../../../decorator/authorize.decorator";
-import { HelloDto } from "./dto";
+import { AddRouteInformationDto } from "./dto";
 
 @Controller('/dcts/external')
 @ApiTags(`${publicConfig.APP_NAME}/外部api`)
@@ -14,15 +14,15 @@ export class ExternalController {
   constructor(private readonly externalService: ExternalService) {
   }
 
-  @Post('/hello')
+  @Post('/add-route-information')
   @ApiOperation({
-    summary: 'hello'
+    summary: '添加路线信息'
   })
   @Authorize({
-    permission: 'dcts:external:hello',
-    label: 'hello'
+    permission: 'dcts:external:addRouteInformation',
+    label: '添加路线信息'
   })
-  async hello(@Body() dto: HelloDto): Promise<R> {
-    return this.externalService.hello(dto)
+  async addRouteInformation(@Body() dto: AddRouteInformationDto): Promise<R> {
+    return this.externalService.addRouteInformation(dto)
   }
 }

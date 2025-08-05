@@ -563,3 +563,35 @@ model signal_light_style {
   update_time DateTime @default(now()) @dbPostgresql.Timestamptz(6)
   deleted     String   @default("N") @dbPostgresql.Char(1)
 }
+
+// 车辆信息表
+model vehicle_info {
+  id           Int      @id @default(autoincrement())
+  plate_number String   @dbPostgresql.VarChar(20)
+  vehicle_type String   @dbPostgresql.VarChar(20)
+  brand        String   @dbPostgresql.VarChar(50)
+  color        String   @dbPostgresql.VarChar(20)
+  create_role  String   @dbPostgresql.VarChar(30)
+  update_role  String   @dbPostgresql.VarChar(30)
+  create_by    String   @dbPostgresql.VarChar(10)
+  update_by    String   @dbPostgresql.VarChar(10)
+  create_time  DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time  DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted      String   @default("N") @dbPostgresql.Char(1)
+}
+
+// 车辆轨迹点表
+model vehicle_track_point {
+  id          Int                     @id @default(autoincrement())
+  vehicle_id  Int
+  point       Unsupported("geometry")
+  create_role String                  @dbPostgresql.VarChar(30)
+  update_role String                  @dbPostgresql.VarChar(30)
+  create_by   String                  @dbPostgresql.VarChar(10)
+  update_by   String                  @dbPostgresql.VarChar(10)
+  create_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted     String                  @default("N") @dbPostgresql.Char(1)
+
+  @@index([point], map: "idx_track_point", type: Gist)
+}

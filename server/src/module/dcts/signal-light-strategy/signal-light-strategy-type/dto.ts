@@ -115,6 +115,7 @@ export class SignalLightStrategyTypeInsOneDto {
 
   @ApiProperty({ description: '是否禁用', required: true })
   @IsNotEmpty({ message: '是否禁用不能为空' })
+  @MaxLength(1, { message: '是否禁用不能超过1个字符' })
   ifDisabled: string;
 
   @ApiProperty({ description: '顺序', required: true })
@@ -123,6 +124,8 @@ export class SignalLightStrategyTypeInsOneDto {
   orderNum: number;
 
   @ApiProperty({ description: '备注', required: false })
+  @IsOptional()
+  @MaxLength(300, { message: '备注不能超过300个字符' })
   remark: string;
 }
 

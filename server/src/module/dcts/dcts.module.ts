@@ -16,6 +16,8 @@ import { SignalLightStrategyScheduleStrategyParamMappingModule } from './signal-
 import { SignalLightStyleModule } from './signal-light/signal-light-style/signal-light-style.module';
 import { SignalLightChildStyleMappingModule } from './signal-light/signal-light-child-style-mapping/signal-light-child-style-mapping.module';
 import { ExternalModule } from './external/external.module';
+import { VehicleInfoModule } from './vehicle/vehicle-info/vehicle-info.module';
+import { VehicleTrackPointModule } from './vehicle/vehicle-track-point/vehicle-track-point.module';
 
 @Module({
   imports: [
@@ -35,7 +37,9 @@ import { ExternalModule } from './external/external.module';
     SignalLightStrategyScheduleStrategyParamMappingModule,
     SignalLightStyleModule,
     SignalLightChildStyleMappingModule,
-    ExternalModule
+    ExternalModule,
+    VehicleInfoModule,
+    VehicleTrackPointModule
   ]
 })
 export class DctsModule {

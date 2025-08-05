@@ -37,7 +37,7 @@ export function splitUrlByX(url: string): string[] {
  * @param str
  */
 export function mysqlLengthFromRowRemark(str: string): string | null {
-  const match = str.match(/\@db\.(?:Var|)Char\((\d+)\)/);
+  const match = str.match(/\.(?:Var|)Char\((\d+)\)/);
   if (match) {
     return match[1];
   } else {

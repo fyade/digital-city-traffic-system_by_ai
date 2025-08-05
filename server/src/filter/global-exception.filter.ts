@@ -4,20 +4,26 @@ import { BaseContextService } from '../infra/base-context/base-context.service';
 import { R } from '../common/R';
 import { WinstonService } from '../infra/winston/winston.service';
 import { HTTP } from '../common/Enum';
-import { baseUtils } from '@dcts/common';
+import { baseUtils, idUtils } from '@dcts/common';
 import { REGEX_GLOBAL_EXCEPTION_1_match } from "../util/RegularUtils";
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   constructor(
-    private readonly bcs: BaseContextService,
-    private readonly winston: WinstonService,
-  ) {}
+      private readonly bcs: BaseContextService,
+      private readonly winston: WinstonService,
+  ) {
+  }
 
   catch(exception: HttpException | Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
-    const reqId = this.bcs.getUserData().reqId;
+    let reqId = ''
+    try {
+      reqId = this.bcs.getUserData().reqId
+    } catch (e) {
+      reqId = idUtils.genId()
+    }
     this.winston.error(`${reqId}\n${exception}\n${exception.stack}`);
     let status = 0;
     let message = '';
@@ -26,16 +32,20 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         message: string[];
       };
       status = HTTP.SERVER_ERROR().code;
-      message =
-        response1.message
-          .map((str) => {
-            const match = REGEX_GLOBAL_EXCEPTION_1_match(str);
-            if (match) {
-              return str.replace(`items.${match[1]}.`, `第${Number(match[1]) + 1}条数据的`);
-            }
-            return str;
-          })
-          .join('、') + '。';
+      if (exception.message.endsWith('is not valid JSON')) {
+        message = '非法JSON格式。'
+      } else {
+        message =
+            response1.message
+                .map((str) => {
+                  const match = REGEX_GLOBAL_EXCEPTION_1_match(str);
+                  if (match) {
+                    return str.replace(`items.${match[1]}.`, `第${Number(match[1]) + 1}条数据的`);
+                  }
+                  return str;
+                })
+                .join('、') + '。';
+      }
     } else if (exception instanceof HttpException) {
       status = exception.getStatus();
       message = exception.message;
@@ -51,8 +61,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     } catch (e) {
       const unknownException = new UnknownException(reqId, exception);
       response
-        .status(unknownException.getStatus())
-        .json(new R(unknownException.getStatus(), null, unknownException.getMessage(), reqId));
+          .status(unknownException.getStatus())
+          .json(new R(unknownException.getStatus(), null, unknownException.getMessage(), reqId));
     }
   }
 }

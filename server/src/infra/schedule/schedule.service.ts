@@ -99,11 +99,11 @@ export class ScheduleService implements OnModuleInit {
     this.schedules.set(name, func);
   }
 
-  dbInsSchedule(name: string, cronExpression: string) {
+  setScheduleCron(name: string, cronExpression: string) {
     this.addSchedule(name, cronExpression);
   }
 
-  dbDelSchedule(name: string) {
+  delScheduleTask(name: string) {
     this.delSchedule(name);
   }
 }

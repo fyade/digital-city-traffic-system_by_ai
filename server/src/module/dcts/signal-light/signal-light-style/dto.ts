@@ -31,10 +31,12 @@ export class SignalLightStyleSelAllDto {
 export class SignalLightStyleInsOneDto {
   @ApiProperty({ description: '样式名', required: true })
   @IsNotEmpty({ message: '样式名不能为空' })
+  @MaxLength(100, { message: '样式名不能超过100个字符' })
   name: string;
 
   @ApiProperty({ description: '样式', required: true })
   @IsNotEmpty({ message: '样式不能为空' })
+  @MaxLength(200, { message: '样式不能超过200个字符' })
   style: string;
 }
 

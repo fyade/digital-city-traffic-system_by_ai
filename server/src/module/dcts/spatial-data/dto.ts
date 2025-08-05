@@ -11,7 +11,7 @@ import {
   ValidateNested
 } from "class-validator";
 
-class PolygonPointDto {
+export class PolygonPointDto {
   @ApiProperty({description: '经度', required: true})
   @Type(() => Number)
   @IsNotEmpty({message: '经度不能为空'})

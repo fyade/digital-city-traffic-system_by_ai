@@ -9,9 +9,9 @@ import { final } from "../../../../util/base";
 @Injectable()
 export class ScheduledTaskService {
   constructor(
-    private readonly mysqlPrisma: MysqlPrismaService,
-    private readonly bcs: BaseContextService,
-    private readonly scheduleService: ScheduleService,
+      private readonly mysqlPrisma: MysqlPrismaService,
+      private readonly bcs: BaseContextService,
+      private readonly scheduleService: ScheduleService,
   ) {
     this.bcs.setFieldSelectParam('sys_scheduled_task', {
       notNullKeys: ['name', 'target', 'cronExpression', 'orderNum', 'ifDisabled'],
@@ -48,7 +48,7 @@ export class ScheduledTaskService {
   async insScheduledTask(dto: ScheduledTaskInsOneDto): Promise<R> {
     const res = await this.mysqlPrisma.create<ScheduledTaskDto>('sys_scheduled_task', dto);
     if (res.ifDisabled === final.N) {
-      this.scheduleService.dbInsSchedule(res.target, res.cronExpression);
+      this.scheduleService.setScheduleCron(res.target, res.cronExpression);
     }
     return R.ok(res);
   }
@@ -61,9 +61,9 @@ export class ScheduledTaskService {
   async updScheduledTask(dto: ScheduledTaskUpdOneDto): Promise<R> {
     const oldTask = await this.selOneScheduledTask(dto.id);
     const res = await this.mysqlPrisma.updateById<ScheduledTaskDto>('sys_scheduled_task', dto);
-    this.scheduleService.dbDelSchedule(oldTask.data.target)
+    this.scheduleService.delScheduleTask(oldTask.data.target)
     if (res.ifDisabled === final.N) {
-      this.scheduleService.dbInsSchedule(res.target, res.cronExpression)
+      this.scheduleService.setScheduleCron(res.target, res.cronExpression)
     }
     return R.ok(res);
   }
@@ -76,7 +76,7 @@ export class ScheduledTaskService {
   async delScheduledTask(ids: number[]): Promise<R> {
     const r = await this.selOnesScheduledTask(ids);
     for (const datum of r.data) {
-      this.scheduleService.dbDelSchedule(datum.target)
+      this.scheduleService.delScheduleTask(datum.target)
     }
     const res = await this.mysqlPrisma.deleteById<ScheduledTaskDto>('sys_scheduled_task', ids);
     return R.ok(res);
