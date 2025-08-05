@@ -1,12 +1,12 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { AuthService } from '../module/auth/auth.service';
-import { CacheTokenService } from '../module/cache/cache.token.service';
-import { BaseContextService } from '../module/base-context/base-context.service';
+import { AuthService } from '../infra/auth/auth.service';
+import { CacheTokenService } from '../infra/cache/cache.token.service';
+import { BaseContextService } from '../infra/base-context/base-context.service';
 import { Request } from 'express';
 import { UnauthorizedException } from '../exception/unauthorized.exception';
 import { getTokenUuidFromAuth } from '../util/RequestUtils';
-import { genCurrentUser } from '../module/base-context/baseContext';
+import { genCurrentUser } from '../infra/base-context/baseContext';
 
 @Injectable()
 export class StaticGuard implements CanActivate {

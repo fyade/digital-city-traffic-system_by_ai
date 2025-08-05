@@ -1,8 +1,8 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, BadRequestException } from '@nestjs/common';
 import { UnknownException } from '../exception/unknown.exception';
-import { BaseContextService } from '../module/base-context/base-context.service';
+import { BaseContextService } from '../infra/base-context/base-context.service';
 import { R } from '../common/R';
-import { WinstonService } from '../module/winston/winston.service';
+import { WinstonService } from '../infra/winston/winston.service';
 import { HTTP } from '../common/Enum';
 import { baseUtils } from '@dcts/common';
 import { REGEX_GLOBAL_EXCEPTION_1_match } from "../util/RegularUtils";

@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { PRE_AUTHORIZE_KEY, PreAuthorizeParams } from '../decorator/authorize.decorator';
-import { AuthService } from '../module/auth/auth.service';
+import { AuthService } from '../infra/auth/auth.service';
 import { Request } from 'express';
 import { Exception } from '../exception/exception';
 

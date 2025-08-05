@@ -3,20 +3,20 @@ import { APP_FILTER } from '@nestjs/core';
 import { GlobalExceptionFilter } from './filter/global-exception.filter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './module/auth/auth.module';
-import { BaseContextModule } from './module/base-context/base-context.module';
-import { CacheModule } from './module/cache/cache.module';
-import { CommonModule } from "./module/common/common.module";
-import { QueueModule } from "./module/queue/queue.module";
-import { ScheduleModule } from "./module/schedule/schedule.module";
-import { StaticModule } from './module/static/static.module';
-import { WinstonModule } from "./module/winston/winston.module";
-import { WsModule } from './module/ws/ws.module';
-import { PrismaModule } from './prisma/prisma.module';
-import { RedisModule } from './redis/redis.module';
-import { AlgorithmModule } from './module/module/algorithm/algorithm.module';
-import { MainModule } from './module/module/main/main.module';
-import { DctsModule } from "./module/module/dcts/dcts.module";
+import { AuthModule } from './infra/auth/auth.module';
+import { BaseContextModule } from './infra/base-context/base-context.module';
+import { CacheModule } from './infra/cache/cache.module';
+import { CommonModule } from "./infra/common/common.module";
+import { PrismaModule } from './infra/prisma/prisma.module';
+import { QueueModule } from "./infra/queue/queue.module";
+import { RedisModule } from './infra/redis/redis.module';
+import { ScheduleModule } from "./infra/schedule/schedule.module";
+import { StaticModule } from './infra/static/static.module';
+import { WinstonModule } from "./infra/winston/winston.module";
+import { WsModule } from './infra/ws/ws.module';
+import { AlgorithmModule } from './module/algorithm/algorithm.module';
+import { DctsModule } from "./module/dcts/dcts.module";
+import { MainModule } from './module/main/main.module';
 
 @Module({
   imports: [
@@ -24,16 +24,16 @@ import { DctsModule } from "./module/module/dcts/dcts.module";
     BaseContextModule,
     CacheModule,
     CommonModule,
+    PrismaModule,
     QueueModule,
+    RedisModule,
     ScheduleModule,
     StaticModule,
     WinstonModule,
     WsModule,
-    PrismaModule,
-    RedisModule,
     AlgorithmModule,
-    MainModule,
-    DctsModule
+    DctsModule,
+    MainModule
   ],
   providers: [
     {

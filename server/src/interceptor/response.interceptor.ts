@@ -4,9 +4,9 @@ import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 import { PRE_AUTHORIZE_KEY, PreAuthorizeParams } from '../decorator/authorize.decorator';
 import { R } from '../common/R';
-import { BaseContextService } from '../module/base-context/base-context.service';
+import { BaseContextService } from '../infra/base-context/base-context.service';
 import { getIpInfoFromRequest } from '../util/RequestUtils';
-import { QueueoService } from '../module/queue/queueo.service';
+import { QueueoService } from '../infra/queue/queueo.service';
 
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {

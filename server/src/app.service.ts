@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { R } from './common/R';
 import { NonSupportException } from './exception/non-support.exception';
-import { AuthService } from './module/auth/auth.service';
+import { AuthService } from './infra/auth/auth.service';
 import { getAllFiles } from './util/FileUtils';
-import { BaseContextService } from './module/base-context/base-context.service';
+import { BaseContextService } from './infra/base-context/base-context.service';
 import { serverConfig } from "@dcts/config";
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { REGEX_MAIN_APP_1_match, REGEX_MAIN_APP_2_match, REGEX_MAIN_APP_3_match } from "./util/RegularUtils";
-import { WinstonService } from "./module/winston/winston.service";
-import { MysqlPrismaoService } from "./prisma/mysql.prismao.service";
-import { PrismaoService } from "./prisma/prismao.service";
+import { WinstonService } from "./infra/winston/winston.service";
+import { MysqlPrismaoService } from "./infra/prisma/mysql.prismao.service";
+import { PrismaoService } from "./infra/prisma/prismao.service";
 import { base } from "@dcts/common";
 
 const si = require("systeminformation");
@@ -62,7 +62,7 @@ export class AppService {
     try {
       const directoryPath = path.join(__dirname, '../../src/module');
       const files = await getAllFiles(directoryPath);
-      files.push(path.join(__dirname, '../../src/app.controller.ts'));
+      files.unshift(path.join(__dirname, '../../src/app.controller.ts'));
       const filePaths = files.filter(fileName => fileName.endsWith('.controller.ts'));
       for (const filePath of filePaths) {
         const text = await fs.readFileSync(filePath, 'utf-8');
