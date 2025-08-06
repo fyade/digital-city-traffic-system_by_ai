@@ -1,6 +1,9 @@
 import * as Cesium from "cesium";
 import arrowUrl from '../../../assets/images2/array.png'
-import { geoUtils } from "@dcts/common";
+import arrowUrl2 from '../../../assets/images2/arrow2.png'
+import { geoUtils, timeUtils } from "@dcts/common";
+import { ChucanDto, RucanDto } from "@/views/dashboard/debugPanel/index.ts";
+import { CesiumLine, CesiumPoint } from "@/views/dashboard/utils/dto.ts";
 
 export class DebugModule {
   private viewer: Cesium.Viewer | null = null
@@ -9,12 +12,135 @@ export class DebugModule {
     this.viewer = viewer;
   }
 
+  private addLines: ((objs: CesiumLine[]) => CesiumLine[] | null) | null = null
+
+  public setAddLines(func: (objs: CesiumLine[]) => CesiumLine[] | null) {
+    this.addLines = func
+  }
+
+  private addPoint: ((obj: CesiumPoint) => CesiumPoint | null) | null = null
+
+  public setAddPoint(func: (obj: CesiumPoint) => CesiumPoint | null) {
+    this.addPoint = func
+  }
+
+  private setViewTo: ((lon: number, lat: number, obj?: { height?: number, ifFly?: boolean }) => void) | null = null
+
+  public setSetViewTo(func: (lon: number, lat: number, obj?: { height?: number, ifFly?: boolean }) => void) {
+    this.setViewTo = func
+  }
+
+
+  public sf1(data: RucanDto) {
+    if (!this.viewer || !this.addLines || !this.addPoint || !this.setViewTo) {
+      return
+    }
+    this.setViewTo((data.startPoint.lon + data.endPoint.lon) / 2, (data.startPoint.lat + data.endPoint.lat) / 2, {ifFly: true})
+    const allRoads = data.allRoads
+        .map(road => road.way
+            .replace('LINESTRING(', '')
+            .replace(')', '')
+            .split(',')
+            .map(item => item.split(' ').map(Number))
+            .map(point => new CesiumPoint({lon: point[0], lat: point[1]}))
+        )
+        .map(points => new CesiumLine({points: points, color: Cesium.Color.BLACK}))
+    this.addLines(allRoads)
+    const allNodes = data.allNodes
+        .map(node => new CesiumPoint({lon: node.lon, lat: node.lat, color: Cesium.Color.BLACK}))
+    for (const node of allNodes) {
+      this.addPoint(node)
+    }
+
+    this.viewer.entities.add({
+      position: Cesium.Cartesian3.fromDegrees(data.startPoint.lon, data.startPoint.lat, 1),
+      label: {
+        text: `起点 ${timeUtils.formatDate(new Date(data.startTime))}`,
+        font: '14pt sans-serif',
+        fillColor: Cesium.Color.WHITE,
+        outlineColor: Cesium.Color.BLACK,
+        outlineWidth: 2,
+        pixelOffset: new Cesium.Cartesian2(0, 0),
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        verticalOrigin: Cesium.VerticalOrigin.TOP // 文字基准点
+      }
+    });
+    this.viewer.entities.add({
+      position: Cesium.Cartesian3.fromDegrees(data.endPoint.lon, data.endPoint.lat, 1),
+      label: {
+        text: '终点',
+        font: '14pt sans-serif',
+        fillColor: Cesium.Color.WHITE,
+        outlineColor: Cesium.Color.BLACK,
+        outlineWidth: 2,
+        pixelOffset: new Cesium.Cartesian2(0, 0),
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        verticalOrigin: Cesium.VerticalOrigin.TOP // 文字基准点
+      }
+    });
+    this.viewer.entities.add({
+      position: Cesium.Cartesian3.fromDegrees(data.startPoint.lon, data.startPoint.lat, 0.9),
+      billboard: {
+        image: arrowUrl2,
+        width: 42,
+        height: 42,
+        scale: 1.0,
+        pixelOffset: new Cesium.Cartesian2(0, 0),
+        verticalOrigin: Cesium.VerticalOrigin.BOTTOM // 图片对齐方式
+      }
+    });
+    this.viewer.entities.add({
+      position: Cesium.Cartesian3.fromDegrees(data.endPoint.lon, data.endPoint.lat, 0.9),
+      billboard: {
+        image: arrowUrl2,
+        width: 42,
+        height: 42,
+        scale: 1.0,
+        pixelOffset: new Cesium.Cartesian2(0, 0),
+        verticalOrigin: Cesium.VerticalOrigin.BOTTOM // 图片对齐方式
+      }
+    });
+  }
+
+  public sf2(data: ChucanDto) {
+    if (!this.viewer || !this.addLines || !this.addPoint) {
+      return
+    }
+    const allRoads = data.roads
+        .map(road => road.way
+            .replace('LINESTRING(', '')
+            .replace(')', '')
+            .split(',')
+            .map(item => item.split(' ').map(Number))
+            .map(point => new CesiumPoint({lon: point[0], lat: point[1], height: 1}))
+        )
+        .map(points => new CesiumLine({points: points, color: Cesium.Color.WHITE}))
+    this.addLines(allRoads)
+    const allNodes = data.nodes
+        .map(node => new CesiumPoint({lon: node.lon, lat: node.lat, height: 1, color: Cesium.Color.WHITE}))
+    for (let i = 0; i < data.nodes.length; i++) {
+      this.addPoint(allNodes[i])
+      this.viewer.entities.add({
+        position: Cesium.Cartesian3.fromDegrees(allNodes[i].lon, allNodes[i].lat, 1),
+        label: {
+          text: `途径时间${timeUtils.formatDate(new Date(data.nodes[i].time[0]))}-${timeUtils.formatDate(new Date(data.nodes[i].time[1]))}`,
+          font: '14pt sans-serif',
+          fillColor: Cesium.Color.WHITE,
+          outlineColor: Cesium.Color.BLACK,
+          outlineWidth: 2,
+          pixelOffset: new Cesium.Cartesian2(0, 0),
+          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+          verticalOrigin: Cesium.VerticalOrigin.TOP // 文字基准点
+        }
+      });
+    }
+  }
 
   /**
    * 小车跟随导航轨迹绘制
    * @constructor
    */
-  public CesiumModelPathAnimation() {
+  public cesiumModelPathAnimation() {
     if (!this.viewer) {
       return
     }

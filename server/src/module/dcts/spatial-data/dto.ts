@@ -29,7 +29,7 @@ export class NodesWithWaysInPolygonDto {
   @ApiProperty({description: '参数版本', default: '1.0'})
   @IsOptional()
   @IsIn(['1.0'], {message: '参数版本值不在允许的值中'})
-  version: string = '1.0';
+  version?: string = '1.0';
 
   @ApiProperty({description: '多边形', required: true, type: [PolygonPointDto]})
   @IsNotEmpty({message: '多边形不能为空'})
@@ -44,12 +44,12 @@ export class SignalLightGroupsInPolygonDto {
   @ApiProperty({description: '参数版本', default: '1.0'})
   @IsOptional()
   @IsIn(['1.0'], {message: '参数版本值不在允许的值中'})
-  version: string = '1.0';
+  version?: string = '1.0';
 
   @ApiProperty({description: '是否需要一并返回子信号灯', default: true})
   @IsOptional()
   @IsBoolean()
-  ifChild: boolean = true;
+  ifChild?: boolean = true;
 
   @ApiProperty({description: '多边形', required: true, type: [PolygonPointDto]})
   @IsNotEmpty({message: '多边形不能为空'})
@@ -64,18 +64,18 @@ export class CalculateLightsInPolygonDto {
   @ApiProperty({description: '参数版本', default: '1.0'})
   @IsOptional()
   @IsIn(['1.0'], {message: '参数版本值不在允许的值中'})
-  version: string = '1.0';
+  version?: string = '1.0';
 
   @ApiProperty({description: '是否直接返回数据', default: false})
   @IsOptional()
   @IsBoolean()
-  ifReturn: boolean = false;
+  ifReturn?: boolean = false;
 
   @ApiProperty({description: '信号灯组id数组', type: [Number], default: null, nullable: true})
   @IsOptional()
   @IsArray({message: '信号灯组id数组必须为数组'})
   @IsNumber({}, {each: true, message: '信号灯组id数组的每个元素必须是数值类型'})
-  groupIds: number[] | null = null
+  groupIds?: number[] | null = null
 
   @ApiProperty({description: '多边形', type: [PolygonPointDto], default: null, nullable: true})
   @IsOptional()

@@ -52,17 +52,25 @@ export class UseCesium {
    * @param height
    * @param ifFly
    */
-  public setViewTo(lon: number, lat: number, height: number, ifFly = false) {
+  public setViewTo(lon: number, lat: number,
+                   {
+                     height,
+                     ifFly = false
+                   }: {
+                     height?: number
+                     ifFly?: boolean
+                   } = {}
+  ) {
     if (!this.viewer) {
       return
     }
     if (ifFly) {
       this.viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(lon, lat, height)
+        destination: Cesium.Cartesian3.fromDegrees(lon, lat, height || this.cameraHeight)
       })
     } else {
       this.viewer.camera.setView({
-        destination: Cesium.Cartesian3.fromDegrees(lon, lat, height)
+        destination: Cesium.Cartesian3.fromDegrees(lon, lat, height || this.cameraHeight)
       })
     }
   }
@@ -161,8 +169,8 @@ export class UseCesium {
     }
     const point = this.pointCollection.add({
       id: obj.id,
-      position: Cesium.Cartesian3.fromDegrees(obj.lon, obj.lat),
-      color: Cesium.Color.RED,
+      position: Cesium.Cartesian3.fromDegrees(obj.lon, obj.lat, obj.height),
+      color: obj.color || Cesium.Color.RED,
       pixelSize: 12
     });
     this.pointMap.set(obj.id, point);
@@ -197,7 +205,7 @@ export class UseCesium {
       return null
     }
     const geometry = new Cesium.PolylineGeometry({
-      positions: Cesium.Cartesian3.fromDegreesArray(obj.points.map(p => [p.lon, p.lat]).flat()),
+      positions: Cesium.Cartesian3.fromDegreesArrayHeights(obj.points.map(p => [p.lon, p.lat, p.height]).flat()),
       width: 2,
       vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT
     });
@@ -205,7 +213,7 @@ export class UseCesium {
       id: obj.id,
       geometry: geometry,
       attributes: {
-        color: Cesium.ColorGeometryInstanceAttribute.fromColor(Cesium.Color.WHITE)
+        color: Cesium.ColorGeometryInstanceAttribute.fromColor(obj.color || Cesium.Color.WHITE)
       },
     });
     const polyline = this.polylineCollection.add(
@@ -248,7 +256,7 @@ export class UseCesium {
     const instances: Cesium.GeometryInstance[] = []
     for (const obj of objs) {
       const geometry = new Cesium.PolylineGeometry({
-        positions: Cesium.Cartesian3.fromDegreesArray(obj.points.map(p => [p.lon, p.lat]).flat()),
+        positions: Cesium.Cartesian3.fromDegreesArrayHeights(obj.points.map(p => [p.lon, p.lat, p.height]).flat()),
         width: 2,
         vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT
       });
@@ -256,7 +264,7 @@ export class UseCesium {
         id: obj.id,
         geometry: geometry,
         attributes: {
-          color: Cesium.ColorGeometryInstanceAttribute.fromColor(Cesium.Color.WHITE)
+          color: Cesium.ColorGeometryInstanceAttribute.fromColor(obj.color || Cesium.Color.WHITE)
         },
       });
       instances.push(instance)
@@ -326,7 +334,7 @@ export class UseCesium {
       this.viewer.scene.debugShowFramesPerSecond = true
     }
 
-    this.setViewTo(this.mapCenterPosition[0], this.mapCenterPosition[1], this.cameraHeight)
+    this.setViewTo(this.mapCenterPosition[0], this.mapCenterPosition[1], {height: this.cameraHeight})
 
     // 获取默认的影像图层
     const defaultImagery = this.viewer.imageryLayers.get(0);

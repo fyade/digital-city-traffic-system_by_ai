@@ -63,7 +63,9 @@ class UseDashboardCesium extends UseCesium {
   public readonly contextMenuSelect = this.cmModule.contextMenuSelect.bind(this.cmModule)
   public formPanelTitle = this.cmModule.formPanelTitle
 
-  public readonly CesiumModelPathAnimation = this.debugModule.CesiumModelPathAnimation.bind(this.debugModule)
+  public readonly debugModuleSf1 = this.debugModule.sf1.bind(this.debugModule)
+  public readonly debugModuleSf2 = this.debugModule.sf2.bind(this.debugModule)
+  public readonly debugModuleCesiumModelPathAnimation = this.debugModule.cesiumModelPathAnimation.bind(this.debugModule)
 
   public allLabels = this.lnModule.allLabels
   public allLayers = this.lnModule.allLayers
@@ -100,6 +102,9 @@ class UseDashboardCesium extends UseCesium {
     })
 
     this.debugModule.setViewer(this.viewer)
+    this.debugModule.setAddLines(this.addLines.bind(this))
+    this.debugModule.setAddPoint(this.addPoint.bind(this))
+    this.debugModule.setSetViewTo(this.setViewTo.bind(this))
 
     this.lnModule.setViewer(this.viewer)
     this.lnModule.setSetAllLabelsCB(() => {
@@ -110,8 +115,8 @@ class UseDashboardCesium extends UseCesium {
     this.meModule.setLnModule(this.lnModule)
     this.meModule.setVdModule(this.vdModule)
     this.meModule.setViewer(this.viewer)
-    this.meModule.setRefreshContextMenuOption(this.refreshContextMenuOption)
-    this.meModule.setGetViewCornerCoordinates(this.getViewCornerCoordinates)
+    this.meModule.setRefreshContextMenuOption(this.refreshContextMenuOption.bind(this))
+    this.meModule.setGetViewCornerCoordinates(this.getViewCornerCoordinates.bind(this))
 
     this.miModule.setMeModule(this.meModule)
     this.miModule.setVdModule(this.vdModule)

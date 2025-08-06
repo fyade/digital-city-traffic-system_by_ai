@@ -5,7 +5,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, ref, watchEffect } from "vue";
 import { CONFIG, final } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
@@ -15,6 +15,10 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { VehicleInfoDto, VehicleInfoUpdDto } from "@/type/module/dcts/vehicle/vehicleInfo.ts";
 import { vehicleInfoApi } from "@/api/module/dcts/vehicle/vehicleInfo.ts";
 import { vehicleInfoDict } from "@/dict/module/dcts/vehicle/vehicleInfo.ts";
+import { useDictStore } from "@/store/module/dict.ts";
+import { DicDataDto } from "@/type/module/main/sysManage/dicData.ts";
+
+const dictStore = useDictStore();
 
 const state = reactive<State2<VehicleInfoDto, VehicleInfoUpdDto>>({
   dialogForm: {
@@ -26,7 +30,12 @@ const state = reactive<State2<VehicleInfoDto, VehicleInfoUpdDto>>({
   },
   dialogForms: [],
   dialogForms_error: {},
-  filterForm: {},
+  filterForm: {
+    plateNumber: '',
+    vehicleType: '',
+    brand: '',
+    color: '',
+  },
 })
 const dFormRules: FormRules<VehicleInfoDto> = {
   plateNumber: [{required: true, trigger: 'change'}],
@@ -82,6 +91,25 @@ const {
   api: vehicleInfoApi,
   dict: vehicleInfoDict,
 })
+
+const vehicleTypeDict = ref<DicDataDto[]>([])
+const boardDict = ref<DicDataDto[]>([])
+const dict1 = dictStore.getDict('dcts:car:type');
+watchEffect(() => {
+  if (dict1.isLoading.value) {
+  } else if (dict1.error.value) {
+  } else {
+    vehicleTypeDict.value = dict1.data.value
+  }
+})
+const dict2 = dictStore.getDict('dcts:car:board');
+watchEffect(() => {
+  if (dict2.isLoading.value) {
+  } else if (dict2.error.value) {
+  } else {
+    boardDict.value = dict2.data.value
+  }
+})
 </script>
 
 <template>
@@ -121,14 +149,20 @@ const {
           </el-col>
           <el-col :span="12">
             <el-form-item :label="vehicleInfoDict.vehicleType" prop="vehicleType">
-              <el-input v-model="state.dialogForm.vehicleType" :placeholder="vehicleInfoDict.vehicleType"/>
+              <!--<el-input v-model="state.dialogForm.vehicleType" :placeholder="vehicleInfoDict.vehicleType"/>-->
+              <el-select v-model="state.dialogForm.vehicleType" :placeholder="vehicleInfoDict.vehicleType" clearable filterable>
+                <el-option v-for="item in vehicleTypeDict" :key="item.id" :label="item.label" :value="item.value"/>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item :label="vehicleInfoDict.brand" prop="brand">
-              <el-input v-model="state.dialogForm.brand" :placeholder="vehicleInfoDict.brand"/>
+              <!--<el-input v-model="state.dialogForm.brand" :placeholder="vehicleInfoDict.brand"/>-->
+              <el-select v-model="state.dialogForm.brand" :placeholder="vehicleInfoDict.brand" clearable filterable>
+                <el-option v-for="item in boardDict" :key="item.id" :label="item.label" :value="item.value"/>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -187,7 +221,10 @@ const {
             </template>
             <template #default="{$index}">
               <div :class="state.dialogForms_error?.[`${$index}-vehicleType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].vehicleType" :placeholder="vehicleInfoDict.vehicleType"/>
+                <!--<el-input v-model="state.dialogForms[$index].vehicleType" :placeholder="vehicleInfoDict.vehicleType"/>-->
+                <el-select v-model="state.dialogForms[$index].vehicleType" :placeholder="vehicleInfoDict.vehicleType" clearable filterable>
+                  <el-option v-for="item in vehicleTypeDict" :key="item.id" :label="item.label" :value="item.value"/>
+                </el-select>
               </div>
             </template>
           </el-table-column>
@@ -197,7 +234,10 @@ const {
             </template>
             <template #default="{$index}">
               <div :class="state.dialogForms_error?.[`${$index}-brand`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].brand" :placeholder="vehicleInfoDict.brand"/>
+                <!--<el-input v-model="state.dialogForms[$index].brand" :placeholder="vehicleInfoDict.brand"/>-->
+                <el-select v-model="state.dialogForms[$index].brand" :placeholder="vehicleInfoDict.brand" clearable filterable>
+                  <el-option v-for="item in boardDict" :key="item.id" :label="item.label" :value="item.value"/>
+                </el-select>
               </div>
             </template>
           </el-table-column>
@@ -241,9 +281,24 @@ const {
         @keyup.enter="fEnter"
     >
       <!--在此下方添加表单项-->
-      <!--<el-form-item :label="vehicleInfoDict." prop="">-->
-      <!--  <el-input v-model="state.filterForm." :placeholder="vehicleInfoDict."/>-->
-      <!--</el-form-item>-->
+      <el-form-item :label="vehicleInfoDict.plateNumber" prop="plateNumber">
+        <el-input v-model="state.filterForm.plateNumber" :placeholder="vehicleInfoDict.plateNumber"/>
+      </el-form-item>
+      <el-form-item :label="vehicleInfoDict.vehicleType" prop="vehicleType">
+        <!--<el-input v-model="state.filterForm.vehicleType" :placeholder="vehicleInfoDict.vehicleType"/>-->
+        <el-select v-model="state.filterForm.vehicleType" :placeholder="vehicleInfoDict.vehicleType" clearable filterable>
+          <el-option v-for="item in vehicleTypeDict" :key="item.id" :label="item.label" :value="item.value"/>
+        </el-select>
+      </el-form-item>
+      <el-form-item :label="vehicleInfoDict.brand" prop="brand">
+        <!--<el-input v-model="state.filterForm.brand" :placeholder="vehicleInfoDict.brand"/>-->
+        <el-select v-model="state.filterForm.brand" :placeholder="vehicleInfoDict.brand" clearable filterable>
+          <el-option v-for="item in boardDict" :key="item.id" :label="item.label" :value="item.value"/>
+        </el-select>
+      </el-form-item>
+      <el-form-item :label="vehicleInfoDict.color" prop="color">
+        <el-input v-model="state.filterForm.color" :placeholder="vehicleInfoDict.color"/>
+      </el-form-item>
       <!--在此上方添加表单项-->
       <el-form-item>
         <el-button type="primary" @click="fCon">筛选</el-button>
