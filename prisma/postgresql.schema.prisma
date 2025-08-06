@@ -592,6 +592,7 @@ model vehicle_track_point {
   create_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
   update_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
   deleted     String                  @default("N") @dbPostgresql.Char(1)
+  heading     Float                   @dbPostgresql.Real
 
   @@index([point], map: "idx_track_point", type: Gist)
 }

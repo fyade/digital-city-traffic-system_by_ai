@@ -73,135 +73,142 @@ export const routes: RouteRecordRaw[] = [
   {
     path: '/dashboard',
     name: '~dashboard',
-    component: () => import('@/views/dashboard/index.vue'),
+    component: () => import('@/views/dashboard/index/index.vue'),
     children: [
       {
-        path: '',
-        name: '~dashboard/',
-        component: () => import('@/views/dashboard/index/index.vue'),
+        path: 'admin-panel',
+        name: '~dashboard/adminPanel',
+        component: () => import('@/views/dashboard/adminPanel/index.vue'),
         children: [
           {
-            path: 'admin-panel',
-            name: '~dashboard/adminPanel',
-            component: () => import('@/views/dashboard/adminPanel/index.vue'),
+            path: ':pathMatch(.*)*',
+            component: () => import('@/views/dashboard/redirect/index.vue')
+          }
+        ]
+      },
+      {
+        path: 'setting-panel',
+        name: '~dashboard/settingPanel',
+        component: () => import('@/views/dashboard/settingPanel/index.vue')
+      },
+      {
+        path: 'operate-guide',
+        name: '~dashboard/operateGuide',
+        component: () => import('@/views/dashboard/operateGuide/index.vue')
+      },
+      {
+        path: 'form-panel',
+        name: '~fp~',
+        component: () => import('@/views/dashboard/formPanel/index.vue'),
+        children: [
+          {
+            path: 'signal-light',
+            name: '~fp~:signalLight',
+            component: () => import('@/views/dashboard/formPanel/signalLight/index.vue'),
             children: [
               {
-                path: ':pathMatch(.*)*',
-                component: () => import('@/views/dashboard/redirect/index.vue')
+                path: 'signal-light-group-info',
+                name: '~fp~:signalLight:signalLightGroupInfo',
+                component: () => import('@/views/dashboard/formPanel/signalLight/signalLightGroupInfo/index.vue'),
+                children: [
+                  {
+                    path: 'ins',
+                    name: '~fp~:signalLight:signalLightGroupInfo:ins',
+                    component: () => import('@/views/dashboard/formPanel/signalLight/signalLightGroupInfo/form.vue')
+                  },
+                  {
+                    path: 'upd',
+                    name: '~fp~:signalLight:signalLightGroupInfo:upd',
+                    component: () => import('@/views/dashboard/formPanel/signalLight/signalLightGroupInfo/form.vue')
+                  },
+                  {
+                    path: 'del',
+                    name: '~fp~:signalLight:signalLightGroupInfo:del',
+                    component: () => import('@/views/dashboard/formPanel/signalLight/signalLightGroupInfo/form.vue')
+                  }
+                ]
+              },
+              {
+                path: 'signal-light-info',
+                name: '~fp~:signalLight:signalLightInfo',
+                component: () => import('@/views/dashboard/formPanel/signalLight/signalLightInfo/index.vue'),
+                children: [
+                  {
+                    path: 'ins',
+                    name: '~fp~:signalLight:signalLightInfo:ins',
+                    component: () => import('@/views/dashboard/formPanel/signalLight/signalLightInfo/form.vue')
+                  },
+                  {
+                    path: 'upd',
+                    name: '~fp~:signalLight:signalLightInfo:upd',
+                    component: () => import('@/views/dashboard/formPanel/signalLight/signalLightInfo/form.vue')
+                  },
+                  {
+                    path: 'del',
+                    name: '~fp~:signalLight:signalLightInfo:del',
+                    component: () => import('@/views/dashboard/formPanel/signalLight/signalLightInfo/form.vue')
+                  }
+                ]
+              },
+              {
+                path: 'signal-light-child-style-mapping',
+                name: '~fp~:signalLight:signalLightChildStyleMapping',
+                component: () => import('@/views/dashboard/formPanel/signalLight/signalLightChildStyleMapping/index.vue'),
+                children: [
+                  {
+                    path: 'ins',
+                    name: '~fp~:signalLight:signalLightChildStyleMapping:ins',
+                    component: () => import('@/views/dashboard/formPanel/signalLight/signalLightChildStyleMapping/form.vue')
+                  }
+                ]
               }
             ]
           },
           {
-            path: 'form-panel',
-            name: '~fp~',
-            component: () => import('@/views/dashboard/formPanel/index.vue'),
+            path: 'signal-light-strategy',
+            name: '~fp~:signalLightStrategy',
+            component: () => import('@/views/dashboard/formPanel/signalLightStrategy/index.vue'),
             children: [
               {
-                path: 'signal-light',
-                name: '~fp~:signalLight',
-                component: () => import('@/views/dashboard/formPanel/signalLight/index.vue'),
+                path: 'signal-light-group-strategy-type-mapping',
+                name: '~fp~:signalLightStrategy:signalLightGroupStrategyTypeMapping',
+                component: () => import('@/views/dashboard/formPanel/signalLightStrategy/signalLightGroupStrategyTypeMapping/index.vue'),
                 children: [
                   {
-                    path: 'signal-light-group-info',
-                    name: '~fp~:signalLight:signalLightGroupInfo',
-                    component: () => import('@/views/dashboard/formPanel/signalLight/signalLightGroupInfo/index.vue'),
-                    children: [
-                      {
-                        path: 'ins',
-                        name: '~fp~:signalLight:signalLightGroupInfo:ins',
-                        component: () => import('@/views/dashboard/formPanel/signalLight/signalLightGroupInfo/form.vue')
-                      },
-                      {
-                        path: 'upd',
-                        name: '~fp~:signalLight:signalLightGroupInfo:upd',
-                        component: () => import('@/views/dashboard/formPanel/signalLight/signalLightGroupInfo/form.vue')
-                      },
-                      {
-                        path: 'del',
-                        name: '~fp~:signalLight:signalLightGroupInfo:del',
-                        component: () => import('@/views/dashboard/formPanel/signalLight/signalLightGroupInfo/form.vue')
-                      }
-                    ]
-                  },
-                  {
-                    path: 'signal-light-info',
-                    name: '~fp~:signalLight:signalLightInfo',
-                    component: () => import('@/views/dashboard/formPanel/signalLight/signalLightInfo/index.vue'),
-                    children: [
-                      {
-                        path: 'ins',
-                        name: '~fp~:signalLight:signalLightInfo:ins',
-                        component: () => import('@/views/dashboard/formPanel/signalLight/signalLightInfo/form.vue')
-                      },
-                      {
-                        path: 'upd',
-                        name: '~fp~:signalLight:signalLightInfo:upd',
-                        component: () => import('@/views/dashboard/formPanel/signalLight/signalLightInfo/form.vue')
-                      },
-                      {
-                        path: 'del',
-                        name: '~fp~:signalLight:signalLightInfo:del',
-                        component: () => import('@/views/dashboard/formPanel/signalLight/signalLightInfo/form.vue')
-                      }
-                    ]
-                  },
-                  {
-                    path: 'signal-light-child-style-mapping',
-                    name: '~fp~:signalLight:signalLightChildStyleMapping',
-                    component: () => import('@/views/dashboard/formPanel/signalLight/signalLightChildStyleMapping/index.vue'),
-                    children: [
-                      {
-                        path: 'ins',
-                        name: '~fp~:signalLight:signalLightChildStyleMapping:ins',
-                        component: () => import('@/views/dashboard/formPanel/signalLight/signalLightChildStyleMapping/form.vue')
-                      }
-                    ]
+                    path: 'ins',
+                    name: '~fp~:signalLightStrategy:signalLightGroupStrategyTypeMapping:ins',
+                    component: () => import('@/views/dashboard/formPanel/signalLightStrategy/signalLightGroupStrategyTypeMapping/form.vue')
                   }
                 ]
               },
               {
-                path: 'signal-light-strategy',
-                name: '~fp~:signalLightStrategy',
-                component: () => import('@/views/dashboard/formPanel/signalLightStrategy/index.vue'),
+                path: 'signal-light-child-strategy-schedule-mapping',
+                name: '~fp~:signalLightStrategy:signalLightChildStrategyScheduleMapping',
+                component: () => import('@/views/dashboard/formPanel/signalLightStrategy/signalLightChildStrategyScheduleMapping/index.vue'),
                 children: [
                   {
-                    path: 'signal-light-group-strategy-type-mapping',
-                    name: '~fp~:signalLightStrategy:signalLightGroupStrategyTypeMapping',
-                    component: () => import('@/views/dashboard/formPanel/signalLightStrategy/signalLightGroupStrategyTypeMapping/index.vue'),
-                    children: [
-                      {
-                        path: 'ins',
-                        name: '~fp~:signalLightStrategy:signalLightGroupStrategyTypeMapping:ins',
-                        component: () => import('@/views/dashboard/formPanel/signalLightStrategy/signalLightGroupStrategyTypeMapping/form.vue')
-                      }
-                    ]
-                  },
-                  {
-                    path: 'signal-light-child-strategy-schedule-mapping',
-                    name: '~fp~:signalLightStrategy:signalLightChildStrategyScheduleMapping',
-                    component: () => import('@/views/dashboard/formPanel/signalLightStrategy/signalLightChildStrategyScheduleMapping/index.vue'),
-                    children: [
-                      {
-                        path: 'ins',
-                        name: '~fp~:signalLightStrategy:signalLightChildStrategyScheduleMapping:ins',
-                        component: () => import('@/views/dashboard/formPanel/signalLightStrategy/signalLightChildStrategyScheduleMapping/form.vue')
-                      }
-                    ]
+                    path: 'ins',
+                    name: '~fp~:signalLightStrategy:signalLightChildStrategyScheduleMapping:ins',
+                    component: () => import('@/views/dashboard/formPanel/signalLightStrategy/signalLightChildStrategyScheduleMapping/form.vue')
                   }
                 ]
-              },
-              {
-                path: 'runtime-diagram',
-                name: '~fp~:runtimeDiagram',
-                component: () => import('@/views/dashboard/formPanel/runtimeDiagram/index.vue')
-              },
-              {
-                path: ':pathMatch(.*)*',
-                redirect: '/dashboard'
               }
             ]
+          },
+          {
+            path: 'runtime-diagram',
+            name: '~fp~:runtimeDiagram',
+            component: () => import('@/views/dashboard/formPanel/runtimeDiagram/index.vue')
+          },
+          {
+            path: ':pathMatch(.*)*',
+            redirect: '/dashboard'
           }
         ]
+      },
+      {
+        path: ':pathMatch(.*)*',
+        redirect: '/dashboard'
       }
     ]
   },

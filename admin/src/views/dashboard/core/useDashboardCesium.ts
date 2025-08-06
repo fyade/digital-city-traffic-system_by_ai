@@ -43,13 +43,13 @@ class UseDashboardCesium extends UseCesium {
 
   public init2() {
     this.wsClient.init({ifInit: true, pageContext: 'dashboard'})
-    this.wsClient.addEventListener('dcts:spatialData:calculateLightsInPolygon', async data => {
+    this.wsClient.addEventListener('dcts:spatialData:calculateLightsInPolygon', data => {
       const calculateLightResult = JSON.parse(data.msg) as CalculateLightsInPolygonVo[];
       this.slModule.addTask(calculateLightResult)
       this.lnModule.closeSignalLightLoading()
     })
-    this.wsClient.addEventListener('dcts:spatialData:refreshLightWhenDatabaseChange', async data => {
-      await this.refreshScreenEntities()
+    this.wsClient.addEventListener('dcts:spatialData:refreshLightWhenDatabaseChange', () => {
+      this.refreshScreenEntities()
     })
   }
 
@@ -71,6 +71,8 @@ class UseDashboardCesium extends UseCesium {
   public allLayers = this.lnModule.allLayers
   public readonly setLayer = this.lnModule.setLayer.bind(this.lnModule)
 
+  public readonly getIfShowSignalLight = this.meModule.getIfShowSignalLight.bind(this.meModule)
+  public readonly setIfShowSignalLight = this.meModule.setIfShowSignalLight.bind(this.meModule)
   public readonly refreshScreenEntities = this.meModule.refreshScreenEntities.bind(this.meModule)
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 事件覆盖及初始化 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -132,6 +134,7 @@ class UseDashboardCesium extends UseCesium {
 
     this.cModule.init()
     this.lnModule.init()
+    this.meModule.init()
     this.miModule.init()
     this.slModule.init()
   }
@@ -140,27 +143,26 @@ class UseDashboardCesium extends UseCesium {
     super.destroy();
     this.cModule.destroy()
     this.slModule.destroy()
-    this.lnModule.closeLayerLoading().then(() => {
-      useDashboardCesium = createDashboardCesium()
-    })
+    this.lnModule.closeLayerLoading()
+    useDashboardCesium = createDashboardCesium()
     this.wsClient.destroy()
   }
 
-  protected async globeTileLoadProgressEventCB(queuedTileCount: number) {
-    await super.globeTileLoadProgressEventCB(queuedTileCount);
+  protected globeTileLoadProgressEventCB(queuedTileCount: number) {
+    super.globeTileLoadProgressEventCB(queuedTileCount);
     // 加载中
     if (queuedTileCount > 0) {
       this.lnModule.openLayerLoading()
     }
     // 加载完成
     if (queuedTileCount === 0) {
-      await this.lnModule.closeLayerLoading(true)
+      this.lnModule.closeLayerLoading(true)
     }
   }
 
-  protected async cameraMoveEndCB() {
-    await super.cameraMoveEndCB();
-    await this.refreshScreenEntities()
+  protected cameraMoveEndCB() {
+    super.cameraMoveEndCB();
+    this.refreshScreenEntities()
   }
 
   protected ScreenSpaceEventTypeLeftDownCB() {
@@ -238,9 +240,9 @@ class UseDashboardCesium extends UseCesium {
   }
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 其他 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-  private async LnModuleCloseCB(count: number) {
+  private LnModuleCloseCB(count: number) {
     if (count === 1) {
-      await this.refreshScreenEntities()
+      this.refreshScreenEntities()
     }
   }
 }

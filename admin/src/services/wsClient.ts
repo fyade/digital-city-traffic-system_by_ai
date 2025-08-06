@@ -26,7 +26,7 @@ class EventDataType {
 export class WsClient {
   private static instance: WsClient | null = null;
   private socket: Socket | null = null;
-  private events = new Map<string, [string, (data: EventDataType) => Promise<void>][]>();
+  private events = new Map<string, [string, (data: EventDataType) => void][]>();
 
   constructor({
                 ifInit = true,
@@ -65,9 +65,9 @@ export class WsClient {
             return;
           }
         });
-        this.socket.on('message', async (data) => {
+        this.socket.on('message', (data) => {
           const parse = JSON.parse(data) as EventDataType;
-          await this.runEvent(parse)
+          this.runEvent(parse)
         });
         this.socket.on('disconnect', () => {
           NMessage.error('服务端实时通信连接断开。')
@@ -110,7 +110,7 @@ export class WsClient {
    * @param perm
    * @param funcs
    */
-  public addEventListener(perm: string, ...funcs: ((data: EventDataType) => Promise<void>)[]): string[] {
+  public addEventListener(perm: string, ...funcs: ((data: EventDataType) => void)[]): string[] {
     if (!this.events.get(perm)) {
       this.events.set(perm, [])
     }
@@ -147,12 +147,12 @@ export class WsClient {
    * @param parse
    * @private
    */
-  private async runEvent(parse: EventDataType) {
+  private runEvent(parse: EventDataType) {
     if (parse && parse.perm) {
       const funcs = this.events.get(parse.perm);
       if (funcs) {
         for (const func of funcs) {
-          await func[1](parse)
+          func[1](parse)
         }
       }
     }

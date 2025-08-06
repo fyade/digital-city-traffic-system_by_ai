@@ -12,11 +12,14 @@ export class VehicleTrackPointDto extends BaseDto {
 
   point: string;
 
+  heading: number;
+
   constructor() {
     super();
     this.id = null;
     this.vehicleId = null;
     this.point = null;
+    this.heading = null;
   }
 }
 
@@ -26,6 +29,9 @@ export class VehicleTrackPointSelListDto extends PageDto {
 
   @ApiProperty({ description: '轨迹点', required: false })
   point: string;
+
+  @ApiProperty({ description: '航向角', required: false })
+  heading: number;
 }
 
 export class VehicleTrackPointSelAllDto {
@@ -34,6 +40,9 @@ export class VehicleTrackPointSelAllDto {
 
   @ApiProperty({ description: '轨迹点', required: false })
   point: string;
+
+  @ApiProperty({ description: '航向角', required: false })
+  heading: number;
 }
 
 export class VehicleTrackPointInsOneDto {
@@ -45,6 +54,11 @@ export class VehicleTrackPointInsOneDto {
   @IsNotEmpty({ message: '轨迹点不能为空' })
   @Matches(REGEX_DCTS_GEOM, { message: `位置必须为[${REGEX_DCTS_GEOM_DESCR}]格式` })
   point: string;
+
+  @ApiProperty({ description: '航向角', required: true })
+  @Type(() => Number)
+  @IsNotEmpty({ message: '航向角不能为空' })
+  heading: number;
 }
 
 export class VehicleTrackPointUpdOneDto extends VehicleTrackPointInsOneDto {

@@ -1,6 +1,6 @@
+import { Injectable } from "@nestjs/common";
 import { PrismaClient, Prisma } from '@dcts/prisma-generated/client-postgresql'
 import { serverConfig } from "@dcts/config";
-import { Injectable } from "@nestjs/common";
 import { baseUtils } from "@dcts/common";
 
 const env = serverConfig.currentConfig()

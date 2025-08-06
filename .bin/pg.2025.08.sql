@@ -32,4 +32,17 @@ create table public.vehicle_track_point
 );
 CREATE INDEX idx_track_point ON vehicle_track_point USING GIST(point);
 
+-- ===== ===== ===== ===== ===== ===== 2025.08.07 ===== ===== ===== ===== ===== =====
+
+alter table public.vehicle_track_point
+    add heading integer;
+alter table public.vehicle_track_point
+alter
+column heading type float using heading::float;
+alter table public.vehicle_track_point
+    alter column heading set not null;
+alter table public.vehicle_track_point
+alter
+column heading type float4 using heading::float4;
+
 -- ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== =====

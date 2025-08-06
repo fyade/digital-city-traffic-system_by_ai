@@ -25,9 +25,9 @@ export class LayerNotificationModule {
     this.setAllLabelsCB = func
   }
 
-  private layerLoadingEndCB: ((count: number) => Promise<void>) | null = null
+  private layerLoadingEndCB: ((count: number) => void) | null = null
 
-  public setLayerLoadingEndCB(func: (count: number) => Promise<void>) {
+  public setLayerLoadingEndCB(func: (count: number) => void) {
     this.layerLoadingEndCB = func
   }
 
@@ -71,7 +71,7 @@ export class LayerNotificationModule {
     }
   }
 
-  private async _closeLayerLoading(ifLoadEnd = false) {
+  private _closeLayerLoading(ifLoadEnd = false) {
     if (!this.layerLoading) {
       return
     }
@@ -94,18 +94,18 @@ export class LayerNotificationModule {
       this.layerLoadingTimer = null
     }
     if (this.layerLoadingEndCB) {
-      await this.layerLoadingEndCB(this.layerLoadingCount)
+      this.layerLoadingEndCB(this.layerLoadingCount)
     }
   }
 
   timeout_cll: NodeJS.Timeout | null = null
 
-  public async closeLayerLoading(ifLoadEnd = false) {
+  public closeLayerLoading(ifLoadEnd = false) {
     if (this.timeout_cll !== null) {
       return
     }
-    this.timeout_cll = setTimeout(async () => {
-      await this._closeLayerLoading(ifLoadEnd)
+    this.timeout_cll = setTimeout(() => {
+      this._closeLayerLoading(ifLoadEnd)
       this.timeout_cll = null
     }, 1000)
   }

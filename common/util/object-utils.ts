@@ -3,54 +3,48 @@ import { typeOf } from "./base-utils.js";
 /**
  * 是否null
  * @param val
- * @returns {boolean}
  */
-export function ifNull(val: any) {
+export function ifNull<T>(val: T): val is Extract<T, null> {
   return val === null
 }
 
 /**
  * 是否非null
  * @param val
- * @returns {boolean}
  */
-export function ifNotNull(val: any) {
+export function ifNotNull<T>(val: T): val is Exclude<T, null> {
   return !ifNull(val)
 }
 
 /**
  * 是否undefined
  * @param val
- * @returns {boolean}
  */
-export function ifUndefined(val: any) {
+export function ifUndefined<T>(val: T): val is Extract<T, undefined> {
   return val === void 0
 }
 
 /**
  * 是否非undefined
  * @param val
- * @returns {boolean}
  */
-export function ifNotUndefined(val: any) {
+export function ifNotUndefined<T>(val: T): val is Exclude<T, undefined> {
   return !ifUndefined(val)
 }
 
 /**
  * 是否有效
  * @param val
- * @returns {boolean}
  */
-export function ifValid(val: any) {
+export function ifValid<T>(val: T): val is NonNullable<T> {
   return ifNotNull(val) && ifNotUndefined(val)
 }
 
 /**
  * 是否无效
  * @param val
- * @returns {boolean}
  */
-export function ifNotValid(val: any) {
+export function ifNotValid<T>(val: T): val is T & (null | undefined) {
   return !ifValid(val)
 }
 

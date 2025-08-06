@@ -22,7 +22,8 @@ export class VehicleTrackPointService {
       private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('vehicle_track_point', {
-      notNullKeys: ['vehicleId', 'point'],
+      notNullKeys: ['vehicleId', 'point', 'heading'],
+      numberKeys: ['heading'],
     });
   }
 

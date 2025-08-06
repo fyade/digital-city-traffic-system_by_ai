@@ -20,8 +20,14 @@ const props = defineProps({
     required: true
   }
 });
-const emits = defineEmits(['openSettingLayerChange', 'openDebugPanel']);
+const emits = defineEmits(['openDebugPanel']);
 
+const goSettingPanel = () => {
+  router.push('/dashboard/setting-panel');
+}
+const goOperateGuidePanel = () => {
+  router.push('/dashboard/operate-guide');
+}
 const goAdminPanel = () => {
   router.push('/dashboard/admin-panel');
 }
@@ -42,12 +48,13 @@ const goHome = () => {
     <div class="footer footer2">
       <p>v{{ dashboardConfig.currentVersion }}</p>
       <p>{{ timeUtils.formatDate(new Date(props.currentTime)) }}</p>
-      <p @click="emits('openSettingLayerChange')"><span class="no-underline">设置</span></p>
+      <p @click="goSettingPanel"><span class="no-underline">设置</span></p>
       <p v-if="!userStore.ifLogin" @click="goToLogin"><span class="no-underline">登录</span></p>
       <p v-if="userStore.ifLogin" @click="userStore.logOut(false)"><span class="no-underline">退出登录</span></p>
       <p v-if="userStore.ifLogin" @click="goAdminPanel"><span class="no-underline">管理端面板</span></p>
       <p v-if="userStore.ifLogin" @click="goHome"><span class="no-underline">前往管理端</span></p>
-      <p v-show="userStore.ifLogin&&currentConfig.VITE_MODE===final.DEV" @click="emits('openDebugPanel')"><span class="no-underline">调试面板</span></p>
+      <p v-show="true||userStore.ifLogin&&currentConfig.VITE_MODE===final.DEV" @click="emits('openDebugPanel')"><span class="no-underline">调试面板</span></p>
+      <p @click="goOperateGuidePanel"><span class="no-underline">操作指南</span></p>
     </div>
   </div>
 </template>

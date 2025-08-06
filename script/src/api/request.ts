@@ -4,12 +4,19 @@ import { Res } from "../common/Res";
 
 const currentConfig = serverConfig.currentConfig();
 
+let apiKey = ''
+if (currentConfig.mode === 'dev') {
+  apiKey = 'xt6jjinic2y93fbb_1754479138269'
+} else if (currentConfig.mode === 'prod') {
+  apiKey = 'ik5kq7dpxc1djd8d_1754497513256'
+}
+
 export const axi = axios.create({
   baseURL: `http://localhost:${currentConfig.port}`,
   timeout: 1000 * 60 * 10,
   headers: {
     'Content-Type': 'application/json',
-    [currentConfig.headerApiKeyName]: 'xt6jjinic2y93fbb_1754479138269',
+    [currentConfig.headerApiKeyName]: apiKey,
   }
 });
 

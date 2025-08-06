@@ -4,7 +4,10 @@ import { ID_PREFIX_SIGNAL_LIGHT, ID_PREFIX_SIGNAL_LIGHT_GROUP } from "@/views/da
 import signalLight1Svg from "@/assets/images2/signal-light-1.png";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 import { LayerNotificationModule } from "@/views/dashboard/functionModules/layerNotificationModule.ts";
-import { base, numberUtils } from "@dcts/common";
+import { base, numberUtils, objectUtils } from "@dcts/common";
+import { useDashboardStore } from "@/store/module/dashboard.ts";
+
+const dashboardStore = useDashboardStore();
 
 const lightCanvasMap = new Map<string, { canvasWidth: number, canvasHeight: number, canvas: HTMLCanvasElement }>();
 
@@ -239,6 +242,30 @@ export class MapEntityModule {
   }
 
 
+  public init() {
+    const b = dashboardStore.getIfShowSignalLight();
+    if (objectUtils.ifValid(b)) {
+      this._ifShowSignalLight = b
+    }
+  }
+
+  // 信号灯是否显示
+  private _ifShowSignalLight = true
+
+  public setIfShowSignalLight(value: boolean) {
+    this._ifShowSignalLight = value
+    dashboardStore.setIfShowSignalLight(this._ifShowSignalLight)
+    if (this._ifShowSignalLight) {
+      this.refreshScreenEntities()
+    } else {
+      this.deleteScreenEntities()
+    }
+  }
+
+  public getIfShowSignalLight() {
+    return this._ifShowSignalLight
+  }
+
   // 当前选中的实体，注意，添加数据时，禁止使用数组方法
   private _selectedEntityIds: string[] = []
 
@@ -296,18 +323,39 @@ export class MapEntityModule {
    * 刷新可视区域内的实体
    * @param ifRefresh
    */
-  public async refreshScreenEntities(ifRefresh = false) {
-    if (this.lnModule) {
-      this.lnModule.openSignalLightLoading()
+  public refreshScreenEntities(ifRefresh = false) {
+    this.drawSignalLightsWhenMapMove(ifRefresh)
+  }
+
+  /**
+   * 清除地图上的所有实体
+   */
+  public deleteScreenEntities() {
+    if (!this.viewer) {
+      return
     }
-    await this.drawSignalLightsWhenMapMove(ifRefresh)
+    const delids: string[] = []
+    for (const value of this.viewer.entities.values) {
+      if (
+          value.id.startsWith(ID_PREFIX_SIGNAL_LIGHT)
+          || value.id.startsWith(ID_PREFIX_SIGNAL_LIGHT_GROUP)
+      ) {
+        delids.push(value.id)
+      }
+    }
+    for (const id of delids) {
+      this.viewer.entities.removeById(id)
+    }
   }
 
   /**
    * 查询可视区域内的信号灯组及子信号灯
    * @param ifRefresh
    */
-  private async drawSignalLightsWhenMapMove(ifRefresh = false) {
+  private drawSignalLightsWhenMapMove(ifRefresh = false) {
+    if (!this.getIfShowSignalLight()) {
+      return
+    }
     if (!this.viewer) {
       return
     }
@@ -318,94 +366,101 @@ export class MapEntityModule {
     if (!viewCornerCoordinates || viewCornerCoordinates.length < 3) {
       return
     }
+    if (this.lnModule) {
+      this.lnModule.openSignalLightLoading()
+    }
     viewCornerCoordinates.push(viewCornerCoordinates[0])
-    const res = await signalLightGroupsInPolygonApi({points: viewCornerCoordinates})
-    if (this.vdModule) {
-      this.vdModule.setHistorySignalLightGroupsInPolygonVo(res)
-    }
-    const seidsByGroup = this.getSelectedEntityIdsByGroup();
-    // 信号灯组
-    if (ifRefresh) {
-      const ids = [
-        ...res.signalLightGroupInfos.map(item => item.id),
-        ...seidsByGroup.signalLightGroupInfo
-      ]
+    signalLightGroupsInPolygonApi({points: viewCornerCoordinates}).then(res => {
+      if (!this.viewer) {
+        return
+      }
       if (this.vdModule) {
-        const hslgip = this.vdModule.getHistorySignalLightGroupsInPolygonVo(-1);
-        if (hslgip) {
-          const _ids = hslgip.data.signalLightGroupInfos.map(item => item.id);
-          ids.push(..._ids)
+        this.vdModule.setHistorySignalLightGroupsInPolygonVo(res)
+      }
+      const seidsByGroup = this.getSelectedEntityIdsByGroup();
+      // 信号灯组
+      if (ifRefresh) {
+        const ids = [
+          ...res.signalLightGroupInfos.map(item => item.id),
+          ...seidsByGroup.signalLightGroupInfo
+        ]
+        if (this.vdModule) {
+          const hslgip = this.vdModule.getHistorySignalLightGroupsInPolygonVo(-1);
+          if (hslgip) {
+            const _ids = hslgip.data.signalLightGroupInfos.map(item => item.id);
+            ids.push(..._ids)
+          }
+        }
+        for (const id of ids) {
+          const d = `${ID_PREFIX_SIGNAL_LIGHT_GROUP}${id}`;
+          const index = this.renderedItemIds.indexOf(d);
+          if (index > -1) {
+            this.viewer.entities.removeById(d)
+            this.renderedItemIds.splice(index, 1)
+          }
         }
       }
-      for (const id of ids) {
-        const d = `${ID_PREFIX_SIGNAL_LIGHT_GROUP}${id}`;
-        const index = this.renderedItemIds.indexOf(d);
-        if (index > -1) {
-          this.viewer.entities.removeById(d)
-          this.renderedItemIds.splice(index, 1)
+      for (const re of res.signalLightGroupInfos) {
+        const d = `${ID_PREFIX_SIGNAL_LIGHT_GROUP}${re.id}`;
+        if (this.renderedItemIds.includes(d)) {
+          continue;
+        }
+        this.renderedItemIds.push(d)
+        const strings = re.location.split(',').map(Number) as [number, number];
+        this.viewer.entities.add({
+          position: Cesium.Cartesian3.fromDegrees(strings[0], strings[1], 0),
+          billboard: {
+            image: signalLight1Svg,
+            verticalOrigin: Cesium.VerticalOrigin.CENTER,
+            width: 32,
+            height: 32
+          },
+          id: d,
+        });
+      }
+      // 子信号灯
+      if (ifRefresh) {
+        const ids = [
+          ...res.signalLightInfos.map(item => item.id),
+          ...seidsByGroup.signalLightInfo
+        ]
+        if (this.vdModule) {
+          const hslgip = this.vdModule.getHistorySignalLightGroupsInPolygonVo(-1);
+          if (hslgip) {
+            const _ids = hslgip.data.signalLightInfos.map(item => item.id);
+            ids.push(..._ids)
+          }
+        }
+        for (const id of ids) {
+          const d = `${ID_PREFIX_SIGNAL_LIGHT}${id}`;
+          const index = this.renderedItemIds.indexOf(d);
+          if (index > -1) {
+            this.viewer.entities.removeById(d)
+            this.renderedItemIds.splice(index, 1)
+          }
         }
       }
-    }
-    for (const re of res.signalLightGroupInfos) {
-      const d = `${ID_PREFIX_SIGNAL_LIGHT_GROUP}${re.id}`;
-      if (this.renderedItemIds.includes(d)) {
-        continue;
-      }
-      this.renderedItemIds.push(d)
-      const strings = re.location.split(',').map(Number) as [number, number];
-      this.viewer.entities.add({
-        position: Cesium.Cartesian3.fromDegrees(strings[0], strings[1], 0),
-        billboard: {
-          image: signalLight1Svg,
-          verticalOrigin: Cesium.VerticalOrigin.CENTER,
-          width: 32,
-          height: 32
-        },
-        id: d,
-      });
-    }
-    // 子信号灯
-    if (ifRefresh) {
-      const ids = [
-        ...res.signalLightInfos.map(item => item.id),
-        ...seidsByGroup.signalLightInfo
-      ]
-      if (this.vdModule) {
-        const hslgip = this.vdModule.getHistorySignalLightGroupsInPolygonVo(-1);
-        if (hslgip) {
-          const _ids = hslgip.data.signalLightInfos.map(item => item.id);
-          ids.push(..._ids)
+      for (const re of res.signalLightInfos) {
+        const d = `${ID_PREFIX_SIGNAL_LIGHT}${re.id}`
+        if (this.renderedItemIds.includes(d)) {
+          continue;
         }
+        this.renderedItemIds.push(d)
+        const strings = re.location.split(',').map(Number) as [number, number];
+        this.viewer.entities.add({
+          position: Cesium.Cartesian3.fromDegrees(strings[0], strings[1], 0.01),
+          billboard: {
+            image: signalLight1Svg,
+            verticalOrigin: Cesium.VerticalOrigin.CENTER,
+            width: 24,
+            height: 24
+          },
+          id: d,
+        });
       }
-      for (const id of ids) {
-        const d = `${ID_PREFIX_SIGNAL_LIGHT}${id}`;
-        const index = this.renderedItemIds.indexOf(d);
-        if (index > -1) {
-          this.viewer.entities.removeById(d)
-          this.renderedItemIds.splice(index, 1)
-        }
-      }
-    }
-    for (const re of res.signalLightInfos) {
-      const d = `${ID_PREFIX_SIGNAL_LIGHT}${re.id}`
-      if (this.renderedItemIds.includes(d)) {
-        continue;
-      }
-      this.renderedItemIds.push(d)
-      const strings = re.location.split(',').map(Number) as [number, number];
-      this.viewer.entities.add({
-        position: Cesium.Cartesian3.fromDegrees(strings[0], strings[1], 0.01),
-        billboard: {
-          image: signalLight1Svg,
-          verticalOrigin: Cesium.VerticalOrigin.CENTER,
-          width: 24,
-          height: 24
-        },
-        id: d,
-      });
-    }
+    })
 
-    await calculateLightsInPolygonApi({points: viewCornerCoordinates})
+    calculateLightsInPolygonApi({points: viewCornerCoordinates})
   }
 
   public setSignalLightToPic(id: number) {

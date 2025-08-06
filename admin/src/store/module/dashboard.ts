@@ -18,10 +18,21 @@ export const useDashboardStore = defineStore('dashboardStore', () => {
     return idsOfBaseMaps.value
   }
 
+  const ifShowSignalLight = ref<boolean | null>(null)
+  const setIfShowSignalLight = (value: boolean) => {
+    ifShowSignalLight.value = value
+  }
+  const getIfShowSignalLight = () => {
+    return ifShowSignalLight.value
+  }
+
   return {
     idsOfBaseMaps,
     setIdsOfBaseMaps,
     getIdsOfBaseMaps,
+    ifShowSignalLight,
+    setIfShowSignalLight,
+    getIfShowSignalLight
   }
 }, {
   persist: true

@@ -21,6 +21,7 @@ const state = reactive<State2<VehicleTrackPointDto, VehicleTrackPointUpdDto>>({
     id: -1,
     vehicleId: '',
     point: '',
+    heading: 0,
   },
   dialogForms: [],
   dialogForms_error: {},
@@ -29,6 +30,7 @@ const state = reactive<State2<VehicleTrackPointDto, VehicleTrackPointUpdDto>>({
 const dFormRules: FormRules<VehicleTrackPointDto> = {
   vehicleId: [{required: true, trigger: 'change'}],
   point: [{required: true, trigger: 'change'}],
+  heading: [{required: true, trigger: 'change'}],
 }
 const config = new TablePageConfig<VehicleTrackPointDto>({
   bulkOperation: true,
@@ -121,6 +123,13 @@ const {
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item :label="vehicleTrackPointDict.heading" prop="heading">
+              <el-input-number v-model="state.dialogForm.heading" controls-position="right"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <!--在此上方添加表单项-->
         <!--<el-form-item :label="vehicleTrackPointDict.orderNum" prop='orderNum'>-->
         <!--  <el-input-number v-model="state.dialogForm.orderNum" controls-position="right"/>-->
@@ -172,6 +181,16 @@ const {
             <template #default="{$index}">
               <div :class="state.dialogForms_error?.[`${$index}-point`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
                 <el-input v-model="state.dialogForms[$index].point" :placeholder="vehicleTrackPointDict.point"/>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="heading" :label="vehicleTrackPointDict.heading" width="300">
+            <template #header>
+              <span :class="ifRequired('heading')?'tp-table-header-required':''">{{ vehicleTrackPointDict.heading }}</span>
+            </template>
+            <template #default="{$index}">
+              <div :class="state.dialogForms_error?.[`${$index}-heading`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-input-number v-model="state.dialogForms[$index].heading" controls-position="right"/>
               </div>
             </template>
           </el-table-column>
@@ -244,6 +263,7 @@ const {
       <!--在此下方添加表格列-->
       <el-table-column prop="vehicleId" :label="vehicleTrackPointDict.vehicleId" width="120"/>
       <el-table-column prop="point" :label="vehicleTrackPointDict.point" width="120"/>
+      <el-table-column prop="heading" :label="vehicleTrackPointDict.heading" width="120"/>
       <!--在此上方添加表格列-->
       <!--<el-table-column prop="createRole" :label="vehicleTrackPointDict.createRole" width="120"/>-->
       <!--<el-table-column prop="updateRole" :label="vehicleTrackPointDict.updateRole" width="120"/>-->

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, PrismaClient } from '@dcts/prisma-generated/client'
+import { PrismaClient, Prisma } from '@dcts/prisma-generated/client'
 import { serverConfig } from "@dcts/config";
 import { baseUtils } from "@dcts/common";
 

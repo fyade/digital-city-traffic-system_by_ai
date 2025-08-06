@@ -38,7 +38,9 @@ export class UseCesium {
    */
   public destroy() {
     UseCesium.instance = null
-    this.viewer?.destroy()
+    if (this.viewer) {
+      this.viewer.destroy()
+    }
     this.viewer = null
 
     this.pointCollection = null
@@ -81,9 +83,12 @@ export class UseCesium {
    * @param y
    */
   public screenXYToLonLat(x: number, y: number) {
+    if (!this.viewer) {
+      return null
+    }
     const pickedPosition = new Cesium.Cartesian2(x, y);
     // 转为笛卡尔坐标
-    const cartesian = this.viewer?.camera.pickEllipsoid(pickedPosition, this.viewer?.scene.globe.ellipsoid);
+    const cartesian = this.viewer.camera.pickEllipsoid(pickedPosition, this.viewer.scene.globe.ellipsoid);
     if (!cartesian) {
       return null
     }
@@ -363,14 +368,14 @@ export class UseCesium {
    * @param queuedTileCount
    * @protected
    */
-  protected async globeTileLoadProgressEventCB(queuedTileCount: number) {
+  protected globeTileLoadProgressEventCB(queuedTileCount: number) {
   }
 
   /**
    * 相机移动结束事件
    * @protected
    */
-  protected async cameraMoveEndCB() {
+  protected cameraMoveEndCB() {
     const centerLonLat1 = this.centerLonLat();
     if (centerLonLat1) {
       this.mapCenterPosition[0] = centerLonLat1.lon
