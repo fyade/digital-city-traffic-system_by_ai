@@ -1,8 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { R } from "../../../common/R";
-import { CalculateLightsInPolygonDto, NodesWithWaysInPolygonDto, SignalLightGroupsInPolygonDto } from "./dto";
+import {
+  CalculateLightsInPolygonDto,
+  GetVehiclesInPolygonDto,
+  NodesWithWaysInPolygonDto,
+  SignalLightGroupsInPolygonDto
+} from "./dto";
 import { PostgresqlPrismaoService } from "../../../infra/prisma/postgresql.prismao.service";
 import {
+  getVehiclesInPolygon,
   nodesWithWaysInPolygon,
   signalLightGroupsInPolygon,
   signalLightGroupsInPolygon2,
@@ -15,9 +21,11 @@ import { SignalLightGroupChildMappingDto } from "../signal-light/signal-light-gr
 import { DctsCoreService } from "../core/dcts-core.service";
 import { BaseContextService } from "../../../infra/base-context/base-context.service";
 import { PrismaoService } from "../../../infra/prisma/prismao.service";
-import { baseUtils } from "@dcts/common";
+import { arrayUtils, baseUtils } from "@dcts/common";
 import { SignalLightChildStyleMappingDto } from "../signal-light/signal-light-child-style-mapping/dto";
 import { SignalLightStyleDto } from "../signal-light/signal-light-style/dto";
+import { WsService } from "../../../infra/ws/ws.service";
+import { VehicleTrackPointDto } from "../vehicle/vehicle-track-point/dto";
 
 @Injectable()
 export class SpatialDataService {
@@ -26,6 +34,7 @@ export class SpatialDataService {
       private readonly pgsqlPrismao: PostgresqlPrismaoService,
       private readonly dctsCoreService: DctsCoreService,
       private readonly bcs: BaseContextService,
+      private readonly wsService: WsService
   ) {
   }
 
@@ -99,5 +108,21 @@ export class SpatialDataService {
     } else {
       return R.ok(true)
     }
+  }
+
+  async getVehiclesInPolygon(dto: GetVehiclesInPolygonDto): Promise<R> {
+    const sql = getVehiclesInPolygon(dto);
+    const ret = await this.pgsqlPrismao.$queryRawUnsafe<VehicleTrackPointDto[]>(sql);
+    const rett: { vehicleId: number, points: VehicleTrackPointDto[] }[] = []
+    const allVIds = arrayUtils.arrNoRepeat(ret.map(tem => tem.vehicleId));
+    for (const vid of allVIds) {
+      rett.push({
+        vehicleId: vid,
+        points: ret.filter(item => item.vehicleId === vid)
+      })
+    }
+    const userData = this.bcs.getUserData();
+    this.wsService.sendMsg(userData.loginRole, userData.userId, 'dcts:spatialData:getVehiclesInPolygon', JSON.stringify(rett))
+    return R.ok(true)
   }
 }

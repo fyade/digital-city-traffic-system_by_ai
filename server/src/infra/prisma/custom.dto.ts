@@ -10,6 +10,7 @@
  * @param selParam 查询参数
  * @param pageNum
  * @param pageSize
+ * @param orderBy
  */
 export class GenSqlDto<T> {
   type: 'selList' | 'selCount' | 'selAll' | 'selById' | 'selByIds' | 'ins' | 'upd' | 'del'
@@ -23,6 +24,7 @@ export class GenSqlDto<T> {
   selParam?: { [P in keyof T]?: T[P] }
   pageNum?: number
   pageSize?: number
+  orderBy?: boolean | object
 }
 
 export const publicSqlSelectKey = {

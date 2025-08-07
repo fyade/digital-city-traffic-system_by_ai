@@ -8,7 +8,7 @@ import { REGEX_DCTS_GEOM, REGEX_DCTS_GEOM_DESCR } from "../../../../util/Regular
 export class VehicleTrackPointDto extends BaseDto {
   id: number;
 
-  vehicleId: string;
+  vehicleId: number;
 
   point: string;
 
@@ -25,7 +25,7 @@ export class VehicleTrackPointDto extends BaseDto {
 
 export class VehicleTrackPointSelListDto extends PageDto {
   @ApiProperty({ description: '车辆id', required: false })
-  vehicleId: string;
+  vehicleId: number;
 
   @ApiProperty({ description: '轨迹点', required: false })
   point: string;
@@ -36,7 +36,7 @@ export class VehicleTrackPointSelListDto extends PageDto {
 
 export class VehicleTrackPointSelAllDto {
   @ApiProperty({ description: '车辆id', required: false })
-  vehicleId: string;
+  vehicleId: number;
 
   @ApiProperty({ description: '轨迹点', required: false })
   point: string;
@@ -47,8 +47,9 @@ export class VehicleTrackPointSelAllDto {
 
 export class VehicleTrackPointInsOneDto {
   @ApiProperty({ description: '车辆id', required: true })
+  @Type(() => Number)
   @IsNotEmpty({ message: '车辆id不能为空' })
-  vehicleId: string;
+  vehicleId: number;
 
   @ApiProperty({ description: '轨迹点', required: true })
   @IsNotEmpty({ message: '轨迹点不能为空' })

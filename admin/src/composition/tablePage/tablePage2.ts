@@ -559,7 +559,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
     state.dialogForms!.splice(index, 1)
   }
 
-  const filterFormVisible1 = computed(() => objectUtils.ifHasKey(state, 'filterForm') && Object.keys(state.filterForm).length > 0)
+  const filterFormVisible1 = computed(() => config.ifShowSelectForm || (objectUtils.ifHasKey(state, 'filterForm') && Object.keys(state.filterForm).length > 0))
 
   return {
     dialogFormRef,

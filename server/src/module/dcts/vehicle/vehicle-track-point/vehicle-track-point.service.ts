@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { MysqlPrismaService } from '../../../../infra/prisma/mysql.prisma.service';
 import { R } from '../../../../common/R';
 import {
   VehicleTrackPointDto,
@@ -23,7 +22,7 @@ export class VehicleTrackPointService {
   ) {
     this.bcs.setFieldSelectParam('vehicle_track_point', {
       notNullKeys: ['vehicleId', 'point', 'heading'],
-      numberKeys: ['heading'],
+      numberKeys: ['vehicleId', 'heading'],
     });
   }
 

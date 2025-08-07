@@ -13,7 +13,7 @@ import { PermissionModule } from "@/views/dashboard/functionModules/permissionMo
 import { SignalLightModule } from "@/views/dashboard/functionModules/signalLightModule.ts";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 import { adminConfig } from "@dcts/config";
-import { CalculateLightsInPolygonVo } from "@/type/module/dcts/spatialData.ts";
+import { CalculateLightsInPolygonVo, GetVehiclesInPolygonVo } from "@/type/module/dcts/spatialData.ts";
 import { final } from "@/utils/base.ts";
 
 const currentConfig = adminConfig.currentConfig()
@@ -44,12 +44,16 @@ class UseDashboardCesium extends UseCesium {
   public init2() {
     this.wsClient.init({ifInit: true, pageContext: 'dashboard'})
     this.wsClient.addEventListener('dcts:spatialData:calculateLightsInPolygon', data => {
-      const calculateLightResult = JSON.parse(data.msg) as CalculateLightsInPolygonVo[];
-      this.slModule.addTask(calculateLightResult)
+      const result = JSON.parse(data.msg) as CalculateLightsInPolygonVo[];
+      this.slModule.addTask(result)
       this.lnModule.closeSignalLightLoading()
     })
     this.wsClient.addEventListener('dcts:spatialData:refreshLightWhenDatabaseChange', () => {
       this.refreshScreenEntities()
+    })
+    this.wsClient.addEventListener('dcts:spatialData:getVehiclesInPolygon', data => {
+      const result = JSON.parse(data.msg) as GetVehiclesInPolygonVo[];
+      this.meModule.drawVehicleRealTime(result)
     })
   }
 
@@ -73,6 +77,10 @@ class UseDashboardCesium extends UseCesium {
 
   public readonly getIfShowSignalLight = this.meModule.getIfShowSignalLight.bind(this.meModule)
   public readonly setIfShowSignalLight = this.meModule.setIfShowSignalLight.bind(this.meModule)
+  public readonly getIfShowVehicleRealTime = this.meModule.getIfShowVehicleRealTime.bind(this.meModule)
+  public readonly setIfShowVehicleRealTime = this.meModule.setIfShowVehicleRealTime.bind(this.meModule)
+  public readonly getLastActiveInterval = this.meModule.getLastActiveInterval.bind(this.meModule)
+  public readonly setLastActiveInterval = this.meModule.setLastActiveInterval.bind(this.meModule)
   public readonly refreshScreenEntities = this.meModule.refreshScreenEntities.bind(this.meModule)
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 事件覆盖及初始化 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -163,6 +171,10 @@ class UseDashboardCesium extends UseCesium {
   protected cameraMoveEndCB() {
     super.cameraMoveEndCB();
     this.refreshScreenEntities()
+  }
+
+  protected trackedEntityChangedCB() {
+    super.trackedEntityChangedCB();
   }
 
   protected ScreenSpaceEventTypeLeftDownCB() {

@@ -4,6 +4,7 @@ import { ref } from "vue";
 import { deepClone } from "@/utils/ObjectUtils.ts";
 import { arrayUtils } from "@dcts/common";
 import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
+import { NMessage } from "@/utils/naiveBase.ts";
 
 const useCesium = useDashboardCesium;
 const allLayers = useCesium.allLayers;
@@ -29,12 +30,26 @@ const submit = () => {
     useCesium.setLayer('roadData', form.value.dataLayer)
   }
   form2 = deepClone(form.value)
+  NMessage.success('保存更改成功。')
 }
 
 const ifShowSignalLight = ref(useCesium.getIfShowSignalLight())
 const updateIfShowSignalLight = (val: boolean) => {
   useCesium.setIfShowSignalLight(val)
   ifShowSignalLight.value = useCesium.getIfShowSignalLight()
+  NMessage.success('修改成功。')
+}
+const ifShowVehicleRealTime = ref(useCesium.getIfShowVehicleRealTime())
+const updateIfShowVehicleRealTime = (val: boolean) => {
+  useCesium.setIfShowVehicleRealTime(val)
+  ifShowVehicleRealTime.value = useCesium.getIfShowVehicleRealTime()
+  NMessage.success('修改成功。')
+}
+const lastActiveInterval = ref(useCesium.getLastActiveInterval())
+const updateLastActiveInterval = (val: number) => {
+  useCesium.setLastActiveInterval(val)
+  lastActiveInterval.value = useCesium.getLastActiveInterval()
+  NMessage.success('修改成功。')
 }
 </script>
 
@@ -66,17 +81,39 @@ const updateIfShowSignalLight = (val: boolean) => {
     </n-form>
 
     <n-divider title-placement="left">实体</n-divider>
-    <n-grid :y-gap="20" :cols="2">
+    <n-grid style="line-height: 34px;" :y-gap="20" :cols="2">
       <n-gi>
         <n-grid>
-          <n-gi :span="4">信号灯</n-gi>
-          <n-gi :span="20">
+          <n-gi :span="6">信号灯</n-gi>
+          <n-gi :span="18">
             <n-switch :value="ifShowSignalLight" @update:value="updateIfShowSignalLight">
               <template #checked>显示</template>
               <template #unchecked>隐藏</template>
             </n-switch>
           </n-gi>
         </n-grid>
+      </n-gi>
+      <n-gi></n-gi>
+      <n-gi>
+        <n-grid>
+          <n-gi :span="6">实时车流数据</n-gi>
+          <n-gi :span="18">
+            <n-switch :value="ifShowVehicleRealTime" @update:value="updateIfShowVehicleRealTime">
+              <template #checked>显示</template>
+              <template #unchecked>隐藏</template>
+            </n-switch>
+          </n-gi>
+        </n-grid>
+      </n-gi>
+      <n-gi>
+        <template v-if="ifShowVehicleRealTime">
+          <n-grid>
+            <n-gi :span="6">最近活动时间(秒)</n-gi>
+            <n-gi :span="18">
+              <n-input-number :value="lastActiveInterval" @update:value="updateLastActiveInterval" :max="60" :min="10"/>
+            </n-gi>
+          </n-grid>
+        </template>
       </n-gi>
     </n-grid>
   </n-modal>

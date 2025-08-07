@@ -1,6 +1,7 @@
-import { NodesWithWaysInPolygonDto, SignalLightGroupsInPolygonDto } from "./dto";
+import { GetVehiclesInPolygonDto, NodesWithWaysInPolygonDto, SignalLightGroupsInPolygonDto } from "./dto";
 import { final } from "../../../util/base";
 import { publicSqlSelectKey } from "../../../infra/prisma/custom.dto";
+import { timeUtils } from "@dcts/common";
 
 export function nodesWithWaysInPolygon(dto: NodesWithWaysInPolygonDto) {
   // 点数组转为字符串
@@ -105,5 +106,28 @@ export function signalLightGroupsInPolygon3(ids: number[]) {
       from signal_light_info
       where deleted = '${final.N}'
         and id in (${ids.join(', ')});
+  `
+}
+
+export function getVehiclesInPolygon(dto: GetVehiclesInPolygonDto) {
+  const end = new Date()
+  const start = new Date(end.getTime() - 1000 * dto.lastActiveInterval)
+  return `
+      select vtp.id                               as "id",
+             vtp.vehicle_id                       as "vehicleId",
+             ST_AsText(vtp.point)                 as "point",
+             vtp.create_role                      as "createRole",
+             vtp.update_role                      as "updateRole",
+             vtp.create_by                        as "createBy",
+             vtp.update_by                        as "updateBy",
+             ${publicSqlSelectKey.kvs.createTime} as "createTime",
+             ${publicSqlSelectKey.kvs.updateTime} as "updateTime",
+             vtp.deleted                          as "deleted",
+             vtp.heading                          as "heading"
+      FROM public.vehicle_track_point vtp
+      WHERE ST_Within(vtp.point, ST_GeomFromText('POLYGON((${dto.points.map(p => `${p.lon} ${p.lat}`).join(`,`)}))', 4326))
+        AND vtp.create_time BETWEEN '${start.toISOString()}' AND '${end.toISOString()}'
+        AND vtp.deleted = '${final.N}'
+      order by vehicle_id asc, create_time desc;
   `
 }

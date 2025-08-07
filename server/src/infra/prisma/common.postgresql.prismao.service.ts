@@ -1,17 +1,16 @@
 import { BaseContextService } from "../base-context/base-context.service";
-import {
-  baseInterfaceColumns,
-  baseInterfaceColumns2
-} from "../../module/main/sys-util/code-generation/codeGeneration";
+import { baseInterfaceColumns, baseInterfaceColumns2 } from "../../module/main/sys-util/code-generation/codeGeneration";
 import { baseUtils, objectUtils } from "@dcts/common";
 import { final } from "../../util/base";
 import { GenSqlDto, publicSqlSelectKey } from "./custom.dto";
 import { Injectable } from "@nestjs/common";
 import { PrismaoService } from "./prismao.service";
+import { PostgresqlPrismaService } from "./postgresql.prisma.service";
 
 @Injectable()
 export class CommonPostgresqlPrismaoService {
   constructor(
+      private readonly pgsqlPrisma: PostgresqlPrismaService,
       private readonly prismao: PrismaoService,
       private readonly bcs: BaseContextService,
   ) {
@@ -87,8 +86,34 @@ export class CommonPostgresqlPrismaoService {
       } else {
         for (const key of Object.keys(dto.selParam)) {
           if (dto.selParam[key]) {
-            sql += ` and ${baseUtils.toSnakeCase(key)} like '%${dto.selParam[key]}%' `
+            let datum: any = '';
+            try {
+              datum = JSON.parse(dto.selParam[key])
+              if (typeof datum === 'number') {
+                datum = dto.selParam[key]
+              }
+            } catch (e) {
+              datum = dto.selParam[key]
+            }
+            if (baseUtils.typeOf(datum) === 'object') {
+            } else {
+              sql += ` and ${baseUtils.toSnakeCase(key)} like '%${datum}%' `
+            }
           }
+        }
+      }
+      if (dto.type === 'selList' || dto.type === 'selAll') {
+        if (typeof dto.orderBy === 'boolean' && dto.orderBy) {
+          sql += ' order by order_num asc, create_time desc '
+        } else if (dto.orderBy) {
+          sql += ' order by '
+          sql += Object.keys(dto.orderBy)
+              .map((_, index) => ` ${baseUtils.toSnakeCase(Object.keys(dto.orderBy)[index])} ${Object.values(dto.orderBy)[index]} `)
+              .map(_ => `${_}, `)
+              .join('')
+          sql += ' create_time desc '
+        } else {
+          sql += ' order by create_time desc '
         }
       }
     } else if (this._ifIns(dto.type)) {
@@ -251,13 +276,38 @@ export class CommonPostgresqlPrismaoService {
       sql += ';';
       sqls.push(sql);
     }
-    return sqls
+    if (dto.type === 'selList' || dto.type === 'selCount' || dto.type === 'selAll') {
+      const _genSelParams = this.pgsqlPrisma.genSelParamSql({
+        tblName: dto.tblName,
+        type: dto.type,
+        clas: dto.clas,
+        selfDefineSelKey: dto.selfDefineSelKey,
+        orderBy: dto.orderBy,
+        pageNum: dto.pageNum,
+        pageSize: dto.pageSize,
+      }, {
+        data: dto.selParam,
+        orderBy: dto.orderBy,
+        range: {},
+        selKeys: [],
+        notNullKeys: fieldSelectParam.notNullKeys,
+        numberKeys: fieldSelectParam.numberKeys,
+        completeMatchingKeys: fieldSelectParam.completeMatchingKeys,
+        ifDeleted: fieldSelectParam.ifDeleted,
+        ifUseSelfData: false
+      })
+      const genSelParams = dto.type === 'selCount' ? _genSelParams : _genSelParams.replace(/select.*from/, `select ${sql_select_keys} from`);
+      sqls.splice(0, sqls.length)
+      sqls.push(genSelParams)
+    }
+    const ret = sqls
         .map(sql => sql
             .trim()
             .replace(/ +/g, ' ')
             .replace(/ ,/g, ',')
             .replace(/ ;/g, ';')
         );
+    return ret;
   }
 
   /**

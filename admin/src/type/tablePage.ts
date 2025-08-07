@@ -76,6 +76,7 @@ export class TablePageConfig<T = {}> {
   activeTabMoreInsCallback
   activeTabMoreInsFinishCallback
   activeTabMoreDelCallback
+  ifShowSelectForm
 
   /**
    * @param selectParam 补充的查询参数
@@ -98,6 +99,7 @@ export class TablePageConfig<T = {}> {
    * @param activeTabMoreInsCallback 弹出表单为操作多个时，新增之前的回调函数
    * @param activeTabMoreInsFinishCallback 弹出表单为操作多个时，新增之后的回调函数
    * @param activeTabMoreDelCallback 弹出表单为操作多个时，删除的回调函数
+   * @param ifShowSelectForm 特殊情况下，需要用这个才能显示查询表单
    */
   constructor({
                 selectParam = {},
@@ -120,6 +122,7 @@ export class TablePageConfig<T = {}> {
                 activeTabMoreInsCallback = null,
                 activeTabMoreInsFinishCallback = null,
                 activeTabMoreDelCallback = null,
+                ifShowSelectForm = false,
               }: {
                 selectParam?: { [P in keyof T]?: (T[P] | SelectParamObj) }
                 insUpdParam?: Partial<T>
@@ -141,6 +144,7 @@ export class TablePageConfig<T = {}> {
                 activeTabMoreInsCallback?: null | Function
                 activeTabMoreInsFinishCallback?: null | Function
                 activeTabMoreDelCallback?: null | ((index: number) => void)
+                ifShowSelectForm?: boolean
               } = {}
   ) {
     this.selectParam = selectParam;
@@ -163,5 +167,6 @@ export class TablePageConfig<T = {}> {
     this.activeTabMoreInsCallback = activeTabMoreInsCallback;
     this.activeTabMoreInsFinishCallback = activeTabMoreInsFinishCallback;
     this.activeTabMoreDelCallback = activeTabMoreDelCallback;
+    this.ifShowSelectForm = ifShowSelectForm;
   }
 }

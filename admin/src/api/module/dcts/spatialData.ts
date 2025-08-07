@@ -1,5 +1,5 @@
 import {
-  CalculateLightsInPolygonDto, CalculateLightsInPolygonVo,
+  CalculateLightsInPolygonDto, CalculateLightsInPolygonVo, GetVehiclesInPolygonDto,
   NodesWithWaysInPolygonDto,
   NodesWithWaysInPolygonVo,
   SignalLightGroupsInPolygonDto,
@@ -38,6 +38,18 @@ export function signalLightGroupsInPolygonApi(data: SignalLightGroupsInPolygonDt
 export function calculateLightsInPolygonApi(data: CalculateLightsInPolygonDto) {
   return request<CalculateLightsInPolygonVo[]>({
     url: '/dcts/spatial-data/calculate-lights-in-polygon',
+    method: 'POST',
+    data: data,
+  })
+}
+
+/**
+ * 计算多边形内的车辆实时信息
+ * @param data
+ */
+export function getVehiclesInPolygon(data: GetVehiclesInPolygonDto) {
+  return request({
+    url: '/dcts/spatial-data/get-vehicles-in-polygon',
     method: 'POST',
     data: data,
   })

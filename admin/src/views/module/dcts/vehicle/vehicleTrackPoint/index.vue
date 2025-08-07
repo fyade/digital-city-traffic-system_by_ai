@@ -5,7 +5,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { CONFIG, final } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
@@ -15,11 +15,12 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { VehicleTrackPointDto, VehicleTrackPointUpdDto } from "@/type/module/dcts/vehicle/vehicleTrackPoint.ts";
 import { vehicleTrackPointApi } from "@/api/module/dcts/vehicle/vehicleTrackPoint.ts";
 import { vehicleTrackPointDict } from "@/dict/module/dcts/vehicle/vehicleTrackPoint.ts";
+import { timeUtils } from "@dcts/common";
 
 const state = reactive<State2<VehicleTrackPointDto, VehicleTrackPointUpdDto>>({
   dialogForm: {
     id: -1,
-    vehicleId: '',
+    vehicleId: 0,
     point: '',
     heading: 0,
   },
@@ -34,6 +35,15 @@ const dFormRules: FormRules<VehicleTrackPointDto> = {
 }
 const config = new TablePageConfig<VehicleTrackPointDto>({
   bulkOperation: true,
+  ifShowSelectForm: true,
+  selectParam: {
+    createTime: {
+      between: {
+        type: 'date',
+        value: [null, null]
+      }
+    }
+  }
 })
 
 const {
@@ -80,6 +90,85 @@ const {
   api: vehicleTrackPointApi,
   dict: vehicleTrackPointDict,
 })
+
+const datePickerValue = ref('')
+const shortcuts = [
+  {
+    text: '前一周',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setDate(start.getDate() - 7)
+      return [start, end]
+    },
+  },
+  {
+    text: '前两周',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setDate(start.getDate() - 14)
+      return [start, end]
+    },
+  },
+  {
+    text: '前一个月',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setMonth(start.getMonth() - 1)
+      return [start, end]
+    },
+  },
+  {
+    text: '前三个月',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setMonth(start.getMonth() - 3)
+      return [start, end]
+    },
+  },
+  {
+    text: '前半年',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setMonth(start.getMonth() - 6)
+      return [start, end]
+    },
+  },
+  {
+    text: '前一年',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setFullYear(start.getFullYear() - 1)
+      return [start, end]
+    },
+  },
+]
+const datePickerValueChange = (value: Date[]) => {
+  if (value) {
+    if (config.selectParam.createTime && 'between' in config.selectParam.createTime && config.selectParam.createTime.between) {
+      config.selectParam.createTime.between.value[0] = value[0]
+      config.selectParam.createTime.between.value[1] = value[1]
+    }
+  } else {
+    if (config.selectParam.createTime && 'between' in config.selectParam.createTime && config.selectParam.createTime.between) {
+      config.selectParam.createTime.between.value[0] = null
+      config.selectParam.createTime.between.value[1] = null
+    }
+  }
+}
+const fCan2 = () => {
+  datePickerValue.value = ''
+  if (config.selectParam.createTime && 'between' in config.selectParam.createTime && config.selectParam.createTime.between) {
+    config.selectParam.createTime.between.value[0] = null
+    config.selectParam.createTime.between.value[1] = null
+  }
+  fCan()
+}
 </script>
 
 <template>
@@ -114,7 +203,7 @@ const {
         <el-row>
           <el-col :span="12">
             <el-form-item :label="vehicleTrackPointDict.vehicleId" prop="vehicleId">
-              <el-input v-model="state.dialogForm.vehicleId" :placeholder="vehicleTrackPointDict.vehicleId"/>
+              <el-input-number v-model="state.dialogForm.vehicleId" controls-position="right"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -170,7 +259,7 @@ const {
             </template>
             <template #default="{$index}">
               <div :class="state.dialogForms_error?.[`${$index}-vehicleId`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].vehicleId" :placeholder="vehicleTrackPointDict.vehicleId"/>
+                <el-input-number v-model="state.dialogForms[$index].vehicleId" controls-position="right"/>
               </div>
             </template>
           </el-table-column>
@@ -227,10 +316,23 @@ const {
       <!--<el-form-item :label="vehicleTrackPointDict." prop="">-->
       <!--  <el-input v-model="state.filterForm." :placeholder="vehicleTrackPointDict."/>-->
       <!--</el-form-item>-->
+      <el-form-item :label="vehicleTrackPointDict.createTime" prop="createTime">
+        <el-date-picker
+            v-model="datePickerValue"
+            type="datetimerange"
+            :shortcuts="shortcuts"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            format="YYYY-MM-DD HH:mm:ss"
+            date-format="YYYY/MM/DD ddd"
+            time-format="HH:mm:ss"
+            @change="datePickerValueChange"
+        />
+      </el-form-item>
       <!--在此上方添加表单项-->
       <el-form-item>
         <el-button type="primary" @click="fCon">筛选</el-button>
-        <el-button @click="fCan">重置</el-button>
+        <el-button @click="fCan2">重置</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -262,14 +364,18 @@ const {
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
       <el-table-column prop="vehicleId" :label="vehicleTrackPointDict.vehicleId" width="120"/>
-      <el-table-column prop="point" :label="vehicleTrackPointDict.point" width="120"/>
+      <el-table-column prop="point" :label="vehicleTrackPointDict.point" width="320"/>
       <el-table-column prop="heading" :label="vehicleTrackPointDict.heading" width="120"/>
       <!--在此上方添加表格列-->
       <!--<el-table-column prop="createRole" :label="vehicleTrackPointDict.createRole" width="120"/>-->
       <!--<el-table-column prop="updateRole" :label="vehicleTrackPointDict.updateRole" width="120"/>-->
       <!--<el-table-column prop="createBy" :label="vehicleTrackPointDict.createBy" width="120"/>-->
       <!--<el-table-column prop="updateBy" :label="vehicleTrackPointDict.updateBy" width="120"/>-->
-      <!--<el-table-column prop="createTime" :label="vehicleTrackPointDict.createTime" width="220"/>-->
+      <el-table-column prop="createTime" :label="vehicleTrackPointDict.createTime" width="220">
+        <template #default="{row}">
+          {{ timeUtils.formatDate(new Date(row.createTime)) }}
+        </template>
+      </el-table-column>
       <!--<el-table-column prop="updateTime" :label="vehicleTrackPointDict.updateTime" width="220"/>-->
       <!--<el-table-column prop="deleted" :label="vehicleTrackPointDict.deleted" width="60"/>-->
       <!--上方几个酌情使用-->

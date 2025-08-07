@@ -26,13 +26,35 @@ export const useDashboardStore = defineStore('dashboardStore', () => {
     return ifShowSignalLight.value
   }
 
+  const ifShowVehicleRealTime = ref<boolean | null>(null)
+  const setIfShowVehicleRealTime = (value: boolean) => {
+    ifShowVehicleRealTime.value = value
+  }
+  const getIfShowVehicleRealTime = () => {
+    return ifShowVehicleRealTime.value
+  }
+
+  const lastActiveInterval = ref<number | null>(null)
+  const setLastActiveInterval = (value: number) => {
+    lastActiveInterval.value = value
+  }
+  const getLastActiveInterval = () => {
+    return lastActiveInterval.value
+  }
+
   return {
     idsOfBaseMaps,
     setIdsOfBaseMaps,
     getIdsOfBaseMaps,
     ifShowSignalLight,
     setIfShowSignalLight,
-    getIfShowSignalLight
+    getIfShowSignalLight,
+    ifShowVehicleRealTime,
+    setIfShowVehicleRealTime,
+    getIfShowVehicleRealTime,
+    lastActiveInterval,
+    setLastActiveInterval,
+    getLastActiveInterval,
   }
 }, {
   persist: true

@@ -4,6 +4,7 @@ import { SignalLightGroupChildMappingDto } from "@/type/module/dcts/signalLight/
 import { SignalLightChildStyleMappingDto } from "@/type/module/dcts/signalLight/signalLightChildStyleMapping.ts";
 import { SignalLightStyleDto } from "@/type/module/dcts/signalLight/signalLightStyle.ts";
 import { base } from "@dcts/common";
+import { VehicleTrackPointDto } from "@/type/module/dcts/vehicle/vehicleTrackPoint.ts";
 
 class PolygonPointDto {
   lon!: number;
@@ -57,4 +58,15 @@ export class CalculateLightsInPolygonVo {
   signalLightGroupId!: number
   signalLightChildId!: number
   runParam!: SignalLightRunParamDParam[]
+}
+
+export class GetVehiclesInPolygonDto {
+  version?: string
+  lastActiveInterval!: number
+  points!: PolygonPointDto[]
+}
+
+export class GetVehiclesInPolygonVo {
+  vehicleId!: number
+  points!: VehicleTrackPointDto[]
 }

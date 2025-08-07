@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PageDto } from '../../common/dto/PageDto';
 import { PageVo } from '../../common/vo/PageVo';
 import { deepClone } from '../../util/ObjectUtils';
-import { PrismaParam, SelectParamObj } from './dto';
+import { PrismaParam, PrismaParamAll, SelectParamObj } from './dto';
 import { PrismaoService } from "./prismao.service";
 import { AuthService } from '../auth/auth.service';
 import { BaseContextService } from '../base-context/base-context.service';
@@ -271,6 +271,116 @@ export class PrismaService {
     return ret;
   }
 
+  public genSelParamSql<T, P = object>(
+      param1: {
+        tblName?: string,
+        type?: 'selList' | 'selCount' | 'selAll',
+        clas?: T
+        selfDefineSelKey?: { [P in keyof T]?: string }
+        orderBy?: boolean | object,
+        pageNum?: number
+        pageSize?: number
+      },
+      ...params: Parameters<typeof this.genSelParams<T, P>>
+  ) {
+    let sql = ''
+    const arg: Partial<PrismaParam> = {
+      where: this.genSelParams<T, P>(...params)
+    }
+    if (param1.type === 'selList' || param1.type === 'selAll') {
+      const publicData = this.prismao.defaultSelArg({
+        selKeys: params[0].selKeys,
+        ifDeleted: params[0].ifDeleted,
+        ifUseSelfData: params[0].ifUseSelfData
+      });
+      if (publicData.select) {
+        arg['select'] = publicData.select
+      }
+      this.__(arg, param1.orderBy)
+    }
+    if (param1.type === 'selList') {
+      const skipAndTakeFromPNS = this._(param1.pageNum, param1.pageSize);
+      arg['skip'] = skipAndTakeFromPNS.skip
+      arg['take'] = skipAndTakeFromPNS.take
+    }
+    sql += ` select `
+    if (param1.type === 'selList' || param1.type === 'selAll') {
+      sql += Object.keys(param1.clas)
+          .map(key => ` ${baseUtils.toSnakeCase(key)} as ${key} `)
+          .join(', ')
+    } else if (param1.type === 'selCount') {
+      sql += ` count(*) as "count" `
+    }
+    sql += ` from ${param1.tblName} `
+    sql += ` where 1=1 `
+    sql += arg.where.AND
+        .map(obj => {
+          if (obj.OR) {
+            let ret = ' ('
+            if (typeof obj.OR !== 'string' && typeof obj.OR !== 'number') {
+              ret += obj.OR
+                  .map(o => {
+                    const key = Object.keys(o)[0];
+                    const value = Object.values(o)[0];
+                    if (typeof value === 'string') {
+                      return ` ${key} = '${value}' `
+                    }
+                    if (typeof value === 'number') {
+                      return ` ${key} = ${value} `
+                    }
+                    const key2 = Object.keys(value)[0];
+                    const value2 = Object.values(value)[0];
+                    if (key2 === 'contains') {
+                      return ` ${key} like '%${value2}%' `
+                    }
+                    if (key2 === 'in') {
+                      const val = value2.map(_ => typeof _ === 'number' ? _ : `'${_}'`).join(', ');
+                      return ` ${key} in (${val}) `
+                    }
+                    if (key2 === 'gte' || key2 === 'lte') {
+                      const b = typeof value['gte'] === 'number';
+                      if (b) {
+                        return ` ${key} between ${value['gte']} and ${value['lte']} `
+                      } else {
+                        return ` ${key} between '${value['gte']}' and '${value['lte']}' `
+                      }
+                    }
+                  })
+                  .join(' or ')
+            }
+            ret += ') '
+            return ret
+          } else {
+            const b1 = typeof Object.values(obj)[0] === 'number';
+            if (b1) {
+              return ` ( ${Object.keys(obj)[0]} = ${Object.values(obj)[0]} ) `
+            } else {
+              return ` ( ${Object.keys(obj)[0]} = '${Object.values(obj)[0]}' ) `
+            }
+          }
+        })
+        .map(_ => ` and ${_} `)
+        .join('')
+    if (param1.type === 'selList' || param1.type === 'selAll') {
+      if (typeof param1.orderBy === 'boolean' && param1.orderBy) {
+        sql += ' order by order_num asc, create_time desc '
+      } else if (param1.orderBy) {
+        sql += ' order by '
+        sql += Object.keys(param1.orderBy)
+            .map((_, index) => ` ${baseUtils.toSnakeCase(Object.keys(param1.orderBy)[index])} ${Object.values(param1.orderBy)[index]} `)
+            .map(_ => `${_}, `)
+            .join('')
+        sql += ' create_time desc '
+      } else {
+        sql += ' order by create_time desc '
+      }
+    }
+    if (param1.type === 'selList') {
+      sql += ` limit ${param1.pageSize} offset ${(param1.pageNum - 1) * param1.pageSize} `;
+    }
+    return sql
+  }
+
   /**
    * 分页查询
    * @param model
@@ -301,6 +411,7 @@ export class PrismaService {
     delete data2.pageSize;
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
     const publicData = this.prismao.defaultSelArg({selKeys, ifDeleted: fieldSelectParam.ifDeleted, ifUseSelfData});
+    const skipAndTakeFromPNS = this._(pageNum, pageSize);
     const arg: PrismaParam = {
       where: this.genSelParams<T, P>({
         data: data2,
@@ -314,34 +425,10 @@ export class PrismaService {
         ifUseSelfData,
       }),
       ...(publicData.select ? {select: publicData.select} : {}),
-      skip: this.getSkipAndTakeFromPNS(pageNum, pageSize).skip,
-      take: this.getSkipAndTakeFromPNS(pageNum, pageSize).take,
+      skip: skipAndTakeFromPNS.skip,
+      take: skipAndTakeFromPNS.take,
     };
-    if (typeof orderBy === 'boolean' && orderBy) {
-      arg['orderBy'] = [
-        {
-          order_num: 'asc',
-        },
-        {
-          create_time: 'desc',
-        }
-      ];
-    } else if (orderBy) {
-      arg['orderBy'] = [
-        ...Object.keys(orderBy).map((_, index) => {
-          return {
-            [baseUtils.toSnakeCase(Object.keys(orderBy)[index])]: Object.values(orderBy)[index],
-          }
-        }),
-        {
-          create_time: 'desc',
-        }
-      ];
-    } else {
-      arg['orderBy'] = {
-        create_time: 'desc',
-      };
-    }
+    this.__(arg, orderBy)
     const model1 = this.getModel(model);
     const list = await model1.findMany(arg);
     const list1 = list.map((item: object) => baseUtils.objToCamelCase(item));
@@ -386,7 +473,7 @@ export class PrismaService {
   ): Promise<T[]> {
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
     const publicData = this.prismao.defaultSelArg({selKeys, ifDeleted: fieldSelectParam.ifDeleted, ifUseSelfData});
-    const arg = {
+    const arg: PrismaParamAll = {
       where: this.genSelParams<T, P>({
         data,
         orderBy,
@@ -400,19 +487,7 @@ export class PrismaService {
       }),
       ...(publicData.select ? {select: publicData.select} : {}),
     };
-    if (typeof orderBy === 'boolean' && orderBy) {
-      arg['orderBy'] = {
-        order_num: 'asc',
-      };
-    } else if (orderBy) {
-      arg['orderBy'] = {
-        [baseUtils.toSnakeCase(Object.keys(orderBy)[0])]: Object.values(orderBy)[0],
-      };
-    } else {
-      arg['orderBy'] = {
-        create_time: 'desc',
-      };
-    }
+    this.__(arg, orderBy)
     const res2 = await this.getModel(model).findMany(arg);
     const res3 = res2.map((item: object) => baseUtils.objToCamelCase(item));
     return new Promise(resolve => resolve(res3));
@@ -514,7 +589,7 @@ export class PrismaService {
                                     } = {},
   ): Promise<number> {
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
-    const arg = {
+    const arg: PrismaParamAll = {
       where: this.genSelParams<T, P>({
         data,
         range,
@@ -703,10 +778,38 @@ export class PrismaService {
     return new Promise(resolve => resolve(true));
   }
 
-  private getSkipAndTakeFromPNS(pageNum: number, pageSize: number) {
+  private _(pageNum: number, pageSize: number) {
     return {
       skip: (pageNum - 1) * pageSize,
       take: pageSize,
     };
+  }
+
+  private __(arg: object, orderBy?: boolean | object) {
+    if (typeof orderBy === 'boolean' && orderBy) {
+      arg['orderBy'] = [
+        {
+          order_num: 'asc',
+        },
+        {
+          create_time: 'desc',
+        }
+      ];
+    } else if (orderBy) {
+      arg['orderBy'] = [
+        ...Object.keys(orderBy).map((_, index) => {
+          return {
+            [baseUtils.toSnakeCase(Object.keys(orderBy)[index])]: Object.values(orderBy)[index],
+          }
+        }),
+        {
+          create_time: 'desc',
+        }
+      ];
+    } else {
+      arg['orderBy'] = {
+        create_time: 'desc',
+      };
+    }
   }
 }

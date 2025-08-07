@@ -27,10 +27,6 @@ const init = async () => {
 
   cesiumClass.value.setContainer('cesiumContainer')
   cesiumClass.value.init2()
-  const viewer = cesiumClass.value.getViewer();
-  if (!viewer) {
-    return
-  }
 
   await sysStore.refreshVisibleButton('sys:dcts')
   console.info('加载完成')

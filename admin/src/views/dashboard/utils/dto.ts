@@ -1,6 +1,6 @@
 import * as Cesium from 'cesium'
 import { idUtils } from "@dcts/common";
-import { ID_PREFIX_LINE, ID_PREFIX_POINT } from "@/views/dashboard/functionModules/constant.ts";
+import { CESIUM_DEFAULT, ID_PREFIX_LINE, ID_PREFIX_POINT } from "@/views/dashboard/functionModules/constant.ts";
 
 export class CesiumPoint {
   id!: string
@@ -13,8 +13,8 @@ export class CesiumPoint {
                 id = ID_PREFIX_POINT + idUtils.genId(),
                 lon,
                 lat,
-                color = Cesium.Color.WHITE,
-                height = 0
+                color = CESIUM_DEFAULT.COLOR_POINT,
+                height = CESIUM_DEFAULT.HEIGHT_POINT
               }: {
                 id?: string
                 lon: number
@@ -40,8 +40,8 @@ export class CesiumLine {
   constructor({
                 id = ID_PREFIX_LINE + idUtils.genId(),
                 points = [],
-                color = Cesium.Color.WHITE,
-                height = 0
+                color = CESIUM_DEFAULT.COLOR_LINE,
+                height = CESIUM_DEFAULT.HEIGHT_LINE
               }: {
                 id?: string
                 points?: CesiumPoint[]

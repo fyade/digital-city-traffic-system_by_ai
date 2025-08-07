@@ -1,12 +1,26 @@
 // 生成的 prisma 查询参数
-export class PrismaParam {
+export class PrismaParamAll {
   select?: Record<string, boolean>;
   where!: {
-    AND: any[];
+    AND: (
+        {
+          OR: Record<string,
+              string
+              | number
+              | { contains: string }
+              | { in: (string | number)[] }
+              | { gte: string | number | Date, lte: string | number | Date }
+          >[]
+        }
+        | Record<string, string | number>
+        )[];
   };
+  orderBy?: Record<string, string> | Record<string, string>[];
+}
+
+export class PrismaParam extends PrismaParamAll {
   skip!: number;
   take!: number;
-  orderBy?: Record<string, string> | Record<string, string>[];
 }
 
 // 查询参数的类型为 object 时的格式
@@ -54,14 +68,14 @@ class SelectParamObjIn {
 
 class SelectParamObjBetween {
   type?: string;
-  value: (string | number)[];
+  value: (string | number | Date)[];
 
   constructor({
                 type = 'string',
                 value = [],
               }: {
                 type?: string,
-                value?: (string | number)[]
+                value?: (string | number | Date)[]
               } = {},
   ) {
     this.type = type;

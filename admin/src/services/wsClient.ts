@@ -27,6 +27,7 @@ export class WsClient {
   private static instance: WsClient | null = null;
   private socket: Socket | null = null;
   private events = new Map<string, [string, (data: EventDataType) => void][]>();
+  private ifSelfDisConnect = false
 
   constructor({
                 ifInit = true,
@@ -70,7 +71,11 @@ export class WsClient {
           this.runEvent(parse)
         });
         this.socket.on('disconnect', () => {
-          NMessage.error('服务端实时通信连接断开。')
+          if (this.ifSelfDisConnect) {
+            NMessage.success('服务端实时通信连接已正常断开。')
+          } else {
+            NMessage.error('服务端实时通信连接断开。')
+          }
           this.socket = null
         });
         this.socket.on('connect_error', (err) => {
@@ -85,6 +90,7 @@ export class WsClient {
 
   public destroy() {
     if (this.socket) {
+      this.ifSelfDisConnect = true
       this.socket.io.reconnection(false)
       this.socket.disconnect()
       this.socket = null

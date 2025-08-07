@@ -3,7 +3,12 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { SpatialDataService } from "./spatial-data.service";
 import { Authorize } from "../../../decorator/authorize.decorator";
 import { R } from "../../../common/R";
-import { CalculateLightsInPolygonDto, NodesWithWaysInPolygonDto, SignalLightGroupsInPolygonDto } from "./dto";
+import {
+  CalculateLightsInPolygonDto,
+  GetVehiclesInPolygonDto,
+  NodesWithWaysInPolygonDto,
+  SignalLightGroupsInPolygonDto
+} from "./dto";
 import { publicConfig } from "@dcts/config";
 import { Exception } from "../../../exception/exception";
 
@@ -52,5 +57,17 @@ export class SpatialDataController {
       throw new Exception('多边形至少需要 3 个顶点。')
     }
     return this.spatialDataService.calculateLightsInPolygon(dto);
+  }
+
+  @Post('/get-vehicles-in-polygon')
+  @ApiOperation({
+    summary: '计算多边形内的车辆实时信息'
+  })
+  @Authorize({
+    permission: 'dcts:spatialData:getVehiclesInPolygon',
+    label: '计算多边形内的车辆实时信息'
+  })
+  async getVehiclesInPolygon(@Body() dto: GetVehiclesInPolygonDto): Promise<R> {
+    return this.spatialDataService.getVehiclesInPolygon(dto);
   }
 }

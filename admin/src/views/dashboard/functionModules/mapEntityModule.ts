@@ -1,11 +1,23 @@
 import * as Cesium from "cesium";
-import { calculateLightsInPolygonApi, signalLightGroupsInPolygonApi } from "@/api/module/dcts/spatialData.ts";
-import { ID_PREFIX_SIGNAL_LIGHT, ID_PREFIX_SIGNAL_LIGHT_GROUP } from "@/views/dashboard/functionModules/constant.ts";
+import {
+  calculateLightsInPolygonApi,
+  getVehiclesInPolygon,
+  signalLightGroupsInPolygonApi
+} from "@/api/module/dcts/spatialData.ts";
+import {
+  CESIUM_DEFAULT,
+  ID_PREFIX_SIGNAL_LIGHT,
+  ID_PREFIX_SIGNAL_LIGHT_GROUP,
+  ID_PREFIX_VEHICLE_REAL_TIME
+} from "@/views/dashboard/functionModules/constant.ts";
 import signalLight1Svg from "@/assets/images2/signal-light-1.png";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 import { LayerNotificationModule } from "@/views/dashboard/functionModules/layerNotificationModule.ts";
 import { base, numberUtils, objectUtils } from "@dcts/common";
 import { useDashboardStore } from "@/store/module/dashboard.ts";
+import { CronJob } from "cron";
+import { GetVehiclesInPolygonVo } from "@/type/module/dcts/spatialData.ts";
+import busTopImage from '@/assets/images2/公交车-车顶.png'
 
 const dashboardStore = useDashboardStore();
 
@@ -242,10 +254,28 @@ export class MapEntityModule {
   }
 
 
+  private cronJob: CronJob | null = null
+
   public init() {
-    const b = dashboardStore.getIfShowSignalLight();
-    if (objectUtils.ifValid(b)) {
-      this._ifShowSignalLight = b
+    this.cronJob = new CronJob(
+        '* * * * * *',
+        this.refreshVehicleRealTime.bind(this),
+        null
+    );
+    const b1 = dashboardStore.getIfShowSignalLight();
+    if (objectUtils.ifValid(b1)) {
+      this._ifShowSignalLight = b1
+    }
+    const b2 = dashboardStore.getIfShowVehicleRealTime()
+    if (objectUtils.ifValid(b2)) {
+      this._ifShowVehicleRealTime = b2
+      if (this._ifShowVehicleRealTime) {
+        this.cronJob.start()
+      }
+    }
+    const b3 = dashboardStore.getLastActiveInterval()
+    if (objectUtils.ifValid(b3)) {
+      this._lastActiveInterval = b3
     }
   }
 
@@ -408,7 +438,7 @@ export class MapEntityModule {
         this.renderedItemIds.push(d)
         const strings = re.location.split(',').map(Number) as [number, number];
         this.viewer.entities.add({
-          position: Cesium.Cartesian3.fromDegrees(strings[0], strings[1], 0),
+          position: Cesium.Cartesian3.fromDegrees(strings[0], strings[1], CESIUM_DEFAULT.HEIGHT_SIGNAL_LIGHT_GROUP),
           billboard: {
             image: signalLight1Svg,
             verticalOrigin: Cesium.VerticalOrigin.CENTER,
@@ -448,7 +478,7 @@ export class MapEntityModule {
         this.renderedItemIds.push(d)
         const strings = re.location.split(',').map(Number) as [number, number];
         this.viewer.entities.add({
-          position: Cesium.Cartesian3.fromDegrees(strings[0], strings[1], 0.01),
+          position: Cesium.Cartesian3.fromDegrees(strings[0], strings[1], CESIUM_DEFAULT.HEIGHT_SIGNAL_LIGHT),
           billboard: {
             image: signalLight1Svg,
             verticalOrigin: Cesium.VerticalOrigin.CENTER,
@@ -497,5 +527,87 @@ export class MapEntityModule {
     entity.billboard.width = new Cesium.ConstantProperty(lightCanvas.canvasWidth)
     entity.billboard.height = new Cesium.ConstantProperty(lightCanvas.canvasHeight)
     entity.billboard.image = new Cesium.ConstantProperty(lightCanvas.canvas)
+  }
+
+  // 车辆信息实时显示
+  private _ifShowVehicleRealTime = false
+
+  public setIfShowVehicleRealTime(value: boolean) {
+    this._ifShowVehicleRealTime = value
+    dashboardStore.setIfShowVehicleRealTime(this._ifShowVehicleRealTime)
+    if (this._ifShowVehicleRealTime) {
+      if (this.cronJob) this.cronJob.start()
+    } else {
+      if (this.cronJob) this.cronJob.stop()
+      if (!this.viewer) {
+        return
+      }
+      for (const id of this.hasDrawedVehicleIds) {
+        this.viewer.entities.removeById(`${ID_PREFIX_VEHICLE_REAL_TIME}${id}`)
+      }
+      this.hasDrawedVehicleIds.splice(0, this.hasDrawedVehicleIds.length)
+    }
+  }
+
+  public getIfShowVehicleRealTime() {
+    return this._ifShowVehicleRealTime
+  }
+
+  private refreshVehicleRealTime() {
+    if (!this.getIfShowVehicleRealTime()) {
+      return;
+    }
+    if (!this.getViewCornerCoordinates) {
+      return
+    }
+    const coordinates = this.getViewCornerCoordinates();
+    if (!coordinates || coordinates.length < 3) {
+      return
+    }
+    coordinates.push(coordinates[0])
+    getVehiclesInPolygon({lastActiveInterval: this.getLastActiveInterval(), points: coordinates})
+  }
+
+  private hasDrawedVehicleIds: number[] = []
+
+  public drawVehicleRealTime(data: GetVehiclesInPolygonVo[]) {
+    if (!this.viewer) {
+      return
+    }
+    for (const datum of data) {
+      const point = datum.points[0].point.replace('POINT(', '').replace(')', '').split(' ').map(Number);
+      if (!this.hasDrawedVehicleIds.includes(datum.vehicleId)) {
+        this.hasDrawedVehicleIds.push(datum.vehicleId)
+        this.viewer.entities.add({
+          position: Cesium.Cartesian3.fromDegrees(point[0], point[1], CESIUM_DEFAULT.HEIGHT_VEHICLE),
+          billboard: {
+            image: busTopImage,
+            width: 40,
+            height: 40,
+            rotation: Cesium.Math.toRadians(datum.points[0].heading),
+            alignedAxis: Cesium.Cartesian3.UNIT_Z
+          },
+          id: `${ID_PREFIX_VEHICLE_REAL_TIME}${datum.vehicleId}`
+        })
+      } else {
+        const entity = this.viewer.entities.getById(`${ID_PREFIX_VEHICLE_REAL_TIME}${datum.vehicleId}`);
+        if (entity && entity.billboard) {
+          entity.position = new Cesium.ConstantPositionProperty(Cesium.Cartesian3.fromDegrees(point[0], point[1], CESIUM_DEFAULT.HEIGHT_VEHICLE))
+          entity.billboard.rotation = new Cesium.ConstantProperty(Cesium.Math.toRadians(datum.points[0].heading))
+        }
+      }
+    }
+  }
+
+  // 最近活动时间
+  private _lastActiveInterval = 10
+
+  public setLastActiveInterval(value: number) {
+    this._lastActiveInterval = value
+    dashboardStore.setLastActiveInterval(this._lastActiveInterval)
+  }
+
+  public getLastActiveInterval() {
+    return this._lastActiveInterval
   }
 }

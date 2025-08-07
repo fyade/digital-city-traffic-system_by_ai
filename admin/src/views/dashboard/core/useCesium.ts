@@ -25,10 +25,6 @@ export class UseCesium {
     return UseCesium.instance
   }
 
-  public getViewer() {
-    return this.viewer;
-  }
-
   protected init() {
   }
 
@@ -175,7 +171,7 @@ export class UseCesium {
     const point = this.pointCollection.add({
       id: obj.id,
       position: Cesium.Cartesian3.fromDegrees(obj.lon, obj.lat, obj.height),
-      color: obj.color || Cesium.Color.RED,
+      color: obj.color,
       pixelSize: 12
     });
     this.pointMap.set(obj.id, point);
@@ -218,7 +214,7 @@ export class UseCesium {
       id: obj.id,
       geometry: geometry,
       attributes: {
-        color: Cesium.ColorGeometryInstanceAttribute.fromColor(obj.color || Cesium.Color.WHITE)
+        color: Cesium.ColorGeometryInstanceAttribute.fromColor(obj.color)
       },
     });
     const polyline = this.polylineCollection.add(
@@ -269,7 +265,7 @@ export class UseCesium {
         id: obj.id,
         geometry: geometry,
         attributes: {
-          color: Cesium.ColorGeometryInstanceAttribute.fromColor(obj.color || Cesium.Color.WHITE)
+          color: Cesium.ColorGeometryInstanceAttribute.fromColor(obj.color)
         },
       });
       instances.push(instance)
@@ -305,6 +301,8 @@ export class UseCesium {
   public cameraHeight = 10000
   // 地图中心点位置[经度、纬度]
   public mapCenterPosition: [number, number] = [118.92269000122111, 32.10650387256775]
+  // 当前聚焦的实体
+  public trackedEntity: Cesium.Entity | null = null
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 事件封装 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   /**
@@ -349,6 +347,7 @@ export class UseCesium {
 
     this.viewer.scene.globe.tileLoadProgressEvent.addEventListener(this.globeTileLoadProgressEventCB.bind(this))
     this.viewer.camera.moveEnd.addEventListener(this.cameraMoveEndCB.bind(this))
+    this.viewer.trackedEntityChanged.addEventListener(this.trackedEntityChangedCB.bind(this))
 
     const handler = new Cesium.ScreenSpaceEventHandler(this.viewer.canvas);
     handler.setInputAction(this.ScreenSpaceEventTypeLeftDownCB.bind(this), Cesium.ScreenSpaceEventType.LEFT_DOWN)
@@ -384,6 +383,17 @@ export class UseCesium {
     if (this.viewer) {
       this.cameraHeight = this.viewer.camera.positionCartographic.height
     }
+  }
+
+  /**
+   * 聚焦实体变化事件
+   * @protected
+   */
+  protected trackedEntityChangedCB() {
+    if (!this.viewer) {
+      return
+    }
+    this.trackedEntity = this.viewer.trackedEntity || null
   }
 
   /**
