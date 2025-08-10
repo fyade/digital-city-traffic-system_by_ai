@@ -20,22 +20,22 @@ import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
         <div class="title">🎯<strong>基础视角控制</strong></div>
         <ul>
           <li>
-            <p>👆<strong>鼠标左键 + 拖动：</strong>平移地图</p>
+            <p>👆<strong>鼠标左键按下 + 拖动：</strong>平移地图</p>
             <p class="beizhu">（保持当前高度水平移动相机）</p>
           </li>
           <li>
-            <p>👆<strong>鼠标滚轮：</strong>垂直升降相机</p>
+            <p>👆<strong>鼠标滚轮滚动：</strong>垂直升降相机</p>
           </li>
           <li>
-            <p>👆<strong>鼠标右键 + 上下拖动：</strong>精细调节相机高度</p>
+            <p>👆<strong>鼠标右键按下 + 上下拖动：</strong>精细调节相机高度</p>
             <p class="beizhu">（向下拖动降低相机高度，向上拖动抬升相机高度）</p>
           </li>
           <li>
-            <p>👆<strong>鼠标中键 + 拖动：</strong>调整观察角度</p>
+            <p>👆<strong>鼠标中键按下 + 拖动：</strong>调整观察角度</p>
             <p class="beizhu">（改变相机俯仰/偏转角度）</p>
           </li>
           <li>
-            <p>🖱<strong>Windows触控板左键 + 单指滑动：</strong>平移地图</p>
+            <p>🖱<strong>Windows触控板左键按下 + 单指滑动：</strong>平移地图</p>
             <p class="beizhu">（保持当前高度水平移动相机）</p>
           </li>
           <li>
@@ -43,7 +43,7 @@ import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
             <p class="beizhu">（向下滑动降低相机高度，向上滑动抬升相机高度）</p>
           </li>
           <li>
-            <p>🖱<strong>Windows触控板右键 + 单指上下滑动：</strong>精细调节相机高度</p>
+            <p>🖱<strong>Windows触控板右键按下 + 单指上下滑动：</strong>精细调节相机高度</p>
             <p class="beizhu">（向下滑动降低相机高度，向上滑动抬升相机高度）</p>
           </li>
         </ul>
@@ -53,18 +53,18 @@ import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
         <div class="title">🎯<strong>聚焦状态下</strong></div>
         <ul>
           <li>
-            <p>👆<strong>鼠标左键 + 拖动：</strong>围绕实体旋转观察</p>
+            <p>👆<strong>鼠标左键按下 + 拖动：</strong>围绕实体旋转观察</p>
             <p class="beizhu">（保持与实体的相对距离进行环形运动）</p>
           </li>
           <li>
-            <p>👆<strong>鼠标滚轮：</strong>调节相机距离</p>
+            <p>👆<strong>鼠标滚轮滚动：</strong>调节相机距离</p>
           </li>
           <li>
-            <p>👆<strong>鼠标右键 + 上下拖动：</strong>精细调节相机距离</p>
+            <p>👆<strong>鼠标右键按下 + 上下拖动：</strong>精细调节相机距离</p>
             <p class="beizhu">（向下拖动拉近距离，向上拖动拉远距离）</p>
           </li>
           <li>
-            <p>🖱<strong>Windows触控板左键 + 单指滑动：</strong>围绕实体旋转观察</p>
+            <p>🖱<strong>Windows触控板左键按下 + 单指滑动：</strong>围绕实体旋转观察</p>
             <p class="beizhu">（保持与实体的相对距离进行环形运动）</p>
           </li>
           <li>
@@ -72,7 +72,7 @@ import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
             <p class="beizhu">（向下滑动拉近距离，向上滑动拉远距离）</p>
           </li>
           <li>
-            <p>🖱<strong>Windows触控板右键 + 单指上下滑动：</strong>精细调节相机距离</p>
+            <p>🖱<strong>Windows触控板右键按下 + 单指上下滑动：</strong>精细调节相机距离</p>
             <p class="beizhu">（向下滑动拉近距离，向上滑动拉远距离）</p>
           </li>
         </ul>

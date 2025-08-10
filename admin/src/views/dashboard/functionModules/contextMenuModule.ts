@@ -3,7 +3,7 @@ import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModu
 import {
   EDIT_TYPE_1,
   ID_PREFIX_SIGNAL_LIGHT,
-  ID_PREFIX_SIGNAL_LIGHT_GROUP
+  ID_PREFIX_SIGNAL_LIGHT_GROUP, ID_PREFIX_VEHICLE_REAL_TIME
 } from "@/views/dashboard/functionModules/constant.ts";
 import { MapInteractionModule } from "@/views/dashboard/functionModules/mapInteractionModule.ts";
 import { DropdownDividerOption, DropdownGroupOption, DropdownOption, DropdownRenderOption } from "naive-ui";
@@ -54,6 +54,12 @@ export class ContextMenuModule {
 
   public setSetFormPanelTitleCB(func: () => void) {
     this.setFormPanelTitleCB = func
+  }
+
+  private trackEntity: ((entityId: string) => void) | null = null
+
+  public setTrackEntity(func: (entityId: string) => void) {
+    this.trackEntity = func
   }
 
 
@@ -229,6 +235,19 @@ export class ContextMenuModule {
       }
     },
     {
+      id: 's:jvjiaobinggenzonggaishiti',
+      func: () => {
+        if (!this.meModule) {
+          return
+        }
+        const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
+        const entityId = `${ID_PREFIX_VEHICLE_REAL_TIME}${seidsByGroup.vehicleRealTime[0]}`
+        if (this.trackEntity) {
+          this.trackEntity(entityId)
+        }
+      }
+    },
+    {
       id: 'cmModule:menuOption:close',
       func: () => {
         this.contextMenuShow = false
@@ -358,6 +377,15 @@ export class ContextMenuModule {
       {
         label: '刷新信号灯状态',
         key: 'cmModule:menuOption:refreshSignalLight'
+      },
+      {
+        type: 'divider',
+        show: !this.pModule || this.pModule.cmihp('', [ID_PREFIX_VEHICLE_REAL_TIME])
+      },
+      {
+        label: '聚焦并跟踪该实体',
+        key: 's:jvjiaobinggenzonggaishiti',
+        show: !this.pModule || this.pModule.cmihp('', [ID_PREFIX_VEHICLE_REAL_TIME])
       },
       {
         type: 'divider'

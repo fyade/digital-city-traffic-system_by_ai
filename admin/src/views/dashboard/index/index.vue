@@ -4,6 +4,7 @@ import DataLayer from "@/views/dashboard/index/dataLayer.vue";
 import DebugPanel from '@/views/dashboard/debugPanel/index.vue';
 import { useSysStore } from "@/store/module/sys.ts";
 import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
+import EntityHub from "@/views/dashboard/index/entityHub.vue";
 
 const sysStore = useSysStore();
 
@@ -65,6 +66,8 @@ const openDebugLayerChange = () => {
       :options="cesiumClass.contextMenuOption"
       @select="cesiumClass.contextMenuSelect"
   />
+
+  <EntityHub/>
 
   <template v-if="ifInited">
     <router-view/>

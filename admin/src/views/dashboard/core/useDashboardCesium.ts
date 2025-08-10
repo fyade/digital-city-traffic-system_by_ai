@@ -15,6 +15,7 @@ import { VersionDataModule } from "@/views/dashboard/functionModules/versionData
 import { adminConfig } from "@dcts/config";
 import { CalculateLightsInPolygonVo, GetVehiclesInPolygonVo } from "@/type/module/dcts/spatialData.ts";
 import { final } from "@/utils/base.ts";
+import { ID_PREFIX_VEHICLE_REAL_TIME } from "@/views/dashboard/functionModules/constant.ts";
 
 const currentConfig = adminConfig.currentConfig()
 
@@ -110,6 +111,7 @@ class UseDashboardCesium extends UseCesium {
     this.cmModule.setSetFormPanelTitleCB(() => {
       this.formPanelTitle = this.cmModule.formPanelTitle
     })
+    this.cmModule.setTrackEntity(this.trackEntity.bind(this))
 
     this.debugModule.setViewer(this.viewer)
     this.debugModule.setAddLines(this.addLines.bind(this))
@@ -173,10 +175,6 @@ class UseDashboardCesium extends UseCesium {
     this.refreshScreenEntities()
   }
 
-  protected trackedEntityChangedCB() {
-    super.trackedEntityChangedCB();
-  }
-
   protected ScreenSpaceEventTypeLeftDownCB() {
     super.ScreenSpaceEventTypeLeftDownCB();
   }
@@ -205,6 +203,22 @@ class UseDashboardCesium extends UseCesium {
     super.ScreenSpaceEventTypeRightClickCB(m);
     this.cmModule.contextMenuXY = [m.position.x, m.position.y];
     this.cmModule.contextMenuShow = true
+  }
+
+  protected ScreenSpaceEventTypeLeftDoubleClickCB(m: Cesium.ScreenSpaceEventHandler.PositionedEvent) {
+    super.ScreenSpaceEventTypeLeftDoubleClickCB(m);
+    if (!this.viewer) {
+      return
+    }
+    if (!this.meModule) {
+      return
+    }
+    const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
+    this.viewer.trackedEntity = void 0
+    if (seidsByGroup.vehicleRealTimeCount > 0) {
+      const id = `${ID_PREFIX_VEHICLE_REAL_TIME}${seidsByGroup.vehicleRealTime[0]}`
+      this.trackEntity(id)
+    }
   }
 
   protected ScreenSpaceEventTypeMouseMoveCB(m: Cesium.ScreenSpaceEventHandler.MotionEvent) {

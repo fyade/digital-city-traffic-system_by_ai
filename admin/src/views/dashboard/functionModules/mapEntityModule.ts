@@ -325,10 +325,15 @@ export class MapEntityModule {
       get signalLightInfoCount() {
         return this.signalLightInfo.length
       },
+      vehicleRealTime: [] as string[],
+      get vehicleRealTimeCount() {
+        return this.vehicleRealTime.length
+      },
       get allIds() {
         return [
           ...this.signalLightGroupInfo,
-          ...this.signalLightInfo
+          ...this.signalLightInfo,
+          ...this.vehicleRealTime,
         ]
       },
       get count() {
@@ -341,6 +346,9 @@ export class MapEntityModule {
       }
       if (selectedEntityId.startsWith(ID_PREFIX_SIGNAL_LIGHT)) {
         obj.signalLightInfo.push(selectedEntityId.replace(ID_PREFIX_SIGNAL_LIGHT, ''))
+      }
+      if (selectedEntityId.startsWith(ID_PREFIX_VEHICLE_REAL_TIME)) {
+        obj.vehicleRealTime.push(selectedEntityId.replace(ID_PREFIX_VEHICLE_REAL_TIME, ''))
       }
     }
     return obj

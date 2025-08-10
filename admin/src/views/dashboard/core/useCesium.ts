@@ -64,7 +64,8 @@ export class UseCesium {
     }
     if (ifFly) {
       this.viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(lon, lat, height || this.cameraHeight)
+        destination: Cesium.Cartesian3.fromDegrees(lon, lat, height || this.cameraHeight),
+        duration: 0.5
       })
     } else {
       this.viewer.camera.setView({
@@ -154,6 +155,29 @@ export class UseCesium {
         lat: Cesium.Math.toDegrees(c.latitude)
       };
     });
+  }
+
+  /**
+   * 获取实体的经纬度坐标
+   */
+  public getEntityLatLonHeight(entityId: string) {
+    if (!this.viewer || !entityId) {
+      return null
+    }
+    const entity = this.viewer.entities.getById(entityId);
+    if (!entity || !entity.position) {
+      return null;
+    }
+    const position = entity.position.getValue(this.viewer.clock.currentTime);
+    if (!position) {
+      return null
+    }
+    const cartographic = Cesium.Cartographic.fromCartesian(position);
+    return {
+      lon: Cesium.Math.toDegrees(cartographic.longitude),
+      lat: Cesium.Math.toDegrees(cartographic.latitude),
+      height: cartographic.height,
+    }
   }
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 通用基础对象函数 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -302,7 +326,7 @@ export class UseCesium {
   // 地图中心点位置[经度、纬度]
   public mapCenterPosition: [number, number] = [118.92269000122111, 32.10650387256775]
   // 当前聚焦的实体
-  public trackedEntity: Cesium.Entity | null = null
+  public trackedEntityId: string | null = null
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 事件封装 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   /**
@@ -347,7 +371,6 @@ export class UseCesium {
 
     this.viewer.scene.globe.tileLoadProgressEvent.addEventListener(this.globeTileLoadProgressEventCB.bind(this))
     this.viewer.camera.moveEnd.addEventListener(this.cameraMoveEndCB.bind(this))
-    this.viewer.trackedEntityChanged.addEventListener(this.trackedEntityChangedCB.bind(this))
 
     const handler = new Cesium.ScreenSpaceEventHandler(this.viewer.canvas);
     handler.setInputAction(this.ScreenSpaceEventTypeLeftDownCB.bind(this), Cesium.ScreenSpaceEventType.LEFT_DOWN)
@@ -356,6 +379,7 @@ export class UseCesium {
     handler.setInputAction(this.ScreenSpaceEventTypeRightUpCB.bind(this), Cesium.ScreenSpaceEventType.RIGHT_DOWN)
     handler.setInputAction(this.ScreenSpaceEventTypeLeftClickCB.bind(this), Cesium.ScreenSpaceEventType.LEFT_CLICK)
     handler.setInputAction(this.ScreenSpaceEventTypeRightClickCB.bind(this), Cesium.ScreenSpaceEventType.RIGHT_CLICK)
+    handler.setInputAction(this.ScreenSpaceEventTypeLeftDoubleClickCB.bind(this), Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK)
     handler.setInputAction(this.ScreenSpaceEventTypeMouseMoveCB.bind(this), Cesium.ScreenSpaceEventType.MOUSE_MOVE)
     handler.setInputAction(this.ScreenSpaceEventTypeWheelCB.bind(this), Cesium.ScreenSpaceEventType.WHEEL)
 
@@ -383,17 +407,6 @@ export class UseCesium {
     if (this.viewer) {
       this.cameraHeight = this.viewer.camera.positionCartographic.height
     }
-  }
-
-  /**
-   * 聚焦实体变化事件
-   * @protected
-   */
-  protected trackedEntityChangedCB() {
-    if (!this.viewer) {
-      return
-    }
-    this.trackedEntity = this.viewer.trackedEntity || null
   }
 
   /**
@@ -468,6 +481,9 @@ export class UseCesium {
     this.ScreenSpaceEventTypeClickCB()
   }
 
+  protected ScreenSpaceEventTypeLeftDoubleClickCB(m: Cesium.ScreenSpaceEventHandler.PositionedEvent) {
+  }
+
   /**
    * 鼠标移动
    * @param m
@@ -499,5 +515,31 @@ export class UseCesium {
    * @protected
    */
   protected ScreenSpaceEventTypeClickCB() {
+  }
+
+  public trackEntity(entityId: string | null) {
+    if (!this.viewer) {
+      return
+    }
+    if (entityId) {
+      const entity = this.viewer.entities.getById(entityId);
+      if (!entity) {
+        return;
+      }
+      this.viewer.trackedEntity = entity
+    } else {
+      this.trackedEntityId = null
+      this.viewer.trackedEntity = void 0
+      this.setViewTo(this.mapCenterPosition[0], this.mapCenterPosition[1], {height: this.cameraHeight})
+    }
+
+    this.trackedEntityId = this.viewer.trackedEntity ? this.viewer.trackedEntity.id : null
+    if (this.trackedEntityId) {
+      const latLonHeight = this.getEntityLatLonHeight(this.trackedEntityId);
+      if (!latLonHeight) {
+        return;
+      }
+      this.setViewTo(latLonHeight.lon, latLonHeight.lat, {height: this.cameraHeight, ifFly: true})
+    }
   }
 }
