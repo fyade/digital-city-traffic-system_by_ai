@@ -1,3 +1,4 @@
+import * as Cesium from "cesium";
 import { CronJob } from "cron";
 import { getSysTime } from "@/api/common/sys.ts";
 
@@ -5,27 +6,18 @@ import { getSysTime } from "@/api/common/sys.ts";
  * 时钟模块
  */
 export class ClockModule {
+  private viewer: Cesium.Viewer | null = null
+
+  public setViewer(viewer: Cesium.Viewer) {
+    this.viewer = viewer;
+  }
+
   private setCurrentTimeCB: (() => void) | null = null
 
   public setSetCurrentTimeCB(func: () => void) {
     this.setCurrentTimeCB = func
   }
 
-
-  private jobs: CronJob<null, null>[] = [];
-  private __currentTime = 0
-  private _currentTime = 0
-
-  get currentTime(): number {
-    return this._currentTime;
-  }
-
-  private set currentTime(value: number) {
-    this._currentTime = value;
-    if (this.setCurrentTimeCB) {
-      this.setCurrentTimeCB()
-    }
-  }
 
   public init() {
     // 长间隔任务
@@ -44,6 +36,33 @@ export class ClockModule {
     );
     this.jobs.push(job, job1)
     this.longIntervalTask()
+    const interval = setInterval(() => {
+      if (this.__currentTime !== 0) {
+        if (!this.viewer) {
+          return
+        }
+        this.viewer.timeline.zoomTo(
+            Cesium.JulianDate.fromDate(new Date(this.__currentTime - 1000 * 60 * 60 * 12)),
+            Cesium.JulianDate.fromDate(new Date(this.__currentTime + 1000 * 60 * 60 * 12)),
+        )
+        clearInterval(interval)
+      }
+    }, 100);
+  }
+
+  private jobs: CronJob<null, null>[] = [];
+  private __currentTime = 0
+  private _currentTime = 0
+
+  get currentTime(): number {
+    return this._currentTime;
+  }
+
+  private set currentTime(value: number) {
+    this._currentTime = value;
+    if (this.setCurrentTimeCB) {
+      this.setCurrentTimeCB()
+    }
   }
 
   public destroy() {
@@ -55,8 +74,13 @@ export class ClockModule {
 
   private longIntervalTask() {
     getSysTime().then(res => {
-      this.__currentTime = new Date(res).getTime();
+      const date = new Date(res);
+      this.__currentTime = date.getTime();
       this.calculateCurrentTime()
+      if (!this.viewer) {
+        return
+      }
+      this.viewer.clock.currentTime = Cesium.JulianDate.fromDate(date)
     })
   }
 

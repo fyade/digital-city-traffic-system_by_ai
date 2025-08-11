@@ -82,7 +82,16 @@ import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
         <div class="title">⚡<strong>快捷操作</strong></div>
         <ul>
           <li>
-            <p>📍<strong>双击地图上的实体</strong>：快速聚焦该实体</p>
+            <p>📍<strong>双击地图上的实体：</strong>快速聚焦该实体</p>
+          </li>
+        </ul>
+      </div>
+
+      <div class="box">
+        <div class="title">⏰<strong>时间轴相关</strong></div>
+        <ul>
+          <li>
+            <p>⌨<strong>Alt + 鼠标滚轮滚动：</strong>缩放时间轴</p>
           </li>
         </ul>
       </div>

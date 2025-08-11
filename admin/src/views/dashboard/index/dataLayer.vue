@@ -73,7 +73,8 @@ const goHome = () => {
 
   > .footer {
     position: absolute;
-    bottom: 12px;
+    //bottom: 12px;
+    bottom: 32px;
     left: 8px;
     width: calc(100% - 12px * 2);
     height: 0;
@@ -105,7 +106,8 @@ const goHome = () => {
   }
 
   > .footer2 {
-    bottom: 32px;
+    //bottom: 32px;
+    bottom: 52px;
   }
 }
 </style>

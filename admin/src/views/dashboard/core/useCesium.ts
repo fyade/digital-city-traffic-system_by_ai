@@ -1,7 +1,7 @@
 import * as Cesium from "cesium";
 import { CesiumLine, CesiumPoint } from "@/views/dashboard/utils/dto.ts";
 import { adminConfig } from "@dcts/config";
-import { idUtils } from "@dcts/common";
+import { idUtils, timeUtils } from "@dcts/common";
 import { final } from "@/utils/base.ts";
 
 const currentConfig = adminConfig.currentConfig();
@@ -343,10 +343,11 @@ export class UseCesium {
       baseLayerPicker: false, // 底图选择器
       navigationHelpButton: false, // 帮助按钮
       animation: false, // 动画控制器
-      timeline: false, // 时间轴
+      timeline: true, // 时间轴
       fullscreenButton: false, // 全屏按钮
     });
     (this.viewer.cesiumWidget.creditContainer as HTMLElement).style.display = "none";
+    this.viewer.timeline.makeLabel = time => timeUtils.formatDate(Cesium.JulianDate.toDate(time));
 
     // 初始化点的集合
     this.pointCollection = this.viewer.scene.primitives.add(

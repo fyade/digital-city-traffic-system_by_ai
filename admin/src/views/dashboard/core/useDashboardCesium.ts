@@ -92,6 +92,7 @@ class UseDashboardCesium extends UseCesium {
       return
     }
 
+    this.cModule.setViewer(this.viewer)
     this.cModule.setSetCurrentTimeCB(() => {
       this.currentTime = this.cModule.currentTime
     })
