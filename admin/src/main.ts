@@ -15,8 +15,7 @@ import 'cesium/Build/Cesium/Widgets/widgets.css'
 import './loaded/autoUpdate.ts'
 import './loaded/singleInputNoEnterSubmit.ts'
 
-// @ts-ignore
-window.CESIUM_BASE_URL = '/'
+window.CESIUM_BASE_URL = '/cesium-static'
 
 document.title = publicConfig.APP_NAME
 

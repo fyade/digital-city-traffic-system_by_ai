@@ -36,18 +36,6 @@ export class ClockModule {
     );
     this.jobs.push(job, job1)
     this.longIntervalTask()
-    const interval = setInterval(() => {
-      if (this.__currentTime !== 0) {
-        if (!this.viewer) {
-          return
-        }
-        this.viewer.timeline.zoomTo(
-            Cesium.JulianDate.fromDate(new Date(this.__currentTime - 1000 * 60 * 60 * 12)),
-            Cesium.JulianDate.fromDate(new Date(this.__currentTime + 1000 * 60 * 60 * 12)),
-        )
-        clearInterval(interval)
-      }
-    }, 100);
   }
 
   private jobs: CronJob<null, null>[] = [];
@@ -80,6 +68,10 @@ export class ClockModule {
       if (!this.viewer) {
         return
       }
+      this.viewer.timeline.zoomTo(
+          Cesium.JulianDate.fromDate(new Date(this.__currentTime - 1000 * 60 * 60 * 12)),
+          Cesium.JulianDate.fromDate(new Date(this.__currentTime + 1000 * 60 * 60 * 12)),
+      )
       this.viewer.clock.currentTime = Cesium.JulianDate.fromDate(date)
     })
   }

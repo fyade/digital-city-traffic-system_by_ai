@@ -2,11 +2,19 @@ import * as Cesium from "cesium";
 import { CronJob } from "cron";
 import { CalculateLightsInPolygonVo } from "@/type/module/dcts/spatialData.ts";
 import { ClockModule } from "@/views/dashboard/functionModules/clockModule.ts";
-import { deepClone } from "@/utils/ObjectUtils.ts";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
-import { arrayUtils, base } from "@dcts/common";
+import { base } from "@dcts/common";
 import { dashboardConfig } from "@dcts/config";
+import { LayerNotificationModule } from "@/views/dashboard/functionModules/layerNotificationModule.ts";
+import { calculateLightsInPolygonApi, signalLightGroupsInPolygonApi } from "@/api/module/dcts/spatialData.ts";
+import {
+  CESIUM_DEFAULT,
+  ID_PREFIX_SIGNAL_LIGHT,
+  ID_PREFIX_SIGNAL_LIGHT_GROUP
+} from "@/views/dashboard/functionModules/constant.ts";
+import signalLight1Svg from "@/assets/images2/signal-light-1.png";
+import { getLightCanvas } from "@/views/dashboard/utils/funcs.ts";
 
 /**
  * 信号灯模块
@@ -16,6 +24,12 @@ export class SignalLightModule {
 
   public setCModule(cModule: ClockModule) {
     this.cModule = cModule;
+  }
+
+  private lnModule: LayerNotificationModule | null = null
+
+  public setLnModule(lnModule: LayerNotificationModule) {
+    this.lnModule = lnModule;
   }
 
   private meModule: MapEntityModule | null = null
@@ -36,7 +50,14 @@ export class SignalLightModule {
     this.viewer = viewer;
   }
 
+  private getViewCornerCoordinates: (() => { lon: number, lat: number }[] | null) | null = null
 
+  public setGetViewCornerCoordinates(func: () => { lon: number, lat: number }[] | null) {
+    this.getViewCornerCoordinates = func
+  }
+
+
+  private timeIntervalCollection = new Map<number, Cesium.TimeIntervalCollection>();
   private jobs: CronJob<null, null>[] = [];
 
   public init() {
@@ -47,14 +68,7 @@ export class SignalLightModule {
         null,
         true
     );
-    // 短间隔任务
-    const job1 = new CronJob(
-        '*/1 * * * * *',
-        this.shortIntervalTask.bind(this),
-        null,
-        true
-    );
-    this.jobs.push(job, job1)
+    this.jobs.push(job)
     this.longIntervalTask()
   }
 
@@ -66,11 +80,25 @@ export class SignalLightModule {
   }
 
   private datas: CalculateLightsInPolygonVo[] = []
-  private shortTaskDatas: CalculateLightsInPolygonVo[] = []
+  private calculatedLightTimes: { childLightId: number, times: [number, number][] }[] = []
   private ifRunLongTask = false
 
   public addTask(calculateLightResult: CalculateLightsInPolygonVo[]) {
     this.datas = calculateLightResult
+    for (const data of this.datas) {
+      if (data.runParam.length === 0) {
+        continue
+      }
+      const find = this.calculatedLightTimes.find(item => item.childLightId === data.signalLightChildId);
+      if (find) {
+        find.times.push([data.runParam[0].start, data.runParam[data.runParam.length - 1].end])
+      } else {
+        this.calculatedLightTimes.push({
+          childLightId: data.signalLightChildId,
+          times: [[data.runParam[0].start, data.runParam[data.runParam.length - 1].end]]
+        })
+      }
+    }
     this.longIntervalTask()
     if (!this.vdModule) {
       return
@@ -90,12 +118,9 @@ export class SignalLightModule {
     }
     const filter = last1.data.filter(id => !last0.data.includes(id));
     for (const id of filter) {
-      this.meModule.setSignalLightToPic(id)
+      this.setSignalLightToPic(id)
     }
   }
-
-  // 需要刷新的组id
-  private needRefreshGroupIds: number[] = []
 
   /**
    * 长间隔任务
@@ -108,6 +133,12 @@ export class SignalLightModule {
     if (!this.cModule) {
       return;
     }
+    if (!this.meModule) {
+      return;
+    }
+    if (!this.vdModule) {
+      return;
+    }
     if (this.cModule.currentTime === 0) {
       const timeout = setTimeout(() => {
         this.longIntervalTask()
@@ -116,67 +147,22 @@ export class SignalLightModule {
       return;
     }
     this.ifRunLongTask = true
-    const currentTime = this.cModule.currentTime;
-    this.shortTaskDatas = []
-    for (const _data of this.datas) {
-      const data = deepClone(_data);
-      data.runParam = data.runParam.filter(rp => {
-        return arrayUtils.ifHasOverlap([rp.start, rp.end], [currentTime, currentTime + 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL * 2])
-      })
-      this.shortTaskDatas.push(data)
-    }
-    this.ifRunLongTask = false
-  }
-
-  /**
-   * 短间隔任务
-   * @private
-   */
-  private shortIntervalTask() {
-    this._shortIntervalTask(false)
-    const timeout = setTimeout(() => {
-      this._shortIntervalTask(true)
-      clearTimeout(timeout)
-    }, 500);
-  }
-
-  private _shortIntervalTask(ifHalfSecond: boolean) {
-    if (!this.cModule) {
-      return
-    }
-    if (!this.meModule) {
-      return;
-    }
-    if (!this.vdModule) {
-      return;
-    }
-    if (!this.viewer) {
-      return;
-    }
     const sls = this.vdModule.getHistorySignalLightGroupsInPolygonVo();
-    // 以服务器时间为准，实时渲染信号灯
     const currentTime = this.cModule.currentTime;
-    for (const shortTaskData of this.shortTaskDatas) {
-      const rps: typeof shortTaskData.runParam = []
-      for (let rp of shortTaskData.runParam) {
-        if (rps.length > 0) {
-          continue;
-        }
-        // 当前信号灯颜色
-        if (rp.start <= currentTime && currentTime <= rp.end) {
-          rps.push(rp)
-        }
+    for (const data of this.datas) {
+      if (data.runParam.length === 0) {
+        continue
       }
-      if (rps.length === 0) {
-        // 把实体变成静态图片
-        this.meModule.setSignalLightToPic(shortTaskData.signalLightChildId)
-      } else {
-        // 修改为对应颜色的信号灯
-        const rp1 = rps[0];
-        const leftTime = Math.floor((rp1.end - currentTime) / 1000);
+      // data.signalLightChildId
+      // data.runParam[0].start
+      // data.runParam[data.runParam.length - 1].end
+      const timeIntervalCollection = new Cesium.TimeIntervalCollection();
+      this.timeIntervalCollection.set(data.signalLightChildId, timeIntervalCollection)
+      for (let rp of data.runParam) {
+        const leftTime = Math.floor((rp.end - Math.max(currentTime, rp.start)) / 1000);
         let style: base.SignalLightUnitStyleEnum[] | null = null
         if (sls) {
-          const find = sls.data.signalLightChildStyleMappings.find(item => item.childId === shortTaskData.signalLightChildId);
+          const find = sls.data.signalLightChildStyleMappings.find(item => item.childId === data.signalLightChildId);
           if (find) {
             const find1 = sls.data.signalLightStyles.find(item => item.id === find.styleId);
             if (find1) {
@@ -184,17 +170,222 @@ export class SignalLightModule {
             }
           }
         }
-        this.meModule.setSignalLightColor(shortTaskData.signalLightChildId, style, rp1.lightType, rp1.color, ifHalfSecond, leftTime)
-      }
-      if (
-          shortTaskData.runParam.length === 0
-          || (shortTaskData.runParam.length > 0 && shortTaskData.runParam[shortTaskData.runParam.length - 1].end - currentTime <= 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL)
-      ) {
-        if (!this.needRefreshGroupIds.includes(shortTaskData.signalLightGroupId)) {
-          this.needRefreshGroupIds.push(shortTaskData.signalLightGroupId)
-          console.log(shortTaskData.signalLightGroupId, '短任务即将结束', shortTaskData)
+        for (let i = 0; i < leftTime; i++) {
+          const canvas = getLightCanvas(style, rp.lightType, rp.color, leftTime - i);
+          if (!canvas) {
+            continue
+          }
+          timeIntervalCollection.addInterval(
+              new Cesium.TimeInterval({
+                start: Cesium.JulianDate.fromDate(new Date(rp.start + i * 1000)),
+                stop: Cesium.JulianDate.fromDate(new Date(rp.start + (i + 1) * 1000)),
+                data: canvas
+              })
+          )
         }
       }
     }
+    this.ifRunLongTask = false
+  }
+
+  public setSignalLightToPic(id: number) {
+    if (!this.viewer) {
+      return;
+    }
+    const entity = this.viewer.entities.getById(`${ID_PREFIX_SIGNAL_LIGHT}${id}`);
+    if (!entity || !entity.billboard) {
+      return
+    }
+    entity.billboard.width = new Cesium.ConstantProperty(24)
+    entity.billboard.height = new Cesium.ConstantProperty(24)
+    entity.billboard.image = new Cesium.ConstantProperty(signalLight1Svg)
+  }
+
+  public setSignalLightColor(id: number, style: base.SignalLightUnitStyleEnum[] | null, lightTypes: base.SLSPLTTypeEnum[], color: base.SignalLightColorEnum, ifHalfSecond: boolean, leftTime: number) {
+    if (!this.viewer) {
+      return
+    }
+    const entity = this.viewer.entities.getById(`${ID_PREFIX_SIGNAL_LIGHT}${id}`);
+    if (!entity || !entity.billboard) {
+      return;
+    }
+    // 根据信号灯样式、颜色、时长生成对应的canvas
+    if (!this.vdModule) {
+      return;
+    }
+    const color1 = (ifHalfSecond && color === base.SignalLightColorEnum.YELLOW) ? base.SignalLightColorEnum.NONE : color;
+    const lightCanvas = getLightCanvas(style, lightTypes, color1, leftTime);
+    if (!lightCanvas) {
+      return;
+    }
+    // 修改为对应颜色的信号灯
+    entity.billboard.width = new Cesium.ConstantProperty(lightCanvas.canvasWidth)
+    entity.billboard.height = new Cesium.ConstantProperty(lightCanvas.canvasHeight)
+    entity.billboard.image = new Cesium.ConstantProperty(lightCanvas.canvas)
+  }
+
+  private lastTickTime: number | null = null
+  private _tick_deviation_time = 50
+
+  public tick() {
+    if (!this.viewer) {
+      return
+    }
+    if (!this.vdModule) {
+      return;
+    }
+    const sls = this.vdModule.getHistorySignalLightGroupsInPolygonVo();
+    const now = Cesium.JulianDate.toDate(this.viewer.clock.currentTime).getTime();
+    if (!this.lastTickTime || (now % 500 <= this._tick_deviation_time && now - this.lastTickTime >= (500 - this._tick_deviation_time))) {
+      this.lastTickTime = now
+      for (const data of this.datas) {
+        const entity = this.viewer.entities.getById(`${ID_PREFIX_SIGNAL_LIGHT}${data.signalLightChildId}`);
+        if (!entity) {
+          continue
+        }
+        const rp = data.runParam.filter(item => item.start <= now && now <= item.end);
+        if (rp.length === 0) {
+          this.setSignalLightToPic(data.signalLightChildId)
+          continue
+        }
+        const leftTime = Math.floor((rp[0].end - now) / 1000);
+        let style: base.SignalLightUnitStyleEnum[] | null = null
+        if (sls) {
+          const find = sls.data.signalLightChildStyleMappings.find(item => item.childId === data.signalLightChildId);
+          if (find) {
+            const find1 = sls.data.signalLightStyles.find(item => item.id === find.styleId);
+            if (find1) {
+              style = find1.style.split('-').filter(_ => _) as base.SignalLightUnitStyleEnum[]
+            }
+          }
+        }
+        const ifHalfSecond = Math.abs(now % 1000 - 500) <= this._tick_deviation_time && rp[0].color === base.SignalLightColorEnum.YELLOW
+        this.setSignalLightColor(data.signalLightChildId, style, rp[0].lightType, rp[0].color, ifHalfSecond, leftTime)
+      }
+    }
+  }
+
+  // 已渲染的信号灯组、子信号灯的id列表
+  private renderedItemIds: string[] = []
+
+  /**
+   * 查询可视区域内的信号灯组及子信号灯
+   * @param ifRefresh
+   */
+  public drawSignalLightsWhenMapMove(ifRefresh = false) {
+    if (!this.viewer) {
+      return
+    }
+    if (!this.meModule) {
+      return;
+    }
+    if (!this.meModule.getIfShowSignalLight()) {
+      return
+    }
+    if (!this.getViewCornerCoordinates) {
+      return
+    }
+    const viewCornerCoordinates = this.getViewCornerCoordinates();
+    if (!viewCornerCoordinates || viewCornerCoordinates.length < 3) {
+      return
+    }
+    if (this.lnModule) {
+      this.lnModule.openSignalLightLoading()
+    }
+    viewCornerCoordinates.push(viewCornerCoordinates[0])
+    signalLightGroupsInPolygonApi({points: viewCornerCoordinates}).then(res => {
+      if (!this.viewer) {
+        return
+      }
+      if (!this.meModule) {
+        return;
+      }
+      if (this.vdModule) {
+        this.vdModule.setHistorySignalLightGroupsInPolygonVo(res)
+      }
+      const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
+      // 信号灯组
+      if (ifRefresh) {
+        const ids = [
+          ...res.signalLightGroupInfos.map(item => item.id),
+          ...seidsByGroup.signalLightGroupInfo
+        ]
+        if (this.vdModule) {
+          const hslgip = this.vdModule.getHistorySignalLightGroupsInPolygonVo(-1);
+          if (hslgip) {
+            const _ids = hslgip.data.signalLightGroupInfos.map(item => item.id);
+            ids.push(..._ids)
+          }
+        }
+        for (const id of ids) {
+          const d = `${ID_PREFIX_SIGNAL_LIGHT_GROUP}${id}`;
+          const index = this.renderedItemIds.indexOf(d);
+          if (index > -1) {
+            this.viewer.entities.removeById(d)
+            this.renderedItemIds.splice(index, 1)
+          }
+        }
+      }
+      for (const re of res.signalLightGroupInfos) {
+        const d = `${ID_PREFIX_SIGNAL_LIGHT_GROUP}${re.id}`;
+        if (this.renderedItemIds.includes(d)) {
+          continue;
+        }
+        this.renderedItemIds.push(d)
+        const strings = re.location.split(',').map(Number) as [number, number];
+        this.viewer.entities.add({
+          position: Cesium.Cartesian3.fromDegrees(strings[0], strings[1], CESIUM_DEFAULT.HEIGHT_SIGNAL_LIGHT_GROUP),
+          billboard: {
+            image: signalLight1Svg,
+            verticalOrigin: Cesium.VerticalOrigin.CENTER,
+            width: CESIUM_DEFAULT.SIGNAL_LIGHT_GROUP_PIC_WIDTH,
+            height: CESIUM_DEFAULT.SIGNAL_LIGHT_GROUP_PIC_HEIGHT
+          },
+          id: d,
+        });
+      }
+      // 子信号灯
+      if (ifRefresh) {
+        const ids = [
+          ...res.signalLightInfos.map(item => item.id),
+          ...seidsByGroup.signalLightInfo
+        ]
+        if (this.vdModule) {
+          const hslgip = this.vdModule.getHistorySignalLightGroupsInPolygonVo(-1);
+          if (hslgip) {
+            const _ids = hslgip.data.signalLightInfos.map(item => item.id);
+            ids.push(..._ids)
+          }
+        }
+        for (const id of ids) {
+          const d = `${ID_PREFIX_SIGNAL_LIGHT}${id}`;
+          const index = this.renderedItemIds.indexOf(d);
+          if (index > -1) {
+            this.viewer.entities.removeById(d)
+            this.renderedItemIds.splice(index, 1)
+          }
+        }
+      }
+      for (const re of res.signalLightInfos) {
+        const d = `${ID_PREFIX_SIGNAL_LIGHT}${re.id}`
+        if (this.renderedItemIds.includes(d)) {
+          continue;
+        }
+        this.renderedItemIds.push(d)
+        const strings = re.location.split(',').map(Number) as [number, number];
+        this.viewer.entities.add({
+          position: Cesium.Cartesian3.fromDegrees(strings[0], strings[1], CESIUM_DEFAULT.HEIGHT_SIGNAL_LIGHT),
+          billboard: {
+            image: signalLight1Svg,
+            verticalOrigin: Cesium.VerticalOrigin.CENTER,
+            width: CESIUM_DEFAULT.SIGNAL_LIGHT_PIC_WIDTH,
+            height: CESIUM_DEFAULT.SIGNAL_LIGHT_PIC_HEIGHT
+          },
+          id: d
+        });
+      }
+    })
+
+    calculateLightsInPolygonApi({points: viewCornerCoordinates})
   }
 }

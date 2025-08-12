@@ -126,6 +126,7 @@ class UseDashboardCesium extends UseCesium {
     this.lnModule.setLayerLoadingEndCB(this.LnModuleCloseCB.bind(this))
 
     this.meModule.setLnModule(this.lnModule)
+    this.meModule.setSlModule(this.slModule)
     this.meModule.setVdModule(this.vdModule)
     this.meModule.setViewer(this.viewer)
     this.meModule.setRefreshContextMenuOption(this.refreshContextMenuOption.bind(this))
@@ -139,9 +140,11 @@ class UseDashboardCesium extends UseCesium {
     this.pModule.setMeModule(this.meModule)
 
     this.slModule.setCModule(this.cModule)
+    this.slModule.setLnModule(this.lnModule)
     this.slModule.setMeModule(this.meModule)
     this.slModule.setVdModule(this.vdModule)
     this.slModule.setViewer(this.viewer)
+    this.slModule.setGetViewCornerCoordinates(this.getViewCornerCoordinates.bind(this))
 
     this.cModule.init()
     this.lnModule.init()
@@ -159,6 +162,18 @@ class UseDashboardCesium extends UseCesium {
     this.wsClient.destroy()
   }
 
+  protected cameraMoveEndCB() {
+    super.cameraMoveEndCB();
+    this.refreshScreenEntities()
+  }
+
+  protected clockOnTickCB() {
+    super.clockOnTickCB();
+    if (this.slModule) {
+      this.slModule.tick()
+    }
+  }
+
   protected globeTileLoadProgressEventCB(queuedTileCount: number) {
     super.globeTileLoadProgressEventCB(queuedTileCount);
     // 加载中
@@ -169,11 +184,6 @@ class UseDashboardCesium extends UseCesium {
     if (queuedTileCount === 0) {
       this.lnModule.closeLayerLoading(true)
     }
-  }
-
-  protected cameraMoveEndCB() {
-    super.cameraMoveEndCB();
-    this.refreshScreenEntities()
   }
 
   protected ScreenSpaceEventTypeLeftDownCB() {

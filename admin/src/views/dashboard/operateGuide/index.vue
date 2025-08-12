@@ -91,7 +91,16 @@ import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
         <div class="title">⏰<strong>时间轴相关</strong></div>
         <ul>
           <li>
-            <p>⌨<strong>Alt + 鼠标滚轮滚动：</strong>缩放时间轴</p>
+            <p>👆<strong>鼠标滚轮滚动：</strong>缩放时间轴</p>
+          </li>
+          <li>
+            <p>👆<strong>鼠标右键按下 + 拖动：</strong>缩放时间轴</p>
+          </li>
+          <li>
+            <p>👆<strong>鼠标左键按下：</strong>调整当前时间</p>
+          </li>
+          <li>
+            <p>👆<strong>鼠标中键按下 + 拖动：</strong>拖动时间轴</p>
           </li>
         </ul>
       </div>

@@ -7,10 +7,7 @@ pnpm-lock.yaml
 
 /config/*/*prod.config.ts
 
-/admin/public/Assets
-/admin/public/ThirdParty
-/admin/public/Widgets
-/admin/public/Workers
+/admin/public/cesium-static
 
 /admin/stats.html
 /admin/tsconfig.tsbuildinfo

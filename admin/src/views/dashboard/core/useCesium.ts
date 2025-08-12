@@ -342,7 +342,8 @@ export class UseCesium {
       sceneModePicker: false, // 场景模式选择器
       baseLayerPicker: false, // 底图选择器
       navigationHelpButton: false, // 帮助按钮
-      animation: false, // 动画控制器
+      animation: true, // 动画控制器
+      shouldAnimate: true, // 自动播放
       timeline: true, // 时间轴
       fullscreenButton: false, // 全屏按钮
     });
@@ -370,8 +371,9 @@ export class UseCesium {
     this.viewer.imageryLayers.remove(defaultImagery);
 
 
-    this.viewer.scene.globe.tileLoadProgressEvent.addEventListener(this.globeTileLoadProgressEventCB.bind(this))
     this.viewer.camera.moveEnd.addEventListener(this.cameraMoveEndCB.bind(this))
+    this.viewer.clock.onTick.addEventListener(this.clockOnTickCB.bind(this))
+    this.viewer.scene.globe.tileLoadProgressEvent.addEventListener(this.globeTileLoadProgressEventCB.bind(this))
 
     const handler = new Cesium.ScreenSpaceEventHandler(this.viewer.canvas);
     handler.setInputAction(this.ScreenSpaceEventTypeLeftDownCB.bind(this), Cesium.ScreenSpaceEventType.LEFT_DOWN)
@@ -388,14 +390,6 @@ export class UseCesium {
   }
 
   /**
-   * 瓦片图层加载事件
-   * @param queuedTileCount
-   * @protected
-   */
-  protected globeTileLoadProgressEventCB(queuedTileCount: number) {
-  }
-
-  /**
    * 相机移动结束事件
    * @protected
    */
@@ -408,6 +402,21 @@ export class UseCesium {
     if (this.viewer) {
       this.cameraHeight = this.viewer.camera.positionCartographic.height
     }
+  }
+
+  /**
+   * 时钟周期事件
+   * @protected
+   */
+  protected clockOnTickCB() {
+  }
+
+  /**
+   * 瓦片图层加载事件
+   * @param queuedTileCount
+   * @protected
+   */
+  protected globeTileLoadProgressEventCB(queuedTileCount: number) {
   }
 
   /**
