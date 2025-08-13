@@ -14,7 +14,7 @@ class VersionDataType<T> {
 }
 
 /**
- * 版本化数据
+ * 版本化数据模块
  */
 export class VersionDataModule {
   // 最大保留数量

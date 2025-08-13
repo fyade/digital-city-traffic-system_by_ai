@@ -5,6 +5,9 @@ import { geoUtils, timeUtils } from "@dcts/common";
 import { ChucanDto, RucanDto } from "@/views/dashboard/debugPanel/index.ts";
 import { CesiumLine, CesiumPoint } from "@/views/dashboard/utils/dto.ts";
 
+/**
+ * debug模块
+ */
 export class DebugModule {
   private viewer: Cesium.Viewer | null = null
 

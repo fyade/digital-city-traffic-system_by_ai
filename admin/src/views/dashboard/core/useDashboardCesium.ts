@@ -1,7 +1,4 @@
 import { UseCesium } from "@/views/dashboard/core/useCesium.ts";
-import { watch } from "vue";
-import * as Cesium from "cesium";
-import { useSysStore } from "@/store/module/sys.ts";
 import { WsClient } from "@/services/wsClient.ts";
 import { ClockModule } from "@/views/dashboard/functionModules/clockModule.ts";
 import { ContextMenuModule } from "@/views/dashboard/functionModules/contextMenuModule.ts";
@@ -12,6 +9,10 @@ import { MapInteractionModule } from "@/views/dashboard/functionModules/mapInter
 import { PermissionModule } from "@/views/dashboard/functionModules/permissionModule.ts";
 import { SignalLightModule } from "@/views/dashboard/functionModules/signalLightModule.ts";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
+import { VehicleModule } from "@/views/dashboard/functionModules/vehicleModule.ts";
+import { watch } from "vue";
+import * as Cesium from "cesium";
+import { useSysStore } from "@/store/module/sys.ts";
 import { adminConfig } from "@dcts/config";
 import { CalculateLightsInPolygonVo, GetVehiclesInPolygonVo } from "@/type/module/dcts/spatialData.ts";
 import { final } from "@/utils/base.ts";
@@ -24,7 +25,7 @@ const sysStore = useSysStore()
 const visibleButtons = sysStore.getVisibleButtons();
 
 /**
- * 大屏页面的 Cesium
+ * 大屏页面的 Cesium 类
  */
 class UseDashboardCesium extends UseCesium {
   constructor(
@@ -38,6 +39,7 @@ class UseDashboardCesium extends UseCesium {
       private readonly pModule: PermissionModule,
       private readonly slModule: SignalLightModule,
       private readonly vdModule: VersionDataModule,
+      private readonly veModule: VehicleModule,
   ) {
     super();
   }
@@ -54,7 +56,7 @@ class UseDashboardCesium extends UseCesium {
     })
     this.wsClient.addEventListener('dcts:spatialData:getVehiclesInPolygon', data => {
       const result = JSON.parse(data.msg) as GetVehiclesInPolygonVo[];
-      this.meModule.drawVehicleRealTime(result)
+      this.veModule.addTask(result)
     })
   }
 
@@ -128,6 +130,7 @@ class UseDashboardCesium extends UseCesium {
     this.meModule.setLnModule(this.lnModule)
     this.meModule.setSlModule(this.slModule)
     this.meModule.setVdModule(this.vdModule)
+    this.meModule.setVeModule(this.veModule)
     this.meModule.setViewer(this.viewer)
     this.meModule.setRefreshContextMenuOption(this.refreshContextMenuOption.bind(this))
     this.meModule.setGetViewCornerCoordinates(this.getViewCornerCoordinates.bind(this))
@@ -146,17 +149,19 @@ class UseDashboardCesium extends UseCesium {
     this.slModule.setViewer(this.viewer)
     this.slModule.setGetViewCornerCoordinates(this.getViewCornerCoordinates.bind(this))
 
+    this.veModule.setMeModule(this.meModule)
+    this.veModule.setViewer(this.viewer)
+    this.veModule.setGetViewCornerCoordinates(this.getViewCornerCoordinates.bind(this))
+
     this.cModule.init()
     this.lnModule.init()
     this.meModule.init()
     this.miModule.init()
-    this.slModule.init()
   }
 
   destroy() {
     super.destroy();
     this.cModule.destroy()
-    this.slModule.destroy()
     this.lnModule.closeLayerLoading()
     useDashboardCesium = createDashboardCesium()
     this.wsClient.destroy()
@@ -171,6 +176,9 @@ class UseDashboardCesium extends UseCesium {
     super.clockOnTickCB();
     if (this.slModule) {
       this.slModule.tick()
+    }
+    if (this.veModule) {
+      this.veModule.tick()
     }
   }
 
@@ -295,6 +303,7 @@ export function createDashboardCesium() {
   const pModule = new PermissionModule();
   const slModule = new SignalLightModule();
   const vdModule = new VersionDataModule();
+  const veModule = new VehicleModule();
   return new UseDashboardCesium(
       wsClient,
       cModule,
@@ -306,6 +315,7 @@ export function createDashboardCesium() {
       pModule,
       slModule,
       vdModule,
+      veModule,
   );
 }
 

@@ -1,6 +1,6 @@
-import { BaseClass, PageDto } from "@/type/tablePage.ts";
+import { BaseClass2, PageDto } from "@/type/tablePage.ts";
 
-export class LogScheduledTaskDto extends BaseClass {
+export class LogScheduledTaskDto extends BaseClass2 {
   id!: number;
   taskTarget!: string;
   operateType!: string;

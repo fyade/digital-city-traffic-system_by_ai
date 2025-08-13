@@ -1,6 +1,6 @@
-import { BaseClass, PageDto } from "@/type/tablePage.ts";
+import { BaseClass2, PageDto } from "@/type/tablePage.ts";
 
-export class LogOperationDto extends BaseClass {
+export class LogOperationDto extends BaseClass2 {
   id!: number;
   reqId!: string;
   callIp!: string;

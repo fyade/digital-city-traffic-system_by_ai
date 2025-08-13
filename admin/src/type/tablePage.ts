@@ -13,13 +13,17 @@ export interface State2<T = object, T2 = T> {
 }
 
 export class BaseClass {
-  createRole?: string;
-  updateRole?: string;
-  createBy?: string;
-  updateBy?: string;
-  createTime?: Date;
-  updateTime?: Date;
-  deleted?: string;
+  createRole!: string;
+  updateRole!: string;
+  createBy!: string;
+  updateBy!: string;
+  createTime!: string;
+  updateTime!: string;
+  deleted!: string;
+}
+
+export class BaseClass2 {
+  createTime!: string;
 }
 
 export class PageDto {

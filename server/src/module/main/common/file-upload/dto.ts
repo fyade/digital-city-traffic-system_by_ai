@@ -1,4 +1,4 @@
-import { BaseDto } from '../../../../common/dto/BaseDto';
+import { BaseDto, BaseDto3 } from '../../../../common/dto/BaseDto';
 import { PageDto } from '../../../../common/dto/PageDto';
 import { IsNotEmpty } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -112,7 +112,7 @@ export class FileSelAllDto {
   remark: string;
 }
 
-export class FileChunkDto extends BaseDto {
+export class FileChunkDto extends BaseDto3 {
   id: string;
 
   fileMd5: string;

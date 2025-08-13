@@ -9,7 +9,7 @@ import { VersionDataModule } from "@/views/dashboard/functionModules/versionData
 import { routerPushByName } from "@/utils/RouterUtils.ts";
 
 /**
- * 地图交互
+ * 地图交互模块
  */
 export class MapInteractionModule {
   private meModule: MapEntityModule | null = null

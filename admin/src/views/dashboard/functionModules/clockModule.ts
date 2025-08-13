@@ -69,8 +69,8 @@ export class ClockModule {
         return
       }
       this.viewer.timeline.zoomTo(
-          Cesium.JulianDate.fromDate(new Date(this.__currentTime - 1000 * 60 * 60 * 12)),
-          Cesium.JulianDate.fromDate(new Date(this.__currentTime + 1000 * 60 * 60 * 12)),
+          Cesium.JulianDate.fromDate(new Date(this.__currentTime - 1000 * 60 * 60 * .5)),
+          Cesium.JulianDate.fromDate(new Date(this.__currentTime + 1000 * 60 * 60 * .5)),
       )
       this.viewer.clock.currentTime = Cesium.JulianDate.fromDate(date)
     })

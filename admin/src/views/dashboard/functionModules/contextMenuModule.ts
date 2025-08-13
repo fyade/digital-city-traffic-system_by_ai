@@ -11,7 +11,7 @@ import { PermissionModule } from "@/views/dashboard/functionModules/permissionMo
 import { routerPushByName } from "@/utils/RouterUtils.ts";
 
 /**
- * 右键菜单
+ * 右键菜单模块
  */
 export class ContextMenuModule {
   private meModule: MapEntityModule | null = null

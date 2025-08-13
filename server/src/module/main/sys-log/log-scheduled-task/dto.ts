@@ -1,10 +1,10 @@
-import { BaseDto } from '../../../../common/dto/BaseDto';
+import { BaseDto2 } from '../../../../common/dto/BaseDto';
 import { PageDto } from '../../../../common/dto/PageDto';
 import { IsNotEmpty, IsOptional, MaxLength, IsArray, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class LogScheduledTaskDto extends BaseDto {
+export class LogScheduledTaskDto extends BaseDto2 {
   id: number;
 
   taskTarget: string;

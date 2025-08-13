@@ -10,7 +10,7 @@ import { useDashboardStore } from "@/store/module/dashboard.ts";
 const dashboardStore = useDashboardStore();
 
 /**
- * 图层及通知
+ * 图层及通知模块
  */
 export class LayerNotificationModule {
   private viewer: Cesium.Viewer | null = null

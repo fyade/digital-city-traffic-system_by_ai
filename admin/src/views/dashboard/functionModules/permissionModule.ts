@@ -13,7 +13,7 @@ const userStore = useUserStore();
 const visibleButtons = sysStore.getVisibleButtons();
 
 /**
- * 权限相关
+ * 权限模块
  */
 export class PermissionModule {
   private meModule: MapEntityModule | null = null

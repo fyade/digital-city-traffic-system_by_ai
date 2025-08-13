@@ -38,18 +38,3 @@ export class FileUploadInsDto {
 export class FileUploadUpdDto extends FileUploadInsDto {
   id!: string;
 }
-
-export class FileDto2 extends BaseClass {
-  id!: string;
-  fileName!: string;
-  fileNewName!: string;
-  fileSize!: string;
-  fileMd5!: string;
-  ifChunk!: string;
-  chunkNum!: number;
-  ifMerge!: string;
-  ifFirst!: string;
-  ifFinished!: string;
-  module!: string;
-  remark!: string;
-}

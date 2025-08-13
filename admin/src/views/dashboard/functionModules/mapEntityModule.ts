@@ -1,7 +1,5 @@
 import * as Cesium from "cesium";
-import { getVehiclesInPolygon } from "@/api/module/dcts/spatialData.ts";
 import {
-  CESIUM_DEFAULT,
   ID_PREFIX_SIGNAL_LIGHT,
   ID_PREFIX_SIGNAL_LIGHT_GROUP,
   ID_PREFIX_VEHICLE_REAL_TIME
@@ -11,14 +9,13 @@ import { LayerNotificationModule } from "@/views/dashboard/functionModules/layer
 import { objectUtils } from "@dcts/common";
 import { useDashboardStore } from "@/store/module/dashboard.ts";
 import { CronJob } from "cron";
-import { GetVehiclesInPolygonVo } from "@/type/module/dcts/spatialData.ts";
-import busTopImage from '@/assets/images2/公交车-车顶.png'
 import { SignalLightModule } from "@/views/dashboard/functionModules/signalLightModule.ts";
+import { VehicleModule } from "@/views/dashboard/functionModules/vehicleModule.ts";
 
 const dashboardStore = useDashboardStore();
 
 /**
- * 地图实体
+ * 地图实体模块
  */
 export class MapEntityModule {
   private lnModule: LayerNotificationModule | null = null
@@ -37,6 +34,12 @@ export class MapEntityModule {
 
   public setVdModule(vdModule: VersionDataModule) {
     this.vdModule = vdModule;
+  }
+
+  private veModule: VehicleModule | null = null
+
+  public setVeModule(veModule: VehicleModule) {
+    this.veModule = veModule
   }
 
   private viewer: Cesium.Viewer | null = null
@@ -61,11 +64,13 @@ export class MapEntityModule {
   private cronJob: CronJob | null = null
 
   public init() {
-    this.cronJob = new CronJob(
-        '* * * * * *',
-        this.refreshVehicleRealTime.bind(this),
-        null
-    );
+    if (this.veModule) {
+      this.cronJob = new CronJob(
+          '* * * * * *',
+          this.veModule.refreshVehicleRealTime.bind(this.veModule),
+          null
+      );
+    }
     const b1 = dashboardStore.getIfShowSignalLight();
     if (objectUtils.ifValid(b1)) {
       this._ifShowSignalLight = b1
@@ -73,7 +78,7 @@ export class MapEntityModule {
     const b2 = dashboardStore.getIfShowVehicleRealTime()
     if (objectUtils.ifValid(b2)) {
       this._ifShowVehicleRealTime = b2
-      if (this._ifShowVehicleRealTime) {
+      if (this._ifShowVehicleRealTime && this.cronJob) {
         this.cronJob.start()
       }
     }
@@ -202,61 +207,18 @@ export class MapEntityModule {
       if (!this.viewer) {
         return
       }
-      for (const id of this.hasDrawedVehicleIds) {
+      if (!this.veModule) {
+        return;
+      }
+      for (const id of this.veModule.hasDrawedVehicleIds) {
         this.viewer.entities.removeById(`${ID_PREFIX_VEHICLE_REAL_TIME}${id}`)
       }
-      this.hasDrawedVehicleIds.splice(0, this.hasDrawedVehicleIds.length)
+      this.veModule.hasDrawedVehicleIds.splice(0, this.veModule.hasDrawedVehicleIds.length)
     }
   }
 
   public getIfShowVehicleRealTime() {
     return this._ifShowVehicleRealTime
-  }
-
-  private refreshVehicleRealTime() {
-    if (!this.getIfShowVehicleRealTime()) {
-      return;
-    }
-    if (!this.getViewCornerCoordinates) {
-      return
-    }
-    const coordinates = this.getViewCornerCoordinates();
-    if (!coordinates || coordinates.length < 3) {
-      return
-    }
-    coordinates.push(coordinates[0])
-    getVehiclesInPolygon({lastActiveInterval: this.getLastActiveInterval(), points: coordinates})
-  }
-
-  private hasDrawedVehicleIds: number[] = []
-
-  public drawVehicleRealTime(data: GetVehiclesInPolygonVo[]) {
-    if (!this.viewer) {
-      return
-    }
-    for (const datum of data) {
-      const point = datum.points[0].point.replace('POINT(', '').replace(')', '').split(' ').map(Number);
-      if (!this.hasDrawedVehicleIds.includes(datum.vehicleId)) {
-        this.hasDrawedVehicleIds.push(datum.vehicleId)
-        this.viewer.entities.add({
-          position: Cesium.Cartesian3.fromDegrees(point[0], point[1], CESIUM_DEFAULT.HEIGHT_VEHICLE),
-          billboard: {
-            image: busTopImage,
-            width: 40,
-            height: 40,
-            rotation: Cesium.Math.toRadians(datum.points[0].heading),
-            alignedAxis: Cesium.Cartesian3.UNIT_Z
-          },
-          id: `${ID_PREFIX_VEHICLE_REAL_TIME}${datum.vehicleId}`
-        })
-      } else {
-        const entity = this.viewer.entities.getById(`${ID_PREFIX_VEHICLE_REAL_TIME}${datum.vehicleId}`);
-        if (entity && entity.billboard) {
-          entity.position = new Cesium.ConstantPositionProperty(Cesium.Cartesian3.fromDegrees(point[0], point[1], CESIUM_DEFAULT.HEIGHT_VEHICLE))
-          entity.billboard.rotation = new Cesium.ConstantProperty(Cesium.Math.toRadians(datum.points[0].heading))
-        }
-      }
-    }
   }
 
   // 最近活动时间

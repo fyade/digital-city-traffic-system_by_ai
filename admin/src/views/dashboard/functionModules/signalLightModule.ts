@@ -1,11 +1,9 @@
 import * as Cesium from "cesium";
-import { CronJob } from "cron";
 import { CalculateLightsInPolygonVo } from "@/type/module/dcts/spatialData.ts";
 import { ClockModule } from "@/views/dashboard/functionModules/clockModule.ts";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
 import { base } from "@dcts/common";
-import { dashboardConfig } from "@dcts/config";
 import { LayerNotificationModule } from "@/views/dashboard/functionModules/layerNotificationModule.ts";
 import { calculateLightsInPolygonApi, signalLightGroupsInPolygonApi } from "@/api/module/dcts/spatialData.ts";
 import {
@@ -57,34 +55,18 @@ export class SignalLightModule {
   }
 
 
-  private timeIntervalCollection = new Map<number, Cesium.TimeIntervalCollection>();
-  private jobs: CronJob<null, null>[] = [];
-
-  public init() {
-    // 长间隔任务
-    const job = new CronJob(
-        `0 */${dashboardConfig.LONG_TASK_INTERVAL} * * * *`,
-        this.longIntervalTask.bind(this),
-        null,
-        true
-    );
-    this.jobs.push(job)
-    this.longIntervalTask()
-  }
-
-  public destroy() {
-    for (const job of this.jobs) {
-      job.stop()
-    }
-    this.jobs = []
-  }
-
   private datas: CalculateLightsInPolygonVo[] = []
   private calculatedLightTimes: { childLightId: number, times: [number, number][] }[] = []
-  private ifRunLongTask = false
 
-  public addTask(calculateLightResult: CalculateLightsInPolygonVo[]) {
-    this.datas = calculateLightResult
+  public addTask(results: CalculateLightsInPolygonVo[]) {
+    for (const result of results) {
+      const find = this.datas.find(item => item.signalLightChildId === result.signalLightChildId);
+      if (find) {
+        find.runParam.push(...result.runParam)
+      } else {
+        this.datas.push(result)
+      }
+    }
     for (const data of this.datas) {
       if (data.runParam.length === 0) {
         continue
@@ -99,7 +81,6 @@ export class SignalLightModule {
         })
       }
     }
-    this.longIntervalTask()
     if (!this.vdModule) {
       return
     }
@@ -109,7 +90,7 @@ export class SignalLightModule {
     if (!this.viewer) {
       return;
     }
-    const slcIds = calculateLightResult.map(item => item.signalLightChildId);
+    const slcIds = results.map(item => item.signalLightChildId);
     this.vdModule.setHistoryRunningSignalLightIds(slcIds)
     const last0 = this.vdModule.getHistoryRunningSignalLightIds(0)
     const last1 = this.vdModule.getHistoryRunningSignalLightIds(-1)
@@ -120,72 +101,6 @@ export class SignalLightModule {
     for (const id of filter) {
       this.setSignalLightToPic(id)
     }
-  }
-
-  /**
-   * 长间隔任务
-   * @private
-   */
-  private longIntervalTask() {
-    if (this.ifRunLongTask) {
-      return
-    }
-    if (!this.cModule) {
-      return;
-    }
-    if (!this.meModule) {
-      return;
-    }
-    if (!this.vdModule) {
-      return;
-    }
-    if (this.cModule.currentTime === 0) {
-      const timeout = setTimeout(() => {
-        this.longIntervalTask()
-        clearTimeout(timeout)
-      }, 100);
-      return;
-    }
-    this.ifRunLongTask = true
-    const sls = this.vdModule.getHistorySignalLightGroupsInPolygonVo();
-    const currentTime = this.cModule.currentTime;
-    for (const data of this.datas) {
-      if (data.runParam.length === 0) {
-        continue
-      }
-      // data.signalLightChildId
-      // data.runParam[0].start
-      // data.runParam[data.runParam.length - 1].end
-      const timeIntervalCollection = new Cesium.TimeIntervalCollection();
-      this.timeIntervalCollection.set(data.signalLightChildId, timeIntervalCollection)
-      for (let rp of data.runParam) {
-        const leftTime = Math.floor((rp.end - Math.max(currentTime, rp.start)) / 1000);
-        let style: base.SignalLightUnitStyleEnum[] | null = null
-        if (sls) {
-          const find = sls.data.signalLightChildStyleMappings.find(item => item.childId === data.signalLightChildId);
-          if (find) {
-            const find1 = sls.data.signalLightStyles.find(item => item.id === find.styleId);
-            if (find1) {
-              style = find1.style.split('-').filter(_ => _) as base.SignalLightUnitStyleEnum[]
-            }
-          }
-        }
-        for (let i = 0; i < leftTime; i++) {
-          const canvas = getLightCanvas(style, rp.lightType, rp.color, leftTime - i);
-          if (!canvas) {
-            continue
-          }
-          timeIntervalCollection.addInterval(
-              new Cesium.TimeInterval({
-                start: Cesium.JulianDate.fromDate(new Date(rp.start + i * 1000)),
-                stop: Cesium.JulianDate.fromDate(new Date(rp.start + (i + 1) * 1000)),
-                data: canvas
-              })
-          )
-        }
-      }
-    }
-    this.ifRunLongTask = false
   }
 
   public setSignalLightToPic(id: number) {
@@ -236,7 +151,7 @@ export class SignalLightModule {
     }
     const sls = this.vdModule.getHistorySignalLightGroupsInPolygonVo();
     const now = Cesium.JulianDate.toDate(this.viewer.clock.currentTime).getTime();
-    if (!this.lastTickTime || (now % 500 <= this._tick_deviation_time && now - this.lastTickTime >= (500 - this._tick_deviation_time))) {
+    if (!this.lastTickTime || (now % 500 <= this._tick_deviation_time && Math.abs(now - this.lastTickTime) >= (500 - this._tick_deviation_time))) {
       this.lastTickTime = now
       for (const data of this.datas) {
         const entity = this.viewer.entities.getById(`${ID_PREFIX_SIGNAL_LIGHT}${data.signalLightChildId}`);
