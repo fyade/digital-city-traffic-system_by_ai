@@ -56,6 +56,9 @@ export class SpatialDataController {
     if (!dto.groupIds && (!dto.points || dto.points.length < 3)) {
       throw new Exception('多边形至少需要 3 个顶点。')
     }
+    if (dto.timeRange && dto.timeRange[1] - dto.timeRange[0] > 1000 * 60 * 60) {
+      throw new Exception('时间范围不能超过1小时')
+    }
     return this.spatialDataService.calculateLightsInPolygon(dto);
   }
 
@@ -68,6 +71,9 @@ export class SpatialDataController {
     label: '计算多边形内的车辆实时信息'
   })
   async getVehiclesInPolygon(@Body() dto: GetVehiclesInPolygonDto): Promise<R> {
+    if (dto.timeRange && dto.timeRange[1] - dto.timeRange[0] > 1000 * 60 * 60) {
+      throw new Exception('时间范围不能超过1小时')
+    }
     return this.spatialDataService.getVehiclesInPolygon(dto);
   }
 }

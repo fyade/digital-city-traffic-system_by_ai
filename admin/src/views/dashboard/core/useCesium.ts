@@ -25,6 +25,10 @@ export class UseCesium {
     return UseCesium.instance
   }
 
+  /**
+   * 初始化
+   * @protected
+   */
   protected init() {
   }
 
@@ -159,6 +163,7 @@ export class UseCesium {
 
   /**
    * 获取实体的经纬度坐标
+   * @param entityId
    */
   public getEntityLatLonHeight(entityId: string) {
     if (!this.viewer || !entityId) {
@@ -327,6 +332,8 @@ export class UseCesium {
   public mapCenterPosition: [number, number] = [118.92269000122111, 32.10650387256775]
   // 当前聚焦的实体
   public trackedEntityId: string | null = null
+  // 鼠标按下时的位置
+  public mouseDownPosition: 'timeline' | 'canvas' | null = null
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 事件封装 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   /**
@@ -348,6 +355,8 @@ export class UseCesium {
       fullscreenButton: false, // 全屏按钮
     });
     (this.viewer.cesiumWidget.creditContainer as HTMLElement).style.display = "none";
+    this.viewer.animation.viewModel.dateFormatter = time => timeUtils.formatDate(Cesium.JulianDate.toDate(time), 'YYYY-MM-DD');
+    this.viewer.animation.viewModel.timeFormatter = time => timeUtils.formatDate(Cesium.JulianDate.toDate(time), 'HH:mm:ss');
     this.viewer.timeline.makeLabel = time => timeUtils.formatDate(Cesium.JulianDate.toDate(time));
 
     // 初始化点的集合
@@ -371,7 +380,14 @@ export class UseCesium {
     this.viewer.imageryLayers.remove(defaultImagery);
 
 
+    const cesiumViewerTimelineContainer = document.querySelector('.cesium-viewer-timelineContainer') as HTMLElement | null;
+    if (cesiumViewerTimelineContainer) {
+      cesiumViewerTimelineContainer.addEventListener('mousedown', this.cesiumViewerTimelineContainerMousedownCB.bind(this))
+      cesiumViewerTimelineContainer.addEventListener('mouseup', this.cesiumViewerTimelineContainerMouseupCB.bind(this))
+    }
+
     this.viewer.camera.moveEnd.addEventListener(this.cameraMoveEndCB.bind(this))
+    this.viewer.clock.onStop.addEventListener(this.clockOnStopCB.bind(this))
     this.viewer.clock.onTick.addEventListener(this.clockOnTickCB.bind(this))
     this.viewer.scene.globe.tileLoadProgressEvent.addEventListener(this.globeTileLoadProgressEventCB.bind(this))
 
@@ -390,6 +406,23 @@ export class UseCesium {
   }
 
   /**
+   * 时间轴鼠标按下事件
+   * @param e
+   * @protected
+   */
+  protected cesiumViewerTimelineContainerMousedownCB(e: MouseEvent) {
+    this.mouseDownPosition = 'timeline'
+  }
+
+  /**
+   * 时间轴鼠标抬起事件
+   * @param e
+   * @protected
+   */
+  protected cesiumViewerTimelineContainerMouseupCB(e: MouseEvent) {
+  }
+
+  /**
    * 相机移动结束事件
    * @protected
    */
@@ -402,6 +435,13 @@ export class UseCesium {
     if (this.viewer) {
       this.cameraHeight = this.viewer.camera.positionCartographic.height
     }
+  }
+
+  /**
+   * 时钟停止事件
+   * @protected
+   */
+  protected clockOnStopCB() {
   }
 
   /**
@@ -426,6 +466,7 @@ export class UseCesium {
    */
   protected ScreenSpaceEventTypeLeftDownCB() {
     this.MOUSE_LEFT_DOWN = true
+    this.mouseDownPosition = 'canvas'
   }
 
   /**
@@ -444,6 +485,7 @@ export class UseCesium {
    */
   protected ScreenSpaceEventTypeRightDownCB() {
     this.MOUSE_RIGHT_DOWN = true
+    this.mouseDownPosition = 'canvas'
   }
 
   /**
@@ -527,6 +569,10 @@ export class UseCesium {
   protected ScreenSpaceEventTypeClickCB() {
   }
 
+  /**
+   * 聚焦实体
+   * @param entityId
+   */
   public trackEntity(entityId: string | null) {
     if (!this.viewer) {
       return

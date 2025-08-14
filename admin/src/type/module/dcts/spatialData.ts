@@ -44,6 +44,7 @@ export class CalculateLightsInPolygonDto {
   ifReturn?: boolean;
   groupIds?: number[]
   points?: PolygonPointDto[]
+  timeRange?: [number, number]
 }
 
 class SignalLightRunParamDParam {
@@ -64,6 +65,7 @@ export class GetVehiclesInPolygonDto {
   version?: string
   lastActiveInterval!: number
   points!: PolygonPointDto[]
+  timeRange?: [number, number]
 }
 
 export class GetVehiclesInPolygonVo {

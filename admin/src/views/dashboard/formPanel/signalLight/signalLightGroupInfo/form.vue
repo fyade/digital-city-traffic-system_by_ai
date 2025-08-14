@@ -53,7 +53,7 @@ const dCon = () => {
     if (ifIns) {
       formLoading.value = true
       signalLightGroupInfoApi.insertOne(form.value).then(_ => {
-        useCesium.refreshScreenEntities(true)
+        useCesium.refreshScreenEntities({ifRefresh: true})
         gotoDashboardHome()
       }).finally(() => {
         formLoading.value = false
@@ -62,7 +62,7 @@ const dCon = () => {
     if (ifUpd) {
       formLoading.value = true
       signalLightGroupInfoApi.updateOne(form.value).then(_ => {
-        useCesium.refreshScreenEntities(true)
+        useCesium.refreshScreenEntities({ifRefresh: true})
         gotoDashboardHome()
       }).finally(() => {
         formLoading.value = false
@@ -73,7 +73,7 @@ const dCon = () => {
 const submitCallback = () => {
   formLoading.value = true
   signalLightGroupInfoDelV2(Number(itemId)).then(_ => {
-    useCesium.refreshScreenEntities(true)
+    useCesium.refreshScreenEntities({ifRefresh: true})
     gotoDashboardHome()
   }).finally(() => {
     formLoading.value = false

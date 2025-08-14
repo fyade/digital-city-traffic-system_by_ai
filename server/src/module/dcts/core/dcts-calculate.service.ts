@@ -35,8 +35,9 @@ export class DctsCalculateService {
   /**
    * 计算信号灯
    * @param signalLightGroupIds
+   * @param timeRange
    */
-  public async calculateLight(signalLightGroupIds: number[]) {
+  public async calculateLight(signalLightGroupIds: number[], timeRange: [number, number] | null) {
     const start = performance.now();
     const defaultSelArg = this.prismao.defaultSelArg();
     const allSignalLightGroups = (await this.pgsqlPrismao.signal_light_group_info.findMany({
@@ -142,9 +143,14 @@ export class DctsCalculateService {
     const start2 = performance.now();
 
     const allSignalLightRunParam: SignalLightRunParam[] = []
-    const now0 = Math.floor(Date.now() / 1000) * 1000
-    const now01 = now0 - 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL * 3;
-    const now02 = now0 + 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL * 3;
+    let now0 = Math.floor(Date.now() / 1000) * 1000
+    let now01 = now0 - 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL * 3;
+    let now02 = now0 + 1000 * 60 * dashboardConfig.LONG_TASK_INTERVAL * 3;
+    if (timeRange) {
+      now0 = timeRange[0]
+      now01 = timeRange[0]
+      now02 = timeRange[1]
+    }
 
     // 策略类型-策略调度-策略参数 关系 [strategyTypeId, strategyScheduleId, strategyParamId][]
     const relation: [number, number, number][] = []

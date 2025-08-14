@@ -167,9 +167,22 @@ class UseDashboardCesium extends UseCesium {
     this.wsClient.destroy()
   }
 
+  protected cesiumViewerTimelineContainerMousedownCB(e: MouseEvent) {
+    super.cesiumViewerTimelineContainerMousedownCB(e);
+  }
+
+  protected cesiumViewerTimelineContainerMouseupCB(e: MouseEvent) {
+    super.cesiumViewerTimelineContainerMouseupCB(e);
+    this.timelineChangeManually()
+  }
+
   protected cameraMoveEndCB() {
     super.cameraMoveEndCB();
     this.refreshScreenEntities()
+  }
+
+  protected clockOnStopCB() {
+    super.clockOnStopCB();
   }
 
   protected clockOnTickCB() {
@@ -289,6 +302,13 @@ class UseDashboardCesium extends UseCesium {
     if (count === 1) {
       this.refreshScreenEntities()
     }
+  }
+
+  private timelineChangeManually() {
+    if (this.viewer) {
+      this.viewer.clock.shouldAnimate = true
+    }
+    this.refreshScreenEntities({ifReplay: true})
   }
 }
 

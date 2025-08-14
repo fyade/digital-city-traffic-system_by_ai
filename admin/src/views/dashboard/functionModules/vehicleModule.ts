@@ -82,6 +82,9 @@ export class VehicleModule {
   }
 
   public refreshVehicleRealTime() {
+    if (!this.viewer) {
+      return;
+    }
     if (!this.meModule) {
       return;
     }
@@ -96,7 +99,15 @@ export class VehicleModule {
       return
     }
     coordinates.push(coordinates[0])
-    getVehiclesInPolygon({lastActiveInterval: this.meModule.getLastActiveInterval(), points: coordinates})
+    const now = Cesium.JulianDate.toDate(this.viewer.clock.currentTime).getTime();
+    getVehiclesInPolygon({
+      lastActiveInterval: this.meModule.getLastActiveInterval(),
+      points: coordinates,
+      timeRange: [
+        now - 1000 * 60 * 5,
+        now + 1000 * 60 * 1.5,
+      ]
+    })
   }
 
   public hasDrawedVehicleIds: number[] = []

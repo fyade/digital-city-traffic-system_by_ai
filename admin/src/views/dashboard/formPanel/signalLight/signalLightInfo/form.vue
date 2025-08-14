@@ -63,7 +63,7 @@ const dCon = () => {
         dto.groupId = Number(itemPid)
         dto.childLightId = res.id
         signalLightGroupChildMappingApi.insertOne(dto).then(_ => {
-          useCesium.refreshScreenEntities(true)
+          useCesium.refreshScreenEntities({ifRefresh: true})
           gotoDashboardHome()
         }).finally(() => {
           formLoading.value = false
@@ -75,7 +75,7 @@ const dCon = () => {
     if (ifUpd) {
       formLoading.value = true
       signalLightInfoApi.updateOne(form.value).then(_ => {
-        useCesium.refreshScreenEntities(true)
+        useCesium.refreshScreenEntities({ifRefresh: true})
         gotoDashboardHome()
       }).finally(() => {
         formLoading.value = false
@@ -86,7 +86,7 @@ const dCon = () => {
 const submitCallback = () => {
   formLoading.value = true
   signalLightInfoDelV2(Number(itemId)).then(_ => {
-    useCesium.refreshScreenEntities(true)
+    useCesium.refreshScreenEntities({ifRefresh: true})
     gotoDashboardHome()
   }).finally(() => {
     formLoading.value = false

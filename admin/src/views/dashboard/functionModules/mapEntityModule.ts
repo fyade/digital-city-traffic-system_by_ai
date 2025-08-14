@@ -149,10 +149,18 @@ export class MapEntityModule {
   /**
    * 刷新可视区域内的实体
    * @param ifRefresh
+   * @param ifReplay
    */
-  public refreshScreenEntities(ifRefresh = false) {
+  public refreshScreenEntities({
+                                 ifRefresh = false,
+                                 ifReplay = false,
+                               }: {
+                                 ifRefresh?: boolean
+                                 ifReplay?: boolean
+                               } = {}
+  ) {
     if (this.slModule) {
-      this.slModule.drawSignalLightsWhenMapMove(ifRefresh)
+      this.slModule.drawSignalLightsWhenMapMove({ifRefresh, ifReplay})
     }
   }
 

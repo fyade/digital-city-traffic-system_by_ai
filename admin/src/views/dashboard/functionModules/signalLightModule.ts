@@ -1,5 +1,5 @@
 import * as Cesium from "cesium";
-import { CalculateLightsInPolygonVo } from "@/type/module/dcts/spatialData.ts";
+import { CalculateLightsInPolygonDto, CalculateLightsInPolygonVo } from "@/type/module/dcts/spatialData.ts";
 import { ClockModule } from "@/views/dashboard/functionModules/clockModule.ts";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
@@ -186,8 +186,16 @@ export class SignalLightModule {
   /**
    * 查询可视区域内的信号灯组及子信号灯
    * @param ifRefresh
+   * @param ifReplay
    */
-  public drawSignalLightsWhenMapMove(ifRefresh = false) {
+  public drawSignalLightsWhenMapMove({
+                                       ifRefresh = false,
+                                       ifReplay = false,
+                                     }: {
+                                       ifRefresh?: boolean
+                                       ifReplay?: boolean
+                                     }
+  ) {
     if (!this.viewer) {
       return
     }
@@ -301,6 +309,15 @@ export class SignalLightModule {
       }
     })
 
-    calculateLightsInPolygonApi({points: viewCornerCoordinates})
+    const reqparam = new CalculateLightsInPolygonDto()
+    reqparam.points = viewCornerCoordinates
+    if (ifReplay) {
+      const now = Cesium.JulianDate.toDate(this.viewer.clock.currentTime).getTime();
+      reqparam.timeRange = [
+        now - 1000 * 60 * 5,
+        now + 1000 * 60 * 25,
+      ]
+    }
+    calculateLightsInPolygonApi(reqparam)
   }
 }

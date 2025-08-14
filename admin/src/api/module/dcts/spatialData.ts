@@ -1,9 +1,11 @@
 import {
-  CalculateLightsInPolygonDto, CalculateLightsInPolygonVo, GetVehiclesInPolygonDto,
   NodesWithWaysInPolygonDto,
   NodesWithWaysInPolygonVo,
   SignalLightGroupsInPolygonDto,
-  SignalLightGroupsInPolygonVo
+  SignalLightGroupsInPolygonVo,
+  CalculateLightsInPolygonDto,
+  CalculateLightsInPolygonVo,
+  GetVehiclesInPolygonDto,
 } from "@/type/module/dcts/spatialData.ts";
 import request from "@/api/request.ts";
 

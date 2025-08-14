@@ -82,7 +82,14 @@ export class CalculateLightsInPolygonDto {
   @IsArray({message: '多边形必须为数组'})
   @ValidateNested({each: true})
   @Type(() => PolygonPointDto)
-  points: PolygonPointDto[] | null = null
+  points?: PolygonPointDto[] | null = null
+
+  @ApiProperty({description: '时间范围', type: [Number], default: null, nullable: true})
+  @IsOptional()
+  @IsArray({message: '时间范围必须为数组'})
+  @IsNumber({}, {each: true, message: '时间范围的每个元素必须是数值类型'})
+  @ArrayMinSize(2, {message: '时间范围必须包含至少2个元素'})
+  timeRange?: [number, number] | null = null
 }
 
 export class GetVehiclesInPolygonDto {
@@ -106,4 +113,11 @@ export class GetVehiclesInPolygonDto {
   @ValidateNested({each: true})
   @Type(() => PolygonPointDto)
   points: PolygonPointDto[]
+
+  @ApiProperty({description: '时间范围', type: [Number], default: null, nullable: true})
+  @IsOptional()
+  @IsArray({message: '时间范围必须为数组'})
+  @IsNumber({}, {each: true, message: '时间范围的每个元素必须是数值类型'})
+  @ArrayMinSize(2, {message: '时间范围必须包含至少2个元素'})
+  timeRange?: [number, number] | null = null
 }

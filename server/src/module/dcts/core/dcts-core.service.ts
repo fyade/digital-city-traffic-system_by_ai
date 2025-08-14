@@ -13,21 +13,19 @@ export class DctsCoreService {
     this.scheduleService.addScheduleFunc('sys:dcts:runCoreSchedule', this.runCoreSchedule.bind(this))
   }
 
-  public async calculateLightsInPolygon(signalLightGroupIds: number[], loginRole: string, userId: string, ifSendWs: boolean) {
-    const signalLightRunParams = await this.calculateLight(signalLightGroupIds);
+  public async calculateLightsInPolygon({
+                                          signalLightGroupIds,
+                                          timeRange = null,
+                                        }: {
+                                          signalLightGroupIds: number[]
+                                          timeRange?: [number, number]
+                                        },
+                                        loginRole: string, userId: string, ifSendWs: boolean) {
+    const signalLightRunParams = await this.dctsCalculateService.calculateLight(signalLightGroupIds, timeRange);
     if (ifSendWs) {
       this.wsService.sendMsg(loginRole, userId, 'dcts:spatialData:calculateLightsInPolygon', JSON.stringify(signalLightRunParams))
     }
     return signalLightRunParams
-  }
-
-  /**
-   * 计算信号灯
-   * @param signalLightGroupIds
-   * @private
-   */
-  private async calculateLight(signalLightGroupIds: number[]) {
-    return this.dctsCalculateService.calculateLight(signalLightGroupIds)
   }
 
   /**

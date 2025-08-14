@@ -110,8 +110,12 @@ export function signalLightGroupsInPolygon3(ids: number[]) {
 }
 
 export function getVehiclesInPolygon(dto: GetVehiclesInPolygonDto) {
-  const end = new Date()
-  const start = new Date(end.getTime() - 1000 * dto.lastActiveInterval)
+  let end = new Date()
+  let start = new Date(end.getTime() - 1000 * dto.lastActiveInterval)
+  if (dto.timeRange) {
+    start = new Date(dto.timeRange[0])
+    end = new Date(dto.timeRange[1])
+  }
   return `
       select vtp.id                               as "id",
              vtp.vehicle_id                       as "vehicleId",
