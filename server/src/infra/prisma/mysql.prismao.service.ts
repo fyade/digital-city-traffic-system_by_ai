@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient, Prisma } from '@dcts/prisma-generated/client'
+import { PrismaClient, Prisma } from '@dcts/prisma-generated/client-mysql'
 import { serverConfig } from "@dcts/config";
 import { baseUtils } from "@dcts/common";
 
@@ -10,7 +10,7 @@ export class MysqlPrismaoService extends PrismaClient {
   constructor() {
     super({
       datasources: {
-        db: {
+        dbMysql: {
           url: serverConfig.getMysqlUrlFromEnv(env),
         },
       },

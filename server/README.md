@@ -17,7 +17,7 @@ npx prisma init
 prisma 迁移数据库：
 
 ```bash
-$ npx prisma migrate dev --name gx --schema=./prisma/schema.prisma
+$ npx prisma migrate dev --name gx --schema=./prisma/mysql.schema.prisma
 ```
 
 prisma 重置数据库：
@@ -34,7 +34,7 @@ $ npx prisma generate
 
 prisma 从数据库同步结构
 ```bash
-$ npx prisma db pull --schema=./prisma/schema.prisma
+$ npx prisma db pull --schema=./prisma/mysql.schema.prisma
 ```
 
 nest 生成拦截器：

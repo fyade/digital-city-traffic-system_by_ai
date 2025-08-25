@@ -1,0 +1,693 @@
+generator clientMysql {
+  provider        = "prisma-client-js"
+  output          = "../prisma-generated/client-mysql"
+  previewFeatures = ["prismaSchemaFolder"]
+  binaryTargets   = ["darwin", "windows", "linux-musl", "rhel-openssl-1.0.x", "debian-openssl-3.0.x"]
+}
+
+datasource dbMysql {
+  provider = "mysql"
+  url      = "mysql://root:123456@localhost:3306/proj_digital-city-traffic-system"
+}
+
+// 1.0 系统配置
+model sys_config {
+  id                   Int      @id @default(autoincrement()) @dbMysql.Int
+  if_allow_user_regist String   @dbMysql.Char(1)
+  remark               String?  @dbMysql.VarChar(300)
+  create_role          String   @dbMysql.VarChar(30)
+  update_role          String   @dbMysql.VarChar(30)
+  create_by            String   @dbMysql.VarChar(10)
+  update_by            String   @dbMysql.VarChar(10)
+  create_time          DateTime @default(now())
+  update_time          DateTime @updatedAt
+  deleted              String   @default("N") @dbMysql.Char(1)
+}
+
+// 1.1 用户表
+model sys_user {
+  id             String          @id @dbMysql.VarChar(10)
+  username       String          @dbMysql.VarChar(50)
+  nickname       String?         @dbMysql.VarChar(50)
+  password       String          @dbMysql.VarChar(100)
+  avatar         String?         @dbMysql.VarChar(200)
+  sex            String?         @dbMysql.VarChar(10)
+  email          String?         @dbMysql.VarChar(50)
+  tel            String?         @dbMysql.VarChar(15)
+  create_role    String          @dbMysql.VarChar(30)
+  update_role    String          @dbMysql.VarChar(30)
+  create_by      String          @dbMysql.VarChar(10)
+  update_by      String          @dbMysql.VarChar(10)
+  create_time    DateTime        @default(now())
+  update_time    DateTime        @updatedAt
+  deleted        String          @default("N") @dbMysql.Char(1)
+  sys_admin_tops sys_admin_top[]
+}
+
+// 1.1.0 用户 apiKey 表
+model sys_user_api_key {
+  id          Int      @id @default(autoincrement()) @dbMysql.Int
+  user_id     String   @dbMysql.VarChar(10)
+  user_role   String   @dbMysql.VarChar(30)
+  api_key     String   @dbMysql.VarChar(50)
+  remark      String?  @dbMysql.VarChar(300)
+  create_role String   @dbMysql.VarChar(30)
+  update_role String   @dbMysql.VarChar(30)
+  create_by   String   @dbMysql.VarChar(10)
+  update_by   String   @dbMysql.VarChar(10)
+  create_time DateTime @default(now())
+  update_time DateTime @updatedAt
+  deleted     String   @default("N") @dbMysql.Char(1)
+}
+
+// 1.1.1 访客用户表
+model sys_user_visitor {
+  id          String   @id @dbMysql.VarChar(10)
+  username    String   @dbMysql.VarChar(50)
+  nickname    String?  @dbMysql.VarChar(50)
+  password    String   @dbMysql.VarChar(100)
+  avatar      String?  @dbMysql.VarChar(200)
+  sex         String?  @dbMysql.VarChar(10)
+  email       String?  @dbMysql.VarChar(50)
+  tel         String?  @dbMysql.VarChar(15)
+  create_role String   @dbMysql.VarChar(30)
+  update_role String   @dbMysql.VarChar(30)
+  create_by   String   @dbMysql.VarChar(10)
+  update_by   String   @dbMysql.VarChar(10)
+  create_time DateTime @default(now())
+  update_time DateTime @updatedAt
+  deleted     String   @default("N") @dbMysql.Char(1)
+}
+
+// 1.1.2 用户表默认权限表
+model sys_user_table_default_permission {
+  id          Int      @id @default(autoincrement()) @dbMysql.Int
+  table_name  String   @dbMysql.VarChar(50) // 表名
+  perm_type   String   @dbMysql.VarChar(2) // 角色类型
+  perm_id     Int      @dbMysql.Int // 角色id
+  create_role String   @dbMysql.VarChar(30)
+  update_role String   @dbMysql.VarChar(30)
+  create_by   String   @dbMysql.VarChar(10)
+  update_by   String   @dbMysql.VarChar(10)
+  create_time DateTime @default(now())
+  update_time DateTime @updatedAt
+  deleted     String   @default("N") @dbMysql.Char(1)
+}
+
+// 1.2 字典类型表
+model sys_dic_type {
+  id            Int            @id @default(autoincrement()) @dbMysql.Int
+  name          String         @dbMysql.VarChar(50)
+  type          String         @dbMysql.VarChar(50)
+  if_disabled   String         @dbMysql.Char(1)
+  order_num     Int            @dbMysql.Int
+  remark        String?        @dbMysql.VarChar(300)
+  create_role   String         @dbMysql.VarChar(30)
+  update_role   String         @dbMysql.VarChar(30)
+  create_by     String         @dbMysql.VarChar(10)
+  update_by     String         @dbMysql.VarChar(10)
+  create_time   DateTime       @default(now())
+  update_time   DateTime       @updatedAt
+  deleted       String         @default("N") @dbMysql.Char(1)
+  sys_dic_datas sys_dic_data[]
+}
+
+// 1.3 字典数据表
+model sys_dic_data {
+  id          Int          @id @default(autoincrement()) @dbMysql.Int
+  label       String       @dbMysql.VarChar(50)
+  value       String       @dbMysql.VarChar(50)
+  dic_type_id Int          @dbMysql.Int
+  if_default  String       @dbMysql.Char(1)
+  if_disabled String       @dbMysql.Char(1)
+  order_num   Int          @dbMysql.Int
+  remark      String?      @dbMysql.VarChar(300)
+  create_role String       @dbMysql.VarChar(30)
+  update_role String       @dbMysql.VarChar(30)
+  create_by   String       @dbMysql.VarChar(10)
+  update_by   String       @dbMysql.VarChar(10)
+  create_time DateTime     @default(now())
+  update_time DateTime     @updatedAt
+  deleted     String       @default("N") @dbMysql.Char(1)
+  dic_type_   sys_dic_type @relation(fields: [dic_type_id], references: [id])
+}
+
+// 1.4 代码生成-表信息表
+model sys_code_gen_table {
+  id                   Int                   @id @default(autoincrement()) @dbMysql.Int
+  table_name           String                @dbMysql.VarChar(60)
+  table_descr          String                @dbMysql.VarChar(100)
+  entity_name          String                @dbMysql.VarChar(60)
+  table_remark         String?               @dbMysql.VarChar(300)
+  business_name        String                @dbMysql.VarChar(60)
+  module_name          String                @dbMysql.VarChar(60)
+  business_name_cn     String                @dbMysql.VarChar(60)
+  module_name_cn       String                @dbMysql.VarChar(60)
+  sys_id               Int                   @dbMysql.Int
+  order_num            Int                   @dbMysql.Int
+  remark               String?               @dbMysql.VarChar(300)
+  create_role          String                @dbMysql.VarChar(30)
+  update_role          String                @dbMysql.VarChar(30)
+  create_by            String                @dbMysql.VarChar(10)
+  update_by            String                @dbMysql.VarChar(10)
+  create_time          DateTime              @default(now())
+  update_time          DateTime              @updatedAt
+  deleted              String                @default("N") @dbMysql.Char(1)
+  sys_                 sys_sys               @relation(fields: [sys_id], references: [id])
+  sys_code_gen_columns sys_code_gen_column[]
+}
+
+// 1.5 代码生成-列信息表
+model sys_code_gen_column {
+  id           Int                @id @default(autoincrement()) @dbMysql.Int
+  table_id     Int                @dbMysql.Int
+  col_name     String             @dbMysql.VarChar(60)
+  col_descr    String             @dbMysql.VarChar(60)
+  mysql_type   String             @dbMysql.VarChar(60)
+  mysql_length Int                @dbMysql.Int
+  ts_type      String             @dbMysql.VarChar(10)
+  ts_name      String             @dbMysql.VarChar(60)
+  if_ins       String             @dbMysql.Char(1)
+  if_upd       String             @dbMysql.Char(1)
+  if_sel_one   String             @dbMysql.Char(1)
+  if_sel_more  String             @dbMysql.Char(1)
+  if_required  String             @dbMysql.Char(1)
+  sel_type     String             @dbMysql.VarChar(10)
+  form_type    String             @dbMysql.VarChar(20)
+  order_num    Int                @dbMysql.Int
+  remark       String?            @dbMysql.VarChar(300)
+  create_role  String             @dbMysql.VarChar(30)
+  update_role  String             @dbMysql.VarChar(30)
+  create_by    String             @dbMysql.VarChar(10)
+  update_by    String             @dbMysql.VarChar(10)
+  create_time  DateTime           @default(now())
+  update_time  DateTime           @updatedAt
+  deleted      String             @default("N") @dbMysql.Char(1)
+  table_id_    sys_code_gen_table @relation(fields: [table_id], references: [id])
+}
+
+// 2.0 顶级管理员表
+model sys_admin_top {
+  id          Int      @id @default(autoincrement()) @dbMysql.Int
+  user_id     String   @dbMysql.VarChar(10)
+  remark      String?  @dbMysql.VarChar(300)
+  create_role String   @dbMysql.VarChar(30)
+  update_role String   @dbMysql.VarChar(30)
+  create_by   String   @dbMysql.VarChar(10)
+  update_by   String   @dbMysql.VarChar(10)
+  create_time DateTime @default(now())
+  update_time DateTime @updatedAt
+  deleted     String   @default("N") @dbMysql.Char(1)
+  user_id_    sys_user @relation(fields: [user_id], references: [id])
+}
+
+// 2.1 菜单表
+model sys_menu {
+  id                        Int                        @id @default(autoincrement()) @dbMysql.Int
+  label                     String                     @dbMysql.VarChar(30)
+  type                      String                     @dbMysql.VarChar(2)
+  path                      String                     @dbMysql.VarChar(100)
+  parent_id                 Int                        @dbMysql.Int
+  component                 String                     @dbMysql.VarChar(200)
+  icon                      String                     @dbMysql.VarChar(30)
+  order_num                 Int                        @dbMysql.Int
+  if_link                   String                     @dbMysql.Char(1)
+  if_visible                String                     @dbMysql.Char(1)
+  if_disabled               String                     @dbMysql.Char(1)
+  if_public                 String                     @dbMysql.Char(1)
+  if_fixed                  String                     @dbMysql.Char(1)
+  perms                     String                     @dbMysql.VarChar(100)
+  sys_id                    Int                        @dbMysql.Int
+  remark                    String?                    @dbMysql.VarChar(300)
+  create_role               String                     @dbMysql.VarChar(30)
+  update_role               String                     @dbMysql.VarChar(30)
+  create_by                 String                     @dbMysql.VarChar(10)
+  update_by                 String                     @dbMysql.VarChar(10)
+  create_time               DateTime                   @default(now())
+  update_time               DateTime                   @updatedAt
+  deleted                   String                     @default("N") @dbMysql.Char(1)
+  sys_                      sys_sys                    @relation(fields: [sys_id], references: [id])
+  sys_role_permissions      sys_role_permission[]
+  sys_dept_permissions      sys_dept_permission[]
+  sys_menu_ip_white_lists   sys_menu_ip_white_list[]
+  sys_menu_throttles        sys_menu_throttle[]
+  sys_table_row_permissions sys_table_row_permission[]
+}
+
+// 2.2 角色表
+model sys_role {
+  id                   Int                   @id @default(autoincrement()) @dbMysql.Int
+  label                String                @dbMysql.VarChar(30)
+  if_admin             String                @dbMysql.Char(1)
+  if_disabled          String                @dbMysql.Char(1)
+  order_num            Int                   @dbMysql.Int
+  remark               String?               @dbMysql.VarChar(300)
+  create_role          String                @dbMysql.VarChar(30)
+  update_role          String                @dbMysql.VarChar(30)
+  create_by            String                @dbMysql.VarChar(10)
+  update_by            String                @dbMysql.VarChar(10)
+  create_time          DateTime              @default(now())
+  update_time          DateTime              @updatedAt
+  deleted              String                @default("N") @dbMysql.Char(1)
+  sys_user_roles       sys_user_role[]
+  sys_role_permissions sys_role_permission[]
+  sys_role_syss        sys_role_sys[]
+}
+
+// 2.3 用户角色表
+model sys_user_role {
+  id          Int      @id @default(autoincrement()) @dbMysql.Int
+  user_id     String   @dbMysql.VarChar(10)
+  role_id     Int      @dbMysql.Int
+  login_role  String   @dbMysql.VarChar(30)
+  create_role String   @dbMysql.VarChar(30)
+  update_role String   @dbMysql.VarChar(30)
+  create_by   String   @dbMysql.VarChar(10)
+  update_by   String   @dbMysql.VarChar(10)
+  create_time DateTime @default(now())
+  update_time DateTime @updatedAt
+  deleted     String   @default("N") @dbMysql.Char(1)
+  role_id_    sys_role @relation(fields: [role_id], references: [id])
+}
+
+// 2.4 角色权限表
+model sys_role_permission {
+  id             Int      @id @default(autoincrement()) @dbMysql.Int
+  role_id        Int      @dbMysql.Int
+  permission_id  Int      @dbMysql.Int
+  create_role    String   @dbMysql.VarChar(30)
+  update_role    String   @dbMysql.VarChar(30)
+  create_by      String   @dbMysql.VarChar(10)
+  update_by      String   @dbMysql.VarChar(10)
+  create_time    DateTime @default(now())
+  update_time    DateTime @updatedAt
+  deleted        String   @default("N") @dbMysql.Char(1)
+  role_id_       sys_role @relation(fields: [role_id], references: [id])
+  permission_id_ sys_menu @relation(fields: [permission_id], references: [id])
+}
+
+// 2.5 部门表
+model sys_dept {
+  id                   Int                   @id @default(autoincrement()) @dbMysql.Int
+  label                String                @dbMysql.VarChar(50)
+  if_admin             String                @dbMysql.Char(1)
+  if_disabled          String                @dbMysql.Char(1)
+  parent_id            Int                   @dbMysql.Int
+  order_num            Int                   @dbMysql.Int
+  remark               String?               @dbMysql.VarChar(300)
+  create_role          String                @dbMysql.VarChar(30)
+  update_role          String                @dbMysql.VarChar(30)
+  create_by            String                @dbMysql.VarChar(10)
+  update_by            String                @dbMysql.VarChar(10)
+  create_time          DateTime              @default(now())
+  update_time          DateTime              @updatedAt
+  deleted              String                @default("N") @dbMysql.Char(1)
+  sys_user_depts       sys_user_dept[]
+  sys_dept_permissions sys_dept_permission[]
+  sys_dept_syss        sys_dept_sys[]
+}
+
+// 2.6 用户部门表
+model sys_user_dept {
+  id          Int      @id @default(autoincrement()) @dbMysql.Int
+  user_id     String   @dbMysql.VarChar(10)
+  dept_id     Int      @dbMysql.Int
+  login_role  String   @dbMysql.VarChar(30)
+  create_role String   @dbMysql.VarChar(30)
+  update_role String   @dbMysql.VarChar(30)
+  create_by   String   @dbMysql.VarChar(10)
+  update_by   String   @dbMysql.VarChar(10)
+  create_time DateTime @default(now())
+  update_time DateTime @updatedAt
+  deleted     String   @default("N") @dbMysql.Char(1)
+  dept_id_    sys_dept @relation(fields: [dept_id], references: [id])
+}
+
+// 2.7 部门权限表
+model sys_dept_permission {
+  id             Int      @id @default(autoincrement()) @dbMysql.Int
+  dept_id        Int      @dbMysql.Int
+  permission_id  Int      @dbMysql.Int
+  create_role    String   @dbMysql.VarChar(30)
+  update_role    String   @dbMysql.VarChar(30)
+  create_by      String   @dbMysql.VarChar(10)
+  update_by      String   @dbMysql.VarChar(10)
+  create_time    DateTime @default(now())
+  update_time    DateTime @updatedAt
+  deleted        String   @default("N") @dbMysql.Char(1)
+  dept_id_       sys_dept @relation(fields: [dept_id], references: [id])
+  permission_id_ sys_menu @relation(fields: [permission_id], references: [id])
+}
+
+// 2.8 系统表
+model sys_sys {
+  id                  Int                  @id @default(autoincrement()) @dbMysql.Int
+  name                String               @dbMysql.VarChar(300)
+  perms               String               @dbMysql.VarChar(100)
+  order_num           Int                  @dbMysql.Int
+  path                String               @dbMysql.VarChar(100)
+  if_disabled         String               @dbMysql.Char(1)
+  remark              String?              @dbMysql.VarChar(300)
+  create_role         String               @dbMysql.VarChar(30)
+  update_role         String               @dbMysql.VarChar(30)
+  create_by           String               @dbMysql.VarChar(10)
+  update_by           String               @dbMysql.VarChar(10)
+  create_time         DateTime             @default(now())
+  update_time         DateTime             @updatedAt
+  deleted             String               @default("N") @dbMysql.Char(1)
+  sys_role_syss       sys_role_sys[]
+  sys_dept_syss       sys_dept_sys[]
+  sys_menus           sys_menu[]
+  sys_code_gen_tables sys_code_gen_table[]
+}
+
+// 2.9 角色系统表
+model sys_role_sys {
+  id          Int      @id @default(autoincrement()) @dbMysql.Int
+  role_id     Int      @dbMysql.Int
+  sys_id      Int      @dbMysql.Int
+  create_role String   @dbMysql.VarChar(30)
+  update_role String   @dbMysql.VarChar(30)
+  create_by   String   @dbMysql.VarChar(10)
+  update_by   String   @dbMysql.VarChar(10)
+  create_time DateTime @default(now())
+  update_time DateTime @updatedAt
+  deleted     String   @default("N") @dbMysql.Char(1)
+  role_id_    sys_role @relation(fields: [role_id], references: [id])
+  sys_id_     sys_sys  @relation(fields: [sys_id], references: [id])
+}
+
+// 2.10 部门系统表
+model sys_dept_sys {
+  id          Int      @id @default(autoincrement()) @dbMysql.Int
+  dept_id     Int      @dbMysql.Int
+  sys_id      Int      @dbMysql.Int
+  create_role String   @dbMysql.VarChar(30)
+  update_role String   @dbMysql.VarChar(30)
+  create_by   String   @dbMysql.VarChar(10)
+  update_by   String   @dbMysql.VarChar(10)
+  create_time DateTime @default(now())
+  update_time DateTime @updatedAt
+  deleted     String   @default("N") @dbMysql.Char(1)
+  dept_id_    sys_dept @relation(fields: [dept_id], references: [id])
+  sys_id_     sys_sys  @relation(fields: [sys_id], references: [id])
+}
+
+// 2.11 菜单-ip白名单表
+model sys_menu_ip_white_list {
+  id          Int      @id @default(autoincrement()) @dbMysql.Int
+  menu_id     Int      @dbMysql.Int
+  white_list  String   @dbMysql.VarChar(100)
+  from_type   String   @dbMysql.VarChar(2)
+  type        String   @dbMysql.VarChar(2)
+  remark      String?  @dbMysql.VarChar(300)
+  create_role String   @dbMysql.VarChar(30)
+  update_role String   @dbMysql.VarChar(30)
+  create_by   String   @dbMysql.VarChar(10)
+  update_by   String   @dbMysql.VarChar(10)
+  create_time DateTime @default(now())
+  update_time DateTime @updatedAt
+  deleted     String   @default("N") @dbMysql.Char(1)
+  menu_id_    sys_menu @relation(fields: [menu_id], references: [id])
+}
+
+// 2.12 菜单-请求限制表
+model sys_menu_throttle {
+  id          Int      @id @default(autoincrement()) @dbMysql.Int
+  menu_id     Int      @dbMysql.Int
+  ttl         Int      @dbMysql.Int
+  limit       Int      @dbMysql.Int
+  type        String   @dbMysql.VarChar(2)
+  remark      String?  @dbMysql.VarChar(300)
+  create_role String   @dbMysql.VarChar(30)
+  update_role String   @dbMysql.VarChar(30)
+  create_by   String   @dbMysql.VarChar(10)
+  update_by   String   @dbMysql.VarChar(10)
+  create_time DateTime @default(now())
+  update_time DateTime @updatedAt
+  deleted     String   @default("N") @dbMysql.Char(1)
+  menu_id_    sys_menu @relation(fields: [menu_id], references: [id])
+}
+
+// 2.13 菜单-数据表行权限表
+model sys_table_row_permission {
+  id             Int      @id @default(autoincrement()) @dbMysql.Int
+  permission_id  Int      @dbMysql.Int
+  action_type    String   @dbMysql.VarChar(20)
+  action_id      String   @dbMysql.VarChar(20)
+  data_type      String   @dbMysql.VarChar(20)
+  create_role    String   @dbMysql.VarChar(30)
+  update_role    String   @dbMysql.VarChar(30)
+  create_by      String   @dbMysql.VarChar(10)
+  update_by      String   @dbMysql.VarChar(10)
+  create_time    DateTime @default(now())
+  update_time    DateTime @updatedAt
+  deleted        String   @default("N") @dbMysql.Char(1)
+  permission_id_ sys_menu @relation(fields: [permission_id], references: [id])
+}
+
+// 2.14 用户组表
+model sys_user_group {
+  id                         Int                         @id @default(autoincrement()) @dbMysql.Int
+  label                      String                      @dbMysql.VarChar(30)
+  parent_id                  Int                         @dbMysql.Int
+  order_num                  Int                         @dbMysql.Int
+  remark                     String?                     @dbMysql.VarChar(300)
+  create_role                String                      @dbMysql.VarChar(30)
+  update_role                String                      @dbMysql.VarChar(30)
+  create_by                  String                      @dbMysql.VarChar(10)
+  update_by                  String                      @dbMysql.VarChar(10)
+  create_time                DateTime                    @default(now())
+  update_time                DateTime                    @updatedAt
+  deleted                    String                      @default("N") @dbMysql.Char(1)
+  sys_user_user_groups       sys_user_user_group[]
+  sys_user_group_permissions sys_user_group_permission[]
+}
+
+// 2.15 用户用户组表
+model sys_user_user_group {
+  id             Int            @id @default(autoincrement()) @dbMysql.Int
+  user_id        String         @dbMysql.VarChar(10)
+  user_group_id  Int            @dbMysql.Int
+  login_role     String         @dbMysql.VarChar(30)
+  create_role    String         @dbMysql.VarChar(30)
+  update_role    String         @dbMysql.VarChar(30)
+  create_by      String         @dbMysql.VarChar(10)
+  update_by      String         @dbMysql.VarChar(10)
+  create_time    DateTime       @default(now())
+  update_time    DateTime       @updatedAt
+  deleted        String         @default("N") @dbMysql.Char(1)
+  user_group_id_ sys_user_group @relation(fields: [user_group_id], references: [id])
+}
+
+// 2.16 接口表
+model sys_interface {
+  id                             Int                             @id @default(autoincrement()) @dbMysql.Int
+  label                          String                          @dbMysql.VarChar(30)
+  icon                           String                          @dbMysql.VarChar(30)
+  order_num                      Int                             @dbMysql.Int
+  if_disabled                    String                          @dbMysql.Char(1)
+  if_public                      String                          @dbMysql.Char(1)
+  perms                          String                          @dbMysql.VarChar(100)
+  url                            String                          @dbMysql.VarChar(100)
+  remark                         String?                         @dbMysql.VarChar(300)
+  create_role                    String                          @dbMysql.VarChar(30)
+  update_role                    String                          @dbMysql.VarChar(30)
+  create_by                      String                          @dbMysql.VarChar(10)
+  update_by                      String                          @dbMysql.VarChar(10)
+  create_time                    DateTime                        @default(now())
+  update_time                    DateTime                        @updatedAt
+  deleted                        String                          @default("N") @dbMysql.Char(1)
+  sys_interface_interface_groups sys_interface_interface_group[]
+}
+
+// 2.17 接口组表
+model sys_interface_group {
+  id                             Int                             @id @default(autoincrement()) @dbMysql.Int
+  label                          String                          @dbMysql.VarChar(30)
+  parent_id                      Int                             @dbMysql.Int
+  perms                          String                          @dbMysql.VarChar(100)
+  base_u_r_l                     String                          @dbMysql.VarChar(300)
+  order_num                      Int                             @dbMysql.Int
+  remark                         String?                         @dbMysql.VarChar(300)
+  create_role                    String                          @dbMysql.VarChar(30)
+  update_role                    String                          @dbMysql.VarChar(30)
+  create_by                      String                          @dbMysql.VarChar(10)
+  update_by                      String                          @dbMysql.VarChar(10)
+  create_time                    DateTime                        @default(now())
+  update_time                    DateTime                        @updatedAt
+  deleted                        String                          @default("N") @dbMysql.Char(1)
+  sys_interface_interface_groups sys_interface_interface_group[]
+  sys_user_group_permissions     sys_user_group_permission[]
+}
+
+// 2.18 接口接口组
+model sys_interface_interface_group {
+  id                  Int                 @id @default(autoincrement()) @dbMysql.Int
+  interface_id        Int                 @dbMysql.Int
+  interface_group_id  Int                 @dbMysql.Int
+  create_role         String              @dbMysql.VarChar(30)
+  update_role         String              @dbMysql.VarChar(30)
+  create_by           String              @dbMysql.VarChar(10)
+  update_by           String              @dbMysql.VarChar(10)
+  create_time         DateTime            @default(now())
+  update_time         DateTime            @updatedAt
+  deleted             String              @default("N") @dbMysql.Char(1)
+  interface_id_       sys_interface       @relation(fields: [interface_id], references: [id])
+  interface_group_id_ sys_interface_group @relation(fields: [interface_group_id], references: [id])
+}
+
+// 2.19 用户组接口组表
+model sys_user_group_permission {
+  id                       Int                  @id @default(autoincrement()) @dbMysql.Int
+  user_group_id            Int                  @dbMysql.Int
+  permission_id            Int                  @dbMysql.Int
+  if_long_term             String               @dbMysql.Char(1)
+  if_limit_request_times   String               @dbMysql.Char(1)
+  if_reject_request_use_up String               @dbMysql.Char(1)
+  permission_start_time    DateTime             @dbMysql.DateTime(3)
+  permission_end_time      DateTime             @dbMysql.DateTime(3)
+  limit_request_times      Int                  @dbMysql.Int
+  if_use_up                String               @default("N") @dbMysql.Char(1)
+  order_num                Int                  @dbMysql.Int
+  remark                   String?              @dbMysql.VarChar(300)
+  create_role              String               @dbMysql.VarChar(30)
+  update_role              String               @dbMysql.VarChar(30)
+  create_by                String               @dbMysql.VarChar(10)
+  update_by                String               @dbMysql.VarChar(10)
+  create_time              DateTime             @default(now())
+  update_time              DateTime             @updatedAt
+  deleted                  String               @default("N") @dbMysql.Char(1)
+  user_group_id_           sys_user_group       @relation(fields: [user_group_id], references: [id])
+  permission_id_           sys_interface_group  @relation(fields: [permission_id], references: [id])
+  log_algorithm_calls      log_algorithm_call[]
+}
+
+// 2.20 定时任务表
+model sys_scheduled_task {
+  id              Int      @id @default(autoincrement()) @dbMysql.Int
+  name            String   @dbMysql.VarChar(100)
+  target          String   @dbMysql.VarChar(150)
+  cron_expression String   @dbMysql.VarChar(100)
+  order_num       Int      @dbMysql.Int
+  if_disabled     String   @dbMysql.Char(1)
+  remark          String?  @dbMysql.VarChar(300)
+  create_role     String   @dbMysql.VarChar(30)
+  update_role     String   @dbMysql.VarChar(30)
+  create_by       String   @dbMysql.VarChar(10)
+  update_by       String   @dbMysql.VarChar(10)
+  create_time     DateTime @default(now())
+  update_time     DateTime @updatedAt
+  deleted         String   @default("N") @dbMysql.Char(1)
+}
+
+// 3.2 文件表
+model tbl_file {
+  id            String   @id @default(uuid()) @dbMysql.VarChar(50)
+  file_name     String   @dbMysql.VarChar(200)
+  file_new_name String   @dbMysql.VarChar(200)
+  file_size     BigInt   @dbMysql.BigInt
+  file_md5      String   @dbMysql.VarChar(50)
+  if_chunk      String   @dbMysql.Char(1)
+  chunk_num     Int?     @dbMysql.Int
+  if_merge      String?  @dbMysql.Char(1)
+  if_first      String   @dbMysql.Char(1)
+  if_finished   String   @dbMysql.Char(1)
+  module        String?  @dbMysql.VarChar(50)
+  remark        String?  @dbMysql.VarChar(300)
+  create_role   String   @dbMysql.VarChar(30)
+  update_role   String   @dbMysql.VarChar(30)
+  create_by     String   @dbMysql.VarChar(10)
+  update_by     String   @dbMysql.VarChar(10)
+  create_time   DateTime @default(now())
+  update_time   DateTime @updatedAt
+  deleted       String   @default("N") @dbMysql.Char(1)
+}
+
+// 3.3 文件分片表
+model tbl_file_chunk {
+  id            String   @id @default(uuid()) @dbMysql.VarChar(50)
+  file_md5      String   @dbMysql.VarChar(50)
+  file_new_name String   @dbMysql.VarChar(200)
+  chunk_name    String   @dbMysql.VarChar(200)
+  chunk_index   Int      @dbMysql.Int
+  if_finished   String   @dbMysql.Char(1)
+  remark        String?  @dbMysql.VarChar(300)
+  create_role   String   @dbMysql.VarChar(30)
+  create_by     String   @dbMysql.VarChar(10)
+  create_time   DateTime @default(now())
+  deleted       String   @default("N") @dbMysql.Char(1)
+}
+
+// 0.1 登录日志表
+model log_user_login {
+  id             Int      @id @default(autoincrement()) @dbMysql.Int
+  user_id        String   @dbMysql.VarChar(10)
+  login_role     String   @dbMysql.VarChar(30)
+  login_ip       String   @dbMysql.VarChar(20)
+  login_position String   @dbMysql.VarChar(30)
+  login_browser  String   @dbMysql.VarChar(30)
+  login_os       String   @dbMysql.VarChar(30)
+  if_success     String   @dbMysql.Char(1)
+  fail_type      String   @dbMysql.VarChar(20)
+  remark         String?  @dbMysql.VarChar(100)
+  create_time    DateTime @default(now())
+}
+
+// 0.2 系统操作日志表
+model log_operation {
+  id           Int      @id @default(autoincrement()) @dbMysql.Int
+  req_id       String   @dbMysql.VarChar(40)
+  call_ip      String   @dbMysql.VarChar(20)
+  host_name    String   @dbMysql.VarChar(100)
+  perms        String   @dbMysql.VarChar(100)
+  user_id      String   @dbMysql.VarChar(10)
+  login_role   String   @dbMysql.VarChar(30)
+  auth_type    String   @dbMysql.VarChar(30)
+  req_param    String   @dbMysql.Text
+  old_value    String   @dbMysql.Text
+  operate_type String   @dbMysql.VarChar(10)
+  if_success   String   @dbMysql.Char(1)
+  remark       String?  @dbMysql.VarChar(100)
+  create_time  DateTime @default(now())
+}
+
+// 0.2.2 系统 WebSocket 操作日志表
+model log_operation_ws {
+  id          Int      @id @default(autoincrement()) @dbMysql.Int
+  socket_id   String   @dbMysql.VarChar(40)
+  call_ip     String   @dbMysql.VarChar(20)
+  host_name   String   @dbMysql.VarChar(100)
+  ws_perms    String   @dbMysql.VarChar(100)
+  user_id     String   @dbMysql.VarChar(10)
+  login_role  String   @dbMysql.VarChar(30)
+  if_success  String   @dbMysql.Char(1)
+  remark      String?  @dbMysql.VarChar(100)
+  create_time DateTime @default(now())
+}
+
+// 0.3 算法调用日志表
+model log_algorithm_call {
+  id                        Int                       @id @default(autoincrement()) @dbMysql.Int
+  user_group_permission_id  Int                       @dbMysql.Int
+  pperms                    String                    @dbMysql.VarChar(100)
+  perms                     String                    @dbMysql.VarChar(100)
+  user_id                   String                    @dbMysql.VarChar(10)
+  login_role                String                    @dbMysql.VarChar(30)
+  auth_type                 String                    @dbMysql.VarChar(30)
+  call_ip                   String                    @dbMysql.VarChar(20)
+  if_success                String                    @dbMysql.Char(1)
+  remark                    String?                   @dbMysql.VarChar(100)
+  create_time               DateTime                  @default(now())
+  user_group_permission_id_ sys_user_group_permission @relation(fields: [user_group_permission_id], references: [id])
+}
+
+// 0.4 定时任务运行日志表
+model log_scheduled_task {
+  id           Int      @id @default(autoincrement()) @dbMysql.Int
+  task_target  String   @dbMysql.VarChar(150)
+  operate_type String   @dbMysql.VarChar(30)
+  if_success   String   @dbMysql.Char(1)
+  remark       String?  @dbMysql.VarChar(100)
+  create_time  DateTime @default(now())
+}

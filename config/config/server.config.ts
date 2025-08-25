@@ -22,7 +22,7 @@ const config = {
       database: 15,
       databaseForQueue: 25,
     },
-    database: {
+    mysql: {
       host: 'localhost',
       port: 3306,
       username: 'root',
@@ -64,7 +64,7 @@ const config = {
 };
 
 export function getMysqlUrlFromEnv(env: typeof config.dev): string {
-  return `mysql://${env.database.username}:${env.database.password}@${env.database.host}:${env.database.port}/${env.database.database}`;
+  return `mysql://${env.mysql.username}:${env.mysql.password}@${env.mysql.host}:${env.mysql.port}/${env.mysql.database}`;
 }
 
 export function getPostgresqlUrlFromEnv(env: typeof config.dev) {
