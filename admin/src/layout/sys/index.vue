@@ -111,13 +111,9 @@ const sysConfigStore = useSysConfigStore();
         </div>
         <div class="main">
           <router-view #default="{Component:c2,route:r2}">
-            <Transition name="component-switch" mode="out-in" appear>
-              <keep-alive :include="routerStore.getMenuListNames">
-                <RootWrapper :key="r2.path">
-                  <component :is="c2"/>
-                </RootWrapper>
-              </keep-alive>
-            </Transition>
+            <keep-alive :include="routerStore.getMenuListNames">
+              <component :is="c2"/>
+            </keep-alive>
           </router-view>
         </div>
       </el-main>
