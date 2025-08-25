@@ -52,7 +52,7 @@ export class LogScheduledTaskInsOneDto {
 
   @ApiProperty({ description: '执行类型', required: true })
   @IsNotEmpty({ message: '执行类型不能为空' })
-  @MaxLength(10, { message: '执行类型不能超过10个字符' })
+  @MaxLength(30, { message: '执行类型不能超过30个字符' })
   operateType: string;
 
   @ApiProperty({ description: '是否成功', required: true })
