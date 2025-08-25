@@ -167,12 +167,12 @@ const shortcuts = [
 ]
 const datePickerValueChange = (value: Date[]) => {
   if (value) {
-    if (config.selectParam.createTime && 'between' in config.selectParam.createTime && config.selectParam.createTime.between) {
+    if (config.selectParam.createTime && typeof config.selectParam.createTime !== 'string' && config.selectParam.createTime.between) {
       config.selectParam.createTime.between.value[0] = value[0]
       config.selectParam.createTime.between.value[1] = value[1]
     }
   } else {
-    if (config.selectParam.createTime && 'between' in config.selectParam.createTime && config.selectParam.createTime.between) {
+    if (config.selectParam.createTime && typeof config.selectParam.createTime !== 'string' && config.selectParam.createTime.between) {
       config.selectParam.createTime.between.value[0] = null
       config.selectParam.createTime.between.value[1] = null
     }
@@ -180,7 +180,7 @@ const datePickerValueChange = (value: Date[]) => {
 }
 const fCan2 = () => {
   datePickerValue.value = ''
-  if (config.selectParam.createTime && 'between' in config.selectParam.createTime && config.selectParam.createTime.between) {
+  if (config.selectParam.createTime && typeof config.selectParam.createTime !== 'string' && config.selectParam.createTime.between) {
     config.selectParam.createTime.between.value[0] = null
     config.selectParam.createTime.between.value[1] = null
   }

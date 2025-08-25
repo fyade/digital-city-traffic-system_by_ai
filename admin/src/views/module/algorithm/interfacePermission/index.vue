@@ -271,26 +271,14 @@ const userGroupPermissionsOfSelectUserGroupOrSelectInterfaceGroup = ref<UserGrou
 
 const leftCardLoading = ref(false)
 const userGroupTableRef = useTemplateRef<TableInstance>('userGroupTableRef')
-const selectUserGroupInfo = reactive<UserGroupDto>({
-  id: -1,
-  label: '',
-  parentId: -1,
-  orderNum: -1,
-  remark: '',
-})
+const selectUserGroupInfo = reactive<UserGroupDto>(new UserGroupDto())
 
 class InterfaceGroupDto2 extends InterfaceGroupDto {
   userGroupPermissionId!: number
 }
 
 const interfaceGroupsOfThisUserGroup = ref<InterfaceGroupDto2[]>([])
-const userGroupHandleCurrentChangeSelectRow = reactive<UserGroupDto>({
-  id: -1,
-  label: '',
-  parentId: -1,
-  orderNum: -1,
-  remark: '',
-})
+const userGroupHandleCurrentChangeSelectRow = reactive<UserGroupDto>(new UserGroupDto())
 const userGroupHandleCurrentChange = (row: UserGroupDto) => {
   if (row) {
     interfaceGroupTableRef.value?.setCurrentRow(null)

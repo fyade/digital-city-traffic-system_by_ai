@@ -430,6 +430,9 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
   // 查看
   const tView = (id: string | number) => {
     api.selectById(id).then(res => {
+      if (!res) {
+        return
+      }
       const keys = Object.keys(state.dialogForm as object) as (keyof T)[];
       ElMessageBox.alert(
           `

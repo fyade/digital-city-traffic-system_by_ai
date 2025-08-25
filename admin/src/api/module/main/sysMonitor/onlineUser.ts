@@ -1,8 +1,8 @@
 import request from "@/api/request.ts";
 import { ApiConfig } from "@/type/tablePage.ts";
-import { OnlineUserDto } from "@/type/module/main/sysMonitor/onlineUser.ts";
+import { OnlineUserDto, OnlineUserUpdDto } from "@/type/module/main/sysMonitor/onlineUser.ts";
 
-export const onlineUserApi: ApiConfig<OnlineUserDto> = {
+export const onlineUserApi: ApiConfig<OnlineUserDto, OnlineUserUpdDto> = {
   selectList: (params) => request({
     url: '/main/sys-monitor/online-user',
     method: 'GET',

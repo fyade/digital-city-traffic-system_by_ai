@@ -41,7 +41,9 @@ const getSLCI = () => {
     return
   }
   signalLightInfoApi.selectById(itemClid).then(res => {
-    signalLightInfo.value = res
+    if (res) {
+      signalLightInfo.value = res
+    }
   })
 }
 

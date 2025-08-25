@@ -36,7 +36,9 @@ const init = () => {
   if (ifUpd) {
     formLoading.value = true
     signalLightInfoApi.selectById(itemId!).then(res => {
-      form.value = res
+      if (res) {
+        form.value = res
+      }
     }).finally(() => {
       formLoading.value = false
     })

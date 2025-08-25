@@ -30,7 +30,9 @@ const init = () => {
   if (ifUpd) {
     formLoading.value = true
     signalLightGroupInfoApi.selectById(itemId!).then(res => {
-      form.value = res
+      if (res) {
+        form.value = res
+      }
     }).finally(() => {
       formLoading.value = false
     })

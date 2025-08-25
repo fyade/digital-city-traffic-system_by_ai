@@ -37,7 +37,9 @@ const getSLGI = () => {
     return
   }
   signalLightGroupInfoApi.selectById(itemSlgid).then(res => {
-    signalLightGroupInfo.value = res
+    if (res) {
+      signalLightGroupInfo.value = res
+    }
   })
 }
 
