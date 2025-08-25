@@ -55,7 +55,7 @@ class UseDashboardCesium extends UseCesium {
       this.refreshScreenEntities()
     })
     this.wsClient.addEventListener('dcts:spatialData:getVehiclesInPolygon', data => {
-      const result = JSON.parse(data.msg) as GetVehiclesInPolygonVo[];
+      const result = JSON.parse(data.msg) as GetVehiclesInPolygonVo;
       this.veModule.addTask(result)
     })
   }
@@ -86,6 +86,11 @@ class UseDashboardCesium extends UseCesium {
   public readonly setLastActiveInterval = this.meModule.setLastActiveInterval.bind(this.meModule)
   public readonly refreshScreenEntities = this.meModule.refreshScreenEntities.bind(this.meModule)
 
+  public drawedVehicleTrajectoryIds = this.veModule.drawedVehicleTrajectoryIds
+  public readonly drawVehicleTrajectory = this.veModule.drawVehicleTrajectory.bind(this.veModule)
+  public readonly setVehicleTrajectoryOpacity = this.veModule.setVehicleTrajectoryOpacity.bind(this.veModule)
+  public readonly closeVehicleTrajectory = this.veModule.closeVehicleTrajectory.bind(this.veModule)
+
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 事件覆盖及初始化 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   protected init() {
     super.init();
@@ -95,36 +100,24 @@ class UseDashboardCesium extends UseCesium {
     }
 
     this.cModule.setViewer(this.viewer)
-    this.cModule.setSetCurrentTimeCB(() => {
-      this.currentTime = this.cModule.currentTime
-    })
+    this.cModule.setSetCurrentTimeCB(() => this.currentTime = this.cModule.currentTime)
 
     this.cmModule.setMeModule(this.meModule);
     this.cmModule.setMiModule(this.miModule);
     this.cmModule.setPModule(this.pModule);
-    this.cmModule.setSetContextMenuShowCB(() => {
-      this.contextMenuShow = this.cmModule.contextMenuShow
-    })
-    this.cmModule.setSetContextMenuXYCB(() => {
-      this.contextMenuXY = this.cmModule.contextMenuXY
-    })
-    this.cmModule.setSetContextMenuOptionCB(() => {
-      this.contextMenuOption = this.cmModule.contextMenuOption
-    })
-    this.cmModule.setSetFormPanelTitleCB(() => {
-      this.formPanelTitle = this.cmModule.formPanelTitle
-    })
+    this.cmModule.setSetContextMenuShowCB(() => this.contextMenuShow = this.cmModule.contextMenuShow)
+    this.cmModule.setSetContextMenuXYCB(() => this.contextMenuXY = this.cmModule.contextMenuXY)
+    this.cmModule.setSetContextMenuOptionCB(() => this.contextMenuOption = this.cmModule.contextMenuOption)
+    this.cmModule.setSetFormPanelTitleCB(() => this.formPanelTitle = this.cmModule.formPanelTitle)
     this.cmModule.setTrackEntity(this.trackEntity.bind(this))
 
     this.debugModule.setViewer(this.viewer)
-    this.debugModule.setAddLines(this.addLines.bind(this))
+    this.debugModule.setAddLine(this.addLine.bind(this))
     this.debugModule.setAddPoint(this.addPoint.bind(this))
     this.debugModule.setSetViewTo(this.setViewTo.bind(this))
 
     this.lnModule.setViewer(this.viewer)
-    this.lnModule.setSetAllLabelsCB(() => {
-      this.allLabels = this.lnModule.allLabels
-    })
+    this.lnModule.setSetAllLabelsCB(() => this.allLabels = this.lnModule.allLabels)
     this.lnModule.setLayerLoadingEndCB(this.LnModuleCloseCB.bind(this))
 
     this.meModule.setLnModule(this.lnModule)
@@ -151,7 +144,11 @@ class UseDashboardCesium extends UseCesium {
 
     this.veModule.setMeModule(this.meModule)
     this.veModule.setViewer(this.viewer)
+    this.veModule.setAddLine(this.addLine.bind(this))
+    this.veModule.setUpdLine(this.updLine.bind(this))
+    this.veModule.setDelLine(this.delLine.bind(this))
     this.veModule.setGetViewCornerCoordinates(this.getViewCornerCoordinates.bind(this))
+    this.veModule.setSetDrawedVehicleTrajectoryIdsCB(() => this.drawedVehicleTrajectoryIds = this.veModule.drawedVehicleTrajectoryIds)
 
     this.cModule.init()
     this.lnModule.init()
@@ -165,6 +162,13 @@ class UseDashboardCesium extends UseCesium {
     this.lnModule.closeLayerLoading()
     useDashboardCesium = createDashboardCesium()
     this.wsClient.destroy()
+  }
+
+  protected documentVisibilitychangeCB() {
+    super.documentVisibilitychangeCB();
+    if (!document.hidden) {
+      this.cModule.refreshServerTime()
+    }
   }
 
   protected cesiumViewerTimelineContainerMousedownCB(e: MouseEvent) {

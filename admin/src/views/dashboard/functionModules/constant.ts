@@ -21,19 +21,32 @@ export const ID_PREFIX_VEHICLE_REAL_TIME = 'ID_PREFIX_VEHICLE_REAL_TIME:::::::::
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 默认值 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 export const CESIUM_DEFAULT = {
+  // 点高度
   HEIGHT_POINT: 0,
+  // 点颜色
   COLOR_POINT: Cesium.Color.WHITE,
 
+  // 线高度
   HEIGHT_LINE: 0,
+  // 线颜色
   COLOR_LINE: Cesium.Color.WHITE,
 
+  // 信号灯组高度
   HEIGHT_SIGNAL_LIGHT_GROUP: 0,
+  // 信号灯组图片宽度
   SIGNAL_LIGHT_GROUP_PIC_WIDTH: 32,
+  // 信号灯组图片高度
   SIGNAL_LIGHT_GROUP_PIC_HEIGHT: 32,
 
+  // 子信号灯高度
   HEIGHT_SIGNAL_LIGHT: 0.01,
+  // 子信号灯图片宽度
   SIGNAL_LIGHT_PIC_WIDTH: 24,
+  // 子信号灯图片高度
   SIGNAL_LIGHT_PIC_HEIGHT: 24,
 
+  // 车辆高度
   HEIGHT_VEHICLE: 0.1,
+  // 车辆轨迹颜色
+  COLOR_VEHICLE_TRAJECTORY: Cesium.Color.GREEN,
 }

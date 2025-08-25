@@ -21,6 +21,7 @@ export class PermissionModule {
   public setMeModule(meModule: MapEntityModule) {
     this.meModule = meModule;
   }
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
   /**

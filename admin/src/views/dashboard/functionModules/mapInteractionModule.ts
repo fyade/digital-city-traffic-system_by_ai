@@ -35,6 +35,7 @@ export class MapInteractionModule {
   public setGetMouseMovePosition(func: () => [number, number]) {
     this.getMouseMovePosition = func
   }
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
   public init() {

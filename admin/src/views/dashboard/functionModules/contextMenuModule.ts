@@ -61,6 +61,7 @@ export class ContextMenuModule {
   public setTrackEntity(func: (entityId: string) => void) {
     this.trackEntity = func
   }
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
   // 右键菜单的显示
@@ -97,13 +98,13 @@ export class ContextMenuModule {
   public contextMenus: ContextMenuItem[] = [
     // 信号灯组
     {
-      id: 'dcts:signalLight:signalLightGroupInfo:ins',
+      id: '~dctsDashboard~:signalLight:signalLightGroupInfo:ins',
       func: () => {
         routerPushByName('~fp~:signalLight:signalLightGroupInfo:ins')
       }
     },
     {
-      id: 'dcts:signalLight:signalLightGroupInfo:upd',
+      id: '~dctsDashboard~:signalLight:signalLightGroupInfo:upd',
       func: () => {
         if (!this.meModule) {
           return
@@ -117,7 +118,7 @@ export class ContextMenuModule {
       }
     },
     {
-      id: 'dcts:signalLight:signalLightGroupInfo:delv2',
+      id: '~dctsDashboard~:signalLight:signalLightGroupInfo:del',
       func: () => {
         if (!this.meModule) {
           return
@@ -132,7 +133,7 @@ export class ContextMenuModule {
     },
     // 子信号灯
     {
-      id: 'dcts:signalLight:signalLightInfo:ins',
+      id: '~dctsDashboard~:signalLight:signalLightInfo:ins',
       func: () => {
         if (!this.miModule) {
           return
@@ -142,7 +143,7 @@ export class ContextMenuModule {
       }
     },
     {
-      id: 'dcts:signalLight:signalLightInfo:upd',
+      id: '~dctsDashboard~:signalLight:signalLightInfo:upd',
       func: () => {
         if (!this.meModule) {
           return
@@ -156,7 +157,7 @@ export class ContextMenuModule {
       }
     },
     {
-      id: 'dcts:signalLight:signalLightInfo:delv2',
+      id: '~dctsDashboard~:signalLight:signalLightInfo:del',
       func: () => {
         if (!this.meModule) {
           return
@@ -170,7 +171,7 @@ export class ContextMenuModule {
       }
     },
     {
-      id: 'dcts:signalLight:signalLightChildStyleMapping:insv2',
+      id: '~dctsDashboard~:signalLight:signalLightChildStyleMapping:ins',
       func: () => {
         if (!this.meModule) {
           return
@@ -184,7 +185,7 @@ export class ContextMenuModule {
       }
     },
     {
-      id: 'dcts:signalLightStrategy:signalLightGroupStrategyTypeMapping:insv2',
+      id: '~dctsDashboard~:signalLightStrategy:signalLightGroupStrategyTypeMapping:ins',
       func: () => {
         if (!this.meModule) {
           return
@@ -198,7 +199,7 @@ export class ContextMenuModule {
       }
     },
     {
-      id: 'dcts:signalLightStrategy:signalLightChildStrategyScheduleMapping:insv2',
+      id: '~dctsDashboard~:signalLightStrategy:signalLightChildStrategyScheduleMapping:ins',
       func: () => {
         if (!this.meModule) {
           return
@@ -212,7 +213,21 @@ export class ContextMenuModule {
       }
     },
     {
-      id: 's:queryRuntimeDiagram',
+      id: '~dctsDashboard~:vehicle:queryVehicleTrajectory',
+      func: () => {
+        if (!this.meModule) {
+          return
+        }
+        let itemId = ''
+        const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
+        if (seidsByGroup.vehicleRealTimeCount > 0) {
+          itemId = seidsByGroup.vehicleRealTime[0]
+        }
+        routerPushByName('~fp~:vehicle:trajectory', {vid: itemId})
+      }
+    },
+    {
+      id: '~dctsDashboard~:queryRuntimeDiagram',
       func: () => {
         if (!this.meModule) {
           return
@@ -226,7 +241,7 @@ export class ContextMenuModule {
       }
     },
     {
-      id: 'cmModule:menuOption:refreshSignalLight',
+      id: '~dctsDashboard~:refreshSignalLight',
       func: () => {
         if (!this.meModule) {
           return
@@ -235,7 +250,7 @@ export class ContextMenuModule {
       }
     },
     {
-      id: 's:jvjiaobinggenzonggaishiti',
+      id: '~dctsDashboard~:jvjiaobinggenzonggaishiti',
       func: () => {
         if (!this.meModule) {
           return
@@ -248,7 +263,7 @@ export class ContextMenuModule {
       }
     },
     {
-      id: 'cmModule:menuOption:close',
+      id: '~dctsDashboard~:closeMenuOption',
       func: () => {
         this.contextMenuShow = false
       }
@@ -274,62 +289,62 @@ export class ContextMenuModule {
     this.contextMenuOption = [
       {
         label: '信号灯管理',
-        key: 'i:dcts:signalLight',
-        show: !this.pModule || this.pModule.cmihp('i:dcts:signalLight'),
+        key: '~dctsDashboard~:signalLight',
+        show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:signalLight'),
         children: [
           {
             label: '信号灯组信息管理',
-            key: 'i:dcts:signalLight:signalLightGroupInfo',
-            show: !this.pModule || this.pModule.cmihp('i:dcts:signalLight:signalLightGroupInfo', [], [ID_PREFIX_SIGNAL_LIGHT]),
+            key: '~dctsDashboard~:signalLight:signalLightGroupInfo',
+            show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:signalLight:signalLightGroupInfo', [], [ID_PREFIX_SIGNAL_LIGHT]),
             children: [
               {
                 label: '新增信号灯组',
-                key: 'dcts:signalLight:signalLightGroupInfo:ins',
-                show: !this.pModule || this.pModule.cmihp('dcts:signalLight:signalLightGroupInfo:ins', [], [ID_PREFIX_SIGNAL_LIGHT_GROUP, ID_PREFIX_SIGNAL_LIGHT]),
+                key: '~dctsDashboard~:signalLight:signalLightGroupInfo:ins',
+                show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:signalLight:signalLightGroupInfo:ins', [], [ID_PREFIX_SIGNAL_LIGHT_GROUP, ID_PREFIX_SIGNAL_LIGHT]),
               },
               {
                 label: '修改信号灯组',
-                key: 'dcts:signalLight:signalLightGroupInfo:upd',
-                show: !this.pModule || this.pModule.cmihp('dcts:signalLight:signalLightGroupInfo:upd', [ID_PREFIX_SIGNAL_LIGHT_GROUP]),
+                key: '~dctsDashboard~:signalLight:signalLightGroupInfo:upd',
+                show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:signalLight:signalLightGroupInfo:upd', [ID_PREFIX_SIGNAL_LIGHT_GROUP]),
               },
               {
                 label: '删除信号灯组',
-                key: 'dcts:signalLight:signalLightGroupInfo:delv2',
-                show: !this.pModule || this.pModule.cmihp('dcts:signalLight:signalLightGroupInfo:delv2', [ID_PREFIX_SIGNAL_LIGHT_GROUP]),
+                key: '~dctsDashboard~:signalLight:signalLightGroupInfo:del',
+                show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:signalLight:signalLightGroupInfo:del', [ID_PREFIX_SIGNAL_LIGHT_GROUP]),
               }
             ]
           },
           {
             label: '子信号灯信息管理',
-            key: 'i:dcts:signalLight:signalLightInfo',
-            show: !this.pModule || this.pModule.cmihp('i:dcts:signalLight:signalLightInfo', [ID_PREFIX_SIGNAL_LIGHT_GROUP, ID_PREFIX_SIGNAL_LIGHT]),
+            key: '~dctsDashboard~:signalLight:signalLightInfo',
+            show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:signalLight:signalLightInfo', [ID_PREFIX_SIGNAL_LIGHT_GROUP, ID_PREFIX_SIGNAL_LIGHT]),
             children: [
               {
                 label: '新增子信号灯',
-                key: 'dcts:signalLight:signalLightInfo:ins',
-                show: !this.pModule || this.pModule.cmihp('dcts:signalLight:signalLightInfo:ins', [ID_PREFIX_SIGNAL_LIGHT_GROUP]),
+                key: '~dctsDashboard~:signalLight:signalLightInfo:ins',
+                show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:signalLight:signalLightInfo:ins', [ID_PREFIX_SIGNAL_LIGHT_GROUP]),
               },
               {
                 label: '修改子信号灯',
-                key: 'dcts:signalLight:signalLightInfo:upd',
-                show: !this.pModule || this.pModule.cmihp('dcts:signalLight:signalLightInfo:upd', [ID_PREFIX_SIGNAL_LIGHT])
+                key: '~dctsDashboard~:signalLight:signalLightInfo:upd',
+                show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:signalLight:signalLightInfo:upd', [ID_PREFIX_SIGNAL_LIGHT])
               },
               {
                 label: '删除子信号灯',
-                key: 'dcts:signalLight:signalLightInfo:delv2',
-                show: !this.pModule || this.pModule.cmihp('dcts:signalLight:signalLightInfo:delv2', [ID_PREFIX_SIGNAL_LIGHT])
+                key: '~dctsDashboard~:signalLight:signalLightInfo:del',
+                show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:signalLight:signalLightInfo:del', [ID_PREFIX_SIGNAL_LIGHT])
               }
             ]
           },
           {
             label: '子信号灯样式关联',
-            key: 'i:dcts:signalLight:signalLightChildStyleMapping',
-            show: !this.pModule || this.pModule.cmihp('i:dcts:signalLight:signalLightChildStyleMapping', [ID_PREFIX_SIGNAL_LIGHT]),
+            key: '~dctsDashboard~:signalLight:signalLightChildStyleMapping',
+            show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:signalLight:signalLightChildStyleMapping', [ID_PREFIX_SIGNAL_LIGHT]),
             children: [
               {
                 label: '新增/修改关联',
-                key: 'dcts:signalLight:signalLightChildStyleMapping:insv2',
-                show: !this.pModule || this.pModule.cmihp('dcts:signalLight:signalLightChildStyleMapping:insv2', [ID_PREFIX_SIGNAL_LIGHT])
+                key: '~dctsDashboard~:signalLight:signalLightChildStyleMapping:ins',
+                show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:signalLight:signalLightChildStyleMapping:ins', [ID_PREFIX_SIGNAL_LIGHT])
               }
             ]
           }
@@ -337,32 +352,44 @@ export class ContextMenuModule {
       },
       {
         label: '信号灯策略管理',
-        key: 'i:dcts:signalLightStrategy',
-        show: !this.pModule || this.pModule.cmihp('i:dcts:signalLightStrategy', [ID_PREFIX_SIGNAL_LIGHT_GROUP, ID_PREFIX_SIGNAL_LIGHT]),
+        key: '~dctsDashboard~:signalLightStrategy',
+        show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:signalLightStrategy', [ID_PREFIX_SIGNAL_LIGHT_GROUP, ID_PREFIX_SIGNAL_LIGHT]),
         children: [
           {
             label: '信号灯组-策略类型关联管理',
-            key: 'i:dcts:signalLightStrategy:signalLightGroupStrategyTypeMapping',
-            show: !this.pModule || this.pModule.cmihp('i:dcts:signalLightStrategy:signalLightGroupStrategyTypeMapping', [ID_PREFIX_SIGNAL_LIGHT_GROUP]),
+            key: '~dctsDashboard~:signalLightStrategy:signalLightGroupStrategyTypeMapping',
+            show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:signalLightStrategy:signalLightGroupStrategyTypeMapping', [ID_PREFIX_SIGNAL_LIGHT_GROUP]),
             children: [
               {
                 label: '新增/修改关联',
-                key: 'dcts:signalLightStrategy:signalLightGroupStrategyTypeMapping:insv2',
-                show: !this.pModule || this.pModule.cmihp('dcts:signalLightStrategy:signalLightGroupStrategyTypeMapping:insv2', [ID_PREFIX_SIGNAL_LIGHT_GROUP]),
+                key: '~dctsDashboard~:signalLightStrategy:signalLightGroupStrategyTypeMapping:ins',
+                show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:signalLightStrategy:signalLightGroupStrategyTypeMapping:ins', [ID_PREFIX_SIGNAL_LIGHT_GROUP]),
               }
             ]
           },
           {
             label: '子信号灯-策略调度关联管理',
-            key: 'i:dcts:signalLightStrategy:signalLightChildStrategyScheduleMapping',
-            show: !this.pModule || this.pModule.cmihp('i:dcts:signalLightStrategy:signalLightChildStrategyScheduleMapping', [ID_PREFIX_SIGNAL_LIGHT]),
+            key: '~dctsDashboard~:signalLightStrategy:signalLightChildStrategyScheduleMapping',
+            show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:signalLightStrategy:signalLightChildStrategyScheduleMapping', [ID_PREFIX_SIGNAL_LIGHT]),
             children: [
               {
                 label: '新增/修改关联',
-                key: 'dcts:signalLightStrategy:signalLightChildStrategyScheduleMapping:insv2',
-                show: !this.pModule || this.pModule.cmihp('dcts:signalLightStrategy:signalLightChildStrategyScheduleMapping:insv2', [ID_PREFIX_SIGNAL_LIGHT]),
+                key: '~dctsDashboard~:signalLightStrategy:signalLightChildStrategyScheduleMapping:ins',
+                show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:signalLightStrategy:signalLightChildStrategyScheduleMapping:ins', [ID_PREFIX_SIGNAL_LIGHT]),
               }
             ]
+          }
+        ]
+      },
+      {
+        label: '车辆管理',
+        key: '~dctsDashboard~:vehicle',
+        show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:vehicle'),
+        children: [
+          {
+            label: '车辆历史轨迹查询',
+            key: '~dctsDashboard~:vehicle:queryVehicleTrajectory',
+            show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:vehicle:queryVehicleTrajectory'),
           }
         ]
       },
@@ -371,12 +398,12 @@ export class ContextMenuModule {
       },
       {
         label: '查看运行时刻图',
-        key: 's:queryRuntimeDiagram',
+        key: '~dctsDashboard~:queryRuntimeDiagram',
         show: !this.pModule || this.pModule.cmihp('', [ID_PREFIX_SIGNAL_LIGHT_GROUP])
       },
       {
         label: '刷新信号灯状态',
-        key: 'cmModule:menuOption:refreshSignalLight'
+        key: '~dctsDashboard~:refreshSignalLight'
       },
       {
         type: 'divider',
@@ -384,7 +411,7 @@ export class ContextMenuModule {
       },
       {
         label: '聚焦并跟踪该实体',
-        key: 's:jvjiaobinggenzonggaishiti',
+        key: '~dctsDashboard~:jvjiaobinggenzonggaishiti',
         show: !this.pModule || this.pModule.cmihp('', [ID_PREFIX_VEHICLE_REAL_TIME])
       },
       {
@@ -392,7 +419,7 @@ export class ContextMenuModule {
       },
       {
         label: '关闭',
-        key: 'cmModule:menuOption:close'
+        key: '~dctsDashboard~:closeMenuOption'
       }
     ]
   }

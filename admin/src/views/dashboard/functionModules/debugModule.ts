@@ -15,10 +15,10 @@ export class DebugModule {
     this.viewer = viewer;
   }
 
-  private addLines: ((objs: CesiumLine[]) => CesiumLine[] | null) | null = null
+  private addLine: ((obj: CesiumLine) => CesiumLine | null) | null = null
 
-  public setAddLines(func: (objs: CesiumLine[]) => CesiumLine[] | null) {
-    this.addLines = func
+  public setAddLine(func: (obj: CesiumLine) => CesiumLine | null) {
+    this.addLine = func
   }
 
   private addPoint: ((obj: CesiumPoint) => CesiumPoint | null) | null = null
@@ -32,10 +32,11 @@ export class DebugModule {
   public setSetViewTo(func: (lon: number, lat: number, obj?: { height?: number, ifFly?: boolean }) => void) {
     this.setViewTo = func
   }
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
   public sf1(data: RucanDto) {
-    if (!this.viewer || !this.addLines || !this.addPoint || !this.setViewTo) {
+    if (!this.viewer || !this.addLine || !this.addPoint || !this.setViewTo) {
       return
     }
     this.setViewTo((data.startPoint.lon + data.endPoint.lon) / 2, (data.startPoint.lat + data.endPoint.lat) / 2, {ifFly: true})
@@ -48,7 +49,9 @@ export class DebugModule {
             .map(point => new CesiumPoint({lon: point[0], lat: point[1]}))
         )
         .map(points => new CesiumLine({points: points, color: Cesium.Color.BLACK}))
-    this.addLines(allRoads)
+    for (const road of allRoads) {
+      this.addLine(road)
+    }
     const allNodes = data.allNodes
         .map(node => new CesiumPoint({lon: node.lon, lat: node.lat, color: Cesium.Color.BLACK}))
     for (const node of allNodes) {
@@ -106,7 +109,7 @@ export class DebugModule {
   }
 
   public sf2(data: ChucanDto) {
-    if (!this.viewer || !this.addLines || !this.addPoint) {
+    if (!this.viewer || !this.addLine || !this.addPoint) {
       return
     }
     const allRoads = data.roads
@@ -118,7 +121,9 @@ export class DebugModule {
             .map(point => new CesiumPoint({lon: point[0], lat: point[1], height: 1}))
         )
         .map(points => new CesiumLine({points: points, color: Cesium.Color.WHITE}))
-    this.addLines(allRoads)
+    for (const road of allRoads) {
+      this.addLine(road)
+    }
     const allNodes = data.nodes
         .map(node => new CesiumPoint({lon: node.lon, lat: node.lat, height: 1, color: Cesium.Color.WHITE}))
     for (let i = 0; i < data.nodes.length; i++) {

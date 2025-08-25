@@ -35,7 +35,9 @@ const a1 = () => {
       const linestring = getLonlatFromLinestring(road.way);
       return new CesiumLine({points: linestring.map(p => new CesiumPoint(p))})
     });
-    useCesium.addLines(map1)
+    for (const line of map1) {
+      useCesium.addLine(line)
+    }
   })
 }
 const a2 = () => {

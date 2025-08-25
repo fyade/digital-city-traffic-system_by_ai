@@ -17,6 +17,9 @@ class VersionDataType<T> {
  * 版本化数据模块
  */
 export class VersionDataModule {
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+
+
   // 最大保留数量
   private MAX_LENGTH = 100
 

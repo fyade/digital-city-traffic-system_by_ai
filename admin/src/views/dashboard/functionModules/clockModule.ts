@@ -17,6 +17,7 @@ export class ClockModule {
   public setSetCurrentTimeCB(func: () => void) {
     this.setCurrentTimeCB = func
   }
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
   public init() {
@@ -100,9 +101,7 @@ export class ClockModule {
     }, a);
   }
 
-  /**
-   * 获取当前服务器时间
-   */
-  public getServerTime() {
+  public refreshServerTime() {
+    this.longIntervalTask()
   }
 }

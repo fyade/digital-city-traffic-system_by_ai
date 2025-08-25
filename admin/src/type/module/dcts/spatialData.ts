@@ -68,7 +68,17 @@ export class GetVehiclesInPolygonDto {
   timeRange?: [number, number]
 }
 
-export class GetVehiclesInPolygonVo {
+class GetVehiclesInPolygonVoData {
   vehicleId!: number
   points!: VehicleTrackPointDto[]
+}
+
+export class GetVehiclesInPolygonVo {
+  data!: GetVehiclesInPolygonVoData[]
+}
+
+export class QueryVehicleTrajectoryDto {
+  startTime!: number
+  endTime!: number
+  plateNumber!: string
 }

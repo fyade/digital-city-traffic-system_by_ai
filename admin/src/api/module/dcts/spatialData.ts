@@ -1,13 +1,15 @@
 import {
-  NodesWithWaysInPolygonDto,
-  NodesWithWaysInPolygonVo,
-  SignalLightGroupsInPolygonDto,
-  SignalLightGroupsInPolygonVo,
   CalculateLightsInPolygonDto,
   CalculateLightsInPolygonVo,
   GetVehiclesInPolygonDto,
+  NodesWithWaysInPolygonDto,
+  NodesWithWaysInPolygonVo,
+  QueryVehicleTrajectoryDto,
+  SignalLightGroupsInPolygonDto,
+  SignalLightGroupsInPolygonVo,
 } from "@/type/module/dcts/spatialData.ts";
 import request from "@/api/request.ts";
+import { VehicleTrackPointDto } from "@/type/module/dcts/vehicle/vehicleTrackPoint.ts";
 
 /**
  * 查询多边形内的所有节点及有连接的道路
@@ -49,9 +51,21 @@ export function calculateLightsInPolygonApi(data: CalculateLightsInPolygonDto) {
  * 计算多边形内的车辆实时信息
  * @param data
  */
-export function getVehiclesInPolygon(data: GetVehiclesInPolygonDto) {
+export function getVehiclesInPolygonApi(data: GetVehiclesInPolygonDto) {
   return request({
     url: '/dcts/spatial-data/get-vehicles-in-polygon',
+    method: 'POST',
+    data: data,
+  })
+}
+
+/**
+ * 查询车辆轨迹
+ * @param data
+ */
+export function queryVehicleTrajectoryApi(data: QueryVehicleTrajectoryDto) {
+  return request<VehicleTrackPointDto[]>({
+    url: '/dcts/spatial-data/query-vehicle-trajectory',
     method: 'POST',
     data: data,
   })

@@ -53,6 +53,7 @@ export class SignalLightModule {
   public setGetViewCornerCoordinates(func: () => { lon: number, lat: number }[] | null) {
     this.getViewCornerCoordinates = func
   }
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
   private datas: CalculateLightsInPolygonVo[] = []
@@ -62,7 +63,7 @@ export class SignalLightModule {
     for (const result of results) {
       const find = this.datas.find(item => item.signalLightChildId === result.signalLightChildId);
       if (find) {
-        find.runParam.push(...result.runParam)
+        find.runParam = result.runParam
       } else {
         this.datas.push(result)
       }

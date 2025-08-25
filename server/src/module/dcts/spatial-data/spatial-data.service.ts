@@ -1,15 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { R } from "../../../common/R";
 import {
+  NodesWithWaysInPolygonDto,
+  SignalLightGroupsInPolygonDto,
   CalculateLightsInPolygonDto,
   GetVehiclesInPolygonDto,
-  NodesWithWaysInPolygonDto,
-  SignalLightGroupsInPolygonDto
+  QueryVehicleTrajectoryDto,
 } from "./dto";
 import { PostgresqlPrismaoService } from "../../../infra/prisma/postgresql.prismao.service";
 import {
   getVehiclesInPolygon,
-  nodesWithWaysInPolygon,
+  nodesWithWaysInPolygon, queryVehicleTrajectory,
   signalLightGroupsInPolygon,
   signalLightGroupsInPolygon2,
   signalLightGroupsInPolygon3
@@ -26,6 +27,7 @@ import { SignalLightChildStyleMappingDto } from "../signal-light/signal-light-ch
 import { SignalLightStyleDto } from "../signal-light/signal-light-style/dto";
 import { WsService } from "../../../infra/ws/ws.service";
 import { VehicleTrackPointDto } from "../vehicle/vehicle-track-point/dto";
+import { Exception } from "../../../exception/exception";
 
 @Injectable()
 export class SpatialDataService {
@@ -127,7 +129,23 @@ export class SpatialDataService {
       })
     }
     const userData = this.bcs.getUserData();
-    this.wsService.sendMsg(userData.loginRole, userData.userId, 'dcts:spatialData:getVehiclesInPolygon', JSON.stringify(rett))
+    const rettt = {data: rett}
+    this.wsService.sendMsg(userData.loginRole, userData.userId, 'dcts:spatialData:getVehiclesInPolygon', JSON.stringify(rettt))
     return R.ok(true)
+  }
+
+  async queryVehicleTrajectory(dto: QueryVehicleTrajectoryDto): Promise<R> {
+    const vehicles = await this.pgsqlPrismao.vehicle_info.findMany({
+      where: {
+        plate_number: dto.plateNumber,
+        ...this.prismao.defaultSelArg().where
+      }
+    });
+    if (vehicles.length === 0) {
+      throw new Exception('车辆不存在')
+    }
+    const sql = queryVehicleTrajectory(dto, vehicles[0].id);
+    const s = await this.pgsqlPrismao.$queryRawUnsafe(sql);
+    return R.ok(s)
   }
 }

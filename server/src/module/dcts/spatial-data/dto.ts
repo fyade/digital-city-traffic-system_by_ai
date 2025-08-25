@@ -7,7 +7,7 @@ import {
   IsIn,
   IsNotEmpty,
   IsNumber,
-  IsOptional, Max, Min,
+  IsOptional, IsString, Max, Min,
   ValidateNested
 } from "class-validator";
 
@@ -120,4 +120,21 @@ export class GetVehiclesInPolygonDto {
   @IsNumber({}, {each: true, message: '时间范围的每个元素必须是数值类型'})
   @ArrayMinSize(2, {message: '时间范围必须包含至少2个元素'})
   timeRange?: [number, number] | null = null
+}
+
+export class QueryVehicleTrajectoryDto {
+  @ApiProperty({description: '开始时间', default: null})
+  @IsNotEmpty({message: '开始时间不能为空'})
+  @IsNumber({}, {message: '开始时间必须是数值类型'})
+  startTime: number
+
+  @ApiProperty({description: '结束时间', default: null})
+  @IsNotEmpty({message: '结束时间不能为空'})
+  @IsNumber({}, {message: '结束时间必须是数值类型'})
+  endTime: number
+
+  @ApiProperty({description: '车牌号', default: null})
+  @IsNotEmpty({message: '车牌号不能为空'})
+  @IsString({message: '车牌号必须是字符串类型'})
+  plateNumber: string
 }

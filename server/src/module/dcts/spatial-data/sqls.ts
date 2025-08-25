@@ -1,7 +1,11 @@
-import { GetVehiclesInPolygonDto, NodesWithWaysInPolygonDto, SignalLightGroupsInPolygonDto } from "./dto";
+import {
+  GetVehiclesInPolygonDto,
+  NodesWithWaysInPolygonDto,
+  QueryVehicleTrajectoryDto,
+  SignalLightGroupsInPolygonDto,
+} from "./dto";
 import { final } from "../../../util/base";
 import { publicSqlSelectKey } from "../../../infra/prisma/custom.dto";
-import { timeUtils } from "@dcts/common";
 
 export function nodesWithWaysInPolygon(dto: NodesWithWaysInPolygonDto) {
   // 点数组转为字符串
@@ -131,6 +135,27 @@ export function getVehiclesInPolygon(dto: GetVehiclesInPolygonDto) {
       FROM public.vehicle_track_point vtp
       WHERE ST_Within(vtp.point, ST_GeomFromText('POLYGON((${dto.points.map(p => `${p.lon} ${p.lat}`).join(`,`)}))', 4326))
         AND vtp.create_time BETWEEN '${start.toISOString()}' AND '${end.toISOString()}'
+        AND vtp.deleted = '${final.N}'
+      order by vehicle_id asc, create_time desc;
+  `
+}
+
+export function queryVehicleTrajectory(dto: QueryVehicleTrajectoryDto, vehicleId: number) {
+  return `
+      select vtp.id                               as "id",
+             vtp.vehicle_id                       as "vehicleId",
+             ST_AsText(vtp.point)                 as "point",
+             vtp.create_role                      as "createRole",
+             vtp.update_role                      as "updateRole",
+             vtp.create_by                        as "createBy",
+             vtp.update_by                        as "updateBy",
+             ${publicSqlSelectKey.kvs.createTime} as "createTime",
+             ${publicSqlSelectKey.kvs.updateTime} as "updateTime",
+             vtp.deleted                          as "deleted",
+             vtp.heading                          as "heading"
+      FROM public.vehicle_track_point vtp
+      WHERE vtp.vehicle_id = ${vehicleId}
+        AND vtp.create_time BETWEEN '${new Date(dto.startTime).toISOString()}' AND '${new Date(dto.endTime).toISOString()}'
         AND vtp.deleted = '${final.N}'
       order by vehicle_id asc, create_time desc;
   `

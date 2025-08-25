@@ -8,19 +8,22 @@ export class CesiumPoint {
   lat!: number
   color!: Cesium.Color
   height!: number
+  opacity!: number
 
   constructor({
                 id = ID_PREFIX_POINT + idUtils.genId(),
                 lon,
                 lat,
                 color = CESIUM_DEFAULT.COLOR_POINT,
-                height = CESIUM_DEFAULT.HEIGHT_POINT
+                height = CESIUM_DEFAULT.HEIGHT_POINT,
+                opacity = 1,
               }: {
                 id?: string
                 lon: number
                 lat: number
                 color?: Cesium.Color
                 height?: number
+                opacity?: number
               }
   ) {
     this.id = id;
@@ -28,6 +31,7 @@ export class CesiumPoint {
     this.lat = lat;
     this.color = color;
     this.height = height;
+    this.opacity = opacity;
   }
 }
 
@@ -36,22 +40,26 @@ export class CesiumLine {
   points!: CesiumPoint[]
   color!: Cesium.Color
   height!: number
+  opacity!: number
 
   constructor({
                 id = ID_PREFIX_LINE + idUtils.genId(),
                 points = [],
                 color = CESIUM_DEFAULT.COLOR_LINE,
-                height = CESIUM_DEFAULT.HEIGHT_LINE
+                height = CESIUM_DEFAULT.HEIGHT_LINE,
+                opacity = 1,
               }: {
                 id?: string
                 points?: CesiumPoint[]
                 color?: Cesium.Color
                 height?: number
+                opacity?: number
               }
   ) {
     this.id = id;
     this.points = points;
     this.color = color;
     this.height = height;
+    this.opacity = opacity;
   }
 }

@@ -59,6 +59,7 @@ export class MapEntityModule {
   public setGetViewCornerCoordinates(func: () => { lon: number, lat: number }[] | null) {
     this.getViewCornerCoordinates = func
   }
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
   private cronJob: CronJob | null = null

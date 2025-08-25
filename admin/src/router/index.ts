@@ -201,6 +201,18 @@ export const routes: RouteRecordRaw[] = [
             component: () => import('@/views/dashboard/formPanel/runtimeDiagram/index.vue')
           },
           {
+            path: 'vehicle',
+            name: '~fp~:vehicle',
+            component: () => import('@/views/dashboard/formPanel/vehicle/index.vue'),
+            children: [
+              {
+                path: 'trajectory',
+                name: '~fp~:vehicle:trajectory',
+                component: () => import('@/views/dashboard/formPanel/vehicle/trajectory/index.vue')
+              }
+            ]
+          },
+          {
             path: ':pathMatch(.*)*',
             redirect: '/dashboard'
           }

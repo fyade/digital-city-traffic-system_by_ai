@@ -13,10 +13,9 @@ export class UseCesium {
   private static instance: UseCesium | null = null
   protected viewer: Cesium.Viewer | null = null
   private pointCollection: Cesium.PointPrimitiveCollection | null = null
-  private pointMap = new Map<string, Cesium.PointPrimitive>()
+  private pointMap: Map<string, Cesium.PointPrimitive> | null = null
   private polylineCollection: Cesium.PrimitiveCollection | null = null
-  private polylineMap = new Map<string, Cesium.Primitive>()
-  private geometryInstanceMap = new Map<string, Cesium.GeometryInstance>()
+  private polylineMap: Map<string, Cesium.Primitive> | null = null
 
   constructor() {
     if (!UseCesium.instance) {
@@ -30,9 +29,23 @@ export class UseCesium {
    * @protected
    */
   protected init() {
+    if (this.viewer) {
+      // 初始化点的集合
+      this.pointCollection = this.viewer.scene.primitives.add(
+          new Cesium.PointPrimitiveCollection()
+      )
+      this.pointMap = new Map<string, Cesium.PointPrimitive>()
+
+      // 初始化线的集合
+      this.polylineCollection = this.viewer.scene.primitives.add(
+          new Cesium.PrimitiveCollection()
+      )
+      this.polylineMap = new Map<string, Cesium.Primitive>()
+    }
+
+    document.addEventListener('visibilitychange', this._documentVisibilitychangeCB)
   }
 
-  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 通用工具函数 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   /**
    * 销毁
    */
@@ -44,9 +57,14 @@ export class UseCesium {
     this.viewer = null
 
     this.pointCollection = null
+    this.pointMap = null
     this.polylineCollection = null
+    this.polylineMap = null
+
+    document.removeEventListener('visibilitychange', this._documentVisibilitychangeCB)
   }
 
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 通用工具函数 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   /**
    * 设置视角到
    * @param lon
@@ -197,10 +215,14 @@ export class UseCesium {
     if (!this.pointCollection) {
       return null
     }
+    if (!this.pointMap) {
+      return null
+    }
+    const colorWithOpacity = Cesium.Color.fromAlpha(obj.color, obj.opacity)
     const point = this.pointCollection.add({
       id: obj.id,
       position: Cesium.Cartesian3.fromDegrees(obj.lon, obj.lat, obj.height),
-      color: obj.color,
+      color: colorWithOpacity,
       pixelSize: 12
     });
     this.pointMap.set(obj.id, point);
@@ -215,12 +237,36 @@ export class UseCesium {
     if (!this.viewer) {
       return null
     }
+    if (!this.pointMap) {
+      return null
+    }
     const point = this.pointMap.get(obj.id);
     if (!point) {
       return null;
     }
-    this.pointMap.set(obj.id, point)
+    this.delPoint(obj.id)
+    this.addPoint(obj)
     return obj
+  }
+
+  /**
+   * 删除点
+   * @param ids
+   */
+  public delPoint(...ids: string[]) {
+    if (!this.pointCollection) {
+      return
+    }
+    if (!this.pointMap) {
+      return
+    }
+    for (const id of ids) {
+      const point = this.pointMap.get(id);
+      if (point) {
+        this.pointCollection.remove(point);
+        this.pointMap.delete(id);
+      }
+    }
   }
 
   /**
@@ -234,6 +280,10 @@ export class UseCesium {
     if (!this.polylineCollection) {
       return null
     }
+    if (!this.polylineMap) {
+      return null
+    }
+    const colorWithOpacity = Cesium.Color.fromAlpha(obj.color, obj.opacity);
     const geometry = new Cesium.PolylineGeometry({
       positions: Cesium.Cartesian3.fromDegreesArrayHeights(obj.points.map(p => [p.lon, p.lat, p.height]).flat()),
       width: 2,
@@ -243,7 +293,7 @@ export class UseCesium {
       id: obj.id,
       geometry: geometry,
       attributes: {
-        color: Cesium.ColorGeometryInstanceAttribute.fromColor(obj.color)
+        color: Cesium.ColorGeometryInstanceAttribute.fromColor(colorWithOpacity)
       },
     });
     const polyline = this.polylineCollection.add(
@@ -264,51 +314,36 @@ export class UseCesium {
     if (!this.viewer) {
       return null
     }
+    if (!this.polylineMap) {
+      return null
+    }
     const polyline = this.polylineMap.get(obj.id);
     if (!polyline) {
       return null
     }
-    this.polylineMap.set(obj.id, polyline)
+    this.delLine(obj.id)
+    this.addLine(obj)
     return obj
   }
 
   /**
-   * 批量新增线
-   * @param objs
+   * 删除线
+   * @param ids
    */
-  public addLines(objs: CesiumLine[]) {
-    if (!this.viewer) {
-      return null
-    }
+  public delLine(...ids: string[]) {
     if (!this.polylineCollection) {
-      return null
+      return
     }
-    const instances: Cesium.GeometryInstance[] = []
-    for (const obj of objs) {
-      const geometry = new Cesium.PolylineGeometry({
-        positions: Cesium.Cartesian3.fromDegreesArrayHeights(obj.points.map(p => [p.lon, p.lat, p.height]).flat()),
-        width: 2,
-        vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT
-      });
-      const instance = new Cesium.GeometryInstance({
-        id: obj.id,
-        geometry: geometry,
-        attributes: {
-          color: Cesium.ColorGeometryInstanceAttribute.fromColor(obj.color)
-        },
-      });
-      instances.push(instance)
-      this.geometryInstanceMap.set(obj.id, instance)
+    if (!this.polylineMap) {
+      return
     }
-    const primitiveId = idUtils.genId();
-    const polyline = this.polylineCollection.add(
-        new Cesium.Primitive({
-          geometryInstances: instances,
-          appearance: new Cesium.PolylineColorAppearance()
-        })
-    );
-    this.polylineMap.set(primitiveId, polyline)
-    return objs
+    for (const id of ids) {
+      const line = this.polylineMap.get(id);
+      if (line) {
+        this.polylineCollection.remove(line);
+        this.polylineMap.delete(id);
+      }
+    }
   }
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 硬件状态变量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -359,15 +394,6 @@ export class UseCesium {
     this.viewer.animation.viewModel.timeFormatter = time => timeUtils.formatDate(Cesium.JulianDate.toDate(time), 'HH:mm:ss');
     this.viewer.timeline.makeLabel = time => timeUtils.formatDate(Cesium.JulianDate.toDate(time));
 
-    // 初始化点的集合
-    this.pointCollection = this.viewer.scene.primitives.add(
-        new Cesium.PointPrimitiveCollection()
-    )
-    // 初始化线的集合
-    this.polylineCollection = this.viewer.scene.primitives.add(
-        new Cesium.PrimitiveCollection()
-    )
-
     if (currentConfig.VITE_MODE === final.DEV) {
       this.viewer.scene.debugShowFramesPerSecond = true
     }
@@ -403,6 +429,19 @@ export class UseCesium {
     handler.setInputAction(this.ScreenSpaceEventTypeWheelCB.bind(this), Cesium.ScreenSpaceEventType.WHEEL)
 
     this.init()
+  }
+
+  /**
+   * 页面可见性变化
+   * @private
+   */
+  private _documentVisibilitychangeCB = this.documentVisibilitychangeCB.bind(this)
+
+  /**
+   * 页面可见性变化
+   * @protected
+   */
+  protected documentVisibilitychangeCB() {
   }
 
   /**
@@ -533,6 +572,12 @@ export class UseCesium {
     this.ScreenSpaceEventTypeClickCB()
   }
 
+  /**
+   * 左键双击
+   * @param m
+   * @constructor
+   * @protected
+   */
   protected ScreenSpaceEventTypeLeftDoubleClickCB(m: Cesium.ScreenSpaceEventHandler.PositionedEvent) {
   }
 

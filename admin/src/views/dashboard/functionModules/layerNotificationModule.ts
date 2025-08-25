@@ -30,6 +30,7 @@ export class LayerNotificationModule {
   public setLayerLoadingEndCB(func: (count: number) => void) {
     this.layerLoadingEndCB = func
   }
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
   public init() {

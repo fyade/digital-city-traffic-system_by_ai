@@ -4,10 +4,11 @@ import { SpatialDataService } from "./spatial-data.service";
 import { Authorize } from "../../../decorator/authorize.decorator";
 import { R } from "../../../common/R";
 import {
+  NodesWithWaysInPolygonDto,
+  SignalLightGroupsInPolygonDto,
   CalculateLightsInPolygonDto,
   GetVehiclesInPolygonDto,
-  NodesWithWaysInPolygonDto,
-  SignalLightGroupsInPolygonDto
+  QueryVehicleTrajectoryDto,
 } from "./dto";
 import { publicConfig } from "@dcts/config";
 import { Exception } from "../../../exception/exception";
@@ -75,5 +76,17 @@ export class SpatialDataController {
       throw new Exception('时间范围不能超过1小时')
     }
     return this.spatialDataService.getVehiclesInPolygon(dto);
+  }
+
+  @Post('/query-vehicle-trajectory')
+  @ApiOperation({
+    summary: '查询车辆轨迹'
+  })
+  @Authorize({
+    permission: 'dcts:spatialData:queryVehicleTrajectory',
+    label: '查询车辆轨迹'
+  })
+  async queryVehicleTrajectory(@Body() dto: QueryVehicleTrajectoryDto): Promise<R> {
+    return this.spatialDataService.queryVehicleTrajectory(dto);
   }
 }
