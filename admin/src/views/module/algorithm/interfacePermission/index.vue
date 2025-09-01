@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { reactive, ref, toRaw, useTemplateRef, watch } from "vue"
-import { CONFIG, final, PAGINATION, publicDict } from "@/utils/base.ts"
+import { CONFIG, datePickerShortcuts, final, PAGINATION, publicDict } from "@/utils/base.ts"
 import Pagination from "@/components/pagination/pagination.vue"
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts"
 import { State2, TablePageConfig } from "@/type/tablePage.ts"
@@ -479,62 +479,6 @@ if (Object.keys(userGroupPermissionState.dialogForm).indexOf('permissionTime') >
     }
   })
 }
-const shortcuts = [
-  {
-    text: '一周',
-    value: () => {
-      const start = new Date()
-      const end = new Date()
-      end.setDate(end.getDate() + 7)
-      return [start, end]
-    },
-  },
-  {
-    text: '两周',
-    value: () => {
-      const start = new Date()
-      const end = new Date()
-      end.setDate(end.getDate() + 14)
-      return [start, end]
-    },
-  },
-  {
-    text: '一个月',
-    value: () => {
-      const start = new Date()
-      const end = new Date()
-      end.setMonth(end.getMonth() + 1)
-      return [start, end]
-    },
-  },
-  {
-    text: '三个月',
-    value: () => {
-      const start = new Date()
-      const end = new Date()
-      end.setMonth(end.getMonth() + 3)
-      return [start, end]
-    },
-  },
-  {
-    text: '半年',
-    value: () => {
-      const start = new Date()
-      const end = new Date()
-      end.setMonth(end.getMonth() + 6)
-      return [start, end]
-    },
-  },
-  {
-    text: '一年',
-    value: () => {
-      const start = new Date()
-      const end = new Date()
-      end.setFullYear(end.getFullYear() + 1)
-      return [start, end]
-    },
-  },
-]
 
 const useLogVisible = ref(false)
 const selectUGPId = ref<number>(-1)
@@ -621,7 +565,7 @@ const userGroupPermissionDCon2 = () => {
         <el-date-picker
             v-model="userGroupPermissionState.dialogForm.permissionTime"
             type="datetimerange"
-            :shortcuts="shortcuts"
+            :shortcuts="datePickerShortcuts"
             :start-placeholder="userGroupPermissionDict.permissionStartTime"
             :end-placeholder="userGroupPermissionDict.permissionEndTime"
             format="YYYY-MM-DD HH:mm:ss"

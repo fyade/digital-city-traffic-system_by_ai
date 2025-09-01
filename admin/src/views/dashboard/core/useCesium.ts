@@ -183,7 +183,7 @@ export class UseCesium {
    * 获取实体的经纬度坐标
    * @param entityId
    */
-  public getEntityLatLonHeight(entityId: string) {
+  public getEntityLonLatHeight(entityId: string) {
     if (!this.viewer || !entityId) {
       return null
     }
@@ -636,11 +636,11 @@ export class UseCesium {
 
     this.trackedEntityId = this.viewer.trackedEntity ? this.viewer.trackedEntity.id : null
     if (this.trackedEntityId) {
-      const latLonHeight = this.getEntityLatLonHeight(this.trackedEntityId);
-      if (!latLonHeight) {
+      const lonLatHeight = this.getEntityLonLatHeight(this.trackedEntityId);
+      if (!lonLatHeight) {
         return;
       }
-      this.setViewTo(latLonHeight.lon, latLonHeight.lat, {height: this.cameraHeight, ifFly: true})
+      this.setViewTo(lonLatHeight.lon, lonLatHeight.lat, {height: this.cameraHeight, ifFly: true})
     }
   }
 }

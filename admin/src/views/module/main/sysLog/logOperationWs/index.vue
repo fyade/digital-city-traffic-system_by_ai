@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { reactive, ref } from "vue";
-import { CONFIG, final } from "@/utils/base.ts";
+import { CONFIG, datePickerShortcuts, final } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
@@ -108,62 +108,6 @@ const {
 })
 
 const datePickerValue = ref('')
-const shortcuts = [
-  {
-    text: '前一周',
-    value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setDate(start.getDate() - 7)
-      return [start, end]
-    },
-  },
-  {
-    text: '前两周',
-    value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setDate(start.getDate() - 14)
-      return [start, end]
-    },
-  },
-  {
-    text: '前一个月',
-    value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setMonth(start.getMonth() - 1)
-      return [start, end]
-    },
-  },
-  {
-    text: '前三个月',
-    value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setMonth(start.getMonth() - 3)
-      return [start, end]
-    },
-  },
-  {
-    text: '前半年',
-    value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setMonth(start.getMonth() - 6)
-      return [start, end]
-    },
-  },
-  {
-    text: '前一年',
-    value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setFullYear(start.getFullYear() - 1)
-      return [start, end]
-    },
-  },
-]
 const datePickerValueChange = (value: Date[]) => {
   if (value) {
     if (config.selectParam.createTime && typeof config.selectParam.createTime !== 'string' && config.selectParam.createTime.between) {
@@ -443,7 +387,7 @@ const fCan2 = () => {
         <el-date-picker
             v-model="datePickerValue"
             type="datetimerange"
-            :shortcuts="shortcuts"
+            :shortcuts="datePickerShortcuts"
             start-placeholder="开始时间"
             end-placeholder="结束时间"
             format="YYYY-MM-DD HH:mm:ss"

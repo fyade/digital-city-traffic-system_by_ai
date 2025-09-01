@@ -23,7 +23,7 @@ async function bootstrap() {
       .setVersion(serverConfig.currentVersion)
       .build();
     const swaggerDocuemnt = SwaggerModule.createDocument(app, swaggerOptions);
-    SwaggerModule.setup('/api', app, swaggerDocuemnt);
+    SwaggerModule.setup('/doc-swagger', app, swaggerDocuemnt);
   }
   await app.listen(node_env.port);
   if (module.hot) {

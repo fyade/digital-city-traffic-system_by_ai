@@ -127,8 +127,13 @@ export class CommonPostgresqlPrismaoService {
         ifUpdateTime: fieldSelectParam.ifUpdateTime,
         ifDeleted: fieldSelectParam.ifDeleted,
       });
-      for (const data of dto.datas) {
+      let _sql = ''
+      for (let i = 0; i < dto.datas.length; i++) {
+        const data = dto.datas[i];
         for (const col of baseInterfaceColumns2) {
+          if (dto.selfDefineInsUpdKey[col]) {
+            continue
+          }
           delete data[col];
         }
         const keys: string[] = []
@@ -149,9 +154,13 @@ export class CommonPostgresqlPrismaoService {
           keys.push(key)
           values.push(defaultInsArg1.data[key])
         }
-        let _sql = ''
-        _sql += ` (${keys.join(',')}) `;
-        _sql += ` values `;
+        if (i === 0) {
+          _sql += ` (${keys.join(',')}) `;
+          _sql += ` values `;
+        }
+        if (i > 0) {
+          _sql += ' , '
+        }
         _sql += ` (${
             values
                 .map((val, index) => {
@@ -165,9 +174,9 @@ export class CommonPostgresqlPrismaoService {
                 })
                 .join(',')
         }) `;
-        const s2 = ` ${_sql} RETURNING ${sql_select_keys} `;
-        _sqlsOfInsUpd.push(s2)
       }
+      const s2 = ` ${_sql} RETURNING ${sql_select_keys} `;
+      _sqlsOfInsUpd.push(s2)
     } else if (this._ifUpd(dto.type)) {
       // 修改数据的拼接
       const defaultUpdArg1 = this.prismao.defaultUpdArg({

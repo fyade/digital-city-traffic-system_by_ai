@@ -2,8 +2,8 @@ import { CascaderProps } from "element-plus";
 import { INS, MORE, N, ONE, UPD, Y } from "@/type/utils/base.ts";
 
 export const allLoginRoles: LV[] = [
-  { label: "系统管理员", value: "admin" },
-  { label: "访客", value: "visitor" },
+  {label: "系统管理员", value: "admin"},
+  {label: "访客", value: "visitor"},
 ];
 
 export class LV {
@@ -12,12 +12,12 @@ export class LV {
 }
 
 export const allTRPDataTypes: LV[] = [
-  { label: "全部", value: "ALL" },
-  { label: "本部门", value: "SELF_DEPT" },
-  { label: "本部门及直属子部门", value: "DEPT_ONE_SON" },
-  { label: "本部门及全部子部门", value: "DEPT_ALL_SON" },
-  { label: "本角色", value: "SELF_ROLE" },
-  { label: "自己", value: "SELF" },
+  {label: "全部", value: "ALL"},
+  {label: "本部门", value: "SELF_DEPT"},
+  {label: "本部门及直属子部门", value: "DEPT_ONE_SON"},
+  {label: "本部门及全部子部门", value: "DEPT_ALL_SON"},
+  {label: "本角色", value: "SELF_ROLE"},
+  {label: "自己", value: "SELF"},
 ];
 
 export const CONFIG = {
@@ -132,3 +132,150 @@ export const cascaderProps1_ = {
   },
   ...cascaderProps3,
 } as CascaderProps;
+
+export const datePickerShortcuts = [
+  {
+    text: '前一小时',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setHours(start.getHours() - 1)
+      return [start, end]
+    }
+  },
+  {
+    text: '前两小时',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setHours(start.getHours() - 2)
+      return [start, end]
+    }
+  },
+  {
+    text: '前三小时',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setHours(start.getHours() - 3)
+      return [start, end]
+    }
+  },
+  {
+    text: '前一天',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setDate(start.getDate() - 1)
+      return [start, end]
+    }
+  },
+  {
+    text: '前两天',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setDate(start.getDate() - 2)
+      return [start, end]
+    }
+  },
+  {
+    text: '前三天',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setDate(start.getDate() - 3)
+      return [start, end]
+    }
+  },
+  {
+    text: '前一周',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setDate(start.getDate() - 7)
+      return [start, end]
+    },
+  },
+  {
+    text: '前两周',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setDate(start.getDate() - 14)
+      return [start, end]
+    },
+  },
+  {
+    text: '前三周',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setDate(start.getDate() - 21)
+      return [start, end]
+    },
+  },
+  {
+    text: '前一月',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setMonth(start.getMonth() - 1)
+      return [start, end]
+    },
+  },
+  {
+    text: '前两月',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setMonth(start.getMonth() - 2)
+      return [start, end]
+    },
+  },
+  {
+    text: '前三月',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setMonth(start.getMonth() - 3)
+      return [start, end]
+    },
+  },
+  {
+    text: '前半年',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setMonth(start.getMonth() - 6)
+      return [start, end]
+    },
+  },
+  {
+    text: '前一年',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setFullYear(start.getFullYear() - 1)
+      return [start, end]
+    },
+  },
+  {
+    text: '前两年',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setFullYear(start.getFullYear() - 2)
+      return [start, end]
+    },
+  },
+  {
+    text: '前三年',
+    value: () => {
+      const start = new Date()
+      const end = new Date()
+      start.setFullYear(start.getFullYear() - 3)
+      return [start, end]
+    },
+  },
+]

@@ -22,7 +22,8 @@
     }
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    ".d.ts/*.d.ts"
   ],
   "exclude": [
     "node_modules",
