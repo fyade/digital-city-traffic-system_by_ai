@@ -43,7 +43,6 @@ const state = reactive<State2<LogOperationDto, LogOperationUpdDto>>({
     userId: '',
     loginRole: '',
     authType: '',
-    reqParam: '',
     ifSuccess: '',
   },
 })
@@ -139,6 +138,21 @@ const fCan2 = () => {
   }
   fCan()
 }
+
+const reqParamLoading = ref(false)
+const showReqParam = (rowId: number) => {
+  reqParamLoading.value = true
+  logOperationApi.selectById(rowId).then(res => {
+    if (res) {
+      const find = tableData.value.find(item => item.id === rowId);
+      if (find) {
+        find.reqParam = res.reqParam
+      }
+    }
+  }).finally(() => {
+    reqParamLoading.value = false
+  })
+}
 </script>
 
 <template>
@@ -192,9 +206,6 @@ const fCan2 = () => {
       </el-form-item>
       <el-form-item :label="logOperationDict.authType" prop="authType">
         <el-input v-model="state.filterForm.authType" :placeholder="logOperationDict.authType"/>
-      </el-form-item>
-      <el-form-item :label="logOperationDict.reqParam" prop="reqParam">
-        <el-input v-model="state.filterForm.reqParam" :placeholder="logOperationDict.reqParam"/>
       </el-form-item>
       <el-form-item :label="logOperationDict.ifSuccess" prop="ifSuccess">
         <!--<el-input v-model="state.filterForm.ifSuccess" :placeholder="logOperationDict.ifSuccess"/>-->
@@ -260,11 +271,16 @@ const fCan2 = () => {
       <el-table-column prop="authType" :label="logOperationDict.authType" width="120"/>
       <el-table-column prop="reqParam" :label="logOperationDict.reqParam" width="360">
         <template #default="{row}">
-          <div style="max-height: 100px;overflow: auto;">
-            <div>query参数：{{ JSON.parse(row.reqParam).query }}</div>
-            <div>body参数：{{ JSON.parse(row.reqParam).body }}</div>
-            <div>param参数：{{ JSON.parse(row.reqParam).param }}</div>
-          </div>
+          <template v-if="row.reqParam">
+            <div style="max-height: 100px;overflow: auto;">
+              <div>query参数：{{ JSON.parse(row.reqParam).query }}</div>
+              <div>body参数：{{ JSON.parse(row.reqParam).body }}</div>
+              <div>param参数：{{ JSON.parse(row.reqParam).param }}</div>
+            </div>
+          </template>
+          <template v-else>
+            <el-button :loading="reqParamLoading" link type="primary" size="small" :icon="Edit" @click="showReqParam(row.id)">点此查看</el-button>
+          </template>
         </template>
       </el-table-column>
       <el-table-column prop="oldValue" :label="logOperationDict.oldValue" width="120"/>

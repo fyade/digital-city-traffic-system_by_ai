@@ -289,6 +289,7 @@ export class PrismaService {
     }
     if (param1.type === 'selList' || param1.type === 'selAll') {
       const publicData = this.prismao.defaultSelArg({
+        model: param1.tblName,
         selKeys: params[0].selKeys,
         ifDeleted: params[0].ifDeleted,
         ifUseSelfData: params[0].ifUseSelfData
@@ -410,7 +411,12 @@ export class PrismaService {
     delete data2.pageNum;
     delete data2.pageSize;
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
-    const publicData = this.prismao.defaultSelArg({selKeys, ifDeleted: fieldSelectParam.ifDeleted, ifUseSelfData});
+    const publicData = this.prismao.defaultSelArg({
+      model,
+      selKeys,
+      ifDeleted: fieldSelectParam.ifDeleted,
+      ifUseSelfData
+    });
     const skipAndTakeFromPNS = this._(pageNum, pageSize);
     const arg: PrismaParam = {
       where: this.genSelParams<T, P>({
@@ -472,7 +478,12 @@ export class PrismaService {
                                       } = {},
   ): Promise<T[]> {
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
-    const publicData = this.prismao.defaultSelArg({selKeys, ifDeleted: fieldSelectParam.ifDeleted, ifUseSelfData});
+    const publicData = this.prismao.defaultSelArg({
+      model,
+      selKeys,
+      ifDeleted: fieldSelectParam.ifDeleted,
+      ifUseSelfData
+    });
     const arg: PrismaParamAll = {
       where: this.genSelParams<T, P>({
         data,
@@ -509,7 +520,12 @@ export class PrismaService {
                                      } = {},
   ): Promise<T> {
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
-    const publicData = this.prismao.defaultSelArg({selKeys, ifDeleted: fieldSelectParam.ifDeleted, ifUseSelfData});
+    const publicData = this.prismao.defaultSelArg({
+      model,
+      selKeys,
+      ifDeleted: fieldSelectParam.ifDeleted,
+      ifUseSelfData
+    });
     const arg = {
       where: {
         ...publicData.where,
@@ -556,7 +572,12 @@ export class PrismaService {
                             } = {},
   ): Promise<T[]> {
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
-    const publicData = this.prismao.defaultSelArg({selKeys, ifDeleted: fieldSelectParam.ifDeleted, ifUseSelfData});
+    const publicData = this.prismao.defaultSelArg({
+      model,
+      selKeys,
+      ifDeleted: fieldSelectParam.ifDeleted,
+      ifUseSelfData
+    });
     const arg = {
       where: {
         ...publicData.where,

@@ -26,6 +26,7 @@ export class LogOperationService {
     const res = await this.mysqlPrisma.findPage<LogOperationDto, LogOperationSelListDto>('log_operation', {
       data: dto,
       orderBy: false,
+      selKeys: ['reqId', 'callIp', 'hostName', 'perms', 'userId', 'loginRole', 'authType', 'oldValue', 'operateType', 'ifSuccess', 'remark'],
     });
     return R.ok(res);
   }
@@ -34,12 +35,15 @@ export class LogOperationService {
     const res = await this.mysqlPrisma.findAll<LogOperationDto>('log_operation', {
       data: dto,
       orderBy: false,
+      selKeys: ['reqId', 'callIp', 'hostName', 'perms', 'userId', 'loginRole', 'authType', 'oldValue', 'operateType', 'ifSuccess', 'remark'],
     });
     return R.ok(res);
   }
 
   async selOnesLogOperation(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<LogOperationDto>('log_operation', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<LogOperationDto>('log_operation', Object.values(ids).map(n => Number(n)), {
+      selKeys: ['reqId', 'callIp', 'hostName', 'perms', 'userId', 'loginRole', 'authType', 'oldValue', 'operateType', 'ifSuccess', 'remark'],
+    });
     return R.ok(res);
   }
 

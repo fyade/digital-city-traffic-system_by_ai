@@ -20,10 +20,12 @@ export class PrismaoService {
   }
 
   public defaultSelArg = ({
+                            model = '',
                             selKeys = [],
                             ifDeleted = true,
                             ifUseSelfData = false,
                           }: {
+                            model?: string,
                             selKeys?: string[],
                             ifDeleted?: boolean,
                             ifUseSelfData?: boolean,
@@ -38,6 +40,18 @@ export class PrismaoService {
       } : {}),
       where: {},
     };
+    if (model && selKeys.length > 0 && retObj.select) {
+      const fieldSelectParam = this.bcs.getFieldSelectParam(model);
+      if (fieldSelectParam) {
+        if (!fieldSelectParam.ifCreateRole) delete retObj.select['create_role']
+        if (!fieldSelectParam.ifUpdateRole) delete retObj.select['update_role']
+        if (!fieldSelectParam.ifCreateBy) delete retObj.select['create_by']
+        if (!fieldSelectParam.ifUpdateBy) delete retObj.select['update_by']
+        if (!fieldSelectParam.ifCreateTime) delete retObj.select['create_time']
+        if (!fieldSelectParam.ifUpdateTime) delete retObj.select['update_time']
+        if (!fieldSelectParam.ifDeleted) delete retObj.select['deleted']
+      }
+    }
     if (ifUseSelfData) {
       retObj.where['create_role'] = this.getLoginRole();
       retObj.where['create_by'] = this.getUserId();
