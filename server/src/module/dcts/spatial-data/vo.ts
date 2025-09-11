@@ -19,4 +19,12 @@ export class SignalLightGroupsInPolygonVo {
   signalLightInfos: SignalLightInfoDto[]
   signalLightChildStyleMappings: SignalLightChildStyleMappingDto[]
   signalLightStyles: SignalLightStyleDto[]
+
+  constructor() {
+    this.signalLightGroupInfos = []
+    this.signalLightGroupChildMappings = []
+    this.signalLightInfos = []
+    this.signalLightChildStyleMappings = []
+    this.signalLightStyles = []
+  }
 }

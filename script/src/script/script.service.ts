@@ -18,6 +18,6 @@ export class ScriptService implements OnModuleInit {
   async onModuleInit() {
     // await this.ariModule.main()
     // await this.aviModule.main()
-    await this.avtpModule.main()
+    // await this.avtpModule.main()
   }
 }

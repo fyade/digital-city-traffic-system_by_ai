@@ -63,6 +63,8 @@ export class VehicleModule {
     if (!this.viewer) {
       return
     }
+    const _datas = this.datas.map(item => item.vehicleId);
+    const _results = results.data.map(item => item.vehicleId);
     const now = Cesium.JulianDate.toDate(this.viewer.clock.currentTime).getTime();
     for (const result of results.data) {
       const find = this.datas.find(item => item.vehicleId === result.vehicleId);
@@ -71,6 +73,11 @@ export class VehicleModule {
       } else {
         this.datas.push(result)
       }
+    }
+    const needDelIds = _datas.filter(item => !_results.includes(item));
+    for (const needDelId of needDelIds) {
+      const index = this.datas.findIndex(item => item.vehicleId === needDelId);
+      this.datas.splice(index, 1);
     }
   }
 
@@ -106,6 +113,12 @@ export class VehicleModule {
             entity.billboard.rotation = new Cesium.ConstantProperty(Cesium.Math.toRadians(datum.points[0].heading))
           }
         }
+      }
+      const vehicleIds = this.datas.map(item => item.vehicleId);
+      const needDelIds: number[] = this.hasDrawedVehicleIds.filter(item => !vehicleIds.includes(item))
+      for (const needDelId of needDelIds) {
+        this.hasDrawedVehicleIds.splice(this.hasDrawedVehicleIds.indexOf(needDelId), 1)
+        this.viewer.entities.removeById(`${ID_PREFIX_VEHICLE_REAL_TIME}${needDelId}`)
       }
     }
   }

@@ -6,7 +6,6 @@ import { computed, useTemplateRef } from "vue";
 import PublicIndex from "@/layout/publicIndex.vue";
 import { useSysConfigStore } from "@/store/module/sysConfig.ts";
 import { useSysStore } from "@/store/module/sys.ts";
-import RootWrapper from "@/components/rootWrapper/rootWrapper.vue";
 
 const route = useRoute()
 const routerStore = useRouterStore();

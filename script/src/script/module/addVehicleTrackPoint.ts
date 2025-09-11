@@ -24,19 +24,19 @@ export class AddVehicleTrackPointModule {
     console.info('路网数据请求完成')
     const roads = res.data.allRoads.map(item => this.getLonlatFromWay(item.way));
 
-    const chunkNum = 120 * 30
-    const date = ['2025', '09', '02']
+    const chunkNum = 120
+    const date = ['2025', '09', '11']
 
     const start = new Date(`${date[0]}-${date[1]}-${date[2]}T00:00:00.000Z`).getTime() - 1000 * 60 * 60 * 8
     const end = new Date(`${date[0]}-${date[1]}-${date[2]}T23:59:59.000Z`).getTime() - 1000 * 60 * 60 * 8
     const results: ReturnType<typeof this.generatePositions>[][] = []
-    for (let i = 0; i < (1000 * 60 * 60 * 24) / (1000 * 5); i++) {
+    for (let i = 0; i < (1000 * 60 * 60 * 24) / (1000 * 60); i++) {
       const index = i % chunkNum;
       if (!results[index]) {
         results.push([])
       }
       const road = roads[numberUtils.randomNumber(0, roads.length - 1)];
-      const speed = numberUtils.randomNumber(10, 40);
+      const speed = numberUtils.randomNumber(30, 60);
       const time = new Date(numberUtils.randomNumber(start, end))
       const positions = this.generatePositions(road, speed, time);
       results[index].push(positions)
@@ -126,7 +126,7 @@ export class AddVehicleTrackPointModule {
         Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
 
     let brng = toDeg(Math.atan2(y, x));
-    return (brng + 360) % 360; // 0–360
+    return 360 - (brng + 360) % 360; // 0–360
   }
 
   private generatePositions(
