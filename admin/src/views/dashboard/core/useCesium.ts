@@ -234,16 +234,6 @@ export class UseCesium {
    * @param obj
    */
   public updPoint(obj: CesiumPoint) {
-    if (!this.viewer) {
-      return null
-    }
-    if (!this.pointMap) {
-      return null
-    }
-    const point = this.pointMap.get(obj.id);
-    if (!point) {
-      return null;
-    }
     this.delPoint(obj.id)
     this.addPoint(obj)
     return obj
@@ -311,16 +301,6 @@ export class UseCesium {
    * @param obj
    */
   public updLine(obj: CesiumLine) {
-    if (!this.viewer) {
-      return null
-    }
-    if (!this.polylineMap) {
-      return null
-    }
-    const polyline = this.polylineMap.get(obj.id);
-    if (!polyline) {
-      return null
-    }
     this.delLine(obj.id)
     this.addLine(obj)
     return obj

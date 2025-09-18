@@ -7,6 +7,7 @@ import busTopImage from '@/assets/images2/公交车-车顶.png'
 import { VehicleTrackPointDto } from "@/type/module/dcts/vehicle/vehicleTrackPoint.ts";
 import { CesiumLine, CesiumPoint } from "@/views/dashboard/utils/dto.ts";
 import { DrawedVehicleTrajectoryClass } from "@/views/dashboard/utils/class.ts";
+import { idUtils } from "@dcts/common";
 
 /**
  * 车辆模块
@@ -163,6 +164,7 @@ export class VehicleModule {
   public hasDrawedVehicleIds: number[] = []
 
   private _drawedVehicleTrajectoryIds: DrawedVehicleTrajectoryClass[] = []
+  private drawedVehicleTrajectoryIds_fushushiti_ids: Map<string, string[]> = new Map()
 
   get drawedVehicleTrajectoryIds(): DrawedVehicleTrajectoryClass[] {
     return this._drawedVehicleTrajectoryIds;
@@ -184,6 +186,9 @@ export class VehicleModule {
     if (!this.addLine) {
       return
     }
+    if (!this.viewer) {
+      return;
+    }
     const cesiumPoints = data
         .map(datum => datum.point
             .replace('POINT(', '')
@@ -200,10 +205,46 @@ export class VehicleModule {
     }
     this.drawedVehicleTrajectoryIds = [...this.drawedVehicleTrajectoryIds, obj]
     this.addLine(cesiumLine)
+
+    // 绘制起点和终点
+    const id1 = idUtils.genId();
+    const id2 = idUtils.genId();
+    this.viewer.entities.add({
+      id: id1,
+      position: Cesium.Cartesian3.fromDegrees(cesiumPoints[0].lon, cesiumPoints[0].lat, CESIUM_DEFAULT.HEIGHT_VEHICLE_TRAJECTORY_MARK),
+      label: {
+        text: '终点',
+        font: '14pt sans-serif',
+        fillColor: Cesium.Color.WHITE,
+        outlineColor: Cesium.Color.BLACK,
+        outlineWidth: 2,
+        pixelOffset: new Cesium.Cartesian2(0, 0),
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        verticalOrigin: Cesium.VerticalOrigin.TOP
+      }
+    })
+    this.viewer.entities.add({
+      id: id2,
+      position: Cesium.Cartesian3.fromDegrees(cesiumPoints[cesiumPoints.length - 1].lon, cesiumPoints[cesiumPoints.length - 1].lat, CESIUM_DEFAULT.HEIGHT_VEHICLE_TRAJECTORY_MARK),
+      label: {
+        text: '起点',
+        font: '14pt sans-serif',
+        fillColor: Cesium.Color.WHITE,
+        outlineColor: Cesium.Color.BLACK,
+        outlineWidth: 2,
+        pixelOffset: new Cesium.Cartesian2(0, 0),
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        verticalOrigin: Cesium.VerticalOrigin.TOP
+      }
+    })
+    this.drawedVehicleTrajectoryIds_fushushiti_ids.set(cesiumLine.id, [id1, id2])
   }
 
-  public setVehicleTrajectoryOpacity(cesiumLineId: string, opacity: number) {
+  public setVehicleTrajectoryOpacity(cesiumLineId: string, opacity: 0 | 1) {
     if (!this.updLine) {
+      return;
+    }
+    if (!this.viewer) {
       return;
     }
     const find = this.drawedVehicleTrajectoryIds.find(item => item.cesiumLineId === cesiumLineId);
@@ -212,10 +253,25 @@ export class VehicleModule {
     }
     find.cesiumLineObj.opacity = opacity
     this.updLine(find.cesiumLineObj)
+
+    // 显示/隐藏起点和终点
+    const pppids = this.drawedVehicleTrajectoryIds_fushushiti_ids.get(cesiumLineId);
+    if (pppids) {
+      for (let pppid of pppids) {
+        const entity = this.viewer.entities.getById(pppid);
+        if (entity && entity.label && entity.label.fillColor) {
+          const fillColor: Cesium.Color = entity.label.fillColor.getValue(Cesium.JulianDate.now());
+          entity.label.fillColor = new Cesium.ConstantProperty(fillColor.withAlpha(opacity))
+        }
+      }
+    }
   }
 
   public closeVehicleTrajectory(cesiumLineId: string) {
     if (!this.delLine) {
+      return;
+    }
+    if (!this.viewer) {
       return;
     }
     const index = this.drawedVehicleTrajectoryIds.findIndex(item => item.cesiumLineId === cesiumLineId);
@@ -227,6 +283,15 @@ export class VehicleModule {
       ...this.drawedVehicleTrajectoryIds.slice(0, index),
       ...this.drawedVehicleTrajectoryIds.slice(index + 1, this.drawedVehicleTrajectoryIds.length)
     ]
+
+    // 清除起点和终点
+    const pppids = this.drawedVehicleTrajectoryIds_fushushiti_ids.get(cesiumLineId);
+    if (pppids) {
+      for (let pppid of pppids) {
+        this.viewer.entities.removeById(pppid)
+      }
+    }
+    this.drawedVehicleTrajectoryIds_fushushiti_ids.delete(cesiumLineId);
   }
 
   public clearVehicleTrajectory() {

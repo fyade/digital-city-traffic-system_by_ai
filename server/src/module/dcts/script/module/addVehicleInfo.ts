@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { request } from "../../api/request";
 import { numberUtils } from "@dcts/common";
+import { request } from "../../../../api/requestDcts";
 
 @Injectable()
 export class AddVehicleInfoModule {

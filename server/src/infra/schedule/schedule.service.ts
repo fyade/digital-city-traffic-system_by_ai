@@ -79,7 +79,8 @@ export class ScheduleService implements OnModuleInit {
       if (obj) {
         let ifSuccess = true;
         try {
-          ifSuccess = await obj();
+          await obj();
+          ifSuccess = true;
         } catch (e) {
           this.winston.error(e);
           ifSuccess = false;

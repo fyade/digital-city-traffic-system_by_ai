@@ -1,5 +1,5 @@
-import { request } from "../../api/request";
 import { Injectable } from "@nestjs/common";
+import { request } from "../../../../api/requestDcts";
 
 @Injectable()
 export class AddRouteInformationModule {

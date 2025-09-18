@@ -18,6 +18,7 @@ import { SignalLightChildStyleMappingModule } from './signal-light/signal-light-
 import { ExternalModule } from './external/external.module';
 import { VehicleInfoModule } from './vehicle/vehicle-info/vehicle-info.module';
 import { VehicleTrackPointModule } from './vehicle/vehicle-track-point/vehicle-track-point.module';
+import { ScriptModule } from './script/script.module';
 
 @Module({
   imports: [
@@ -39,7 +40,8 @@ import { VehicleTrackPointModule } from './vehicle/vehicle-track-point/vehicle-t
     SignalLightChildStyleMappingModule,
     ExternalModule,
     VehicleInfoModule,
-    VehicleTrackPointModule
+    VehicleTrackPointModule,
+    ScriptModule
   ]
 })
 export class DctsModule {

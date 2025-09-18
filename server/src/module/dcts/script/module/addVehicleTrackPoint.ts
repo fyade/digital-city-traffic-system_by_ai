@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { request } from "../../api/request";
 import { numberUtils } from "@dcts/common";
+import { request } from "../../../../api/requestDcts";
 
 @Injectable()
 export class AddVehicleTrackPointModule {
@@ -25,7 +25,11 @@ export class AddVehicleTrackPointModule {
     const roads = res.data.allRoads.map(item => this.getLonlatFromWay(item.way));
 
     const chunkNum = 120
-    const date = ['2025', '09', '11']
+    const date: [string, string, string] = ['', '', '']
+    const date1 = new Date();
+    date[0] = `${date1.getFullYear()}`
+    date[1] = numberUtils.addZero(date1.getMonth() + 1)
+    date[2] = numberUtils.addZero(date1.getDate())
 
     const start = new Date(`${date[0]}-${date[1]}-${date[2]}T00:00:00.000Z`).getTime() - 1000 * 60 * 60 * 8
     const end = new Date(`${date[0]}-${date[1]}-${date[2]}T23:59:59.000Z`).getTime() - 1000 * 60 * 60 * 8

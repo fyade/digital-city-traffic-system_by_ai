@@ -49,4 +49,6 @@ export const CESIUM_DEFAULT = {
   HEIGHT_VEHICLE: 0.1,
   // 车辆轨迹颜色
   COLOR_VEHICLE_TRAJECTORY: Cesium.Color.GREEN,
+  // 车辆轨迹标识高度
+  HEIGHT_VEHICLE_TRAJECTORY_MARK: 0.1
 }
