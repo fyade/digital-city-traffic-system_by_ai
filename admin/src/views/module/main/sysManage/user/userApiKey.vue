@@ -11,6 +11,7 @@ import { userApiKeyApi } from "@/api/module/main/sysManage/userApiKey.ts";
 import { userApiKeyDict } from "@/dict/module/main/sysManage/userApiKey.ts";
 import { UserDto2 } from "@/type/module/main/sysManage/user.ts";
 import { userDict } from "@/dict/module/main/sysManage/user.ts";
+import { base } from "@dcts/common";
 
 const props = defineProps({
   user: {
@@ -28,7 +29,6 @@ const state = reactive<State2<UserApiKeyDto, UserApiKeyUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {},
 })
 const dFormRules: FormRules<UserApiKeyDto> = {
@@ -40,11 +40,11 @@ const config = new TablePageConfig<UserApiKeyDto>({
   bulkOperation: true,
   selectParam: {
     userId: props.user?.id,
-    userRole: 'admin',
+    userRole: base.LoginRoleEnum.admin,
   },
   insUpdParam: {
     userId: props.user?.id,
-    userRole: 'admin',
+    userRole: base.LoginRoleEnum.admin,
   },
   dialogFormLoadingFinishCallback: () => {
     state.dialogForm.apiKey = '#'
@@ -188,10 +188,12 @@ const copy = async (row: UserApiKeyDto) => {
       <el-form
           ref="dialogFormsRef"
           v-loading="dialogLoadingRef"
+          :model="state.dialogForms"
+          :rules="dFormRules"
       >
         <el-table
+            class="tp-table-operate-more-row"
             :data="state.dialogForms"
-            v-if="state.dialogForms"
         >
           <el-table-column type="index" width="50">
             <template #header>
@@ -204,9 +206,9 @@ const copy = async (row: UserApiKeyDto) => {
           <!--    <span :class="ifRequired('userId')?'tp-table-header-required':''">{{ userApiKeyDict.userId }}</span>-->
           <!--  </template>-->
           <!--  <template #default="{$index}">-->
-          <!--    <div :class="state.dialogForms_error?.[`${$index}-userId`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">-->
+          <!--    <el-form-item :prop="`${$index}.userId`" :rules="dFormRules.userId">-->
           <!--      <el-input v-model="state.dialogForms[$index].userId" :placeholder="userApiKeyDict.userId"/>-->
-          <!--    </div>-->
+          <!--    </el-form-item>-->
           <!--  </template>-->
           <!--</el-table-column>-->
           <!--<el-table-column prop="userRole" :label="userApiKeyDict.userRole" width="300">-->
@@ -214,9 +216,9 @@ const copy = async (row: UserApiKeyDto) => {
           <!--    <span :class="ifRequired('userRole')?'tp-table-header-required':''">{{ userApiKeyDict.userRole }}</span>-->
           <!--  </template>-->
           <!--  <template #default="{$index}">-->
-          <!--    <div :class="state.dialogForms_error?.[`${$index}-userRole`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">-->
+          <!--    <el-form-item :prop="`${$index}.userRole`" :rules="dFormRules.userRole">-->
           <!--      <el-input v-model="state.dialogForms[$index].userRole" :placeholder="userApiKeyDict.userRole"/>-->
-          <!--    </div>-->
+          <!--    </el-form-item>-->
           <!--  </template>-->
           <!--</el-table-column>-->
           <el-table-column prop="apiKey" :label="userApiKeyDict.apiKey" width="300">
@@ -226,9 +228,9 @@ const copy = async (row: UserApiKeyDto) => {
               </Tooltip>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-apiKey`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.apiKey`" :rules="dFormRules.apiKey">
                 <el-input v-model="state.dialogForms[$index].apiKey" :placeholder="userApiKeyDict.apiKey" disabled/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="remark" :label="userApiKeyDict.remark" width="300">
@@ -236,9 +238,9 @@ const copy = async (row: UserApiKeyDto) => {
               <span :class="ifRequired('remark')?'tp-table-header-required':''">{{ userApiKeyDict.remark }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-remark`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.remark`" :rules="dFormRules.remark">
                 <el-input type="textarea" v-model="state.dialogForms[$index].remark" :placeholder="userApiKeyDict.remark"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <!--在此上方添加表格列-->

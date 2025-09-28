@@ -27,7 +27,6 @@ import { base } from "@dcts/common";
 const state = reactive<State2<MenuDto, MenuUpdDto>>({
   dialogForm: new MenuDto(),
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {},
 })
 const dFormRules: FormRules<MenuDto> = reactive({})
@@ -87,18 +86,18 @@ const {
 })
 
 // 左
-const selectRT = ref('')
+const selectRT = ref<base.UTDPTypeEnum | ''>('')
 const allRoles = ref<RoleDto[]>([])
 const allDepts = ref<DeptDto[]>([])
 const allRoles2 = computed(() => allRoles.value)
 const allDepts2 = computed(() => arr2ToDiguiObj(allDepts.value))
 const selectRTChange = () => {
-  // if (selectRT.value === T_ROLE) {
+  // if (selectRT.value === base.UTDPTypeEnum.T_ROLE) {
   roleApi.selectAll({}).then(res => {
     allRoles.value = res
   })
   // }
-  // if (selectRT.value === T_DEPT) {
+  // if (selectRT.value === base.UTDPTypeEnum.T_DEPT) {
   deptApi.selectAll({}).then(res => {
     allDepts.value = res
   })

@@ -6,6 +6,10 @@
   }
 }
 
+.tp-table-operate-more-row .el-form-item {
+  //margin-bottom: 0;
+}
+
 .demo-form-inline .el-input {
   --el-input-width: 220px;
 }
@@ -16,29 +20,6 @@
 
 .el-table-append-box {
   //position: fixed;
-}
-
-.tp-table-cell-bg-red {
-  @extend .tp-table-cell-base;
-  animation: colorChange 1.2s infinite
-}
-
-.tp-table-cell {
-  @extend .tp-table-cell-base;
-}
-
-.tp-table-cell-base {
-  padding: 3px;
-  border-radius: 5px;
-}
-
-@keyframes colorChange {
-  0%, 100% {
-    background-color: red;
-  }
-  50% {
-    background-color: white;
-  }
 }
 
 .zs-filter-form {

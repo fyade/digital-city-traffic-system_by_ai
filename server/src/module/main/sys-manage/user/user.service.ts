@@ -28,7 +28,7 @@ import { NOT_ADMIN, PASSWORD_ERROR } from '../../sys-log/log-user-login/dto';
 import { UserVisitorDto } from '../../other-user/user-visitor/dto';
 import * as svgCaptcha from 'svg-captcha';
 import { Exception } from "../../../../exception/exception";
-import { cryptUtils, encryptUtils, idUtils, timeUtils } from '@dcts/common'
+import { base, cryptUtils, encryptUtils, idUtils, timeUtils } from '@dcts/common'
 import { serverConfig } from "@dcts/config";
 import { MysqlPrismaService } from '../../../../infra/prisma/mysql.prisma.service';
 import { MysqlPrismaoService } from "../../../../infra/prisma/mysql.prismao.service";
@@ -84,7 +84,7 @@ export class UserService {
             value: userIds,
           },
         },
-        login_role: 'admin',
+        login_role: base.LoginRoleEnum.admin,
       },
     });
     const allRoleIdsOfThoseUsers = allUserRolesOfThoseUsers.map(item => item.roleId);
@@ -104,7 +104,7 @@ export class UserService {
             value: userIds,
           },
         },
-        login_role: 'admin',
+        login_role: base.LoginRoleEnum.admin,
       },
     });
     const allUserDeptIdsOfThoseUsers = allUserDeptsOfThoseUsers.map(item => item.deptId);
@@ -124,7 +124,7 @@ export class UserService {
             value: userIds,
           },
         },
-        login_role: 'admin',
+        login_role: base.LoginRoleEnum.admin,
       },
     });
     const allUserUserGroupIdsOfThoseUsers = allUserUserGroupsOfThoseUsers.map(item => item.userGroupId);
@@ -162,13 +162,13 @@ export class UserService {
     const loginRole = this.bcs.getUserData().loginRole;
     const userId = this.bcs.getUserData().userId;
     const multiAuthUser = new MultiAuthUserDto();
-    if (loginRole === 'admin') {
+    if (loginRole === base.LoginRoleEnum.admin) {
       const user = await this.mysqlPrisma.findById<UserDto>('sys_user', userId);
       delete user.password;
       multiAuthUser.admin = user;
       return R.ok(multiAuthUser);
     }
-    if (loginRole === 'visitor') {
+    if (loginRole === base.LoginRoleEnum.visitor) {
       const user = await this.mysqlPrisma.findById<UserVisitorDto>('sys_user_visitor', userId);
       delete user.password;
       multiAuthUser.visitor = user;
@@ -201,11 +201,11 @@ export class UserService {
   async updUser(dto: MultiAuthUserDto): Promise<R> {
     const loginRole = this.bcs.getUserData().loginRole;
     const userId = this.bcs.getUserData().userId;
-    if (loginRole === 'admin') {
+    if (loginRole === base.LoginRoleEnum.admin) {
       await this.mysqlPrisma.updateById<UserDto>('sys_user', dto.admin);
       return R.ok(true);
     }
-    if (loginRole === 'visitor') {
+    if (loginRole === base.LoginRoleEnum.visitor) {
       await this.mysqlPrisma.updateById<UserVisitorDto>('sys_user_visitor', dto.visitor);
       return R.ok(true);
     }
@@ -215,7 +215,7 @@ export class UserService {
   async updPsd(dto: UpdPsdDto): Promise<R> {
     const loginRole = this.bcs.getUserData().loginRole;
     const userId = this.bcs.getUserData().userId;
-    if (loginRole === 'admin') {
+    if (loginRole === base.LoginRoleEnum.admin) {
       const user_ = await this.mysqlPrisma.findById<UserDto>('sys_user', userId);
       const ifUserYes = await encryptUtils.comparePassword(dto.oldp, user_.password);
       if (!ifUserYes) {
@@ -227,7 +227,7 @@ export class UserService {
       });
       return R.ok(true);
     }
-    if (loginRole === 'visitor') {
+    if (loginRole === base.LoginRoleEnum.visitor) {
       const user_ = await this.mysqlPrisma.findById<UserVisitorDto>('sys_user_visitor', userId);
       const ifUserYes = await encryptUtils.comparePassword(dto.oldp, user_.password);
       if (!ifUserYes) {
@@ -272,7 +272,7 @@ export class UserService {
         throw new Exception('当前不允许新用户注册。')
       }
     }
-    if (dto.loginRole === 'admin') {
+    if (dto.loginRole === base.LoginRoleEnum.admin) {
       const user = await this.mysqlPrisma.findFirst<UserDto>('sys_user', {
         username: dto.username,
       });
@@ -291,7 +291,7 @@ export class UserService {
       }, { ifCustomizeId: true });
       return R.ok('注册成功。');
     }
-    if (dto.loginRole === 'visitor') {
+    if (dto.loginRole === base.LoginRoleEnum.visitor) {
       const user = await this.mysqlPrisma.findFirst<UserVisitorDto>('sys_user_visitor', {
         username: dto.username,
       });
@@ -329,7 +329,7 @@ export class UserService {
     }
     await this.cacheTokenService.deletePasswordKey(dto.passwordKeyUuid);
     const multiAuthUser = new MultiAuthUserDto();
-    if (dto.loginRole === 'admin') {
+    if (dto.loginRole === base.LoginRoleEnum.admin) {
       const user = await this.mysqlPrisma.findFirst<UserDto>('sys_user', {
         username: dto.username,
       });
@@ -359,7 +359,7 @@ export class UserService {
         multiAuthUser: multiAuthUser,
       });
     }
-    if (dto.loginRole === 'visitor') {
+    if (dto.loginRole === base.LoginRoleEnum.visitor) {
       const user = await this.mysqlPrisma.findFirst<UserVisitorDto>('sys_user_visitor', {
         username: dto.username,
       });

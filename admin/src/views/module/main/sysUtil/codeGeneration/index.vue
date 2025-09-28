@@ -38,7 +38,6 @@ const state = reactive<State2<CodeGenTableDto, CodeGenTableUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     sysId: void 0,
     tableName: '',
@@ -420,10 +419,12 @@ const gUpd2 = () => {
       <el-form
           ref="dialogFormsRef"
           v-loading="dialogLoadingRef"
+          :model="state.dialogForms"
+          :rules="dFormRules"
       >
         <el-table
+            class="tp-table-operate-more-row"
             :data="state.dialogForms"
-            v-if="state.dialogForms"
         >
           <el-table-column type="index" width="50">
             <template #header>
@@ -436,13 +437,11 @@ const gUpd2 = () => {
               <span :class="ifRequired('sysId')?'tp-table-header-required':''">{{ codeGenTableDict.sysId }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-sysId`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-form-item :label="codeGenTableDict.sysId" prop="sysId">
-                  <el-select v-model="state.dialogForms[$index].sysId" :placeholder="codeGenTableDict.sysId" clearable filterable>
-                    <el-option v-for="item in allSyss" :key="item.id" :value="item.id" :label="item.name"/>
-                  </el-select>
-                </el-form-item>
-              </div>
+              <el-form-item :prop="`${$index}.sysId`" :rules="dFormRules.sysId">
+                <el-select v-model="state.dialogForms[$index].sysId" :placeholder="codeGenTableDict.sysId" clearable filterable>
+                  <el-option v-for="item in allSyss" :key="item.id" :value="item.id" :label="item.name"/>
+                </el-select>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column label="表选择方式" width="300">
@@ -460,7 +459,7 @@ const gUpd2 = () => {
               <span :class="ifRequired('tableName')?'tp-table-header-required':''">{{ codeGenTableDict.tableName }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-tableName`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.tableName`" :rules="dFormRules.tableName">
                 <template v-if="dialogFormTableNameTypes[$index]===A">
                   <el-select
                       v-model="state.dialogForms[$index].tableName"
@@ -480,7 +479,7 @@ const gUpd2 = () => {
                 <template v-else-if="dialogFormTableNameTypes[$index]===B">
                   <el-input v-model="state.dialogForms[$index].tableName" :placeholder="codeGenTableDict.tableName"/>
                 </template>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="tableDescr" :label="codeGenTableDict.tableDescr" width="300">
@@ -488,14 +487,14 @@ const gUpd2 = () => {
               <span :class="ifRequired('tableDescr')?'tp-table-header-required':''">{{ codeGenTableDict.tableDescr }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-tableDescr`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.tableDescr`" :rules="dFormRules.tableDescr">
                 <template v-if="dialogFormTableNameTypes[$index]===A">
                   <el-input disabled v-model="state.dialogForms[$index].tableDescr" :placeholder="codeGenTableDict.tableDescr"/>
                 </template>
                 <template v-else-if="dialogFormTableNameTypes[$index]===B">
                   <el-input v-model="state.dialogForms[$index].tableDescr" :placeholder="codeGenTableDict.tableDescr"/>
                 </template>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="entityName" :label="codeGenTableDict.entityName" width="300">
@@ -503,9 +502,9 @@ const gUpd2 = () => {
               <span :class="ifRequired('entityName')?'tp-table-header-required':''">{{ codeGenTableDict.entityName }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-entityName`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.entityName`" :rules="dFormRules.entityName">
                 <el-input v-model="state.dialogForms[$index].entityName" :placeholder="codeGenTableDict.entityName"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="orderNum" :label="codeGenTableDict.orderNum" width="200">
@@ -513,9 +512,9 @@ const gUpd2 = () => {
               <span :class="ifRequired('orderNum')?'tp-table-header-required':''">{{ codeGenTableDict.orderNum }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-orderNum`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.orderNum`" :rules="dFormRules.orderNum">
                 <el-input-number v-model="state.dialogForms[$index].orderNum" :placeholder="codeGenTableDict.orderNum" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="businessName" :label="codeGenTableDict.businessName" width="300">
@@ -527,9 +526,9 @@ const gUpd2 = () => {
               </Tooltip>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-businessName`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.businessName`" :rules="dFormRules.businessName">
                 <el-input v-model="state.dialogForms[$index].businessName" :placeholder="codeGenTableDict.businessName"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="moduleName" :label="codeGenTableDict.moduleName" width="300">
@@ -541,9 +540,9 @@ const gUpd2 = () => {
               </Tooltip>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-moduleName`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.moduleName`" :rules="dFormRules.moduleName">
                 <el-input v-model="state.dialogForms[$index].moduleName" :placeholder="codeGenTableDict.moduleName"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="businessNameCn" :label="codeGenTableDict.businessNameCn" width="300">
@@ -555,9 +554,9 @@ const gUpd2 = () => {
               </Tooltip>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-businessNameCn`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.businessNameCn`" :rules="dFormRules.businessNameCn">
                 <el-input v-model="state.dialogForms[$index].businessNameCn" :placeholder="codeGenTableDict.businessNameCn"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="moduleNameCn" :label="codeGenTableDict.moduleNameCn" width="300">
@@ -569,9 +568,9 @@ const gUpd2 = () => {
               </Tooltip>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-moduleNameCn`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.moduleNameCn`" :rules="dFormRules.moduleNameCn">
                 <el-input v-model="state.dialogForms[$index].moduleNameCn" :placeholder="codeGenTableDict.moduleNameCn"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="tableRemark" :label="codeGenTableDict.tableRemark" width="300">
@@ -579,9 +578,9 @@ const gUpd2 = () => {
               <span :class="ifRequired('tableRemark')?'tp-table-header-required':''">{{ codeGenTableDict.tableRemark }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-tableRemark`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.tableRemark`" :rules="dFormRules.tableRemark">
                 <el-input type="textarea" v-model="state.dialogForms[$index].tableRemark" :placeholder="codeGenTableDict.tableRemark"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <!--在此上方添加表格列-->

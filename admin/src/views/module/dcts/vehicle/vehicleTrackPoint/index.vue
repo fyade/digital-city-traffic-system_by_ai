@@ -25,7 +25,6 @@ const state = reactive<State2<VehicleTrackPointDto, VehicleTrackPointUpdDto>>({
     heading: 0,
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {},
 })
 const dFormRules: FormRules<VehicleTrackPointDto> = {
@@ -186,10 +185,12 @@ const fCan2 = () => {
       <el-form
           ref="dialogFormsRef"
           v-loading="dialogLoadingRef"
+          :model="state.dialogForms"
+          :rules="dFormRules"
       >
         <el-table
+            class="tp-table-operate-more-row"
             :data="state.dialogForms"
-            v-if="state.dialogForms"
         >
           <el-table-column type="index" width="50">
             <template #header>
@@ -202,9 +203,9 @@ const fCan2 = () => {
               <span :class="ifRequired('vehicleId')?'tp-table-header-required':''">{{ vehicleTrackPointDict.vehicleId }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-vehicleId`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.vehicleId`" :rules="dFormRules.vehicleId">
                 <el-input-number v-model="state.dialogForms[$index].vehicleId" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="point" :label="vehicleTrackPointDict.point" width="300">
@@ -212,9 +213,9 @@ const fCan2 = () => {
               <span :class="ifRequired('point')?'tp-table-header-required':''">{{ vehicleTrackPointDict.point }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-point`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.point`" :rules="dFormRules.point">
                 <el-input v-model="state.dialogForms[$index].point" :placeholder="vehicleTrackPointDict.point"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="heading" :label="vehicleTrackPointDict.heading" width="300">
@@ -222,9 +223,9 @@ const fCan2 = () => {
               <span :class="ifRequired('heading')?'tp-table-header-required':''">{{ vehicleTrackPointDict.heading }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-heading`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.heading`" :rules="dFormRules.heading">
                 <el-input-number v-model="state.dialogForms[$index].heading" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <!--在此上方添加表格列-->

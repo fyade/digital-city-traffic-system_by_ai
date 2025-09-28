@@ -107,7 +107,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
   ) => {
     if (ifImport || activeTabName && activeTabName.value === final.more) {
       config.beforeInsertCallback && config.beforeInsertCallback(dialogType.value)
-      api.insertMore((ifImport ? dataFromExcel : state.dialogForms!).map(item => ({...item, ...config.insUpdParam}))).then(res => {
+      api.insertMore((ifImport ? dataFromExcel : state.dialogForms).map(item => ({...item, ...config.insUpdParam}))).then(res => {
         if (objectUtils.ifValid(res)) {
           ElMessage.success(Operate.success)
           dialogVisible.value = false
@@ -138,7 +138,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
     tableLoadingRef.value = true
     if (activeTabName.value === final.more) {
       config.beforeUpdateCallback && config.beforeUpdateCallback(dialogType.value)
-      api.updateMore((state.dialogForms!).map(item => ({...item, ...config.insUpdParam}))).then(res => {
+      api.updateMore((state.dialogForms).map(item => ({...item, ...config.insUpdParam}))).then(res => {
         if (objectUtils.ifValid(res)) {
           ElMessage.success(Operate.success)
           dialogVisible.value = false
@@ -200,11 +200,6 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
       nextTick(() => {
         if (newVal) {
         } else {
-          if (state.dialogForms_error) {
-            Object.keys(state.dialogForms_error).forEach(key => {
-              delete state.dialogForms_error![key]
-            })
-          }
           dialogFormRef.value?.resetFields()
         }
         config.dialogVisibleCallback && config.dialogVisibleCallback(newVal)
@@ -225,33 +220,23 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
   // 弹窗确定
   const dCon = () => {
     dialogButtonLoadingRef.value = true
-    // 去掉dialog表单中string类型的数据的前后空格
-    Object.keys(state.dialogForm as object).forEach(ite => {
-      const item = ite as keyof typeof state.dialogForm
-      if (typeof state.dialogForm[item] === 'string') {
-        (state.dialogForm[item] as string) = (state.dialogForm[item] as string).trim()
-      }
-    })
     if (activeTabName && activeTabName.value === final.more && dialogFormsRef) {
-      Object.keys(state.dialogForms_error!).forEach(key => {
-        delete state.dialogForms_error![key]
-      })
-      const keys = Object.keys(initialStateDFormRules)
-      for (let i = 0; i < state.dialogForms!.length; i++) {
-        keys.forEach(key => {
-          const rule = (dFormRules[key] as FormItemRule[])[0]
-          if (['', void 0].includes(rule.required && (state.dialogForms![i] as any)[key])) {
-            state.dialogForms_error![`${i}-${key}`] = 'error'
+      dialogFormsRef.value?.validate((valid, fields) => {
+        if (valid) {
+          if (dialogType.value === final.ins) insData();
+          if (dialogType.value === final.upd) updData();
+        } else {
+          if (fields) {
+            const arr: string[] = [];
+            Object.keys(fields).forEach((rowKey) => {
+              const strings = rowKey.split(".");
+              arr.push(`第${Number(strings[0]) + 1}条数据的${dict[strings[1] as keyof typeof dict]}`);
+            });
+            ElMessage.warning(`${arr.join('、')}不能为空或格式错误。`);
           }
-        })
-      }
-      if (Object.keys(state.dialogForms_error!).length === 0) {
-        if (dialogType.value === final.ins) insData()
-        if (dialogType.value === final.upd) updData()
-      } else {
-        ElMessage.warning(`校验未通过，请完善表格中红框字段。`)
-        dialogButtonLoadingRef.value = false
-      }
+          dialogButtonLoadingRef.value = false;
+        }
+      });
     } else if (!activeTabName || activeTabName.value === final.one) {
       dialogFormRef.value?.validate((valid, fields) => {
         if (valid) {
@@ -259,9 +244,9 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
           if (dialogType.value === final.upd) updData()
         } else {
           if (fields) {
-            let arr: string[] = []
+            const arr: string[] = []
             Object.keys(fields).forEach(item => arr.push(dict[item as keyof typeof dict]))
-            ElMessage.warning(`${arr.join('、')}不能为空。`)
+            ElMessage.warning(`${arr.join('、')}不能为空或格式错误。`)
           }
           dialogButtonLoadingRef.value = false
         }
@@ -274,11 +259,6 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
   }
   // 筛选
   const fCon = () => {
-    Object.keys(state.filterForm).forEach(item => {
-      if (typeof state.filterForm[item as keyof typeof state.filterForm] === 'string') {
-        (state.filterForm[item as keyof typeof state.filterForm] as string) = (state.filterForm[item as keyof typeof state.filterForm] as string).trim()
-      }
-    })
     pageParam.pageNum = 1
     getData()
   }
@@ -289,6 +269,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
   }
   // 刷新
   const gRefresh = () => {
+    config.refreshCallback && config.refreshCallback()
     getData()
   }
   // 新增
@@ -415,7 +396,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
       activeTabName.value = final.more
       state.dialogForms = []
       values.forEach(value => {
-        state.dialogForms?.push(value)
+        state.dialogForms.push(value)
       })
     }
     reader.onerror = e => {
@@ -476,12 +457,12 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
         if (activeTabName) {
           activeTabName.value = final.more
         }
-        state.dialogForms!.splice(0, state.dialogForms!.length)
+        state.dialogForms.splice(0, state.dialogForms.length)
         if (api.selectByIds) {
           api.selectByIds(multipleSelection.value.map(item => item.id)).then(res => {
             res.forEach((obj, i) => {
-              state.dialogForms![i] = structuredClone(initialStateDialogForm)
-              objectUtils.copyObject(state.dialogForms![i], obj as unknown as T2)
+              state.dialogForms[i] = structuredClone(initialStateDialogForm)
+              objectUtils.copyObject(state.dialogForms[i], obj as unknown as T2)
             })
           }).catch((e) => {
             dialogVisible.value = false
@@ -492,7 +473,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
         } else {
           const datas: T2[] = []
           for (let i = 0; i < multipleSelection.value.length; i++) {
-            state.dialogForms![i] = structuredClone(initialStateDialogForm)
+            state.dialogForms[i] = structuredClone(initialStateDialogForm)
             try {
               const obj = await api.selectById(multipleSelection.value[i].id)
               datas.push(obj as unknown as T2)
@@ -502,7 +483,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
             }
           }
           datas.forEach((_, i) => {
-            objectUtils.copyObject(state.dialogForms![i], datas[i])
+            objectUtils.copyObject(state.dialogForms[i], datas[i])
           })
           dialogLoadingRef.value = false
           config.dialogFormLoadingFinishCallback && config.dialogFormLoadingFinishCallback(activeTabName.value)
@@ -548,18 +529,18 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
   }
 
   const refresh = () => {
-    getData()
+    gRefresh()
   }
 
   const dfIns = () => {
     config.activeTabMoreInsCallback && config.activeTabMoreInsCallback()
-    state.dialogForms!.push(structuredClone(initialStateDialogForm))
+    state.dialogForms.push(structuredClone(initialStateDialogForm))
     config.activeTabMoreInsFinishCallback && config.activeTabMoreInsFinishCallback()
   }
 
   const dfDel = (index: number) => {
     config.activeTabMoreDelCallback && config.activeTabMoreDelCallback(index)
-    state.dialogForms!.splice(index, 1)
+    state.dialogForms.splice(index, 1)
   }
 
   const filterFormVisible1 = computed(() => config.ifShowSelectForm || (objectUtils.ifHasKey(state, 'filterForm') && Object.keys(state.filterForm).length > 0))

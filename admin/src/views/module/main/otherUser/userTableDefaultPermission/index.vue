@@ -34,7 +34,6 @@ const state = reactive<State2<UserTableDefaultPermissionDto, UserTableDefaultPer
     permId: final.DEFAULT_PARENT_ID,
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     tableName: '',
   },
@@ -300,10 +299,12 @@ const chooseUserGroup = (row: UserGroupDto) => {
       <el-form
           ref="dialogFormsRef"
           v-loading="dialogLoadingRef"
+          :model="state.dialogForms"
+          :rules="dFormRules"
       >
         <el-table
+            class="tp-table-operate-more-row"
             :data="state.dialogForms"
-            v-if="state.dialogForms"
         >
           <el-table-column type="index" width="50">
             <template #header>
@@ -316,9 +317,9 @@ const chooseUserGroup = (row: UserGroupDto) => {
               <span :class="ifRequired('tableName')?'tp-table-header-required':''">{{ userTableDefaultPermissionDict.tableName }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-tableName`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.tableName`" :rules="dFormRules.tableName">
                 <el-input v-model="state.dialogForms[$index].tableName" :placeholder="userTableDefaultPermissionDict.tableName"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="permType" :label="userTableDefaultPermissionDict.permType" width="300">
@@ -326,14 +327,14 @@ const chooseUserGroup = (row: UserGroupDto) => {
               <span :class="ifRequired('permType')?'tp-table-header-required':''">{{ userTableDefaultPermissionDict.permType }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-permType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.permType`" :rules="dFormRules.permType">
                 <!--<el-input v-model="state.dialogForms[$index].permType" :placeholder="userTableDefaultPermissionDict.permType"/>-->
                 <el-radio-group v-model="state.dialogForms[$index].permType">
                   <el-radio :value="base.UTDPTypeEnum.T_ROLE">{{ base.uTDPTypeDict[base.UTDPTypeEnum.T_ROLE] }}</el-radio>
                   <el-radio :value="base.UTDPTypeEnum.T_DEPT">{{ base.uTDPTypeDict[base.UTDPTypeEnum.T_DEPT] }}</el-radio>
                   <el-radio :value="base.UTDPTypeEnum.T_UG">{{ base.uTDPTypeDict[base.UTDPTypeEnum.T_UG] }}</el-radio>
                 </el-radio-group>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="permId" :label="userTableDefaultPermissionDict.permId" width="300">
@@ -341,9 +342,9 @@ const chooseUserGroup = (row: UserGroupDto) => {
               <span :class="ifRequired('permId')?'tp-table-header-required':''">{{ userTableDefaultPermissionDict.permId }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-permId`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.permId`" :rules="dFormRules.permId">
                 <el-input-number v-model="state.dialogForms[$index].permId" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <!--在此上方添加表格列-->

@@ -14,6 +14,7 @@ async function bootstrap() {
     req['TIMEZONE'] = 'Asia/Shanghai'; // 设置全局时区
     next();
   });
+  const publicCurrentConfig = publicConfig.currentConfig();
   const node_env = serverConfig.currentConfig();
   if (node_env.ifShowSwagger) {
     const swaggerOptions = new DocumentBuilder()
@@ -23,7 +24,7 @@ async function bootstrap() {
       .setVersion(serverConfig.currentVersion)
       .build();
     const swaggerDocuemnt = SwaggerModule.createDocument(app, swaggerOptions);
-    SwaggerModule.setup('/doc-swagger', app, swaggerDocuemnt);
+    SwaggerModule.setup(publicCurrentConfig.docSwaggerPath, app, swaggerDocuemnt);
   }
   await app.listen(node_env.port);
   if (module.hot) {

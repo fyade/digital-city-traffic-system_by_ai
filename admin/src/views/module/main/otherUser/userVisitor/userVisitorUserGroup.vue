@@ -29,7 +29,6 @@ const state = reactive<State2<UserGroupDto, UserGroupUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {},
 })
 const dFormRules: FormRules<UserGroupDto> = {

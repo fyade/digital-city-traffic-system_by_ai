@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { FileUploadModule } from './common/file-upload/file-upload.module';
-import { SmsModule } from './common/sms/sms.module';
 import { UserModule } from './sys-manage/user/user.module';
 import { MenuModule } from './sys-manage/menu/menu.module';
 import { RoleModule } from './sys-manage/role/role.module';
@@ -35,7 +34,6 @@ import { LogOperationWsModule } from './sys-log/log-operation-ws/log-operation-w
 @Module({
   imports: [
     FileUploadModule,
-    SmsModule,
     UserModule,
     MenuModule,
     RoleModule,

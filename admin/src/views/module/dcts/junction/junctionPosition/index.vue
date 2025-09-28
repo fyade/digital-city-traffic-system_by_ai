@@ -25,7 +25,6 @@ const state = reactive<State2<JunctionPositionDto, JunctionPositionUpdDto>>({
     junctionType: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     name: '',
     junctionType: '',
@@ -157,10 +156,12 @@ const {
       <el-form
           ref="dialogFormsRef"
           v-loading="dialogLoadingRef"
+          :model="state.dialogForms"
+          :rules="dFormRules"
       >
         <el-table
+            class="tp-table-operate-more-row"
             :data="state.dialogForms"
-            v-if="state.dialogForms"
         >
           <el-table-column type="index" width="50">
             <template #header>
@@ -173,9 +174,9 @@ const {
               <span :class="ifRequired('geom')?'tp-table-header-required':''">{{ junctionPositionDict.geom }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-geom`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.geom`" :rules="dFormRules.geom">
                 <el-input v-model="state.dialogForms[$index].geom" :placeholder="junctionPositionDict.geom"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="name" :label="junctionPositionDict.name" width="300">
@@ -183,9 +184,9 @@ const {
               <span :class="ifRequired('name')?'tp-table-header-required':''">{{ junctionPositionDict.name }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-name`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.name`" :rules="dFormRules.name">
                 <el-input v-model="state.dialogForms[$index].name" :placeholder="junctionPositionDict.name"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="junctionType" :label="junctionPositionDict.junctionType" width="300">
@@ -193,9 +194,9 @@ const {
               <span :class="ifRequired('junctionType')?'tp-table-header-required':''">{{ junctionPositionDict.junctionType }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-junctionType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.junctionType`" :rules="dFormRules.junctionType">
                 <el-input v-model="state.dialogForms[$index].junctionType" :placeholder="junctionPositionDict.junctionType"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <!--在此上方添加表格列-->

@@ -23,7 +23,6 @@ const state = reactive<State2<SignalLightChildStrategyScheduleMappingDto, Signal
     strategyScheduleId: -1,
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {},
 })
 const dFormRules: FormRules<SignalLightChildStrategyScheduleMappingDto> = {
@@ -144,10 +143,12 @@ const {
       <el-form
           ref="dialogFormsRef"
           v-loading="dialogLoadingRef"
+          :model="state.dialogForms"
+          :rules="dFormRules"
       >
         <el-table
+            class="tp-table-operate-more-row"
             :data="state.dialogForms"
-            v-if="state.dialogForms"
         >
           <el-table-column type="index" width="50">
             <template #header>
@@ -160,9 +161,9 @@ const {
               <span :class="ifRequired('childLightId')?'tp-table-header-required':''">{{ signalLightChildStrategyScheduleMappingDict.childLightId }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-childLightId`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.childLightId`" :rules="dFormRules.childLightId">
                 <el-input-number v-model="state.dialogForms[$index].childLightId" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="strategyScheduleId" :label="signalLightChildStrategyScheduleMappingDict.strategyScheduleId" width="300">
@@ -170,9 +171,9 @@ const {
               <span :class="ifRequired('strategyScheduleId')?'tp-table-header-required':''">{{ signalLightChildStrategyScheduleMappingDict.strategyScheduleId }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-strategyScheduleId`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.strategyScheduleId`" :rules="dFormRules.strategyScheduleId">
                 <el-input-number v-model="state.dialogForms[$index].strategyScheduleId" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <!--在此上方添加表格列-->

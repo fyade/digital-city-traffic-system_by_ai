@@ -6,6 +6,7 @@ import { final } from '../../util/base';
 import { WinstonService } from '../winston/winston.service';
 import { MysqlPrismaoService } from "../prisma/mysql.prismao.service";
 import { PrismaoService } from "../prisma/prismao.service";
+import { base } from '@dcts/common';
 
 @Injectable()
 export class ScheduleService implements OnModuleInit {
@@ -47,14 +48,14 @@ export class ScheduleService implements OnModuleInit {
     const cronJob = new CronJob(cronExpression, async () => {
       let ifSuccess = true;
       try {
-        ifSuccess = await obj();
+        await obj();
       } catch (e) {
         this.winston.error(e);
         ifSuccess = false;
       }
       await this.queueo.addLogScheduledTaskQueue('ins', {
         taskTarget: name,
-        operateType: 'by:self',
+        operateType: base.LSTOTTypeEnum.T_BYSELF,
         ifSuccess: ifSuccess ? final.Y : final.N,
         remark: '',
         createTime: new Date(),
@@ -80,14 +81,13 @@ export class ScheduleService implements OnModuleInit {
         let ifSuccess = true;
         try {
           await obj();
-          ifSuccess = true;
         } catch (e) {
           this.winston.error(e);
           ifSuccess = false;
         }
         await this.queueo.addLogScheduledTaskQueue('ins', {
           taskTarget: name,
-          operateType: 'user:trigger',
+          operateType: base.LSTOTTypeEnum.T_USERTRIGGER,
           ifSuccess: ifSuccess ? final.Y : final.N,
           remark: '',
           createTime: new Date(),

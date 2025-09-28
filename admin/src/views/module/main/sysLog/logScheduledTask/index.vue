@@ -15,7 +15,7 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { LogScheduledTaskDto, LogScheduledTaskUpdDto } from "@/type/module/main/sysLog/logScheduledTask.ts";
 import { logScheduledTaskApi } from "@/api/module/main/sysLog/logScheduledTask.ts";
 import { logScheduledTaskDict } from "@/dict/module/main/sysLog/logScheduledTask.ts";
-import { timeUtils } from "@dcts/common";
+import { base, timeUtils } from "@dcts/common";
 
 const state = reactive<State2<LogScheduledTaskDto, LogScheduledTaskUpdDto>>({
   dialogForm: {
@@ -26,7 +26,6 @@ const state = reactive<State2<LogScheduledTaskDto, LogScheduledTaskUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     taskTarget: '',
     operateType: '',
@@ -132,137 +131,6 @@ const fCan2 = () => {
       <el-tab-pane :disabled="dialogType.value===final.upd" label="操作单个" :name="final.one"></el-tab-pane>
       <el-tab-pane :disabled="dialogType.value===final.upd" label="操作多个" :name="final.more"></el-tab-pane>
     </el-tabs>
-    <template v-if="activeTabName===final.one">
-      <el-form
-          ref="dialogFormRef"
-          v-loading="dialogLoadingRef"
-          :model="state.dialogForm"
-          :label-width="CONFIG.dialog_form_label_width"
-          :rules="dFormRules"
-      >
-        <!--<el-row>-->
-        <!--  <el-col :span="12"></el-col>-->
-        <!--  <el-col :span="12"></el-col>-->
-        <!--</el-row>-->
-        <el-form-item v-if="dialogType.value!==final.ins" :label="logScheduledTaskDict.id" prop="id">
-          <span>{{ state.dialogForm.id }}</span>
-        </el-form-item>
-        <!--在此下方添加表单项-->
-        <el-row>
-          <el-col :span="12">
-            <el-form-item :label="logScheduledTaskDict.taskTarget" prop="taskTarget">
-              <el-input v-model="state.dialogForm.taskTarget" :placeholder="logScheduledTaskDict.taskTarget"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item :label="logScheduledTaskDict.operateType" prop="operateType">
-              <el-input v-model="state.dialogForm.operateType" :placeholder="logScheduledTaskDict.operateType"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item :label="logScheduledTaskDict.ifSuccess" prop="ifSuccess">
-              <el-radio-group v-model="state.dialogForm.ifSuccess">
-                <el-radio :value="final.Y">是</el-radio>
-                <el-radio :value="final.N">否</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item :label="logScheduledTaskDict.remark" prop="remark">
-              <el-input type="textarea" v-model="state.dialogForm.remark" :placeholder="logScheduledTaskDict.remark"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <!--在此上方添加表单项-->
-        <!--<el-form-item :label="logScheduledTaskDict.orderNum" prop='orderNum'>-->
-        <!--  <el-input-number v-model="state.dialogForm.orderNum" controls-position="right"/>-->
-        <!--</el-form-item>-->
-        <!--<el-form-item :label="logScheduledTaskDict.ifDefault" prop='ifDefault'>-->
-        <!--  <el-switch v-model="state.dialogForm.ifDefault" :active-value='final.Y' :inactive-value='final.N'/>-->
-        <!--</el-form-item>-->
-        <!--<el-form-item :label="logScheduledTaskDict.ifDisabled" prop='ifDisabled'>-->
-        <!--  <el-radio-group v-model="state.dialogForm.ifDisabled">-->
-        <!--    <el-radio :value="final.Y">是</el-radio>-->
-        <!--    <el-radio :value="final.N">否</el-radio>-->
-        <!--  </el-radio-group>-->
-        <!--</el-form-item>-->
-        <!--<el-form-item :label="logScheduledTaskDict.ifDisabled" prop="ifDisabled">-->
-        <!--  <el-switch v-model="state.dialogForm.ifDisabled" :active-value="final.N" :inactive-value="final.Y"/>-->
-        <!--</el-form-item>-->
-        <!--上方几个酌情使用-->
-      </el-form>
-    </template>
-    <template v-if="activeTabName===final.more">
-      <el-form
-          ref="dialogFormsRef"
-          v-loading="dialogLoadingRef"
-      >
-        <el-table
-            :data="state.dialogForms"
-            v-if="state.dialogForms"
-        >
-          <el-table-column type="index" width="50">
-            <template #header>
-              #
-            </template>
-          </el-table-column>
-          <!--在此下方添加表格列-->
-          <el-table-column prop="taskTarget" :label="logScheduledTaskDict.taskTarget" width="300">
-            <template #header>
-              <span :class="ifRequired('taskTarget')?'tp-table-header-required':''">{{ logScheduledTaskDict.taskTarget }}</span>
-            </template>
-            <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-taskTarget`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].taskTarget" :placeholder="logScheduledTaskDict.taskTarget"/>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="operateType" :label="logScheduledTaskDict.operateType" width="300">
-            <template #header>
-              <span :class="ifRequired('operateType')?'tp-table-header-required':''">{{ logScheduledTaskDict.operateType }}</span>
-            </template>
-            <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-operateType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].operateType" :placeholder="logScheduledTaskDict.operateType"/>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="ifSuccess" :label="logScheduledTaskDict.ifSuccess" width="70">
-            <template #header>
-              <span :class="ifRequired('ifSuccess')?'tp-table-header-required':''">{{ logScheduledTaskDict.ifSuccess }}</span>
-            </template>
-            <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-ifSuccess`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-checkbox v-model="state.dialogForms[$index].ifSuccess" :true-value="final.Y" :false-value="final.N"/>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="remark" :label="logScheduledTaskDict.remark" width="300">
-            <template #header>
-              <span :class="ifRequired('remark')?'tp-table-header-required':''">{{ logScheduledTaskDict.remark }}</span>
-            </template>
-            <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-remark`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input type="textarea" v-model="state.dialogForms[$index].remark" :placeholder="logScheduledTaskDict.remark"/>
-              </div>
-            </template>
-          </el-table-column>
-          <!--在此上方添加表格列-->
-          <el-table-column fixed="right" label="操作" min-width="120">
-            <template v-if="dialogType.value===final.ins" #default="{$index}">
-              <el-button link type="danger" size="small" :icon="Delete" @click="dfDel($index)">删除</el-button>
-            </template>
-          </el-table-column>
-          <template v-if="dialogType.value===final.ins" #append>
-            <el-button text type="primary" plain :icon="Plus" @click="dfIns">新增</el-button>
-          </template>
-        </el-table>
-      </el-form>
-    </template>
     <template #footer>
       <span class="dialog-footer">
         <el-button :disabled="dialogButtonLoadingRef" @click="dCan">取消</el-button>
@@ -285,10 +153,19 @@ const fCan2 = () => {
         <el-input v-model="state.filterForm.taskTarget" :placeholder="logScheduledTaskDict.taskTarget"/>
       </el-form-item>
       <el-form-item :label="logScheduledTaskDict.operateType" prop="operateType">
-        <el-input v-model="state.filterForm.operateType" :placeholder="logScheduledTaskDict.operateType"/>
+        <!--<el-input v-model="state.filterForm.operateType" :placeholder="logScheduledTaskDict.operateType"/>-->
+        <el-select v-model="state.filterForm.operateType" :placeholder="logScheduledTaskDict.operateType" clearable filterable>
+          <el-option :label="base.LSTOTTypeDict[base.LSTOTTypeEnum.T_BYSELF]" :value="base.LSTOTTypeEnum.T_BYSELF"/>
+          <el-option :label="base.LSTOTTypeDict[base.LSTOTTypeEnum.T_USERTRIGGER]" :value="base.LSTOTTypeEnum.T_USERTRIGGER"/>
+        </el-select>
       </el-form-item>
       <el-form-item :label="logScheduledTaskDict.ifSuccess" prop="ifSuccess">
-        <el-input v-model="state.filterForm.ifSuccess" :placeholder="logScheduledTaskDict.ifSuccess"/>
+        <!--<el-input v-model="state.filterForm.ifSuccess" :placeholder="logScheduledTaskDict.ifSuccess"/>-->
+        <el-select v-model="state.filterForm.ifSuccess" :placeholder="logScheduledTaskDict.ifSuccess" clearable filterable>
+          <el-option label="是" :value="final.Y"/>
+          <el-option label="否" :value="final.N"/>
+          <el-option label="不确定" :value="final.O"/>
+        </el-select>
       </el-form-item>
       <el-form-item :label="logScheduledTaskDict.createTime" prop="createTime">
         <el-date-picker
@@ -340,8 +217,8 @@ const fCan2 = () => {
       <el-table-column prop="taskTarget" :label="logScheduledTaskDict.taskTarget" width="300"/>
       <el-table-column prop="operateType" :label="logScheduledTaskDict.operateType" width="180">
         <template #default="{row}">
-          <el-tag v-if="row.operateType === 'by:self'" type="success">系统自动触发</el-tag>
-          <el-tag v-else-if="row.operateType === 'user:trigger'" type="primary">用户手动触发</el-tag>
+          <el-tag v-if="row.operateType === base.LSTOTTypeEnum.T_BYSELF" type="success">{{ base.LSTOTTypeDict[base.LSTOTTypeEnum.T_BYSELF] }}</el-tag>
+          <el-tag v-else-if="row.operateType === base.LSTOTTypeEnum.T_USERTRIGGER" type="primary">{{ base.LSTOTTypeDict[base.LSTOTTypeEnum.T_USERTRIGGER] }}</el-tag>
           <el-tag v-else type="info">{{ row.operateType }}</el-tag>
         </template>
       </el-table-column>

@@ -30,7 +30,6 @@ const state = reactive<State2<MenuThrottleDto, MenuThrottleUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {},
 })
 const dFormRules: FormRules<MenuThrottleDto> = {
@@ -173,10 +172,12 @@ const {
       <el-form
           ref="dialogFormsRef"
           v-loading="dialogLoadingRef"
+          :model="state.dialogForms"
+          :rules="dFormRules"
       >
         <el-table
+            class="tp-table-operate-more-row"
             :data="state.dialogForms"
-            v-if="state.dialogForms"
         >
           <el-table-column type="index" width="50">
             <template #header>
@@ -189,9 +190,9 @@ const {
               <span :class="ifRequired('ttl')?'tp-table-header-required':''">{{ menuThrottleDict.ttl }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-ttl`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.ttl`" :rules="dFormRules.ttl">
                 <el-input-number v-model="state.dialogForms[$index].ttl" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="limit" :label="menuThrottleDict.limit" width="300">
@@ -199,9 +200,9 @@ const {
               <span :class="ifRequired('limit')?'tp-table-header-required':''">{{ menuThrottleDict.limit }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-limit`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.limit`" :rules="dFormRules.limit">
                 <el-input-number v-model="state.dialogForms[$index].limit" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="type" :label="menuThrottleDict.type" width="300">
@@ -209,12 +210,12 @@ const {
               <span :class="ifRequired('type')?'tp-table-header-required':''">{{ menuThrottleDict.type }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-type`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.type`" :rules="dFormRules.type">
                 <!--<el-input v-model="state.dialogForms[$index].type" :placeholder="menuThrottleDict.type"/>-->
                 <el-radio-group v-model="state.dialogForms[$index].type">
                   <el-radio :value="base.MTTypeEnum.T_IP">{{ base.mTTypeDict[base.MTTypeEnum.T_IP] }}</el-radio>
                 </el-radio-group>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="remark" :label="menuThrottleDict.remark" width="300">
@@ -222,9 +223,9 @@ const {
               <span :class="ifRequired('remark')?'tp-table-header-required':''">{{ menuThrottleDict.remark }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-remark`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.remark`" :rules="dFormRules.remark">
                 <el-input type="textarea" v-model="state.dialogForms[$index].remark" :placeholder="menuThrottleDict.remark"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <!--在此上方添加表格列-->

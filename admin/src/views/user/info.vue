@@ -4,6 +4,7 @@ import { reactive } from 'vue';
 import { ElMessage } from "element-plus";
 import { useUserStore } from "@/store/module/user.ts";
 import { MultiAuthUserDto } from "@/type/module/main/sysManage/user.ts";
+import { base } from "@dcts/common";
 
 const userStore = useUserStore();
 
@@ -14,12 +15,12 @@ const state = reactive({
 })
 const getUserInfo = () => {
   getSelfInfo().then(res => {
-    if (userStore.loginRole === 'admin') {
+    if (userStore.loginRole === base.LoginRoleEnum.admin) {
       state.id = res.admin!.id
       state.nickname = res.admin!.nickname
       state.username = res.admin!.username
     }
-    if (userStore.loginRole === 'visitor') {
+    if (userStore.loginRole === base.LoginRoleEnum.visitor) {
       state.id = res.visitor!.id
       state.nickname = res.visitor!.nickname
       state.username = res.visitor!.username
@@ -30,14 +31,14 @@ getUserInfo()
 
 const onSubmit = () => {
   const multiAuthUser: { [P in keyof MultiAuthUserDto]: Partial<MultiAuthUserDto[P]> } = new MultiAuthUserDto();
-  if (userStore.loginRole === "admin") {
+  if (userStore.loginRole === base.LoginRoleEnum.admin) {
     multiAuthUser.admin = {
       id: userStore.userinfo.admin!.id,
       nickname: state.nickname,
       username: state.username,
     }
   }
-  if (userStore.loginRole === "visitor") {
+  if (userStore.loginRole === base.LoginRoleEnum.visitor) {
     multiAuthUser.visitor = {
       id: userStore.userinfo.visitor!.id,
       nickname: state.nickname,

@@ -1,29 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { splitStrByLine } from './RegularUtils';
-
-/**
- * 获取某文件夹下的所有文件（包括子文件夹）
- * @param directoryPath
- */
-export async function getAllFiles(directoryPath: string) {
-  const ret: string[] = [];
-  await _(directoryPath);
-  return ret;
-
-  async function _(directoryPath: string) {
-    const files: string[] = fs.readdirSync(directoryPath);
-    if (files.length > 0) {
-      for (const path of files) {
-        if (path.includes('.')) {
-          ret.push(`${directoryPath}/${path}`);
-        } else {
-          await _(`${directoryPath}/${path}`);
-        }
-      }
-    }
-  }
-}
+import { regularUtils } from '@dcts/common';
 
 const dirIfExist = new Map<string, boolean>();
 
@@ -49,7 +26,7 @@ export function saveFile(directoryPath: string, fileName: string, fileBuffer,
   }
   let uploadPath = directoryPath;
   if (a) {
-    const strings = splitStrByLine(a);
+    const strings = regularUtils.splitStrByLine(a);
     for (const string of strings) {
       uploadPath += `/${string}/`;
       if (!dirIfExist.get(uploadPath)) {

@@ -38,7 +38,6 @@ const state = reactive<State2<SignalLightStrategyScheduleDto, SignalLightStrateg
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     name: '',
     description: '',
@@ -103,7 +102,6 @@ const {
 const stateSlstscm = reactive<State2<SignalLightStrategyTypeStrategyScheduleMappingDto, SignalLightStrategyTypeStrategyScheduleMappingUpdDto>>({
   dialogForm: new SignalLightStrategyTypeStrategyScheduleMappingUpdDto(),
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {},
 })
 const configSlstscm = new TablePageConfig<SignalLightStrategyTypeStrategyScheduleMappingDto>({

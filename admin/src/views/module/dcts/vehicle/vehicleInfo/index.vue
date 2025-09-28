@@ -29,7 +29,6 @@ const state = reactive<State2<VehicleInfoDto, VehicleInfoUpdDto>>({
     color: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     plateNumber: '',
     vehicleType: '',
@@ -194,10 +193,12 @@ watchEffect(() => {
       <el-form
           ref="dialogFormsRef"
           v-loading="dialogLoadingRef"
+          :model="state.dialogForms"
+          :rules="dFormRules"
       >
         <el-table
+            class="tp-table-operate-more-row"
             :data="state.dialogForms"
-            v-if="state.dialogForms"
         >
           <el-table-column type="index" width="50">
             <template #header>
@@ -210,9 +211,9 @@ watchEffect(() => {
               <span :class="ifRequired('plateNumber')?'tp-table-header-required':''">{{ vehicleInfoDict.plateNumber }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-plateNumber`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.plateNumber`" :rules="dFormRules.plateNumber">
                 <el-input v-model="state.dialogForms[$index].plateNumber" :placeholder="vehicleInfoDict.plateNumber"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="vehicleType" :label="vehicleInfoDict.vehicleType" width="300">
@@ -220,12 +221,12 @@ watchEffect(() => {
               <span :class="ifRequired('vehicleType')?'tp-table-header-required':''">{{ vehicleInfoDict.vehicleType }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-vehicleType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.vehicleType`" :rules="dFormRules.vehicleType">
                 <!--<el-input v-model="state.dialogForms[$index].vehicleType" :placeholder="vehicleInfoDict.vehicleType"/>-->
                 <el-select v-model="state.dialogForms[$index].vehicleType" :placeholder="vehicleInfoDict.vehicleType" clearable filterable>
                   <el-option v-for="item in vehicleTypeDict" :key="item.id" :label="item.label" :value="item.value"/>
                 </el-select>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="brand" :label="vehicleInfoDict.brand" width="300">
@@ -233,12 +234,12 @@ watchEffect(() => {
               <span :class="ifRequired('brand')?'tp-table-header-required':''">{{ vehicleInfoDict.brand }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-brand`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.brand`" :rules="dFormRules.brand">
                 <!--<el-input v-model="state.dialogForms[$index].brand" :placeholder="vehicleInfoDict.brand"/>-->
                 <el-select v-model="state.dialogForms[$index].brand" :placeholder="vehicleInfoDict.brand" clearable filterable>
                   <el-option v-for="item in boardDict" :key="item.id" :label="item.label" :value="item.value"/>
                 </el-select>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="color" :label="vehicleInfoDict.color" width="300">
@@ -246,9 +247,9 @@ watchEffect(() => {
               <span :class="ifRequired('color')?'tp-table-header-required':''">{{ vehicleInfoDict.color }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-color`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.color`" :rules="dFormRules.color">
                 <el-input v-model="state.dialogForms[$index].color" :placeholder="vehicleInfoDict.color"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <!--在此上方添加表格列-->

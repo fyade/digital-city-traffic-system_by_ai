@@ -27,7 +27,6 @@ const state = reactive<State2<DicTypeDto, DicTypeUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     name: '',
     type: '',
@@ -184,10 +183,12 @@ const setDicData = (row: DicTypeDto) => {
       <el-form
           ref="dialogFormsRef"
           v-loading="dialogLoadingRef"
+          :model="state.dialogForms"
+          :rules="dFormRules"
       >
         <el-table
+            class="tp-table-operate-more-row"
             :data="state.dialogForms"
-            v-if="state.dialogForms"
         >
           <el-table-column type="index" width="50">
             <template #header>
@@ -200,9 +201,9 @@ const setDicData = (row: DicTypeDto) => {
               <span :class="ifRequired('name')?'tp-table-header-required':''">{{ dicTypeDict.name }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-name`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.name`" :rules="dFormRules.name">
                 <el-input v-model="state.dialogForms[$index].name" :placeholder="dicTypeDict.name"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="type" :label="dicTypeDict.type" width="300">
@@ -210,9 +211,9 @@ const setDicData = (row: DicTypeDto) => {
               <span :class="ifRequired('type')?'tp-table-header-required':''">{{ dicTypeDict.type }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-type`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.type`" :rules="dFormRules.type">
                 <el-input v-model="state.dialogForms[$index].type" :placeholder="dicTypeDict.type"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="ifDisabled" :label="dicTypeDict.ifDisabled" width="70">
@@ -220,9 +221,9 @@ const setDicData = (row: DicTypeDto) => {
               <span :class="ifRequired('ifDisabled')?'tp-table-header-required':''">{{ dicTypeDict.ifDisabled }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-ifDisabled`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.ifDisabled`" :rules="dFormRules.ifDisabled">
                 <el-checkbox v-model="state.dialogForms[$index].ifDisabled" :true-value="final.Y" :false-value="final.N"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="orderNum" :label="dicTypeDict.orderNum" width="200">
@@ -230,9 +231,9 @@ const setDicData = (row: DicTypeDto) => {
               <span :class="ifRequired('orderNum')?'tp-table-header-required':''">{{ dicTypeDict.orderNum }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-orderNum`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.orderNum`" :rules="dFormRules.orderNum">
                 <el-input-number v-model="state.dialogForms[$index].orderNum" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="remark" :label="dicTypeDict.remark" width="300">
@@ -240,9 +241,9 @@ const setDicData = (row: DicTypeDto) => {
               <span :class="ifRequired('remark')?'tp-table-header-required':''">{{ dicTypeDict.remark }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-remark`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.remark`" :rules="dFormRules.remark">
                 <el-input type="textarea" v-model="state.dialogForms[$index].remark" :placeholder="dicTypeDict.remark"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <!--在此上方添加表格列-->

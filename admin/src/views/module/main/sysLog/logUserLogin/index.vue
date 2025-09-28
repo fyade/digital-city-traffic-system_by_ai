@@ -15,7 +15,7 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { LogUserLoginDto, LogUserLoginUpdDto } from "@/type/module/main/sysLog/logUserLogin.ts";
 import { logUserLoginApi } from "@/api/module/main/sysLog/logUserLogin.ts";
 import { logUserLoginDict } from "@/dict/module/main/sysLog/logUserLogin.ts";
-import { timeUtils } from "@dcts/common";
+import { base, timeUtils } from "@dcts/common";
 
 const state = reactive<State2<LogUserLoginDto, LogUserLoginUpdDto>>({
   dialogForm: {
@@ -31,7 +31,6 @@ const state = reactive<State2<LogUserLoginDto, LogUserLoginUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     userId: '',
     loginRole: '',
@@ -167,7 +166,11 @@ const fCan2 = () => {
         <el-input v-model="state.filterForm.userId" :placeholder="logUserLoginDict.userId"/>
       </el-form-item>
       <el-form-item :label="logUserLoginDict.loginRole" prop="loginRole">
-        <el-input v-model="state.filterForm.loginRole" :placeholder="logUserLoginDict.loginRole"/>
+        <!--<el-input v-model="state.filterForm.loginRole" :placeholder="logUserLoginDict.loginRole"/>-->
+        <el-select v-model="state.filterForm.loginRole" :placeholder="logUserLoginDict.loginRole" clearable filterable>
+          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.admin]" :value="base.LoginRoleEnum.admin"/>
+          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.visitor]" :value="base.LoginRoleEnum.visitor"/>
+        </el-select>
       </el-form-item>
       <el-form-item :label="logUserLoginDict.loginIp" prop="loginIp">
         <el-input v-model="state.filterForm.loginIp" :placeholder="logUserLoginDict.loginIp"/>
@@ -232,7 +235,11 @@ const fCan2 = () => {
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
       <el-table-column prop="userId" :label="logUserLoginDict.userId" width="120"/>
-      <el-table-column prop="loginRole" :label="logUserLoginDict.loginRole" width="120"/>
+      <el-table-column prop="loginRole" :label="logUserLoginDict.loginRole" width="120">
+        <template #default="{row}">
+          {{ base.LoginRoleDict[row.loginRole as base.LoginRoleEnum] }}
+        </template>
+      </el-table-column>
       <el-table-column prop="loginIp" :label="logUserLoginDict.loginIp" width="200"/>
       <el-table-column prop="loginPosition" :label="logUserLoginDict.loginPosition" width="120"/>
       <el-table-column prop="loginBrowser" :label="logUserLoginDict.loginBrowser" width="200"/>

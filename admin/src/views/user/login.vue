@@ -2,16 +2,16 @@
 import { reactive, ref } from 'vue'
 import { useUserStore } from "@/store/module/user.ts";
 import { useSysStore } from "@/store/module/sys.ts";
-import { allLoginRoles } from "@/utils/base.ts";
 import { getVerificationCode } from "@/api/module/main/sysManage/userLogin.ts";
 import { publicConfig } from "@dcts/config";
+import { base } from "@dcts/common";
 
 const userStore = useUserStore();
 const sysStore = useSysStore();
 const form = reactive({
   username: '',
   password: '',
-  loginRole: allLoginRoles[0].value,
+  loginRole: base.LoginRoleEnum.admin,
   verificationCode: '',
   verificationCodeUuid: '',
 })
@@ -55,7 +55,8 @@ refreshVerificationCode()
       </el-form-item>
       <el-form-item label="登录身份">
         <el-select v-model="form.loginRole">
-          <el-option v-for="item in allLoginRoles" :key="item.value" :label="item.label" :value="item.value"/>
+          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.admin]" :value="base.LoginRoleEnum.admin"/>
+          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.visitor]" :value="base.LoginRoleEnum.visitor"/>
         </el-select>
       </el-form-item>
       <el-form-item label="验证码">

@@ -15,6 +15,7 @@ import { userDict } from "@/dict/module/main/sysManage/user.ts";
 import { userGroupDict } from "@/dict/module/algorithm/userGroup.ts";
 import { useSysStore } from "@/store/module/sys.ts";
 import { userUserGroupDict } from "@/dict/module/algorithm/userUserGroup.ts";
+import { base } from "@dcts/common";
 
 const sysStore = useSysStore()
 
@@ -58,7 +59,7 @@ const getInfo = () => {
   usersOfThisUserGroup.value = []
   userUserGroupsOfThisUserGroup.value = []
   table1LoadingRef.value = true
-  userUserGroupApi.selectList({userGroupId: props.selectUserGroup.id, loginRole: 'admin', ...state.pageParam1}).then(res => {
+  userUserGroupApi.selectList({userGroupId: props.selectUserGroup.id, loginRole: base.LoginRoleEnum.admin, ...state.pageParam1}).then(res => {
     state.total1 = res.total
     userUserGroupsOfThisUserGroup.value = res.list
     userApi.selectByIds(userUserGroupsOfThisUserGroup.value.map(item => item.userId)).then(res => {
@@ -160,7 +161,7 @@ const dialogConfirm = () => {
   const param = {
     userId: selectRows2.value.map(item => item.id),
     userGroupId: props.selectUserGroup.id,
-    loginRole: 'admin',
+    loginRole: base.LoginRoleEnum.admin,
   }
   userUserGroupUpdUGU(param).then(res => {
     getInfo()

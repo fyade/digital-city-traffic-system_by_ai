@@ -3,7 +3,7 @@ import { PageDto } from '../../../../common/dto/PageDto';
 import { IsNotEmpty, IsOptional, MaxLength, IsArray, ValidateNested, Matches } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { REGEX_DCTS_GEOM, REGEX_DCTS_GEOM_DESCR } from "../../../../util/RegularUtils";
+import { regularUtils } from "@dcts/common";
 
 export class VehicleTrackPointDto extends BaseDto {
   id: number;
@@ -53,7 +53,7 @@ export class VehicleTrackPointInsOneDto {
 
   @ApiProperty({ description: '轨迹点', required: true })
   @IsNotEmpty({ message: '轨迹点不能为空' })
-  @Matches(REGEX_DCTS_GEOM, { message: `位置必须为[${REGEX_DCTS_GEOM_DESCR}]格式` })
+  @Matches(regularUtils.REGEX_DCTS_GEOM, { message: `位置必须为[${regularUtils.REGEX_DCTS_GEOM_DESCR}]格式` })
   point: string;
 
   @ApiProperty({ description: '航向角', required: true })

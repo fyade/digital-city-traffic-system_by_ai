@@ -25,7 +25,6 @@ const state = reactive<State2<SignalLightStyleDto, SignalLightStyleUpdDto>>({
     style: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     name: '',
   },

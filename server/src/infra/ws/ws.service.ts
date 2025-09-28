@@ -7,6 +7,7 @@ import { getTokenUuidFromAuth } from "../../util/RequestUtils";
 import { TokenDto } from "../../common/token";
 import { idUtils, objectUtils, timeUtils } from "@dcts/common";
 import { QueueoService } from "../queue/queueo.service";
+import { final } from '../../util/base';
 
 const currentConfig = serverConfig.currentConfig();
 
@@ -204,7 +205,7 @@ export class WsService implements OnModuleInit {
       wsPerms: parse?.perm || '???',
       userId: userInfo.userid,
       loginRole: userInfo.loginRole,
-      ifSuccess: 'O',
+      ifSuccess: final.O,
       remark: '',
       createTime: new Date
     })

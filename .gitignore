@@ -7,17 +7,18 @@ pnpm-lock.yaml
 
 /config/*/*prod.config.ts
 
+/admin/dist.zip
 /admin/public/cesium-static
-
 /admin/stats.html
 /admin/tsconfig.tsbuildinfo
-/admin/dist.zip
+
+/prisma/migrations
+/prisma/mysql.schema.prisma
 
 /prisma-generated/client-mysql
 /prisma-generated/client-postgresql
+/prisma-generated/client-mysql.zip
+/prisma-generated/client-postgresql.zip
 /prisma-generated.zip
-/prisma/migrations
-
-/script/dist.zip
 
 /server/dist.zip

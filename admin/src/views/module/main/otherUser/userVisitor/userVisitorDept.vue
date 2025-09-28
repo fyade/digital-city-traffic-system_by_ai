@@ -31,7 +31,6 @@ const state = reactive<State2<DeptDto, DeptUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {},
 })
 const dFormRules: FormRules<DeptDto> = {

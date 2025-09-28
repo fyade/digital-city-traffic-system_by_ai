@@ -1,6 +1,7 @@
 export type Y = 'Y'
 export type N = 'N'
-export type TypeYN = Y | N
+export type O = 'O'
+
 export type ONE = 'ONE'
 export type MORE = 'MORE'
 export type TypeOM = ONE | MORE

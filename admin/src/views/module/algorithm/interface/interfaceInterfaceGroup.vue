@@ -31,7 +31,6 @@ const state = reactive<State2<InterfaceGroupDto, InterfaceGroupUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {},
 })
 const dFormRules: FormRules<InterfaceGroupDto> = {

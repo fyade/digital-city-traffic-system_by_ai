@@ -32,7 +32,6 @@ const state = reactive<State2<SignalLightStrategyTypeDto, SignalLightStrategyTyp
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     name: '',
     description: '',
@@ -245,10 +244,12 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
       <el-form
           ref="dialogFormsRef"
           v-loading="dialogLoadingRef"
+          :model="state.dialogForms"
+          :rules="dFormRules"
       >
         <el-table
+            class="tp-table-operate-more-row"
             :data="state.dialogForms"
-            v-if="state.dialogForms"
         >
           <el-table-column type="index" width="50">
             <template #header>
@@ -261,9 +262,9 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
               <span :class="ifRequired('name')?'tp-table-header-required':''">{{ signalLightStrategyTypeDict.name }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-name`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.name`" :rules="dFormRules.name">
                 <el-input v-model="state.dialogForms[$index].name" :placeholder="signalLightStrategyTypeDict.name"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="description" :label="signalLightStrategyTypeDict.description" width="300">
@@ -271,9 +272,9 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
               <span :class="ifRequired('description')?'tp-table-header-required':''">{{ signalLightStrategyTypeDict.description }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-description`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.description`" :rules="dFormRules.description">
                 <el-input v-model="state.dialogForms[$index].description" :placeholder="signalLightStrategyTypeDict.description"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="strategyType" :label="signalLightStrategyTypeDict.strategyType" width="300">
@@ -281,14 +282,14 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
               <span :class="ifRequired('strategyType')?'tp-table-header-required':''">{{ signalLightStrategyTypeDict.strategyType }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-strategyType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.strategyType`" :rules="dFormRules.strategyType">
                 <!--<el-input v-model="state.dialogForms[$index].strategyType" :placeholder="signalLightStrategyTypeDict.strategyType"/>-->
                 <el-radio-group v-model="state.dialogForms[$index].strategyType">
                   <el-radio :value="base.SLSTTTypeEnum.T_CUSTOM">{{ base.sLSTTTypeDict[base.SLSTTTypeEnum.T_CUSTOM] }}</el-radio>
                   <el-radio :value="base.SLSTTTypeEnum.T_FINE_TUNING">{{ base.sLSTTTypeDict[base.SLSTTTypeEnum.T_FINE_TUNING] }}</el-radio>
                   <el-radio :value="base.SLSTTTypeEnum.T_TOP">{{ base.sLSTTTypeDict[base.SLSTTTypeEnum.T_TOP] }}</el-radio>
                 </el-radio-group>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="scheduleType" :label="signalLightStrategyTypeDict.scheduleType" width="300">
@@ -296,7 +297,7 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
               <span :class="ifRequired('scheduleType')?'tp-table-header-required':''">{{ signalLightStrategyTypeDict.scheduleType }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-scheduleType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.scheduleType`" :rules="dFormRules.scheduleType">
                 <!--<el-input v-model="state.dialogForms[$index].scheduleType" :placeholder="signalLightStrategyTypeDict.scheduleType"/>-->
                 <el-radio-group v-model="state.dialogForms[$index].scheduleType">
                   <el-radio :value="base.SLSSTTypeEnum.T_DAY">{{ base.sLSSTTypeDict[base.SLSSTTypeEnum.T_DAY] }}</el-radio>
@@ -305,7 +306,7 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
                   <el-radio :value="base.SLSSTTypeEnum.T_YEAR">{{ base.sLSSTTypeDict[base.SLSSTTypeEnum.T_YEAR] }}</el-radio>
                   <el-radio :value="base.SLSSTTypeEnum.T_FIXED_TIME_PERIOD">{{ base.sLSSTTypeDict[base.SLSSTTypeEnum.T_FIXED_TIME_PERIOD] }}</el-radio>
                 </el-radio-group>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="startTime" :label="signalLightStrategyTypeDict.startTime" width="300">
@@ -313,10 +314,10 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
               <span :class="ifRequired('startTime')?'tp-table-header-required':''">{{ signalLightStrategyTypeDict.startTime }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-startTime`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.startTime`" :rules="dFormRules.startTime">
                 <!--<el-input v-model="state.dialogForms[$index].startTime" :placeholder="signalLightStrategyTypeDict.startTime"/>-->
                 <el-date-picker v-model="state.dialogForms[$index].startTime" type="datetime"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="endTime" :label="signalLightStrategyTypeDict.endTime" width="300">
@@ -324,10 +325,10 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
               <span :class="ifRequired('endTime')?'tp-table-header-required':''">{{ signalLightStrategyTypeDict.endTime }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-endTime`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.endTime`" :rules="dFormRules.endTime">
                 <!--<el-input v-model="state.dialogForms[$index].endTime" :placeholder="signalLightStrategyTypeDict.endTime"/>-->
                 <el-date-picker v-model="state.dialogForms[$index].endTime" type="datetime"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="ifDisabled" :label="signalLightStrategyTypeDict.ifDisabled" width="70">
@@ -335,9 +336,9 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
               <span :class="ifRequired('ifDisabled')?'tp-table-header-required':''">{{ signalLightStrategyTypeDict.ifDisabled }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-ifDisabled`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.ifDisabled`" :rules="dFormRules.ifDisabled">
                 <el-checkbox v-model="state.dialogForms[$index].ifDisabled" :true-value="final.Y" :false-value="final.N"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="orderNum" :label="signalLightStrategyTypeDict.orderNum" width="300">
@@ -345,9 +346,9 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
               <span :class="ifRequired('orderNum')?'tp-table-header-required':''">{{ signalLightStrategyTypeDict.orderNum }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-orderNum`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.orderNum`" :rules="dFormRules.orderNum">
                 <el-input-number v-model="state.dialogForms[$index].orderNum" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="remark" :label="signalLightStrategyTypeDict.remark" width="300">
@@ -355,9 +356,9 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
               <span :class="ifRequired('remark')?'tp-table-header-required':''">{{ signalLightStrategyTypeDict.remark }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-remark`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.remark`" :rules="dFormRules.remark">
                 <el-input type="textarea" v-model="state.dialogForms[$index].remark" :placeholder="signalLightStrategyTypeDict.remark"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <!--在此上方添加表格列-->

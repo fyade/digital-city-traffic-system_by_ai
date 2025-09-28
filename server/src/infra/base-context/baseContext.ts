@@ -1,7 +1,8 @@
 import { baseInterfaceColumns2 } from '../../module/main/sys-util/code-generation/codeGeneration';
 import { base, idUtils } from '@dcts/common';
 
-export const USER_INFO_LINSHI_FIELD_NAME = 'user-info-linshi';
+export const USER_THREAD_DATA = 'user-thread-data';
+export const THREAD_DATA_OTHER = 'thread-data-other';
 
 export class CurrentUser {
   userId: string;
@@ -23,6 +24,9 @@ export function genCurrentUser(user?: string, token?: string, loginRole?: string
   currentUser.topAdmin = false;
   currentUser.authType = base.AuthTypeEnum.unknown;
   return currentUser;
+}
+
+export class ThreadDataOther {
 }
 
 export class FieldSelectParam {

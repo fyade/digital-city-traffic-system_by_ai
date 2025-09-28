@@ -30,7 +30,6 @@ const state = reactive<State2<RoleDto, RoleUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     label: '',
     ifAdmin: '',

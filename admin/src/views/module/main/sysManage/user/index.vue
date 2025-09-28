@@ -26,6 +26,7 @@ import UserRole from "@/views/module/main/sysManage/user/userRole.vue";
 import UserDept from "@/views/module/main/sysManage/user/userDept.vue";
 import { useSysStore } from "@/store/module/sys.ts";
 import UserApiKey from "@/views/module/main/sysManage/user/userApiKey.vue";
+import { base } from "@dcts/common";
 
 const sysStore = useSysStore()
 
@@ -35,6 +36,7 @@ const state = reactive<State2<UserDto, UserUpdDto>>({
     username: '',
     password: '123456'
   },
+  dialogForms: [],
   filterForm: {
     username: '',
     nickname: ''
@@ -164,7 +166,7 @@ const drawer = ref(false)
 const selectRole = ref<number[]>([])
 const manageRole = (row: UserDto_) => {
   selectUser.value = deepClone(row)
-  userRoleApi.selectAll({userId: selectUser.value.id, loginRole: 'admin'}).then(res => {
+  userRoleApi.selectAll({userId: selectUser.value.id, loginRole: base.LoginRoleEnum.admin}).then(res => {
     selectRole.value = res.map(item => item.roleId)
     drawer.value = true
   })
@@ -173,7 +175,7 @@ const drawerConfirmUserRole = () => {
   const obj = {
     userId: selectUser.value.id,
     roleId: selectRole.value,
-    loginRole: 'admin',
+    loginRole: base.LoginRoleEnum.admin,
   }
   userRoleUpdUR(obj).then(res => {
     if (res) {
@@ -192,7 +194,7 @@ const drawer2 = ref(false)
 const selectDept = ref<number[]>([])
 const manageDept = (row: UserDto_) => {
   selectUser.value = deepClone(row)
-  userDeptApi.selectAll({userId: selectUser.value.id, loginRole: 'admin'}).then(res => {
+  userDeptApi.selectAll({userId: selectUser.value.id, loginRole: base.LoginRoleEnum.admin}).then(res => {
     selectDept.value = res.map(item => item.deptId)
     drawer2.value = true
   })
@@ -201,7 +203,7 @@ const drawerConfirmUserDept = () => {
   const param = {
     userId: selectUser.value.id,
     deptId: selectDept.value,
-    loginRole: 'admin'
+    loginRole: base.LoginRoleEnum.admin
   }
   userDeptUpdUD(param).then(res => {
     if (res) {

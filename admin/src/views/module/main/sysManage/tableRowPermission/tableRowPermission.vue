@@ -32,7 +32,6 @@ const props = defineProps({
 const state = reactive<State2<MenuDto, MenuUpdDto>>({
   dialogForm: new MenuDto(),
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {},
 })
 const dFormRules: FormRules<MenuDto> = reactive({})

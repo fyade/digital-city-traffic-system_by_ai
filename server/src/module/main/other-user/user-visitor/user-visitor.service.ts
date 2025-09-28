@@ -11,7 +11,7 @@ import { UserUserGroupDto } from '../../../algorithm/user-user-group/dto';
 import { UserGroupDto } from '../../../algorithm/user-group/dto';
 import { BaseContextService } from '../../../../infra/base-context/base-context.service';
 import { Exception } from "../../../../exception/exception";
-import { encryptUtils, idUtils } from '@dcts/common'
+import { base, encryptUtils, idUtils } from '@dcts/common'
 
 @Injectable()
 export class UserVisitorService {
@@ -66,7 +66,7 @@ export class UserVisitorService {
             value: userIds
           },
         },
-        login_role: 'visitor',
+        login_role: base.LoginRoleEnum.visitor,
       },
     });
     const allUserDeptIdsOfThoseUsers = allUserDeptsOfThoseUsers.map(item => item.deptId);
@@ -86,7 +86,7 @@ export class UserVisitorService {
             value: userIds
           },
         },
-        login_role: 'visitor',
+        login_role: base.LoginRoleEnum.visitor,
       },
     });
     const allUserUserGroupIdsOfThoseUsers = allUserUserGroupsOfThoseUsers.map(item => item.userGroupId);

@@ -5,10 +5,9 @@ import { final } from "@/utils/base.ts";
 import { arr2ToDiguiObj, diguiRun } from "@/utils/baseUtils.ts";
 import { useSysStore } from "@/store/module/sys.ts";
 import { useRouterStore } from "@/store/module/router.ts";
-import { splitUrlByX } from "@/utils/RegularUtils.ts";
 import { ElMessage } from 'element-plus'
 import router from "@/router";
-import { base } from "@dcts/common";
+import { base, regularUtils } from "@dcts/common";
 import { Component } from "vue";
 
 const sysStore = useSysStore();
@@ -91,7 +90,7 @@ export const goToSystem = async (
     routerStore.deleteAllMenu()
     if (pushPath) {
       try {
-        const strs = splitUrlByX(pushPath);
+        const strs = regularUtils.splitUrlByX(pushPath);
         if (strs.length > 1) {
           let arr: RouteRecordRaw[] | void = []
           for (let i = 1; i < strs.length; i++) {

@@ -1,10 +1,5 @@
-import { CascaderProps } from "element-plus";
-import { INS, MORE, N, ONE, UPD, Y } from "@/type/utils/base.ts";
-
-export const allLoginRoles: LV[] = [
-  {label: "系统管理员", value: "admin"},
-  {label: "访客", value: "visitor"},
-];
+import { CascaderProps, TreeOptionProps } from "element-plus";
+import { INS, MORE, N, O, ONE, UPD, Y } from "@/type/utils/base.ts";
 
 export class LV {
   label!: string;
@@ -12,12 +7,12 @@ export class LV {
 }
 
 export const allTRPDataTypes: LV[] = [
-  {label: "全部", value: "ALL"},
-  {label: "本部门", value: "SELF_DEPT"},
-  {label: "本部门及直属子部门", value: "DEPT_ONE_SON"},
-  {label: "本部门及全部子部门", value: "DEPT_ALL_SON"},
-  {label: "本角色", value: "SELF_ROLE"},
-  {label: "自己", value: "SELF"},
+  { label: "全部", value: "ALL" },
+  { label: "本部门", value: "SELF_DEPT" },
+  { label: "本部门及直属子部门", value: "DEPT_ONE_SON" },
+  { label: "本部门及全部子部门", value: "DEPT_ALL_SON" },
+  { label: "本角色", value: "SELF_ROLE" },
+  { label: "自己", value: "SELF" },
 ];
 
 export const CONFIG = {
@@ -50,9 +45,10 @@ export const publicDict = {
 export const final: {
   Y: Y;
   N: N;
-  DEV: 'dev';
-  TEST: 'test';
-  PROD: 'prod';
+  O: O;
+  DEV: "dev";
+  TEST: "test";
+  PROD: "prod";
   DEFAULT_PARENT_ID: 0;
   DEFAULT_ORDER_NUM: 0;
   one: ONE;
@@ -62,9 +58,10 @@ export const final: {
 } = {
   Y: "Y",
   N: "N",
-  DEV: 'dev',
-  TEST: 'test',
-  PROD: 'prod',
+  O: "O",
+  DEV: "dev",
+  TEST: "test",
+  PROD: "prod",
   DEFAULT_PARENT_ID: 0,
   DEFAULT_ORDER_NUM: 0,
   one: "ONE",
@@ -97,185 +94,185 @@ export const shift_yes_no = {
   N: "Y",
 };
 
-export const publicCascaderProps = {
+export const publicCascaderProps: CascaderProps = {
   value: "id",
   label: "label",
   disabled: "casDisbaled",
-} as CascaderProps;
+};
 // 只能选择最子层
-export const cascaderProps3 = {
+export const cascaderProps3: CascaderProps = {
   disabled: "casDisbaled",
   expandTrigger: "hover",
   emitPath: false, // 在选中节点改变时，是否返回由该节点所在的各级菜单的值所组成的数组，若设置 false，则只返回该节点的值
-} as CascaderProps;
+};
 // 可以选择任何层
-export const cascaderProps2 = {
+export const cascaderProps2: CascaderProps = {
   ...publicCascaderProps,
   expandTrigger: "hover",
   emitPath: false, // 在选中节点改变时，是否返回由该节点所在的各级菜单的值所组成的数组，若设置 false，则只返回该节点的值
   checkStrictly: true, // 是否严格的遵守父子节点不互相关联
-} as CascaderProps;
+};
 // 可以选择任何层且支持多选
-export const cascaderProps4 = {
+export const cascaderProps4: CascaderProps = {
   ...cascaderProps2,
   multiple: true,
-} as CascaderProps;
-export const cascaderProps1 = {
+};
+export const cascaderProps1: CascaderProps = {
   ...publicCascaderProps,
   ...cascaderProps3,
-} as CascaderProps;
-export const cascaderProps1_ = {
+};
+export const cascaderProps1_: CascaderProps = {
   ...{
     ...publicCascaderProps,
     value: "perms",
     label: "name",
   },
   ...cascaderProps3,
-} as CascaderProps;
+};
 
 export const datePickerShortcuts = [
   {
-    text: '前一小时',
+    text: "前一小时",
     value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setHours(start.getHours() - 1)
-      return [start, end]
-    }
-  },
-  {
-    text: '前两小时',
-    value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setHours(start.getHours() - 2)
-      return [start, end]
-    }
-  },
-  {
-    text: '前三小时',
-    value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setHours(start.getHours() - 3)
-      return [start, end]
-    }
-  },
-  {
-    text: '前一天',
-    value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setDate(start.getDate() - 1)
-      return [start, end]
-    }
-  },
-  {
-    text: '前两天',
-    value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setDate(start.getDate() - 2)
-      return [start, end]
-    }
-  },
-  {
-    text: '前三天',
-    value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setDate(start.getDate() - 3)
-      return [start, end]
-    }
-  },
-  {
-    text: '前一周',
-    value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setDate(start.getDate() - 7)
-      return [start, end]
+      const start = new Date();
+      const end = new Date();
+      start.setHours(start.getHours() - 1);
+      return [start, end];
     },
   },
   {
-    text: '前两周',
+    text: "前两小时",
     value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setDate(start.getDate() - 14)
-      return [start, end]
+      const start = new Date();
+      const end = new Date();
+      start.setHours(start.getHours() - 2);
+      return [start, end];
     },
   },
   {
-    text: '前三周',
+    text: "前三小时",
     value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setDate(start.getDate() - 21)
-      return [start, end]
+      const start = new Date();
+      const end = new Date();
+      start.setHours(start.getHours() - 3);
+      return [start, end];
     },
   },
   {
-    text: '前一月',
+    text: "前一天",
     value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setMonth(start.getMonth() - 1)
-      return [start, end]
+      const start = new Date();
+      const end = new Date();
+      start.setDate(start.getDate() - 1);
+      return [start, end];
     },
   },
   {
-    text: '前两月',
+    text: "前两天",
     value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setMonth(start.getMonth() - 2)
-      return [start, end]
+      const start = new Date();
+      const end = new Date();
+      start.setDate(start.getDate() - 2);
+      return [start, end];
     },
   },
   {
-    text: '前三月',
+    text: "前三天",
     value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setMonth(start.getMonth() - 3)
-      return [start, end]
+      const start = new Date();
+      const end = new Date();
+      start.setDate(start.getDate() - 3);
+      return [start, end];
     },
   },
   {
-    text: '前半年',
+    text: "前一周",
     value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setMonth(start.getMonth() - 6)
-      return [start, end]
+      const start = new Date();
+      const end = new Date();
+      start.setDate(start.getDate() - 7);
+      return [start, end];
     },
   },
   {
-    text: '前一年',
+    text: "前两周",
     value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setFullYear(start.getFullYear() - 1)
-      return [start, end]
+      const start = new Date();
+      const end = new Date();
+      start.setDate(start.getDate() - 14);
+      return [start, end];
     },
   },
   {
-    text: '前两年',
+    text: "前三周",
     value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setFullYear(start.getFullYear() - 2)
-      return [start, end]
+      const start = new Date();
+      const end = new Date();
+      start.setDate(start.getDate() - 21);
+      return [start, end];
     },
   },
   {
-    text: '前三年',
+    text: "前一月",
     value: () => {
-      const start = new Date()
-      const end = new Date()
-      start.setFullYear(start.getFullYear() - 3)
-      return [start, end]
+      const start = new Date();
+      const end = new Date();
+      start.setMonth(start.getMonth() - 1);
+      return [start, end];
     },
   },
-]
+  {
+    text: "前两月",
+    value: () => {
+      const start = new Date();
+      const end = new Date();
+      start.setMonth(start.getMonth() - 2);
+      return [start, end];
+    },
+  },
+  {
+    text: "前三月",
+    value: () => {
+      const start = new Date();
+      const end = new Date();
+      start.setMonth(start.getMonth() - 3);
+      return [start, end];
+    },
+  },
+  {
+    text: "前半年",
+    value: () => {
+      const start = new Date();
+      const end = new Date();
+      start.setMonth(start.getMonth() - 6);
+      return [start, end];
+    },
+  },
+  {
+    text: "前一年",
+    value: () => {
+      const start = new Date();
+      const end = new Date();
+      start.setFullYear(start.getFullYear() - 1);
+      return [start, end];
+    },
+  },
+  {
+    text: "前两年",
+    value: () => {
+      const start = new Date();
+      const end = new Date();
+      start.setFullYear(start.getFullYear() - 2);
+      return [start, end];
+    },
+  },
+  {
+    text: "前三年",
+    value: () => {
+      const start = new Date();
+      const end = new Date();
+      start.setFullYear(start.getFullYear() - 3);
+      return [start, end];
+    },
+  },
+];

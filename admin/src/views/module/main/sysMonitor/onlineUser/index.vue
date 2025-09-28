@@ -15,12 +15,11 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { OnlineUserDto, OnlineUserUpdDto } from "@/type/module/main/sysMonitor/onlineUser.ts";
 import { onlineUserApi } from "@/api/module/main/sysMonitor/onlineUser.ts";
 import { onlineUserDict } from "@/dict/module/main/sysMonitor/onlineUser.ts";
-import { timeUtils } from "@dcts/common";
+import { base, timeUtils } from "@dcts/common";
 
 const state = reactive<State2<OnlineUserDto, OnlineUserUpdDto>>({
   dialogForm: new OnlineUserUpdDto(),
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     userid: '',
     username: '',
@@ -95,7 +94,11 @@ const {
         <el-input v-model="state.filterForm.username" :placeholder="onlineUserDict.username"/>
       </el-form-item>
       <el-form-item :label="onlineUserDict.loginRole" prop="loginRole">
-        <el-input v-model="state.filterForm.loginRole" :placeholder="onlineUserDict.loginRole"/>
+        <!--<el-input v-model="state.filterForm.loginRole" :placeholder="onlineUserDict.loginRole"/>-->
+        <el-select v-model="state.filterForm.loginRole" :placeholder="onlineUserDict.loginRole" clearable filterable>
+          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.admin]" :value="base.LoginRoleEnum.admin"/>
+          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.visitor]" :value="base.LoginRoleEnum.visitor"/>
+        </el-select>
       </el-form-item>
       <!--在此上方添加表单项-->
       <el-form-item>
@@ -133,7 +136,11 @@ const {
       <!--在此下方添加表格列-->
       <el-table-column prop="userid" :label="onlineUserDict.userid" width="120"/>
       <el-table-column prop="username" :label="onlineUserDict.username" width="120"/>
-      <el-table-column prop="loginRole" :label="onlineUserDict.loginRole" width="120"/>
+      <el-table-column prop="loginRole" :label="onlineUserDict.loginRole" width="120">
+        <template #default="{row}">
+          {{ base.LoginRoleDict[row.loginRole as base.LoginRoleEnum] }}
+        </template>
+      </el-table-column>
       <el-table-column prop="loginTime" :label="onlineUserDict.loginTime" width="240">
         <template #default="{row}">
           {{ timeUtils.formatDate(new Date(row.loginTime)) }}

@@ -23,7 +23,6 @@ const state = reactive<State2<SignalLightChildStyleMappingDto, SignalLightChildS
     styleId: 0,
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {},
 })
 const dFormRules: FormRules<SignalLightChildStyleMappingDto> = {
@@ -144,10 +143,12 @@ const {
       <el-form
           ref="dialogFormsRef"
           v-loading="dialogLoadingRef"
+          :model="state.dialogForms"
+          :rules="dFormRules"
       >
         <el-table
+            class="tp-table-operate-more-row"
             :data="state.dialogForms"
-            v-if="state.dialogForms"
         >
           <el-table-column type="index" width="50">
             <template #header>
@@ -160,9 +161,9 @@ const {
               <span :class="ifRequired('childId')?'tp-table-header-required':''">{{ signalLightChildStyleMappingDict.childId }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-childId`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.childId`" :rules="dFormRules.childId">
                 <el-input-number v-model="state.dialogForms[$index].childId" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="styleId" :label="signalLightChildStyleMappingDict.styleId" width="300">
@@ -170,9 +171,9 @@ const {
               <span :class="ifRequired('styleId')?'tp-table-header-required':''">{{ signalLightChildStyleMappingDict.styleId }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-styleId`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.styleId`" :rules="dFormRules.styleId">
                 <el-input-number v-model="state.dialogForms[$index].styleId" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <!--在此上方添加表格列-->

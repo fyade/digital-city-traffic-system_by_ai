@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import PublicIndex from "@/layout/publicIndex.vue";
-import { CONFIG } from "@/utils/base.ts";
 import { useRoute, useRouter } from 'vue-router';
+import RootWrapper from "@/components/rootWrapper/rootWrapper.vue";
 
 const route = useRoute()
 const router = useRouter()

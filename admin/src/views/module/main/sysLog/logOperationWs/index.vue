@@ -15,7 +15,7 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { LogOperationWsDto, LogOperationWsUpdDto } from "@/type/module/main/sysLog/logOperationWs.ts";
 import { logOperationWsApi } from "@/api/module/main/sysLog/logOperationWs.ts";
 import { logOperationWsDict } from "@/dict/module/main/sysLog/logOperationWs.ts";
-import { timeUtils } from "@dcts/common";
+import { base, timeUtils } from "@dcts/common";
 
 const state = reactive<State2<LogOperationWsDto, LogOperationWsUpdDto>>({
   dialogForm: {
@@ -30,7 +30,6 @@ const state = reactive<State2<LogOperationWsDto, LogOperationWsUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     socketId: '',
     callIp: '',
@@ -144,201 +143,6 @@ const fCan2 = () => {
       <el-tab-pane :disabled="dialogType.value===final.upd" label="操作单个" :name="final.one"></el-tab-pane>
       <el-tab-pane :disabled="dialogType.value===final.upd" label="操作多个" :name="final.more"></el-tab-pane>
     </el-tabs>
-    <template v-if="activeTabName===final.one">
-      <el-form
-          ref="dialogFormRef"
-          v-loading="dialogLoadingRef"
-          :model="state.dialogForm"
-          :label-width="CONFIG.dialog_form_label_width"
-          :rules="dFormRules"
-      >
-        <!--<el-row>-->
-        <!--  <el-col :span="12"></el-col>-->
-        <!--  <el-col :span="12"></el-col>-->
-        <!--</el-row>-->
-        <el-form-item v-if="dialogType.value!==final.ins" :label="logOperationWsDict.id" prop="id">
-          <span>{{ state.dialogForm.id }}</span>
-        </el-form-item>
-        <!--在此下方添加表单项-->
-        <el-row>
-          <el-col :span="12">
-            <el-form-item :label="logOperationWsDict.socketId" prop="socketId">
-              <el-input v-model="state.dialogForm.socketId" :placeholder="logOperationWsDict.socketId"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item :label="logOperationWsDict.callIp" prop="callIp">
-              <el-input v-model="state.dialogForm.callIp" :placeholder="logOperationWsDict.callIp"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item :label="logOperationWsDict.hostName" prop="hostName">
-              <el-input v-model="state.dialogForm.hostName" :placeholder="logOperationWsDict.hostName"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item :label="logOperationWsDict.wsPerms" prop="wsPerms">
-              <el-input v-model="state.dialogForm.wsPerms" :placeholder="logOperationWsDict.wsPerms"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item :label="logOperationWsDict.userId" prop="userId">
-              <el-input v-model="state.dialogForm.userId" :placeholder="logOperationWsDict.userId"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item :label="logOperationWsDict.loginRole" prop="loginRole">
-              <el-input v-model="state.dialogForm.loginRole" :placeholder="logOperationWsDict.loginRole"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item :label="logOperationWsDict.ifSuccess" prop="ifSuccess">
-              <el-radio-group v-model="state.dialogForm.ifSuccess">
-                <el-radio :value="final.Y">是</el-radio>
-                <el-radio :value="final.N">否</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item :label="logOperationWsDict.remark" prop="remark">
-              <el-input type="textarea" v-model="state.dialogForm.remark" :placeholder="logOperationWsDict.remark"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <!--在此上方添加表单项-->
-        <!--<el-form-item :label="logOperationWsDict.orderNum" prop='orderNum'>-->
-        <!--  <el-input-number v-model="state.dialogForm.orderNum" controls-position="right"/>-->
-        <!--</el-form-item>-->
-        <!--<el-form-item :label="logOperationWsDict.ifDefault" prop='ifDefault'>-->
-        <!--  <el-switch v-model="state.dialogForm.ifDefault" :active-value='final.Y' :inactive-value='final.N'/>-->
-        <!--</el-form-item>-->
-        <!--<el-form-item :label="logOperationWsDict.ifDisabled" prop='ifDisabled'>-->
-        <!--  <el-radio-group v-model="state.dialogForm.ifDisabled">-->
-        <!--    <el-radio :value="final.Y">是</el-radio>-->
-        <!--    <el-radio :value="final.N">否</el-radio>-->
-        <!--  </el-radio-group>-->
-        <!--</el-form-item>-->
-        <!--<el-form-item :label="logOperationWsDict.ifDisabled" prop="ifDisabled">-->
-        <!--  <el-switch v-model="state.dialogForm.ifDisabled" :active-value="final.N" :inactive-value="final.Y"/>-->
-        <!--</el-form-item>-->
-        <!--上方几个酌情使用-->
-      </el-form>
-    </template>
-    <template v-if="activeTabName===final.more">
-      <el-form
-          ref="dialogFormsRef"
-          v-loading="dialogLoadingRef"
-      >
-        <el-table
-            :data="state.dialogForms"
-            v-if="state.dialogForms"
-        >
-          <el-table-column type="index" width="50">
-            <template #header>
-              #
-            </template>
-          </el-table-column>
-          <!--在此下方添加表格列-->
-          <el-table-column prop="socketId" :label="logOperationWsDict.socketId" width="300">
-            <template #header>
-              <span :class="ifRequired('socketId')?'tp-table-header-required':''">{{ logOperationWsDict.socketId }}</span>
-            </template>
-            <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-socketId`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].socketId" :placeholder="logOperationWsDict.socketId"/>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="callIp" :label="logOperationWsDict.callIp" width="300">
-            <template #header>
-              <span :class="ifRequired('callIp')?'tp-table-header-required':''">{{ logOperationWsDict.callIp }}</span>
-            </template>
-            <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-callIp`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].callIp" :placeholder="logOperationWsDict.callIp"/>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="hostName" :label="logOperationWsDict.hostName" width="300">
-            <template #header>
-              <span :class="ifRequired('hostName')?'tp-table-header-required':''">{{ logOperationWsDict.hostName }}</span>
-            </template>
-            <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-hostName`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].hostName" :placeholder="logOperationWsDict.hostName"/>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="wsPerms" :label="logOperationWsDict.wsPerms" width="300">
-            <template #header>
-              <span :class="ifRequired('wsPerms')?'tp-table-header-required':''">{{ logOperationWsDict.wsPerms }}</span>
-            </template>
-            <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-wsPerms`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].wsPerms" :placeholder="logOperationWsDict.wsPerms"/>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="userId" :label="logOperationWsDict.userId" width="300">
-            <template #header>
-              <span :class="ifRequired('userId')?'tp-table-header-required':''">{{ logOperationWsDict.userId }}</span>
-            </template>
-            <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-userId`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].userId" :placeholder="logOperationWsDict.userId"/>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="loginRole" :label="logOperationWsDict.loginRole" width="300">
-            <template #header>
-              <span :class="ifRequired('loginRole')?'tp-table-header-required':''">{{ logOperationWsDict.loginRole }}</span>
-            </template>
-            <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-loginRole`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].loginRole" :placeholder="logOperationWsDict.loginRole"/>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="ifSuccess" :label="logOperationWsDict.ifSuccess" width="70">
-            <template #header>
-              <span :class="ifRequired('ifSuccess')?'tp-table-header-required':''">{{ logOperationWsDict.ifSuccess }}</span>
-            </template>
-            <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-ifSuccess`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-checkbox v-model="state.dialogForms[$index].ifSuccess" :true-value="final.Y" :false-value="final.N"/>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="remark" :label="logOperationWsDict.remark" width="300">
-            <template #header>
-              <span :class="ifRequired('remark')?'tp-table-header-required':''">{{ logOperationWsDict.remark }}</span>
-            </template>
-            <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-remark`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
-                <el-input v-model="state.dialogForms[$index].remark" :placeholder="logOperationWsDict.remark"/>
-              </div>
-            </template>
-          </el-table-column>
-          <!--在此上方添加表格列-->
-          <el-table-column fixed="right" label="操作" min-width="120">
-            <template v-if="dialogType.value===final.ins" #default="{$index}">
-              <el-button link type="danger" size="small" :icon="Delete" @click="dfDel($index)">删除</el-button>
-            </template>
-          </el-table-column>
-          <template v-if="dialogType.value===final.ins" #append>
-            <el-button text type="primary" plain :icon="Plus" @click="dfIns">新增</el-button>
-          </template>
-        </el-table>
-      </el-form>
-    </template>
     <template #footer>
       <span class="dialog-footer">
         <el-button :disabled="dialogButtonLoadingRef" @click="dCan">取消</el-button>
@@ -373,14 +177,18 @@ const fCan2 = () => {
         <el-input v-model="state.filterForm.userId" :placeholder="logOperationWsDict.userId"/>
       </el-form-item>
       <el-form-item :label="logOperationWsDict.loginRole" prop="loginRole">
-        <el-input v-model="state.filterForm.loginRole" :placeholder="logOperationWsDict.loginRole"/>
+        <!--<el-input v-model="state.filterForm.loginRole" :placeholder="logOperationWsDict.loginRole"/>-->
+        <el-select v-model="state.filterForm.loginRole" :placeholder="logOperationWsDict.loginRole" clearable filterable>
+          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.admin]" :value="base.LoginRoleEnum.admin"/>
+          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.visitor]" :value="base.LoginRoleEnum.visitor"/>
+        </el-select>
       </el-form-item>
       <el-form-item :label="logOperationWsDict.ifSuccess" prop="ifSuccess">
         <!--<el-input v-model="state.filterForm.ifSuccess" :placeholder="logOperationWsDict.ifSuccess"/>-->
         <el-select v-model="state.filterForm.ifSuccess" :placeholder="logOperationWsDict.ifSuccess" clearable filterable>
           <el-option label="是" :value="final.Y"/>
           <el-option label="否" :value="final.N"/>
-          <el-option label="不确定" value="O"/>
+          <el-option label="不确定" :value="final.O"/>
         </el-select>
       </el-form-item>
       <el-form-item :label="logOperationWsDict.createTime" prop="createTime">
@@ -435,7 +243,11 @@ const fCan2 = () => {
       <el-table-column prop="hostName" :label="logOperationWsDict.hostName" width="180"/>
       <el-table-column prop="wsPerms" :label="logOperationWsDict.wsPerms" width="240"/>
       <el-table-column prop="userId" :label="logOperationWsDict.userId" width="120"/>
-      <el-table-column prop="loginRole" :label="logOperationWsDict.loginRole" width="120"/>
+      <el-table-column prop="loginRole" :label="logOperationWsDict.loginRole" width="120">
+        <template #default="{row}">
+          {{ base.LoginRoleDict[row.loginRole as base.LoginRoleEnum] || row.loginRole }}
+        </template>
+      </el-table-column>
       <el-table-column prop="ifSuccess" :label="logOperationWsDict.ifSuccess" width="120">
         <template #header>
           <Tooltip content="Y表示成功，N表示失败，O表示接口无返回值，无法确定是否成功。">

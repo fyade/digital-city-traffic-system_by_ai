@@ -4,8 +4,7 @@ import { BaseContextService } from '../infra/base-context/base-context.service';
 import { R } from '../common/R';
 import { WinstonService } from '../infra/winston/winston.service';
 import { HTTP } from '../common/Enum';
-import { baseUtils, idUtils } from '@dcts/common';
-import { REGEX_GLOBAL_EXCEPTION_1_match } from "../util/RegularUtils";
+import { baseUtils, idUtils, regularUtils } from '@dcts/common';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -38,7 +37,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         message =
             response1.message
                 .map((str) => {
-                  const match = REGEX_GLOBAL_EXCEPTION_1_match(str);
+                  const match = regularUtils.REGEX_GLOBAL_EXCEPTION_1_match(str);
                   if (match) {
                     return str.replace(`items.${match[1]}.`, `第${Number(match[1]) + 1}条数据的`);
                   }

@@ -94,7 +94,7 @@ export class FileUploadService {
       const fillObj = {
         fileName: fileName2,
         fileNewName: fileNewName2,
-        fileSize: BigInt(fileSize),
+        fileSize: fileSize,
         fileMd5: fileMd5,
         ifChunk: final.N,
         ifFirst: final.Y,
@@ -104,7 +104,7 @@ export class FileUploadService {
       if (sameFile) {
         // 如果已有相同文件，直接存库
         fillObj.fileNewName = sameFile.fileNewName;
-        fillObj.fileSize = BigInt(sameFile.fileSize);
+        fillObj.fileSize = sameFile.fileSize;
         fillObj.ifFirst = final.N;
         fillObj.ifFinished = final.Y;
         await this.mysqlPrisma.create<FileDto>('tbl_file', fillObj);
@@ -155,7 +155,7 @@ export class FileUploadService {
         const fillObj = {
           fileName: fileName,
           fileNewName: sameFileElement1.fileNewName,
-          fileSize: BigInt(sameFileElement1.fileSize),
+          fileSize: sameFileElement1.fileSize,
           fileMd5: sameFileElement1.fileMd5,
           ifChunk: final.Y,
           chunkNum: sameFileElement1.chunkNum,
@@ -171,7 +171,7 @@ export class FileUploadService {
         const fillObj = {
           fileName: fileName,
           fileNewName: sameFileElement1.fileNewName,
-          fileSize: BigInt(sameFileElement1.fileSize),
+          fileSize: sameFileElement1.fileSize,
           fileMd5: sameFileElement1.fileMd5,
           ifChunk: final.Y,
           chunkNum: sameFileElement1.chunkNum,
@@ -200,7 +200,7 @@ export class FileUploadService {
       const fillObj = {
         fileName: fileName,
         fileNewName: fileNewName2,
-        fileSize: BigInt(dto.fileSize),
+        fileSize: dto.fileSize,
         fileMd5: dto.fileMd5,
         ifChunk: final.Y,
         chunkNum: dto.chunkNum,

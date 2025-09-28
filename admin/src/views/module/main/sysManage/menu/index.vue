@@ -22,6 +22,7 @@ import { sysApi } from "@/api/module/main/sysManage/sys.ts";
 import MenuIpWhiteList from "@/views/module/main/sysManage/menu/menuIpWhiteList.vue";
 import { arrayUtils, base, objectUtils } from "@dcts/common";
 import MenuThrottle from "@/views/module/main/sysManage/menu/menuThrottle.vue";
+import { deepClone } from "@/utils/ObjectUtils.ts";
 
 const state = reactive<State2<MenuDto, MenuUpdDto>>({
   dialogForm: {
@@ -43,7 +44,6 @@ const state = reactive<State2<MenuDto, MenuUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     perms: ''
   },
@@ -127,7 +127,6 @@ const stateInter = reactive<State2<MenuDto, MenuUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     perms: ''
   },
@@ -290,18 +289,18 @@ const tableData3 = computed(() => {
 })
 
 // 表格的展开
-const expandRowKeys = ref<number[]>([])
-const expandRowKeys2 = ref<number[]>([])
+const expandRowKeys = ref<string[]>([])
+const expandRowKeys2 = ref<string[]>([])
 const expendAll = () => {
   if (expandRowKeys.value.length === 0) {
-    expandRowKeys.value = arrayUtils.arrNoRepeat(tableData.value.map(item => item.parentId)).filter(item => item !== final.DEFAULT_PARENT_ID)
+    expandRowKeys.value = arrayUtils.arrNoRepeat(tableData.value.map(item => item.parentId)).filter(item => item !== final.DEFAULT_PARENT_ID).map(String)
   } else {
     expandRowKeys.value = []
   }
 }
 const expendAll2 = () => {
   if (expandRowKeys2.value.length === 0) {
-    expandRowKeys2.value = arrayUtils.arrNoRepeat(tableDataInter.value.map(item => item.parentId)).filter(item => item !== final.DEFAULT_PARENT_ID)
+    expandRowKeys2.value = arrayUtils.arrNoRepeat(tableDataInter.value.map(item => item.parentId)).filter(item => item !== final.DEFAULT_PARENT_ID).map(String)
   } else {
     expandRowKeys2.value = []
   }
@@ -379,7 +378,6 @@ const stateI2 = reactive<State2<MenuDto, MenuUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     label: '',
     ifDisabled: '',
@@ -462,6 +460,35 @@ const {
 const gInsI22 = () => {
   stateI2.dialogForm.parentId = selectInterGroup.id
   gInsI2()
+}
+const gInsI222Loading = ref(false)
+const gInsI222Visible = ref(false)
+const gInsI222Value = ref('')
+const gInsI222 = () => {
+  gInsI222Value.value = ''
+  gInsI222Visible.value = true
+}
+const gInsI222Confirm = () => {
+  try {
+    const data = JSON.parse(gInsI222Value.value) as {permission:string,label:string}[];
+    activeTabNameI2.value = final.more
+    dialogVisibleI2.value = true
+    stateI2.dialogForms = []
+    for (const datum of data) {
+      const sc = deepClone(stateI2.dialogForm);
+      sc.perms = datum.permission
+      sc.label = datum.label
+      sc.parentId = selectInterGroup.id
+      stateI2.dialogForms.push(sc)
+    }
+    gInsI222Visible.value = false
+    refreshI2()
+  } catch (e) {
+    ElMessage.error('异常字符串。')
+  }
+}
+const gInsI222Cancel = () => {
+  gInsI222Visible.value = false
 }
 
 const selectMenu = ref<MenuDto>(new MenuDto())
@@ -647,10 +674,12 @@ const setThrottle = (row: MenuDto) => {
         <el-form
             ref="dialogFormsRefI2"
             v-loading="dialogLoadingRefI2"
+            :model="stateI2.dialogForms"
+            :rules="dFormRulesI2"
         >
           <el-table
+              class="tp-table-operate-more-row"
               :data="stateI2.dialogForms"
-              v-if="stateI2.dialogForms"
           >
             <el-table-column type="index" width="50">
               <template #header>
@@ -663,7 +692,7 @@ const setThrottle = (row: MenuDto) => {
                 <span :class="ifRequiredI2('parentId')?'tp-table-header-required':''">{{ menuDictI2.parentId }}</span>
               </template>
               <template #default="{$index}">
-                <div :class="stateI2.dialogForms_error?.[`${$index}-parentId`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-form-item :prop="`${$index}.parentId`" :rules="dFormRulesI2.parentId">
                   <el-cascader
                       v-model="stateI2.dialogForms[$index].parentId"
                       :options="tableData3Inter"
@@ -672,7 +701,7 @@ const setThrottle = (row: MenuDto) => {
                       :value-on-clear="final.DEFAULT_PARENT_ID"
                       disabled
                   />
-                </div>
+                </el-form-item>
               </template>
             </el-table-column>
             <el-table-column prop="type" :label="menuDictI2.type" width="300">
@@ -680,13 +709,13 @@ const setThrottle = (row: MenuDto) => {
                 <span :class="ifRequiredI2('type')?'tp-table-header-required':''">{{ menuDictI2.type }}</span>
               </template>
               <template #default="{$index}">
-                <div :class="stateI2.dialogForms_error?.[`${$index}-type`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-form-item :prop="`${$index}.type`" :rules="dFormRulesI2.type">
                   <el-radio-group v-model="stateI2.dialogForms[$index].type">
                     <el-radio :value="base.MenuTypeEnum.T_Inter">
                       {{ base.menuTypeDict[base.MenuTypeEnum.T_Inter] }}
                     </el-radio>
                   </el-radio-group>
-                </div>
+                </el-form-item>
               </template>
             </el-table-column>
             <el-table-column prop="label" :label="menuDictI2.label" width="300">
@@ -694,9 +723,9 @@ const setThrottle = (row: MenuDto) => {
                 <span :class="ifRequiredI2('label')?'tp-table-header-required':''">{{ menuDictI2.label }}</span>
               </template>
               <template #default="{$index}">
-                <div :class="stateI2.dialogForms_error?.[`${$index}-label`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-form-item :prop="`${$index}.label`" :rules="dFormRulesI2.label">
                   <el-input v-model="stateI2.dialogForms[$index].label" :placeholder="menuDictI2.label"/>
-                </div>
+                </el-form-item>
               </template>
             </el-table-column>
             <el-table-column prop="orderNum" :label="menuDictI2.orderNum" width="300">
@@ -704,9 +733,9 @@ const setThrottle = (row: MenuDto) => {
                 <span :class="ifRequiredI2('orderNum')?'tp-table-header-required':''">{{ menuDictI2.orderNum }}</span>
               </template>
               <template #default="{$index}">
-                <div :class="stateI2.dialogForms_error?.[`${$index}-orderNum`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-form-item :prop="`${$index}.orderNum`" :rules="dFormRulesI2.orderNum">
                   <el-input-number v-model="stateI2.dialogForms[$index].orderNum" controls-position="right"/>
-                </div>
+                </el-form-item>
               </template>
             </el-table-column>
             <el-table-column prop="ifPublic" :label="menuDictI2.ifPublic" width="80">
@@ -714,13 +743,13 @@ const setThrottle = (row: MenuDto) => {
                 <span :class="ifRequiredI2('ifPublic')?'tp-table-header-required':''">{{ menuDictI2.ifPublic }}</span>
               </template>
               <template #default="{$index}">
-                <div :class="stateI2.dialogForms_error?.[`${$index}-ifPublic`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-form-item :prop="`${$index}.ifPublic`" :rules="dFormRulesI2.ifPublic">
                   <!--<el-radio-group v-model="stateI2.dialogForms[$index].ifPublic">-->
                   <!--  <el-radio :value="final.Y">是</el-radio>-->
                   <!--  <el-radio :value="final.N">否</el-radio>-->
                   <!--</el-radio-group>-->
                   <el-checkbox v-model="stateI2.dialogForms[$index].ifPublic" :true-value="final.Y" :false-value="final.N"/>
-                </div>
+                </el-form-item>
               </template>
             </el-table-column>
             <el-table-column prop="ifDisabled" :label="menuDictI2.ifDisabled" width="80">
@@ -728,13 +757,13 @@ const setThrottle = (row: MenuDto) => {
                 <span :class="ifRequiredI2('ifDisabled')?'tp-table-header-required':''">{{ menuDictI2.ifDisabled }}</span>
               </template>
               <template #default="{$index}">
-                <div :class="stateI2.dialogForms_error?.[`${$index}-ifDisabled`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-form-item :prop="`${$index}.ifDisabled`" :rules="dFormRulesI2.ifDisabled">
                   <!--<el-radio-group v-model="stateI2.dialogForms[$index].ifDisabled">-->
                   <!--  <el-radio :value="final.Y">是</el-radio>-->
                   <!--  <el-radio :value="final.N">否</el-radio>-->
                   <!--</el-radio-group>-->
                   <el-checkbox v-model="stateI2.dialogForms[$index].ifDisabled" :true-value="final.Y" :false-value="final.N"/>
-                </div>
+                </el-form-item>
               </template>
             </el-table-column>
             <el-table-column prop="perms" :label="menuDictI2.perms" width="300">
@@ -744,9 +773,9 @@ const setThrottle = (row: MenuDto) => {
                 </Tooltip>
               </template>
               <template #default="{$index}">
-                <div :class="stateI2.dialogForms_error?.[`${$index}-perms`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-form-item :prop="`${$index}.perms`" :rules="dFormRulesI2.perms">
                   <el-input v-model="stateI2.dialogForms[$index].perms" :placeholder="menuDictI2.perms"/>
-                </div>
+                </el-form-item>
               </template>
             </el-table-column>
             <el-table-column prop="remark" :label="menuDictI2.remark" width="300">
@@ -754,9 +783,9 @@ const setThrottle = (row: MenuDto) => {
                 <span :class="ifRequiredI2('remark')?'tp-table-header-required':''">{{ menuDictI2.remark }}</span>
               </template>
               <template #default="{$index}">
-                <div :class="stateI2.dialogForms_error?.[`${$index}-remark`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-form-item :prop="`${$index}.remark`" :rules="dFormRulesI2.remark">
                   <el-input type="textarea" v-model="stateI2.dialogForms[$index].remark" :placeholder="menuDictI2.remark"/>
-                </div>
+                </el-form-item>
               </template>
             </el-table-column>
             <!--在此上方添加表格列-->
@@ -772,10 +801,10 @@ const setThrottle = (row: MenuDto) => {
         </el-form>
       </template>
       <template #footer>
-      <span class="dialog-footer">
-        <el-button :disabled="dialogButtonLoadingRefI2" @click="dCanI2">取消</el-button>
-        <el-button type="primary" :disabled="dialogButtonLoadingRefI2" @click="dConI2">确认</el-button>
-      </span>
+        <span class="dialog-footer">
+          <el-button :disabled="dialogButtonLoadingRefI2" @click="dCanI2">取消</el-button>
+          <el-button type="primary" :disabled="dialogButtonLoadingRefI2" @click="dConI2">确认</el-button>
+        </span>
       </template>
     </el-dialog>
 
@@ -820,6 +849,7 @@ const setThrottle = (row: MenuDto) => {
       <div>
         <el-button type="primary" plain :icon="Refresh" @click="gRefreshI2">刷新</el-button>
         <el-button type="primary" plain :icon="Plus" @click="gInsI22">新增</el-button>
+        <el-button type="primary" plain :icon="Plus" @click="gInsI222">批量新增接口</el-button>
         <el-button type="success" plain :icon="Edit" :disabled="configI2.bulkOperation?multipleSelectionI2.length===0:multipleSelectionI2.length!==1" @click="gUpdI2">修改</el-button>
         <el-button type="danger" plain :icon="Delete" :disabled="multipleSelectionI2.length===0" @click="gDelI2()">删除</el-button>
         <!--<el-button type="warning" plain :icon="Download" :disabled="multipleSelectionI2.length===0" @click="gExportI2()">导出</el-button>-->
@@ -881,6 +911,26 @@ const setThrottle = (row: MenuDto) => {
           @page-change="pageChangeI2"
       />
     </div>
+  </el-dialog>
+
+  <el-dialog
+    :width="CONFIG.dialog_width_wider"
+    v-model="gInsI222Visible"
+    title="批量新增接口"
+    draggable
+    append-to-body
+  >
+    <el-form v-loading="gInsI222Loading">
+      <el-form-item label="权限字符集">
+        <el-input type="textarea" v-model="gInsI222Value" placeholder="权限字符集"/>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button :disabled="gInsI222Loading" @click="gInsI222Cancel">取消</el-button>
+        <el-button type="primary" :disabled="gInsI222Loading" @click="gInsI222Confirm">确认</el-button>
+      </span>
+    </template>
   </el-dialog>
 
   <!--弹窗-->
@@ -1041,10 +1091,12 @@ const setThrottle = (row: MenuDto) => {
       <el-form
           ref="dialogFormsRef"
           v-loading="dialogLoadingRef"
+          :model="state.dialogForms"
+          :rules="dFormRules"
       >
         <el-table
+            class="tp-table-operate-more-row"
             :data="state.dialogForms"
-            v-if="state.dialogForms"
         >
           <el-table-column type="index" width="50">
             <template #header>
@@ -1057,7 +1109,7 @@ const setThrottle = (row: MenuDto) => {
               <span :class="ifRequired('parentId')?'tp-table-header-required':''">{{ menuDict.parentId }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-parentId`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.parentId`" :rules="dFormRules.parentId">
                 <el-cascader
                     v-model="state.dialogForms[$index].parentId"
                     :options="tableData3"
@@ -1065,7 +1117,7 @@ const setThrottle = (row: MenuDto) => {
                     clearable
                     :value-on-clear="final.DEFAULT_PARENT_ID"
                 />
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="type" :label="menuDict.type" width="300">
@@ -1075,7 +1127,7 @@ const setThrottle = (row: MenuDto) => {
               </Tooltip>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-type`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.type`" :rules="dFormRules.type">
                 <el-radio-group v-model="state.dialogForms[$index].type">
                   <el-radio :value="base.MenuTypeEnum.T_MENU" :disabled="canChooseTypes.indexOf(base.MenuTypeEnum.T_MENU)===-1">
                     {{ base.menuTypeDict[base.MenuTypeEnum.T_MENU] }}
@@ -1084,7 +1136,7 @@ const setThrottle = (row: MenuDto) => {
                     {{ base.menuTypeDict[base.MenuTypeEnum.T_COMP] }}
                   </el-radio>
                 </el-radio-group>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="icon" :label="menuDict.icon" width="300">
@@ -1092,9 +1144,9 @@ const setThrottle = (row: MenuDto) => {
               <span :class="ifRequired('icon')?'tp-table-header-required':''">{{ menuDict.icon }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-icon`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.icon`" :rules="dFormRules.icon">
                 <IconSelect v-model="state.dialogForms[$index].icon" :placeholder="menuDict.icon"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="label" :label="menuDict.label" width="300">
@@ -1102,9 +1154,9 @@ const setThrottle = (row: MenuDto) => {
               <span :class="ifRequired('label')?'tp-table-header-required':''">{{ menuDict.label }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-label`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.label`" :rules="dFormRules.label">
                 <el-input v-model="state.dialogForms[$index].label" :placeholder="menuDict.label"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="path" :label="menuDict.path" width="300">
@@ -1114,9 +1166,9 @@ const setThrottle = (row: MenuDto) => {
               </Tooltip>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-path`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.path`" :rules="dFormRules.path">
                 <el-input v-model="state.dialogForms[$index].path" :placeholder="menuDict.path"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="perms" :label="menuDict.perms" width="300">
@@ -1126,9 +1178,9 @@ const setThrottle = (row: MenuDto) => {
               </Tooltip>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-perms`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.perms`" :rules="dFormRules.perms">
                 <el-input v-model="state.dialogForms[$index].perms" :placeholder="menuDict.perms"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="orderNum" :label="menuDict.orderNum" width="200">
@@ -1136,9 +1188,9 @@ const setThrottle = (row: MenuDto) => {
               <span :class="ifRequired('orderNum')?'tp-table-header-required':''">{{ menuDict.orderNum }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-orderNum`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.orderNum`" :rules="dFormRules.orderNum">
                 <el-input-number v-model="state.dialogForms[$index].orderNum" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="ifVisible" :label="menuDict.ifVisible" width="80">
@@ -1146,13 +1198,13 @@ const setThrottle = (row: MenuDto) => {
               <span :class="ifRequired('ifVisible')?'tp-table-header-required':''">{{ menuDict.ifVisible }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-ifVisible`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.ifVisible`" :rules="dFormRules.ifVisible">
                 <!--<el-radio-group v-model="state.dialogForms[$index].ifVisible">-->
                 <!--  <el-radio :value="final.Y">是</el-radio>-->
                 <!--  <el-radio :value="final.N">否</el-radio>-->
                 <!--</el-radio-group>-->
                 <el-checkbox v-model="state.dialogForms[$index].ifVisible" :true-value="final.Y" :false-value="final.N"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="ifDisabled" :label="menuDict.ifDisabled" width="80">
@@ -1160,13 +1212,13 @@ const setThrottle = (row: MenuDto) => {
               <span :class="ifRequired('ifDisabled')?'tp-table-header-required':''">{{ menuDict.ifDisabled }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-ifDisabled`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.ifDisabled`" :rules="dFormRules.ifDisabled">
                 <!--<el-radio-group v-model="state.dialogForms[$index].ifDisabled">-->
                 <!--  <el-radio :value="final.Y">是</el-radio>-->
                 <!--  <el-radio :value="final.N">否</el-radio>-->
                 <!--</el-radio-group>-->
                 <el-checkbox v-model="state.dialogForms[$index].ifDisabled" :true-value="final.Y" :false-value="final.N"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="ifLink" :label="menuDict.ifLink" width="80">
@@ -1174,13 +1226,13 @@ const setThrottle = (row: MenuDto) => {
               <span :class="ifRequired('ifLink')?'tp-table-header-required':''">{{ menuDict.ifLink }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-ifLink`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.ifLink`" :rules="dFormRules.ifLink">
                 <!--<el-radio-group v-model="state.dialogForms[$index].ifLink">-->
                 <!--  <el-radio :value="final.Y">是</el-radio>-->
                 <!--  <el-radio :value="final.N">否</el-radio>-->
                 <!--</el-radio-group>-->
                 <el-checkbox v-model="state.dialogForms[$index].ifLink" :true-value="final.Y" :false-value="final.N"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="ifFixed" :label="menuDict.ifFixed" width="80">
@@ -1189,13 +1241,13 @@ const setThrottle = (row: MenuDto) => {
             </template>
             <template #default="{$index}">
               <template v-if="checkVisible(state.dialogForms[$index].type, [base.MenuTypeEnum.T_COMP])">
-                <div :class="state.dialogForms_error?.[`${$index}-ifFixed`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-form-item :prop="`${$index}.ifFixed`" :rules="dFormRules.ifFixed">
                   <!--<el-radio-group v-model="state.dialogForms[$index].ifFixed">-->
                   <!--  <el-radio :value="final.Y">是</el-radio>-->
                   <!--  <el-radio :value="final.N">否</el-radio>-->
                   <!--</el-radio-group>-->
                   <el-checkbox v-model="state.dialogForms[$index].ifFixed" :true-value="final.Y" :false-value="final.N"/>
-                </div>
+                </el-form-item>
               </template>
               <template v-else></template>
             </template>
@@ -1208,9 +1260,9 @@ const setThrottle = (row: MenuDto) => {
             </template>
             <template #default="{$index}">
               <template v-if="checkVisible(state.dialogForms[$index].type, [base.MenuTypeEnum.T_COMP])">
-                <div :class="state.dialogForms_error?.[`${$index}-component`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-form-item :prop="`${$index}.component`" :rules="dFormRules.component">
                   <el-input v-model="state.dialogForms[$index].component" :placeholder="menuDict.component"/>
-                </div>
+                </el-form-item>
               </template>
               <template v-else></template>
             </template>
@@ -1220,9 +1272,9 @@ const setThrottle = (row: MenuDto) => {
               <span :class="ifRequired('remark')?'tp-table-header-required':''">{{ menuDict.remark }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-remark`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.remark`" :rules="dFormRules.remark">
                 <el-input type="textarea" v-model="state.dialogForms[$index].remark" :placeholder="menuDict.remark"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <!--在此上方添加表格列-->
@@ -1332,12 +1384,14 @@ const setThrottle = (row: MenuDto) => {
     </template>
     <template v-if="activeTabNameInter===final.more">
       <el-form
-          ref="dialogFormRefInter"
+          ref="dialogFormsRefInter"
           v-loading="dialogLoadingRefInter"
+          :model="stateInter.dialogForms"
+          :rules="dFormRulesInter"
       >
         <el-table
+            class="tp-table-operate-more-row"
             :data="stateInter.dialogForms"
-            v-if="stateInter.dialogForms"
         >
           <el-table-column type="index" width="50">
             <template #header>
@@ -1350,7 +1404,7 @@ const setThrottle = (row: MenuDto) => {
               <span :class="ifRequiredInter('parentId')?'tp-table-header-required':''">{{ menuDictInter.parentId }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="stateInter.dialogForms_error?.[`${$index}-parentId`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.parentId`" :rules="dFormRulesInter.parentId">
                 <el-cascader
                     style="width: 100%;"
                     v-model="stateInter.dialogForms[$index].parentId"
@@ -1359,7 +1413,7 @@ const setThrottle = (row: MenuDto) => {
                     clearable
                     :value-on-clear="final.DEFAULT_PARENT_ID"
                 />
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="type" :label="menuDictInter.type" width="300">
@@ -1367,13 +1421,13 @@ const setThrottle = (row: MenuDto) => {
               <span :class="ifRequiredInter('type')?'tp-table-header-required':''">{{ menuDictInter.type }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="stateInter.dialogForms_error?.[`${$index}-type`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.type`" :rules="dFormRulesInter.type">
                 <el-radio-group v-model="stateInter.dialogForms[$index].type">
                   <el-radio :value="base.MenuTypeEnum.T_IS">
                     {{ base.menuTypeDict[base.MenuTypeEnum.T_IS] }}
                   </el-radio>
                 </el-radio-group>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="label" :label="menuDictInter.label" width="300">
@@ -1381,9 +1435,9 @@ const setThrottle = (row: MenuDto) => {
               <span :class="ifRequiredInter('label')?'tp-table-header-required':''">{{ menuDictInter.label }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="stateInter.dialogForms_error?.[`${$index}-label`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.label`" :rules="dFormRulesInter.label">
                 <el-input v-model="stateInter.dialogForms[$index].label" :placeholder="menuDictInter.label"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="orderNum" :label="menuDictInter.orderNum" width="300">
@@ -1391,9 +1445,9 @@ const setThrottle = (row: MenuDto) => {
               <span :class="ifRequiredInter('orderNum')?'tp-table-header-required':''">{{ menuDictInter.orderNum }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="stateInter.dialogForms_error?.[`${$index}-orderNum`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.orderNum`" :rules="dFormRulesInter.orderNum">
                 <el-input-number v-model="stateInter.dialogForms[$index].orderNum" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="perms" :label="menuDictInter.perms" width="300">
@@ -1403,9 +1457,9 @@ const setThrottle = (row: MenuDto) => {
               </Tooltip>
             </template>
             <template #default="{$index}">
-              <div :class="stateInter.dialogForms_error?.[`${$index}-perms`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.perms`" :rules="dFormRulesInter.perms">
                 <el-input v-model="stateInter.dialogForms[$index].perms" :placeholder="menuDictInter.perms"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="ifPublic" :label="menuDictInter.ifPublic" width="300">
@@ -1413,12 +1467,12 @@ const setThrottle = (row: MenuDto) => {
               <span :class="ifRequiredInter('ifPublic')?'tp-table-header-required':''">{{ menuDictInter.ifPublic }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="stateInter.dialogForms_error?.[`${$index}-ifPublic`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.ifPublic`" :rules="dFormRulesInter.ifPublic">
                 <el-radio-group v-model="stateInter.dialogForms[$index].ifPublic">
                   <el-radio :value="final.Y">是</el-radio>
                   <el-radio :value="final.N">否</el-radio>
                 </el-radio-group>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="remark" :label="menuDictInter.remark" width="300">
@@ -1426,9 +1480,9 @@ const setThrottle = (row: MenuDto) => {
               <span :class="ifRequiredInter('remark')?'tp-table-header-required':''">{{ menuDictInter.remark }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="stateInter.dialogForms_error?.[`${$index}-remark`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.remark`" :rules="dFormRulesInter.remark">
                 <el-input type="textarea" v-model="stateInter.dialogForms[$index].remark" :placeholder="menuDictInter.remark"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <!--在此上方添加表格列-->

@@ -1,20 +1,28 @@
 import * as adminConfig from './config/admin.config.js'
 import * as dashboardConfig from './config/dashboard.config.js'
 import * as publicConfig from './config/public.config.js'
-import * as scriptConfig from './config/script.config.js'
 import * as serverConfig from './config/server.config.js'
 import * as process from "process";
 
+export {
+  adminConfig,
+  dashboardConfig,
+  publicConfig,
+  serverConfig,
+}
+
 export function getCurrentConfig<T extends object>(config: T) {
   let environmentMode;
-  const isViteEnv = typeof import.meta !== 'undefined' && !!(import.meta as unknown as ImportMeta).env;
-  const isNodeEnv = typeof process !== 'undefined' && !!process.env
+  const isViteEnv =
+    typeof import.meta !== "undefined" &&
+    !!(import.meta as unknown as ImportMeta).env;
+  const isNodeEnv = typeof process !== "undefined" && !!process.env;
   if (isViteEnv) {
     environmentMode = (import.meta as unknown as ImportMeta).env.MODE;
   } else if (isNodeEnv) {
     environmentMode = process.env.NODE_ENV;
   } else {
-    environmentMode = 'dev';
+    environmentMode = "dev";
   }
   if (!environmentMode || !Object.keys(config).includes(environmentMode)) {
     throw new Error(`当前环境（${environmentMode}）无配置。`);
@@ -26,14 +34,6 @@ export interface ImportMeta {
   env: {
     MODE: string;
   };
-}
-
-export {
-  adminConfig,
-  dashboardConfig,
-  publicConfig,
-  scriptConfig,
-  serverConfig,
 }
 
 export { geoserverConfig } from './third-config/geoserver.config.js'

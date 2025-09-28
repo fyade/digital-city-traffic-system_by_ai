@@ -38,7 +38,6 @@ const state = reactive<State2<FileUploadDto, FileUploadUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     fileName: '',
     fileMd5: '',

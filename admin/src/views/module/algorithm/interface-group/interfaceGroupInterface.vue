@@ -29,7 +29,6 @@ const interfaceInterfaceGroupState = reactive<State2<InterfaceInterfaceGroupDto,
     interfaceGroupId: -1,
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {},
 })
 const interfaceInterfaceGroupDFormRules: FormRules<InterfaceInterfaceGroupDto> = {
@@ -110,7 +109,6 @@ const interfaceState = reactive<State2<InterfaceDto, InterfaceUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     label: '',
     ifDisabled: '',
@@ -438,10 +436,12 @@ const confirmAddInterfaceInterfaceGroup = () => {
         <el-form
             ref="interfaceDialogFormsRef"
             v-loading="interfaceDialogLoadingRef"
+            :model="interfaceState.dialogForms"
+            :rules="interfaceDFormRules"
         >
           <el-table
+              class="tp-table-operate-more-row"
               :data="interfaceState.dialogForms"
-              v-if="interfaceState.dialogForms"
           >
             <el-table-column type="index" width="50">
               <template #header>
@@ -454,9 +454,9 @@ const confirmAddInterfaceInterfaceGroup = () => {
                 <span :class="interfaceIfRequired('label')?'tp-table-header-required':''">{{ interfaceDict.label }}</span>
               </template>
               <template #default="{$index}">
-                <div :class="interfaceState.dialogForms_error?.[`${$index}-label`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-form-item :prop="`${$index}.label`" :rules="interfaceDFormRules.label">
                   <el-input v-model="interfaceState.dialogForms[$index].label" :placeholder="interfaceDict.label"/>
-                </div>
+                </el-form-item>
               </template>
             </el-table-column>
             <el-table-column prop="icon" :label="interfaceDict.icon" width="300">
@@ -464,9 +464,9 @@ const confirmAddInterfaceInterfaceGroup = () => {
                 <span :class="interfaceIfRequired('icon')?'tp-table-header-required':''">{{ interfaceDict.icon }}</span>
               </template>
               <template #default="{$index}">
-                <div :class="interfaceState.dialogForms_error?.[`${$index}-icon`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-form-item :prop="`${$index}.icon`" :rules="interfaceDFormRules.icon">
                   <el-input v-model="interfaceState.dialogForms[$index].icon" :placeholder="interfaceDict.icon"/>
-                </div>
+                </el-form-item>
               </template>
             </el-table-column>
             <el-table-column prop="orderNum" :label="interfaceDict.orderNum" width="300">
@@ -474,9 +474,9 @@ const confirmAddInterfaceInterfaceGroup = () => {
                 <span :class="interfaceIfRequired('orderNum')?'tp-table-header-required':''">{{ interfaceDict.orderNum }}</span>
               </template>
               <template #default="{$index}">
-                <div :class="interfaceState.dialogForms_error?.[`${$index}-orderNum`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-form-item :prop="`${$index}.orderNum`" :rules="interfaceDFormRules.orderNum">
                   <el-input-number v-model="interfaceState.dialogForms[$index].orderNum" controls-position="right"/>
-                </div>
+                </el-form-item>
               </template>
             </el-table-column>
             <el-table-column prop="ifDisabled" :label="interfaceDict.ifDisabled" width="70">
@@ -484,9 +484,9 @@ const confirmAddInterfaceInterfaceGroup = () => {
                 <span :class="interfaceIfRequired('ifDisabled')?'tp-table-header-required':''">{{ interfaceDict.ifDisabled }}</span>
               </template>
               <template #default="{$index}">
-                <div :class="interfaceState.dialogForms_error?.[`${$index}-ifDisabled`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-form-item :prop="`${$index}.ifDisabled`" :rules="interfaceDFormRules.ifDisabled">
                   <el-checkbox v-model="interfaceState.dialogForms[$index].ifDisabled" :true-value="final.Y" :false-value="final.N"/>
-                </div>
+                </el-form-item>
               </template>
             </el-table-column>
             <el-table-column prop="ifPublic" :label="interfaceDict.ifPublic" width="70">
@@ -494,9 +494,9 @@ const confirmAddInterfaceInterfaceGroup = () => {
                 <span :class="interfaceIfRequired('ifPublic')?'tp-table-header-required':''">{{ interfaceDict.ifPublic }}</span>
               </template>
               <template #default="{$index}">
-                <div :class="interfaceState.dialogForms_error?.[`${$index}-ifPublic`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-form-item :prop="`${$index}.ifPublic`" :rules="interfaceDFormRules.ifPublic">
                   <el-checkbox v-model="interfaceState.dialogForms[$index].ifPublic" :true-value="final.Y" :false-value="final.N"/>
-                </div>
+                </el-form-item>
               </template>
             </el-table-column>
             <el-table-column prop="perms" :label="interfaceDict.perms" width="300">
@@ -504,9 +504,9 @@ const confirmAddInterfaceInterfaceGroup = () => {
                 <span :class="interfaceIfRequired('perms')?'tp-table-header-required':''">{{ interfaceDict.perms }}</span>
               </template>
               <template #default="{$index}">
-                <div :class="interfaceState.dialogForms_error?.[`${$index}-perms`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-form-item :prop="`${$index}.perms`" :rules="interfaceDFormRules.perms">
                   <el-input v-model="interfaceState.dialogForms[$index].perms" :placeholder="interfaceDict.perms"/>
-                </div>
+                </el-form-item>
               </template>
             </el-table-column>
             <el-table-column prop="url" :label="interfaceDict.url" width="300">
@@ -514,9 +514,9 @@ const confirmAddInterfaceInterfaceGroup = () => {
                 <span :class="interfaceIfRequired('url')?'tp-table-header-required':''">{{ interfaceDict.url }}</span>
               </template>
               <template #default="{$index}">
-                <div :class="interfaceState.dialogForms_error?.[`${$index}-url`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-form-item :prop="`${$index}.url`" :rules="interfaceDFormRules.url">
                   <el-input v-model="interfaceState.dialogForms[$index].url" :placeholder="interfaceDict.url"/>
-                </div>
+                </el-form-item>
               </template>
             </el-table-column>
             <el-table-column prop="remark" :label="interfaceDict.remark" width="300">
@@ -524,9 +524,9 @@ const confirmAddInterfaceInterfaceGroup = () => {
                 <span :class="interfaceIfRequired('remark')?'tp-table-header-required':''">{{ interfaceDict.remark }}</span>
               </template>
               <template #default="{$index}">
-                <div :class="interfaceState.dialogForms_error?.[`${$index}-remark`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+                <el-form-item :prop="`${$index}.remark`" :rules="interfaceDFormRules.remark">
                   <el-input type="textarea" v-model="interfaceState.dialogForms[$index].remark" :placeholder="interfaceDict.remark"/>
-                </div>
+                </el-form-item>
               </template>
             </el-table-column>
             <!--在此上方添加表格列-->
@@ -542,10 +542,10 @@ const confirmAddInterfaceInterfaceGroup = () => {
         </el-form>
       </template>
       <template #footer>
-      <span class="dialog-footer">
-        <el-button :disabled="interfaceDialogButtonLoadingRef" @click="interfaceDCan">取消</el-button>
-        <el-button type="primary" :disabled="interfaceDialogButtonLoadingRef" @click="interfaceDCon">确认</el-button>
-      </span>
+        <span class="dialog-footer">
+          <el-button :disabled="interfaceDialogButtonLoadingRef" @click="interfaceDCan">取消</el-button>
+          <el-button type="primary" :disabled="interfaceDialogButtonLoadingRef" @click="interfaceDCon">确认</el-button>
+        </span>
       </template>
     </el-dialog>
 

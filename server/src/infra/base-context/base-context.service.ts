@@ -1,15 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
-import { CurrentUser, FieldSelectParam, genCurrentUser, USER_INFO_LINSHI_FIELD_NAME } from './baseContext';
-import { base } from "@dcts/common";
+import {
+  CurrentUser,
+  FieldSelectParam,
+  genCurrentUser,
+  THREAD_DATA_OTHER,
+  ThreadDataOther,
+  USER_THREAD_DATA,
+} from './baseContext';
+import { base } from '@dcts/common';
 
 @Injectable()
 export class BaseContextService {
-  constructor(private readonly cls: ClsService) {
-  }
+  constructor(private readonly cls: ClsService) {}
 
   getUserData(): CurrentUser {
-    const header = this.cls.get(USER_INFO_LINSHI_FIELD_NAME);
+    const header = this.cls.get(USER_THREAD_DATA);
     if (header) {
       return header;
     }
@@ -19,7 +25,7 @@ export class BaseContextService {
   }
 
   setUserData(userData: CurrentUser) {
-    this.cls.set(USER_INFO_LINSHI_FIELD_NAME, userData);
+    this.cls.set(USER_THREAD_DATA, userData);
   }
 
   setUserToTopAdmin() {

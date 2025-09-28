@@ -1,15 +1,10 @@
 import { TypeIU, TypeOM } from "@/type/utils/base.ts";
 import { PageVo } from "@/type/asiox.ts";
 
-interface DialogForms_error {
-  [key: string]: boolean | string
-}
-
 export interface State2<T = object, T2 = T> {
-  dialogForm: T2
-  dialogForms?: T2[]
-  dialogForms_error?: DialogForms_error
-  filterForm: Partial<T>
+  dialogForm: T2;
+  dialogForms: T2[];
+  filterForm: Partial<T>;
 }
 
 export class BaseClass {
@@ -27,20 +22,26 @@ export class BaseClass2 {
 }
 
 export class PageDto {
-  pageNum!: number
-  pageSize!: number
+  pageNum!: number;
+  pageSize!: number;
 }
 
 export interface ApiConfig<T, T2 = T> {
-  selectList: (obj: { [P in keyof Omit<T2, 'id'>]?: (T2[P] | SelectParamObj) } & { [P in keyof PageDto]: PageDto[P] }) => Promise<PageVo<T>>
-  selectAll: (obj: { [P in keyof Omit<T2, 'id'>]?: (T2[P] | SelectParamObj) }) => Promise<T[]>
-  selectById: (id: string | number) => Promise<T | null>
-  selectByIds: (ids: (string | number)[]) => Promise<T[]>
-  insertOne: (obj: Omit<T2, 'id'>) => Promise<T>
-  updateOne: (obj: T2) => Promise<T>
-  insertMore: (obj: Omit<T2, 'id'>[]) => Promise<T[]>
-  updateMore: (obj: T2[]) => Promise<T[]>
-  deleteList: (...ids: (string | number)[]) => Promise<boolean>
+  selectList: (
+    obj: { [P in keyof Omit<T2, "id">]?: T2[P] | SelectParamObj } & {
+      [P in keyof PageDto]: PageDto[P];
+    },
+  ) => Promise<PageVo<T>>;
+  selectAll: (obj: {
+    [P in keyof Omit<T2, "id">]?: T2[P] | SelectParamObj;
+  }) => Promise<T[]>;
+  selectById: (id: string | number) => Promise<T | null>;
+  selectByIds: (ids: (string | number)[]) => Promise<T[]>;
+  insertOne: (obj: Omit<T2, "id">) => Promise<T>;
+  updateOne: (obj: T2) => Promise<T>;
+  insertMore: (obj: Omit<T2, "id">[]) => Promise<T[]>;
+  updateMore: (obj: T2[]) => Promise<T[]>;
+  deleteList: (...ids: (string | number)[]) => Promise<boolean>;
 }
 
 // 查询参数的类型为 object 时的格式
@@ -60,27 +61,28 @@ class SelectParamObjBetween {
 }
 
 export class TablePageConfig<T = {}> {
-  selectParam
-  insUpdParam
-  getDataOnMounted
-  pageQuery
-  watchDialogVisible
-  dialogVisibleCallback
-  beforeSelectListCallback
-  selectListCallback
-  beforeInsertCallback
-  insertCallback
-  beforeUpdateCallback
-  updateCallback
-  beforeDeleteCallback
-  deleteCallback
-  dialogFormLoadingFinishCallback
-  bulkOperation
-  changeActiveTabNameCallback
-  activeTabMoreInsCallback
-  activeTabMoreInsFinishCallback
-  activeTabMoreDelCallback
-  ifShowSelectForm
+  selectParam;
+  insUpdParam;
+  getDataOnMounted;
+  pageQuery;
+  watchDialogVisible;
+  dialogVisibleCallback;
+  refreshCallback;
+  beforeSelectListCallback;
+  selectListCallback;
+  beforeInsertCallback;
+  insertCallback;
+  beforeUpdateCallback;
+  updateCallback;
+  beforeDeleteCallback;
+  deleteCallback;
+  dialogFormLoadingFinishCallback;
+  bulkOperation;
+  changeActiveTabNameCallback;
+  activeTabMoreInsCallback;
+  activeTabMoreInsFinishCallback;
+  activeTabMoreDelCallback;
+  ifShowSelectForm;
 
   /**
    * @param selectParam 补充的查询参数
@@ -89,6 +91,7 @@ export class TablePageConfig<T = {}> {
    * @param pageQuery 分页，默认true
    * @param watchDialogVisible 监听dialogVisible变化，默认true
    * @param dialogVisibleCallback dialogVisible变化时的回调
+   * @param refreshCallback 刷新时的回调
    * @param beforeSelectListCallback selectList前的回调
    * @param selectListCallback selectList回调
    * @param beforeInsertCallback 新增前的回调
@@ -106,57 +109,59 @@ export class TablePageConfig<T = {}> {
    * @param ifShowSelectForm 特殊情况下，需要用这个才能显示查询表单
    */
   constructor({
-                selectParam = {},
-                insUpdParam = {},
-                getDataOnMounted = true,
-                pageQuery = true,
-                watchDialogVisible = true,
-                dialogVisibleCallback = null,
-                beforeSelectListCallback = null,
-                selectListCallback = null,
-                beforeInsertCallback = null,
-                insertCallback = null,
-                beforeUpdateCallback = null,
-                updateCallback = null,
-                beforeDeleteCallback = null,
-                deleteCallback = null,
-                dialogFormLoadingFinishCallback = null,
-                bulkOperation = false,
-                changeActiveTabNameCallback = null,
-                activeTabMoreInsCallback = null,
-                activeTabMoreInsFinishCallback = null,
-                activeTabMoreDelCallback = null,
-                ifShowSelectForm = false,
-              }: {
-                selectParam?: { [P in keyof T]?: (T[P] | SelectParamObj) }
-                insUpdParam?: Partial<T>
-                getDataOnMounted?: boolean
-                pageQuery?: boolean
-                watchDialogVisible?: boolean
-                dialogVisibleCallback?: null | ((newVal: boolean) => void)
-                beforeSelectListCallback?: null | Function
-                selectListCallback?: null | Function
-                beforeInsertCallback?: null | ((dialogType: TypeIU) => void)
-                insertCallback?: null | ((dialogType: TypeIU) => void)
-                beforeUpdateCallback?: null | ((dialogType: TypeIU) => void)
-                updateCallback?: null | ((dialogType: TypeIU) => void)
-                beforeDeleteCallback?: null | Function
-                deleteCallback?: null | Function
-                dialogFormLoadingFinishCallback?: null | ((activeTabName: TypeOM) => void)
-                bulkOperation?: boolean
-                changeActiveTabNameCallback?: null | ((newVal: TypeOM) => void)
-                activeTabMoreInsCallback?: null | Function
-                activeTabMoreInsFinishCallback?: null | Function
-                activeTabMoreDelCallback?: null | ((index: number) => void)
-                ifShowSelectForm?: boolean
-              } = {}
-  ) {
+    selectParam = {},
+    insUpdParam = {},
+    getDataOnMounted = true,
+    pageQuery = true,
+    watchDialogVisible = true,
+    dialogVisibleCallback = null,
+    refreshCallback = null,
+    beforeSelectListCallback = null,
+    selectListCallback = null,
+    beforeInsertCallback = null,
+    insertCallback = null,
+    beforeUpdateCallback = null,
+    updateCallback = null,
+    beforeDeleteCallback = null,
+    deleteCallback = null,
+    dialogFormLoadingFinishCallback = null,
+    bulkOperation = false,
+    changeActiveTabNameCallback = null,
+    activeTabMoreInsCallback = null,
+    activeTabMoreInsFinishCallback = null,
+    activeTabMoreDelCallback = null,
+    ifShowSelectForm = false,
+  }: {
+    selectParam?: { [P in keyof T]?: T[P] | SelectParamObj | null };
+    insUpdParam?: Partial<T>;
+    getDataOnMounted?: boolean;
+    pageQuery?: boolean;
+    watchDialogVisible?: boolean;
+    dialogVisibleCallback?: null | ((newVal: boolean) => void);
+    refreshCallback?: null | Function;
+    beforeSelectListCallback?: null | Function;
+    selectListCallback?: null | Function;
+    beforeInsertCallback?: null | ((dialogType: TypeIU) => void);
+    insertCallback?: null | ((dialogType: TypeIU) => void);
+    beforeUpdateCallback?: null | ((dialogType: TypeIU) => void);
+    updateCallback?: null | ((dialogType: TypeIU) => void);
+    beforeDeleteCallback?: null | Function;
+    deleteCallback?: null | Function;
+    dialogFormLoadingFinishCallback?: null | ((activeTabName: TypeOM) => void);
+    bulkOperation?: boolean;
+    changeActiveTabNameCallback?: null | ((newVal: TypeOM) => void);
+    activeTabMoreInsCallback?: null | Function;
+    activeTabMoreInsFinishCallback?: null | Function;
+    activeTabMoreDelCallback?: null | ((index: number) => void);
+    ifShowSelectForm?: boolean;
+  } = {}) {
     this.selectParam = selectParam;
     this.insUpdParam = insUpdParam;
     this.getDataOnMounted = getDataOnMounted;
     this.pageQuery = pageQuery;
     this.watchDialogVisible = watchDialogVisible;
     this.dialogVisibleCallback = dialogVisibleCallback;
+    this.refreshCallback = refreshCallback;
     this.beforeSelectListCallback = beforeSelectListCallback;
     this.selectListCallback = selectListCallback;
     this.beforeInsertCallback = beforeInsertCallback;

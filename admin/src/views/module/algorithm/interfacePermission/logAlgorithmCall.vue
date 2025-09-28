@@ -9,7 +9,7 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { LogAlgorithmCallDto, LogAlgorithmCallUpdDto } from "@/type/module/algorithm/logAlgorithmCall.ts";
 import { logAlgorithmCallApi } from "@/api/module/algorithm/logAlgorithmCall.ts";
 import { logAlgorithmCallDict } from "@/dict/module/algorithm/logAlgorithmCall.ts";
-import { timeUtils } from "@dcts/common";
+import { base, timeUtils } from "@dcts/common";
 
 const props = defineProps({
   selectUGPId: {
@@ -32,7 +32,6 @@ const state = reactive<State2<LogAlgorithmCallDto, LogAlgorithmCallUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     pperms: '',
     perms: '',
@@ -175,7 +174,11 @@ const fCan2 = () => {
         <el-input v-model="state.filterForm.userId" :placeholder="logAlgorithmCallDict.userId"/>
       </el-form-item>
       <el-form-item :label="logAlgorithmCallDict.loginRole" prop="loginRole">
-        <el-input v-model="state.filterForm.loginRole" :placeholder="logAlgorithmCallDict.loginRole"/>
+        <!--<el-input v-model="state.filterForm.loginRole" :placeholder="logAlgorithmCallDict.loginRole"/>-->
+        <el-select v-model="state.filterForm.loginRole" :placeholder="logAlgorithmCallDict.loginRole" clearable filterable>
+          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.admin]" :value="base.LoginRoleEnum.admin"/>
+          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.visitor]" :value="base.LoginRoleEnum.visitor"/>
+        </el-select>
       </el-form-item>
       <el-form-item :label="logAlgorithmCallDict.authType" prop="authType">
         <el-input v-model="state.filterForm.authType" :placeholder="logAlgorithmCallDict.authType"/>
@@ -234,7 +237,11 @@ const fCan2 = () => {
       <el-table-column prop="pperms" :label="logAlgorithmCallDict.pperms" width="180"/>
       <el-table-column prop="perms" :label="logAlgorithmCallDict.perms" width="180"/>
       <el-table-column prop="userId" :label="logAlgorithmCallDict.userId" width="120"/>
-      <el-table-column prop="loginRole" :label="logAlgorithmCallDict.loginRole" width="120"/>
+      <el-table-column prop="loginRole" :label="logAlgorithmCallDict.loginRole" width="120">
+        <template #default="{row}">
+          {{ base.LoginRoleDict[row.loginRole as base.LoginRoleEnum] || row.loginRole }}
+        </template>
+      </el-table-column>
       <el-table-column prop="authType" :label="logAlgorithmCallDict.authType" width="120"/>
       <el-table-column prop="callIp" :label="logAlgorithmCallDict.callIp" width="120"/>
       <el-table-column prop="ifSuccess" :label="logAlgorithmCallDict.ifSuccess" width="120"/>

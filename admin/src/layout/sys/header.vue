@@ -6,7 +6,6 @@ import { useRouterStore } from "@/store/module/router.ts";
 import { useUserStore } from '@/store/module/user';
 import { fileBaseUrl } from "@/api/request.ts";
 import { useSysStore } from "@/store/module/sys.ts";
-import { allLoginRoles } from "@/utils/base.ts";
 import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
 import { useSysConfigStore } from "@/store/module/sysConfig.ts";
 import { base } from "@dcts/common";
@@ -31,17 +30,17 @@ const userInfo = computed(() => {
     avatar: '',
     nickname: '',
   }
-  if (userStore.loginRole === 'admin') {
+  if (userStore.loginRole === base.LoginRoleEnum.admin) {
     ret.avatar = userinfo.admin!.avatar;
     ret.nickname = userinfo.admin!.nickname;
   }
-  if (userStore.loginRole === 'visitor') {
+  if (userStore.loginRole === base.LoginRoleEnum.visitor) {
     ret.avatar = userinfo.visitor!.avatar;
     ret.nickname = userinfo.visitor!.nickname;
   }
-  const find2 = allLoginRoles.find(item => item.value === userStore.loginRole);
-  if (find2) {
-    ret._loginRole = find2.label
+  const v = base.LoginRoleDict[userStore.loginRole as base.LoginRoleEnum];
+  if (v) {
+    ret._loginRole = v;
   }
   return ret;
 })

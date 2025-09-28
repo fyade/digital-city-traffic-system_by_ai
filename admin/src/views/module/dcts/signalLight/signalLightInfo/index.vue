@@ -24,7 +24,6 @@ const state = reactive<State2<SignalLightInfoDto, SignalLightInfoUpdDto>>({
     description: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {},
 })
 const dFormRules: FormRules<SignalLightInfoDto> = {
@@ -153,10 +152,12 @@ const {
       <el-form
           ref="dialogFormsRef"
           v-loading="dialogLoadingRef"
+          :model="state.dialogForms"
+          :rules="dFormRules"
       >
         <el-table
+            class="tp-table-operate-more-row"
             :data="state.dialogForms"
-            v-if="state.dialogForms"
         >
           <el-table-column type="index" width="50">
             <template #header>
@@ -169,9 +170,9 @@ const {
               <span :class="ifRequired('name')?'tp-table-header-required':''">{{ signalLightInfoDict.name }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-name`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.name`" :rules="dFormRules.name">
                 <el-input v-model="state.dialogForms[$index].name" :placeholder="signalLightInfoDict.name"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="location" :label="signalLightInfoDict.location" width="300">
@@ -179,9 +180,9 @@ const {
               <span :class="ifRequired('location')?'tp-table-header-required':''">{{ signalLightInfoDict.location }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-location`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.location`" :rules="dFormRules.location">
                 <el-input v-model="state.dialogForms[$index].location" :placeholder="signalLightInfoDict.location"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="description" :label="signalLightInfoDict.description" width="300">
@@ -189,9 +190,9 @@ const {
               <span :class="ifRequired('description')?'tp-table-header-required':''">{{ signalLightInfoDict.description }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-description`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.description`" :rules="dFormRules.description">
                 <el-input v-model="state.dialogForms[$index].description" :placeholder="signalLightInfoDict.description"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <!--在此上方添加表格列-->

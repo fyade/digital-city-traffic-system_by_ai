@@ -44,7 +44,6 @@ const state = reactive<State2<MenuDto<string>, MenuUpdDto<string>>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {},
 })
 const dFormRules: FormRules<MenuDto> = {

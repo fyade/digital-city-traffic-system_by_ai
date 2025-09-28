@@ -30,7 +30,6 @@ const state = reactive<State2<MenuIpWhiteListDto, MenuIpWhiteListUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     whiteList: '',
     fromType: '',
@@ -170,10 +169,12 @@ const {
       <el-form
           ref="dialogFormsRef"
           v-loading="dialogLoadingRef"
+          :model="state.dialogForms"
+          :rules="dFormRules"
       >
         <el-table
+            class="tp-table-operate-more-row"
             :data="state.dialogForms"
-            v-if="state.dialogForms"
         >
           <el-table-column type="index" width="50">
             <template #header>
@@ -186,9 +187,9 @@ const {
               <span :class="ifRequired('whiteList')?'tp-table-header-required':''">{{ menuIpWhiteListDict.whiteList }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-whiteList`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.whiteList`" :rules="dFormRules.whiteList">
                 <el-input v-model="state.dialogForms[$index].whiteList" :placeholder="menuIpWhiteListDict.whiteList"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="fromType" :label="menuIpWhiteListDict.fromType" width="300">
@@ -196,13 +197,13 @@ const {
               <span :class="ifRequired('fromType')?'tp-table-header-required':''">{{ menuIpWhiteListDict.fromType }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-fromType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.fromType`" :rules="dFormRules.fromType">
                 <!--<el-input v-model="state.dialogForms[$index].fromType" :placeholder="menuIpWhiteListDict.fromType"/>-->
                 <el-radio-group v-model="state.dialogForms[$index].fromType">
                   <el-radio :value="base.TMWLTypeEnum.T_IP">{{ base.mIWLTypeDict[base.TMWLTypeEnum.T_IP] }}</el-radio>
                   <el-radio :value="base.TMWLTypeEnum.T_HOST">{{ base.mIWLTypeDict[base.TMWLTypeEnum.T_HOST] }}</el-radio>
                 </el-radio-group>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="remark" :label="menuIpWhiteListDict.remark" width="300">
@@ -210,9 +211,9 @@ const {
               <span :class="ifRequired('remark')?'tp-table-header-required':''">{{ menuIpWhiteListDict.remark }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-remark`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.remark`" :rules="dFormRules.remark">
                 <el-input type="textarea" v-model="state.dialogForms[$index].remark" :placeholder="menuIpWhiteListDict.remark"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <!--在此上方添加表格列-->

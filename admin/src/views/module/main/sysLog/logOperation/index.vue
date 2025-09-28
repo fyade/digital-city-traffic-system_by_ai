@@ -15,7 +15,7 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { LogOperationDto, LogOperationUpdDto } from "@/type/module/main/sysLog/logOperation.ts";
 import { logOperationApi } from "@/api/module/main/sysLog/logOperation.ts";
 import { logOperationDict } from "@/dict/module/main/sysLog/logOperation.ts";
-import { timeUtils } from "@dcts/common";
+import { base, timeUtils } from "@dcts/common";
 
 const state = reactive<State2<LogOperationDto, LogOperationUpdDto>>({
   dialogForm: {
@@ -34,7 +34,6 @@ const state = reactive<State2<LogOperationDto, LogOperationUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     reqId: '',
     callIp: '',
@@ -202,7 +201,11 @@ const showReqParam = (rowId: number) => {
         <el-input v-model="state.filterForm.userId" :placeholder="logOperationDict.userId"/>
       </el-form-item>
       <el-form-item :label="logOperationDict.loginRole" prop="loginRole">
-        <el-input v-model="state.filterForm.loginRole" :placeholder="logOperationDict.loginRole"/>
+        <!--<el-input v-model="state.filterForm.loginRole" :placeholder="logOperationDict.loginRole"/>-->
+        <el-select v-model="state.filterForm.loginRole" :placeholder="logOperationDict.loginRole" clearable filterable>
+          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.admin]" :value="base.LoginRoleEnum.admin"/>
+          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.visitor]" :value="base.LoginRoleEnum.visitor"/>
+        </el-select>
       </el-form-item>
       <el-form-item :label="logOperationDict.authType" prop="authType">
         <el-input v-model="state.filterForm.authType" :placeholder="logOperationDict.authType"/>
@@ -212,7 +215,7 @@ const showReqParam = (rowId: number) => {
         <el-select v-model="state.filterForm.ifSuccess" :placeholder="logOperationDict.ifSuccess" clearable filterable>
           <el-option label="是" :value="final.Y"/>
           <el-option label="否" :value="final.N"/>
-          <el-option label="不确定" value="O"/>
+          <el-option label="不确定" :value="final.O"/>
         </el-select>
       </el-form-item>
       <el-form-item :label="logOperationDict.createTime" prop="createTime">
@@ -267,7 +270,11 @@ const showReqParam = (rowId: number) => {
       <el-table-column prop="hostName" :label="logOperationDict.hostName" width="180"/>
       <el-table-column prop="perms" :label="logOperationDict.perms" width="240"/>
       <el-table-column prop="userId" :label="logOperationDict.userId" width="120"/>
-      <el-table-column prop="loginRole" :label="logOperationDict.loginRole" width="120"/>
+      <el-table-column prop="loginRole" :label="logOperationDict.loginRole" width="120">
+        <template #default="{row}">
+          {{ base.LoginRoleDict[row.loginRole as base.LoginRoleEnum] || row.loginRole }}
+        </template>
+      </el-table-column>
       <el-table-column prop="authType" :label="logOperationDict.authType" width="120"/>
       <el-table-column prop="reqParam" :label="logOperationDict.reqParam" width="360">
         <template #default="{row}">

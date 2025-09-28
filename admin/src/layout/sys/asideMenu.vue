@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CONFIG, final } from "@/utils/base.ts";
+import { final } from "@/utils/base.ts";
 import { computed } from "vue";
 import { type RouteRecord, RouteRecordNormalized, RouteRecordRaw, useRoute } from "vue-router";
 import { useSysConfigStore } from "@/store/module/sysConfig.ts";

@@ -27,7 +27,6 @@ const state = reactive<State2<SysDto, SysUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     name: '',
     perms: '',
@@ -169,10 +168,12 @@ const {
       <el-form
           ref="dialogFormsRef"
           v-loading="dialogLoadingRef"
+          :model="state.dialogForms"
+          :rules="dFormRules"
       >
         <el-table
+            class="tp-table-operate-more-row"
             :data="state.dialogForms"
-            v-if="state.dialogForms"
         >
           <el-table-column type="index" width="50">
             <template #header>
@@ -185,9 +186,9 @@ const {
               <span :class="ifRequired('name')?'tp-table-header-required':''">{{ sysDict.name }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-name`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.name`" :rules="dFormRules.name">
                 <el-input v-model="state.dialogForms[$index].name" :placeholder="sysDict.name"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="perms" :label="sysDict.perms" width="300">
@@ -195,9 +196,9 @@ const {
               <span :class="ifRequired('perms')?'tp-table-header-required':''">{{ sysDict.perms }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-perms`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.perms`" :rules="dFormRules.perms">
                 <el-input v-model="state.dialogForms[$index].perms" :placeholder="sysDict.perms"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="orderNum" :label="sysDict.orderNum" width="300">
@@ -205,9 +206,9 @@ const {
               <span :class="ifRequired('orderNum')?'tp-table-header-required':''">{{ sysDict.orderNum }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-orderNum`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.orderNum`" :rules="dFormRules.orderNum">
                 <el-input-number v-model="state.dialogForms[$index].orderNum" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="path" :label="sysDict.path" width="300">
@@ -215,9 +216,9 @@ const {
               <span :class="ifRequired('path')?'tp-table-header-required':''">{{ sysDict.path }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-path`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.path`" :rules="dFormRules.path">
                 <el-input v-model="state.dialogForms[$index].path" :placeholder="sysDict.path"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="ifDisabled" :label="sysDict.ifDisabled" width="70">
@@ -225,9 +226,9 @@ const {
               <span :class="ifRequired('ifDisabled')?'tp-table-header-required':''">{{ sysDict.ifDisabled }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-ifDisabled`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.ifDisabled`" :rules="dFormRules.ifDisabled">
                 <el-checkbox v-model="state.dialogForms[$index].ifDisabled" :true-value="final.Y" :false-value="final.N"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="remark" :label="sysDict.remark" width="300">
@@ -235,9 +236,9 @@ const {
               <span :class="ifRequired('remark')?'tp-table-header-required':''">{{ sysDict.remark }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-remark`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.remark`" :rules="dFormRules.remark">
                 <el-input type="textarea" v-model="state.dialogForms[$index].remark" :placeholder="sysDict.remark"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <!--在此上方添加表格列-->

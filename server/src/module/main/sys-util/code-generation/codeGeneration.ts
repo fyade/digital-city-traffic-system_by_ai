@@ -256,9 +256,9 @@ ${index % 2 === 1 || ifLastAndSingular ? `          </el-col>
               <span :class="ifRequired('${tsName}')?'tp-table-header-required':''">{{ ${moduleName1}Dict.${tsName} }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[\`\${$index}-${tsName}\`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="\`\$\{$index\}.${tsName}\`" :rules="dFormRules.${tsName}">
                 <el-input-number v-model="state.dialogForms[$index].${tsName}" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>`;
       }
@@ -283,9 +283,9 @@ ${index % 2 === 1 || ifLastAndSingular ? `          </el-col>
               <span :class="ifRequired('${tsName}')?'tp-table-header-required':''">{{ ${moduleName1}Dict.${tsName} }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[\`\${$index}-${tsName}\`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="\`\$\{$index\}.${tsName}\`" :rules="dFormRules.${tsName}">
                 <el-input type="textarea" v-model="state.dialogForms[$index].${tsName}" :placeholder="${moduleName1}Dict.${tsName}"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>`;
       }
@@ -313,9 +313,9 @@ ${index % 2 === 1 || ifLastAndSingular ? `          </el-col>
               <span :class="ifRequired('${tsName}')?'tp-table-header-required':''">{{ ${moduleName1}Dict.${tsName} }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[\`\${$index}-${tsName}\`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="\`\$\{$index\}.${tsName}\`" :rules="dFormRules.${tsName}">
                 <el-checkbox v-model="state.dialogForms[$index].${tsName}" :true-value="final.Y" :false-value="final.N"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>`;
       }
@@ -340,9 +340,9 @@ ${index % 2 === 1 || ifLastAndSingular ? `          </el-col>
               <span :class="ifRequired('${tsName}')?'tp-table-header-required':''">{{ ${moduleName1}Dict.${tsName} }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[\`\${$index}-${tsName}\`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="\`\$\{$index\}.${tsName}\`" :rules="dFormRules.${tsName}">
                 <el-input v-model="state.dialogForms[$index].${tsName}" :placeholder="${moduleName1}Dict.${tsName}"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>`;
       }
@@ -817,7 +817,6 @@ ${
   }
 ${`  },`}
 ${`  dialogForms: [],`}
-${`  dialogForms_error: {},`}
 ${`  filterForm: {},`}
 ${`})`}
 ${`const dFormRules: FormRules<${moduleName2}Dto> = {`}
@@ -953,10 +952,12 @@ ${`    <template v-if="activeTabName===final.more">`}
 ${`      <el-form`}
 ${`          ref="dialogFormsRef"`}
 ${`          v-loading="dialogLoadingRef"`}
+${`          :model="state.dialogForms"`}
+${`          :rules="dFormRules"`}
 ${`      >`}
 ${`        <el-table`}
+${`            class="tp-table-operate-more-row"`}
 ${`            :data="state.dialogForms"`}
-${`            v-if="state.dialogForms"`}
 ${`        >`}
 ${`          <el-table-column type="index" width="50">`}
 ${`            <template #header>`}
@@ -1081,28 +1082,66 @@ ${`</template>`}
 ${`<style scoped>`}
 ${`</style>`}
 `;
+  const other = JSON.stringify([
+    {
+      permission: `${sysPath}${isBusiness?`:${businessName1}`:''}:${moduleName1}:selList`,
+      label: `分页查询${table.moduleNameCn}`,
+    },
+    {
+      permission: `${sysPath}${isBusiness?`:${businessName1}`:''}:${moduleName1}:selAll`,
+      label: `查询所有${table.moduleNameCn}`,
+    },
+    {
+      permission: `${sysPath}${isBusiness?`:${businessName1}`:''}:${moduleName1}:selOnes`,
+      label: `查询多个${table.moduleNameCn}（根据id）`,
+    },
+    {
+      permission: `${sysPath}${isBusiness?`:${businessName1}`:''}:${moduleName1}:selOne`,
+      label: `查询单个${table.moduleNameCn}`,
+    },
+    {
+      permission: `${sysPath}${isBusiness?`:${businessName1}`:''}:${moduleName1}:ins`,
+      label: `新增${table.moduleNameCn}`,
+    },
+    {
+      permission: `${sysPath}${isBusiness?`:${businessName1}`:''}:${moduleName1}:inss`,
+      label: `批量新增${table.moduleNameCn}`,
+    },
+    {
+      permission: `${sysPath}${isBusiness?`:${businessName1}`:''}:${moduleName1}:upd`,
+      label: `修改${table.moduleNameCn}`,
+    },
+    {
+      permission: `${sysPath}${isBusiness?`:${businessName1}`:''}:${moduleName1}:upds`,
+      label: `批量修改${table.moduleNameCn}`,
+    },
+    {
+      permission: `${sysPath}${isBusiness?`:${businessName1}`:''}:${moduleName1}:del`,
+      label: `删除${table.moduleNameCn}`,
+    },
+  ])
   return [
     {
       fileName: `dto.ts`,
-      filePath: `/src/module/${sysPath}${isBusiness?`/${businessName3}`:''}/${moduleName3}`,
+      filePath: `/server/src/module/${sysPath}${isBusiness?`/${businessName3}`:''}/${moduleName3}`,
       canCopy: true,
       code: hd1,
     },
     {
       fileName: `${moduleName3}.service.ts`,
-      filePath: `/src/module/${sysPath}${isBusiness?`/${businessName3}`:''}/${moduleName3}`,
+      filePath: `/server/src/module/${sysPath}${isBusiness?`/${businessName3}`:''}/${moduleName3}`,
       canCopy: true,
       code: hd2,
     },
     {
       fileName: `${moduleName3}.controller.ts`,
-      filePath: `/src/module/${sysPath}${isBusiness?`/${businessName3}`:''}/${moduleName3}`,
+      filePath: `/server/src/module/${sysPath}${isBusiness?`/${businessName3}`:''}/${moduleName3}`,
       canCopy: true,
       code: hd3,
     },
     {
       fileName: `${moduleName3}.module.ts`,
-      filePath: `/src/module/${sysPath}${isBusiness?`/${businessName3}`:''}/${moduleName3}`,
+      filePath: `/server/src/module/${sysPath}${isBusiness?`/${businessName3}`:''}/${moduleName3}`,
       canCopy: true,
       code: hd4,
     },
@@ -1114,27 +1153,33 @@ ${`</style>`}
     // },
     {
       fileName: `${moduleName1}.ts`,
-      filePath: `/src/type/module/${sysPath}${isBusiness?`/${businessName1}`:''}`,
+      filePath: `/admin/src/type/module/${sysPath}${isBusiness?`/${businessName1}`:''}`,
       canCopy: true,
       code: qd1,
     },
     {
       fileName: `${moduleName1}.ts`,
-      filePath: `/src/dict/module/${sysPath}${isBusiness?`/${businessName1}`:''}`,
+      filePath: `/admin/src/dict/module/${sysPath}${isBusiness?`/${businessName1}`:''}`,
       canCopy: true,
       code: qd2,
     },
     {
       fileName: `${moduleName1}.ts`,
-      filePath: `/src/api/module/${sysPath}${isBusiness?`/${businessName1}`:''}`,
+      filePath: `/admin/src/api/module/${sysPath}${isBusiness?`/${businessName1}`:''}`,
       canCopy: true,
       code: qd3,
     },
     {
       fileName: `index.vue`,
-      filePath: `/src/views/module/${sysPath}${isBusiness?`/${businessName1}`:''}/${moduleName1}`,
+      filePath: `/admin/src/views/module/${sysPath}${isBusiness?`/${businessName1}`:''}/${moduleName1}`,
       canCopy: true,
       code: qd4,
     },
+    {
+      fileName: '权限字符集',
+      filePath: 'null',
+      canCopy: true,
+      code: other,
+    }
   ];
 }

@@ -14,8 +14,8 @@ import { SysDto } from '../../module/main/sys-manage/sys/dto';
 import { base, baseUtils, timeUtils } from '@dcts/common';
 import { MenuThrottleDto } from '../../module/main/sys-manage/menu-throttle/dto';
 import { WinstonService } from '../winston/winston.service';
-import { MysqlPrismaoService } from "../prisma/mysql.prismao.service";
-import { PrismaoService } from "../prisma/prismao.service";
+import { MysqlPrismaoService } from '../prisma/mysql.prismao.service';
+import { PrismaoService } from '../prisma/prismao.service';
 
 @Injectable()
 export class AuthService {
@@ -35,8 +35,8 @@ export class AuthService {
     const data = await this.mysqlPrismao.sys_user_api_key.findMany({
       where: {
         api_key: apiKey,
-        ...this.prismao.defaultSelArg().where
-      }
+        ...this.prismao.defaultSelArg().where,
+      },
     });
     return data[0];
   }
@@ -64,7 +64,7 @@ export class AuthService {
     if (s) {
       return s === final.Y;
     }
-    if (loginRole === 'admin') {
+    if (loginRole === base.LoginRoleEnum.admin) {
       const admintop = await this.mysqlPrismao.sys_admin_top.findFirst({
         where: {
           user_id: userId,
@@ -187,7 +187,9 @@ export class AuthService {
     ) {
       return true;
     }
-    const whiteList_host = ips.filter((item) => item.fromType === base.TMWLTypeEnum.T_HOST).map((item) => item.whiteList);
+    const whiteList_host = ips
+      .filter((item) => item.fromType === base.TMWLTypeEnum.T_HOST)
+      .map((item) => item.whiteList);
     if (
       whiteList_host.findIndex((who) => {
         return who.startsWith('http://') || who.startsWith('https://')
@@ -734,7 +736,7 @@ export class AuthService {
     `;
     const allRoleIds = [...allRoleIds1.map((item) => item.role_id)];
     const allDeptIds = [...allDeptIds1.map((item) => item.dept_id)];
-    if (loginRole === 'admin') {
+    if (loginRole === base.LoginRoleEnum.admin) {
       const sutdps_ = await this.mysqlPrismao.sys_user_table_default_permission.findMany({
         where: {
           table_name: 'sys_user',
@@ -765,7 +767,7 @@ export class AuthService {
       allRoleIds.push(...allRoleIds2.map((item) => item.id));
       allDeptIds.push(...allDeptIds2.map((item) => item.id));
     }
-    if (loginRole === 'visitor') {
+    if (loginRole === base.LoginRoleEnum.visitor) {
       const sutdps_ = await this.mysqlPrismao.sys_user_table_default_permission.findMany({
         where: {
           table_name: 'sys_user_visitor',
@@ -799,6 +801,37 @@ export class AuthService {
     return {
       allRoleIds,
       allDeptIds,
+    };
+  }
+
+  /**
+   * 用户的角色名和部门名
+   * @param userId
+   * @param loginRole
+   * @param ifAdmin
+   */
+  async rnamesAndDnamesOfUser(userId: string, loginRole: string, ifAdmin: boolean = false) {
+    const rads = await this.rolesAndDeptsOfUser(userId, loginRole, ifAdmin);
+    const defaultSelArg = this.prismao.defaultSelArg();
+    const roles = await this.mysqlPrismao.sys_role.findMany({
+      where: {
+        id: {
+          in: rads.allRoleIds,
+        },
+        ...defaultSelArg.where,
+      },
+    });
+    const depts = await this.mysqlPrismao.sys_dept.findMany({
+      where: {
+        id: {
+          in: rads.allDeptIds,
+        },
+        ...defaultSelArg.where,
+      },
+    });
+    return {
+      allRoleNames: roles.map((item) => item.label),
+      allDeptNames: depts.map((item) => item.label),
     };
   }
 

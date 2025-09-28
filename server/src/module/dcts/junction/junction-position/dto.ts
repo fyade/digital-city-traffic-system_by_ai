@@ -3,7 +3,7 @@ import { PageDto } from '../../../../common/dto/PageDto';
 import { IsNotEmpty, IsOptional, MaxLength, IsArray, ValidateNested, Matches } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { REGEX_DCTS_GEOM, REGEX_DCTS_GEOM_DESCR } from "../../../../util/RegularUtils";
+import { regularUtils } from "@dcts/common";
 
 export class JunctionPositionDto extends BaseDto {
   id: number;
@@ -48,7 +48,7 @@ export class JunctionPositionSelAllDto {
 export class JunctionPositionInsOneDto {
   @ApiProperty({ description: '位置', required: true })
   @IsNotEmpty({ message: '位置不能为空' })
-  @Matches(REGEX_DCTS_GEOM, { message: `位置必须为[${REGEX_DCTS_GEOM_DESCR}]格式` })
+  @Matches(regularUtils.REGEX_DCTS_GEOM, { message: `位置必须为[${regularUtils.REGEX_DCTS_GEOM_DESCR}]格式` })
   geom: string;
 
   @ApiProperty({ description: '路口名', required: true })

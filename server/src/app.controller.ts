@@ -10,7 +10,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 @UsePipes(new ValidationPipe({ transform: true }))
 export class AppController {
   constructor(
-    private readonly appService: AppService,
+      private readonly appService: AppService,
   ) {
   }
 

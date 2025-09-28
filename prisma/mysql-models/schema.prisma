@@ -1,8 +1,7 @@
 generator clientMysql {
-  provider        = "prisma-client-js"
-  output          = "../prisma-generated/client-mysql"
-  previewFeatures = ["prismaSchemaFolder"]
-  binaryTargets   = ["darwin", "windows", "linux-musl", "rhel-openssl-1.0.x", "debian-openssl-3.0.x"]
+  provider      = "prisma-client-js"
+  output        = "../prisma-generated/client-mysql"
+  binaryTargets = ["darwin", "windows", "linux-musl", "rhel-openssl-1.0.x", "debian-openssl-3.0.x"]
 }
 
 datasource dbMysql {
@@ -586,7 +585,7 @@ model tbl_file {
   id            String   @id @default(uuid()) @dbMysql.VarChar(50)
   file_name     String   @dbMysql.VarChar(200)
   file_new_name String   @dbMysql.VarChar(200)
-  file_size     BigInt   @dbMysql.BigInt
+  file_size     Int      @dbMysql.Int
   file_md5      String   @dbMysql.VarChar(50)
   if_chunk      String   @dbMysql.Char(1)
   chunk_num     Int?     @dbMysql.Int

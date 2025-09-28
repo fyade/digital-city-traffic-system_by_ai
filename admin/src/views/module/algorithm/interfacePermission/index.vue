@@ -35,7 +35,6 @@ const userGroupState = reactive<State2<UserGroupDto, UserGroupUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     label: ''
   },
@@ -108,7 +107,6 @@ const interfaceGroupState = reactive<State2<InterfaceGroupDto, InterfaceGroupUpd
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     label: ''
   },
@@ -188,7 +186,6 @@ const userGroupPermissionState = reactive<State2<UserGroupPermissionDto, UserGro
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {},
 })
 const userGroupPermissionDFormRules: FormRules<UserGroupPermissionDto> = {

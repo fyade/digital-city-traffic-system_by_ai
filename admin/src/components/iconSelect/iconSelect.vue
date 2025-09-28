@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { getFilenameWithoutSuffix } from "@/utils/RegularUtils.ts";
 import iconEnCn from '../../assets/iconEnCn.json'
-import { CONFIG } from "@/utils/base.ts";
+import { regularUtils } from "@dcts/common";
 
 const modelValue = defineModel({type: String})
 const props = defineProps({
@@ -24,7 +23,7 @@ const files = import.meta.glob('/src/assets/icon/*.svg');
 icons.value = Object.keys(files).map((path) => {
   const module = files[path];
   const fileName = path!.split('/')!.pop() as string; // 提取文件名部分
-  const filenameWithoutSuffix = getFilenameWithoutSuffix(fileName);
+  const filenameWithoutSuffix = regularUtils.getFilenameWithoutSuffix(fileName);
   return {
     url: (module as unknown as { default: string }).default, // 图片相对路径（/public/icon/DNS服务.svg）
     name: fileName, // 文件名(带后缀)

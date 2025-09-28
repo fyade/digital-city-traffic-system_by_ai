@@ -2,16 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { R } from './common/R';
 import { NonSupportException } from './exception/non-support.exception';
 import { AuthService } from './infra/auth/auth.service';
-import { getAllFiles } from './util/FileUtils';
 import { BaseContextService } from './infra/base-context/base-context.service';
 import { serverConfig } from "@dcts/config";
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { REGEX_MAIN_APP_1_match, REGEX_MAIN_APP_2_match, REGEX_MAIN_APP_3_match } from "./util/RegularUtils";
 import { WinstonService } from "./infra/winston/winston.service";
 import { MysqlPrismaoService } from "./infra/prisma/mysql.prismao.service";
-import { PrismaoService } from "./infra/prisma/prismao.service";
-import { base } from "@dcts/common";
+import { PrismaoService } from './infra/prisma/prismao.service';
+import { base, fileUtils, regularUtils } from '@dcts/common';
 
 const si = require("systeminformation");
 
@@ -20,11 +18,11 @@ export class AppService {
   private cpuUsageMSDefault: number;
 
   constructor(
-    private readonly authService: AuthService,
-    private readonly bcs: BaseContextService,
-    private readonly prismao: PrismaoService,
-    private readonly mysqlPrismao: MysqlPrismaoService,
-    private readonly winston: WinstonService,
+      private readonly authService: AuthService,
+      private readonly bcs: BaseContextService,
+      private readonly prismao: PrismaoService,
+      private readonly mysqlPrismao: MysqlPrismaoService,
+      private readonly winston: WinstonService,
   ) {
     this.cpuUsageMSDefault = 100; // CPU 利用率默认时间段
   }
@@ -61,20 +59,20 @@ export class AppService {
     const allAuthApis = {};
     try {
       const directoryPath = path.join(__dirname, '../../src/module');
-      const files = await getAllFiles(directoryPath);
+      const files = fileUtils.getAllFiles(directoryPath);
       files.unshift(path.join(__dirname, '../../src/app.controller.ts'));
       const filePaths = files.filter(fileName => fileName.endsWith('.controller.ts'));
       for (const filePath of filePaths) {
         const text = await fs.readFileSync(filePath, 'utf-8');
         // 正则表达式来匹配单引号或双引号内的字符串
         // 提取简单授权字符串
-        const simpleAuthorizeMatches = REGEX_MAIN_APP_1_match(text);
+        const simpleAuthorizeMatches = regularUtils.REGEX_MAIN_APP_1_match(text);
         const simpleAuthorizePermissions = simpleAuthorizeMatches?.map(match => {
-          const permissionMatch = REGEX_MAIN_APP_3_match(match);
+          const permissionMatch = regularUtils.REGEX_MAIN_APP_3_match(match);
           return permissionMatch ? permissionMatch[1] : null;
         }) || [];
         // 提取复杂授权对象字符串
-        const complexAuthorizeMatches = REGEX_MAIN_APP_2_match(text);
+        const complexAuthorizeMatches = regularUtils.REGEX_MAIN_APP_2_match(text);
         const complexAuthorizeObjects = complexAuthorizeMatches;
 
         function parseAuthorizeObject(str) {
@@ -143,8 +141,8 @@ export class AppService {
 
   async getSystems(): Promise<R> {
     const systemsOfUser = await this.authService.systemsOfUser(
-      this.bcs.getUserData().userId,
-      this.bcs.getUserData().loginRole,
+        this.bcs.getUserData().userId,
+        this.bcs.getUserData().loginRole,
     );
     return R.ok(systemsOfUser);
   }

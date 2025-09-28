@@ -4,18 +4,19 @@ import { updUser } from "@/api/module/main/sysManage/user.ts";
 import { useUserStore } from "@/store/module/user.ts";
 import { ElMessage } from 'element-plus'
 import { MultiAuthUserDto } from "@/type/module/main/sysManage/user.ts";
+import { base } from "@dcts/common";
 
 const userStore = useUserStore();
 
 const uploadSuccess = (fileName: string) => {
   const multiAuthUser: { [P in keyof MultiAuthUserDto]: Partial<MultiAuthUserDto[P]> } = new MultiAuthUserDto();
-  if (userStore.loginRole === "admin") {
+  if (userStore.loginRole === base.LoginRoleEnum.admin) {
     multiAuthUser.admin = {
       id: userStore.userinfo.admin!.id,
       avatar: fileName,
     }
   }
-  if (userStore.loginRole === "visitor") {
+  if (userStore.loginRole === base.LoginRoleEnum.visitor) {
     multiAuthUser.visitor = {
       id: userStore.userinfo.visitor!.id,
       avatar: fileName,

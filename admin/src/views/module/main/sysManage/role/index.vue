@@ -30,7 +30,6 @@ const state = reactive<State2<RoleDto, RoleUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     label: '',
     ifAdmin: '',
@@ -261,10 +260,12 @@ const setSystem = (row: RoleDto) => {
       <el-form
           ref="dialogFormsRef"
           v-loading="dialogLoadingRef"
+          :model="state.dialogForms"
+          :rules="dFormRules"
       >
         <el-table
+            class="tp-table-operate-more-row"
             :data="state.dialogForms"
-            v-if="state.dialogForms"
         >
           <el-table-column type="index" width="50">
             <template #header>
@@ -277,9 +278,9 @@ const setSystem = (row: RoleDto) => {
               <span :class="ifRequired('label')?'tp-table-header-required':''">{{ roleDict.label }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-label`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.label`" :rules="dFormRules.label">
                 <el-input v-model="state.dialogForms[$index].label" :placeholder="roleDict.label"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="orderNum" :label="roleDict.orderNum" width="300">
@@ -287,9 +288,9 @@ const setSystem = (row: RoleDto) => {
               <span :class="ifRequired('orderNum')?'tp-table-header-required':''">{{ roleDict.orderNum }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-orderNum`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.orderNum`" :rules="dFormRules.orderNum">
                 <el-input-number v-model="state.dialogForms[$index].orderNum" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="ifAdmin" :label="roleDict.ifAdmin" width="70">
@@ -297,9 +298,9 @@ const setSystem = (row: RoleDto) => {
               <span :class="ifRequired('ifAdmin')?'tp-table-header-required':''">{{ roleDict.ifAdmin }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-ifAdmin`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.ifAdmin`" :rules="dFormRules.ifAdmin">
                 <el-checkbox v-model="state.dialogForms[$index].ifAdmin" :true-value="final.Y" :false-value="final.N"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="ifDisabled" :label="roleDict.ifDisabled" width="70">
@@ -307,9 +308,9 @@ const setSystem = (row: RoleDto) => {
               <span :class="ifRequired('ifDisabled')?'tp-table-header-required':''">{{ roleDict.ifDisabled }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-ifDisabled`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.ifDisabled`" :rules="dFormRules.ifDisabled">
                 <el-checkbox v-model="state.dialogForms[$index].ifDisabled" :true-value="final.Y" :false-value="final.N"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="remark" :label="roleDict.remark" width="300">
@@ -317,9 +318,9 @@ const setSystem = (row: RoleDto) => {
               <span :class="ifRequired('remark')?'tp-table-header-required':''">{{ roleDict.remark }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-remark`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.remark`" :rules="dFormRules.remark">
                 <el-input type="textarea" v-model="state.dialogForms[$index].remark" :placeholder="roleDict.remark"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <!--在此上方添加表格列-->

@@ -36,7 +36,6 @@ const state = reactive<State2<SignalLightStrategyTypeDto, SignalLightStrategyTyp
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     name: '',
     description: '',

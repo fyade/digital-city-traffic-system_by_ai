@@ -13,8 +13,7 @@ import { ChooseTableTableColInterface, ChooseTableTableColInterfaceDict, ChooseT
 import { getDbInfo } from "@/api/module/main/sysUtil/codeGeneration.ts";
 import { deepClone } from "@/utils/ObjectUtils.ts";
 import { TypeOM } from "@/type/utils/base.ts";
-import { baseUtils } from "@dcts/common";
-import { mysqlLengthFromRowRemark } from "@/utils/RegularUtils.ts";
+import { baseUtils, regularUtils } from "@dcts/common";
 
 const props = defineProps({
   tableId: {
@@ -48,7 +47,6 @@ const state = reactive<State2<CodeGenColumnDto, CodeGenColumnUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {
     colName: '',
     colDescr: '',
@@ -198,7 +196,7 @@ const d1Con = () => {
       obj.colName = row.colName
       obj.colDescr = adict[baseUtils.toCamelCase<keyof AdictInterface>(row.colName)] || ''
       obj.mysqlType = row.colType
-      const match = mysqlLengthFromRowRemark(row.colRemark);
+      const match = regularUtils.mysqlLengthFromRowRemark(row.colRemark);
       obj.mysqlLength = match ? Number(match) : 0
       obj.tsType = (['Int'].indexOf(row.colType) > -1 ? tsTypeDicts.find(item => item.value === 'number')?.value : tsTypeDicts.find(item => item.value !== 'number')?.value) || ''
       obj.tsName = baseUtils.toCamelCase(row.colName)
@@ -220,7 +218,7 @@ const d1Con = () => {
     state.dialogForm.colName = row.colName
     state.dialogForm.colDescr = adict[baseUtils.toCamelCase<keyof AdictInterface>(row.colName)] || ''
     state.dialogForm.mysqlType = row.colType
-    const match = mysqlLengthFromRowRemark(row.colRemark);
+    const match = regularUtils.mysqlLengthFromRowRemark(row.colRemark);
     state.dialogForm.mysqlLength = match ? Number(match) : 0
     state.dialogForm.tsType = (['Int'].indexOf(row.colType) > -1 ? tsTypeDicts.find(item => item.value === 'number')?.value : tsTypeDicts.find(item => item.value !== 'number')?.value) as string
     state.dialogForm.tsName = baseUtils.toCamelCase(row.colName)
@@ -478,10 +476,12 @@ const gUpd2 = () => {
       <el-form
           ref="dialogFormsRef"
           v-loading="dialogLoadingRef"
+          :model="state.dialogForms"
+          :rules="dFormRules"
       >
         <el-table
+            class="tp-table-operate-more-row"
             :data="state.dialogForms"
-            v-if="state.dialogForms"
         >
           <el-table-column fixed type="index" width="50">
             <template #header>
@@ -504,7 +504,7 @@ const gUpd2 = () => {
               <span :class="ifRequired('colName')?'tp-table-header-required':''">{{ codeGenColumnDict.colName }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-colName`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.colName`" :rules="dFormRules.colName">
                 <template v-if="dialogFormTableNameTypes[$index]===A">
                   <el-input disabled v-model="state.dialogForms[$index].colName" :placeholder="codeGenColumnDict.colName">
                     <template #append>
@@ -515,7 +515,7 @@ const gUpd2 = () => {
                 <template v-else-if="dialogFormTableNameTypes[$index]===B">
                   <el-input v-model="state.dialogForms[$index].colName" :placeholder="codeGenColumnDict.colName"/>
                 </template>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column fixed prop="colDescr" :label="codeGenColumnDict.colDescr" width="200">
@@ -523,9 +523,9 @@ const gUpd2 = () => {
               <span :class="ifRequired('colDescr')?'tp-table-header-required':''">{{ codeGenColumnDict.colDescr }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-colDescr`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.colDescr`" :rules="dFormRules.colDescr">
                 <el-input v-model="state.dialogForms[$index].colDescr" :placeholder="codeGenColumnDict.colDescr"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="mysqlType" :label="codeGenColumnDict.mysqlType" width="200">
@@ -533,14 +533,14 @@ const gUpd2 = () => {
               <span :class="ifRequired('mysqlType')?'tp-table-header-required':''">{{ codeGenColumnDict.mysqlType }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-mysqlType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.mysqlType`" :rules="dFormRules.mysqlType">
                 <template v-if="dialogFormTableNameTypes[$index]===A">
                   <el-input disabled v-model="state.dialogForms[$index].mysqlType" :placeholder="codeGenColumnDict.mysqlType"/>
                 </template>
                 <template v-else-if="dialogFormTableNameTypes[$index]===B">
                   <el-input v-model="state.dialogForms[$index].mysqlType" :placeholder="codeGenColumnDict.mysqlType"/>
                 </template>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="mysqlLength" :label="codeGenColumnDict.mysqlLength" width="200">
@@ -548,9 +548,9 @@ const gUpd2 = () => {
               <span :class="ifRequired('mysqlLength')?'tp-table-header-required':''">{{ codeGenColumnDict.mysqlLength }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-mysqlLength`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.mysqlLength`" :rules="dFormRules.mysqlLength">
                 <el-input-number v-model="state.dialogForms[$index].mysqlLength" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="tsType" :label="codeGenColumnDict.tsType" width="200">
@@ -558,11 +558,11 @@ const gUpd2 = () => {
               <span :class="ifRequired('tsType')?'tp-table-header-required':''">{{ codeGenColumnDict.tsType }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-tsType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.tsType`" :rules="dFormRules.tsType">
                 <el-select v-model="state.dialogForms[$index].tsType" :placeholder="codeGenColumnDict.tsType" clearable filterable>
                   <el-option v-for="item in tsTypeDicts" :key="item.value" :label="item.label" :value="item.value"/>
                 </el-select>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="tsName" :label="codeGenColumnDict.tsName" width="200">
@@ -570,9 +570,9 @@ const gUpd2 = () => {
               <span :class="ifRequired('tsName')?'tp-table-header-required':''">{{ codeGenColumnDict.tsName }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-tsName`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.tsName`" :rules="dFormRules.tsName">
                 <el-input v-model="state.dialogForms[$index].tsName" :placeholder="codeGenColumnDict.tsName"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="ifIns" :label="codeGenColumnDict.ifIns" width="90">
@@ -582,9 +582,9 @@ const gUpd2 = () => {
               </Tooltip>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-ifIns`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.ifIns`" :rules="dFormRules.ifIns">
                 <el-checkbox v-model="state.dialogForms[$index].ifIns" :true-value="final.Y" :false-value="final.N"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="ifUpd" :label="codeGenColumnDict.ifUpd" width="90">
@@ -594,9 +594,9 @@ const gUpd2 = () => {
               </Tooltip>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-ifUpd`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.ifUpd`" :rules="dFormRules.ifUpd">
                 <el-checkbox v-model="state.dialogForms[$index].ifUpd" :true-value="final.Y" :false-value="final.N"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="ifSelOne" :label="codeGenColumnDict.ifSelOne" width="90">
@@ -606,9 +606,9 @@ const gUpd2 = () => {
               </Tooltip>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-ifSelOne`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.ifSelOne`" :rules="dFormRules.ifSelOne">
                 <el-checkbox v-model="state.dialogForms[$index].ifSelOne" :true-value="final.Y" :false-value="final.N"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="ifSelMore" :label="codeGenColumnDict.ifSelMore" width="90">
@@ -620,9 +620,9 @@ const gUpd2 = () => {
               </Tooltip>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-ifSelMore`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.ifSelMore`" :rules="dFormRules.ifSelMore">
                 <el-checkbox v-model="state.dialogForms[$index].ifSelMore" :true-value="final.Y" :false-value="final.N"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="ifRequired" :label="codeGenColumnDict.ifRequired" width="90">
@@ -634,9 +634,9 @@ const gUpd2 = () => {
               </Tooltip>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-ifRequired`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.ifRequired`" :rules="dFormRules.ifRequired">
                 <el-checkbox v-model="state.dialogForms[$index].ifRequired" :true-value="final.Y" :false-value="final.N"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="formType" :label="codeGenColumnDict.formType" width="200">
@@ -644,11 +644,11 @@ const gUpd2 = () => {
               <span :class="ifRequired('formType')?'tp-table-header-required':''">{{ codeGenColumnDict.formType }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-formType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.formType`" :rules="dFormRules.formType">
                 <el-select v-model="state.dialogForms[$index].formType" :placeholder="codeGenColumnDict.formType" clearable filterable>
                   <el-option v-for="item in formTypeDicts" :key="item.value" :label="item.label" :value="item.value"/>
                 </el-select>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="selType" :label="codeGenColumnDict.selType" width="200">
@@ -656,11 +656,11 @@ const gUpd2 = () => {
               <span :class="ifRequired('selType')?'tp-table-header-required':''">{{ codeGenColumnDict.selType }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-selType`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.selType`" :rules="dFormRules.selType">
                 <el-select v-model="state.dialogForms[$index].selType" :placeholder="codeGenColumnDict.selType" clearable filterable>
                   <el-option v-for="item in selTypeDicts" :key="item.value" :label="item.label" :value="item.value"/>
                 </el-select>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="orderNum" :label="codeGenColumnDict.orderNum" width="200">
@@ -668,9 +668,9 @@ const gUpd2 = () => {
               <span :class="ifRequired('orderNum')?'tp-table-header-required':''">{{ codeGenColumnDict.orderNum }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-orderNum`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.orderNum`" :rules="dFormRules.orderNum">
                 <el-input-number v-model="state.dialogForms[$index].orderNum" :placeholder="codeGenColumnDict.orderNum" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <!--在此上方添加表格列-->

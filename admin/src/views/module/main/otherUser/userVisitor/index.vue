@@ -27,6 +27,7 @@ import UserVisitorDept from "@/views/module/main/otherUser/userVisitor/userVisit
 import { userUserGroupApi, userUserGroupUpdUGU, userUserGroupUpdUUG } from "@/api/module/algorithm/userUserGroup.ts";
 import UserVisitorUserGroup from "@/views/module/main/otherUser/userVisitor/userVisitorUserGroup.vue";
 import { useSysStore } from "@/store/module/sys.ts";
+import { base } from "@dcts/common";
 
 const sysStore = useSysStore()
 
@@ -36,6 +37,7 @@ const state = reactive<State2<UserVisitorDto, UserVisitorUpdDto>>({
     username: '',
     password: '123456',
   },
+  dialogForms: [],
   filterForm: {
     username: '',
     nickname: '',
@@ -165,7 +167,7 @@ const drawer = ref(false)
 const selectRole = ref<number[]>([])
 const manageRole = (row: UserVisitorDto_) => {
   selectUser.value = deepClone(row)
-  userRoleApi.selectAll({userId: selectUser.value.id, loginRole: 'visitor'}).then(res => {
+  userRoleApi.selectAll({userId: selectUser.value.id, loginRole: base.LoginRoleEnum.visitor}).then(res => {
     selectRole.value = res.map(item => item.roleId)
     drawer.value = true
   })
@@ -174,7 +176,7 @@ const drawerConfirmUserRole = () => {
   const obj = {
     userId: selectUser.value.id,
     roleId: selectRole.value,
-    loginRole: 'visitor',
+    loginRole: base.LoginRoleEnum.visitor,
   }
   userRoleUpdUR(obj).then(res => {
     if (res) {
@@ -193,7 +195,7 @@ const drawer2 = ref(false)
 const selectDept = ref<number[]>([])
 const manageDept = (row: UserVisitorDto_) => {
   selectUser.value = deepClone(row)
-  userDeptApi.selectAll({userId: selectUser.value.id, loginRole: 'visitor'}).then(res => {
+  userDeptApi.selectAll({userId: selectUser.value.id, loginRole: base.LoginRoleEnum.visitor}).then(res => {
     selectDept.value = res.map(item => item.deptId)
     drawer2.value = true
   })
@@ -202,7 +204,7 @@ const drawerConfirmUserDept = () => {
   const param = {
     userId: selectUser.value.id,
     deptId: selectDept.value,
-    loginRole: 'visitor'
+    loginRole: base.LoginRoleEnum.visitor
   }
   userDeptUpdUD(param).then(res => {
     if (res) {
@@ -221,7 +223,7 @@ const drawer3 = ref(false)
 const selectUserGroup = ref<number[]>([])
 const manageUserGroup = (row: UserVisitorDto_) => {
   selectUser.value = deepClone(row)
-  userUserGroupApi.selectAll({userId: selectUser.value.id, loginRole: 'visitor'}).then(res => {
+  userUserGroupApi.selectAll({userId: selectUser.value.id, loginRole: base.LoginRoleEnum.visitor}).then(res => {
     selectUserGroup.value = res.map(item => item.userGroupId)
     drawer3.value = true
   })
@@ -230,7 +232,7 @@ const drawerConfirmUserUserGroup = () => {
   const param = {
     userId: selectUser.value.id,
     userGroupId: selectUserGroup.value,
-    loginRole: 'visitor'
+    loginRole: base.LoginRoleEnum.visitor
   }
   userUserGroupUpdUUG(param).then(res => {
     if (res) {

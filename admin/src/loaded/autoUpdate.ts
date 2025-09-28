@@ -1,5 +1,4 @@
-import { getScriptTagFromHtmlText } from "@/utils/RegularUtils.ts";
-import { arrayUtils, baseUtils } from "@dcts/common";
+import { arrayUtils, baseUtils, regularUtils } from "@dcts/common";
 import { adminConfig } from "@dcts/config";
 import { final } from "@/utils/base.ts";
 
@@ -17,7 +16,7 @@ const whiteList = [
 async function main() {
   await baseUtils.sleep(1000)
   const oldHtml = document.documentElement.outerHTML
-  const oldTag_ = getScriptTagFromHtmlText(oldHtml)
+  const oldTag_ = regularUtils.getScriptTagFromHtmlText(oldHtml)
   // 去除一些干扰项
   const oldTag = oldTag_.filter(str => {
     if (
@@ -29,7 +28,7 @@ async function main() {
     return true
   })
   const html = await fetch(`/?timestamp=${new Date().getTime()}`).then(res => res.text())
-  const newTag = getScriptTagFromHtmlText(html)
+  const newTag = regularUtils.getScriptTagFromHtmlText(html)
   const currentConfig = adminConfig.currentConfig();
   if (currentConfig.VITE_MODE === final.DEV) {
     console.log(oldTag, newTag)

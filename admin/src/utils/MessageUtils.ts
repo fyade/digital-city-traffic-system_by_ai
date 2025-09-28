@@ -2,6 +2,18 @@ import { NDialog, NMessage } from "@/utils/naiveBase.ts";
 import { ifDashboardPage } from "@/utils/DashboardUtils.ts";
 
 /**
+ * message.success
+ * @param msg
+ */
+export function messageSuccess(msg: string) {
+  if (ifDashboardPage()) {
+    NMessage.success(msg);
+  } else {
+    ElMessage.success(msg);
+  }
+}
+
+/**
  * message.error
  * @param msg
  */

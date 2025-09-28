@@ -32,7 +32,6 @@ const state = reactive<State2<SysDto, SysUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {},
 })
 const dFormRules: FormRules<SysDto> = {
@@ -115,10 +114,10 @@ const getDeptSyss = () => {
     stateList2.value.forEach(item => item.loading = false)
   })
 }
-const beforeChange = (dto: SysDto2): boolean | Promise<boolean> => {
+const beforeChange = (dto: SysDto2) => {
   dto.loading = true
   if (!dto.ifTrue) {
-    return new Promise((resolve, reject) => {
+    return new Promise<boolean>((resolve, reject) => {
       deptSysApi.insertOne({deptId: props.selectDept.id, sysId: dto.id}).then(res => {
         if (res) {
           gRefresh()
@@ -131,7 +130,7 @@ const beforeChange = (dto: SysDto2): boolean | Promise<boolean> => {
       })
     })
   } else {
-    return new Promise((resolve, reject) => {
+    return new Promise<boolean>((resolve, reject) => {
       const find = allDeptSyss.value.find(item => item.deptId === props.selectDept.id && item.sysId === dto.id);
       if (find) {
         deptSysApi.deleteList(find.id).then(res => {

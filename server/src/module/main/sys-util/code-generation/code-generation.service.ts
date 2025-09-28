@@ -9,12 +9,7 @@ import { CodeGenTableDto } from '../code-gen-table/dto';
 import { CodeGenColumnDto } from '../code-gen-column/dto';
 import { CgTablesInterface } from './dto';
 import { SysDto } from '../../sys-manage/sys/dto';
-import { getAllFiles } from '../../../../util/FileUtils';
-import {
-  REGEX_MAIN_CODEGEN_regex1_test,
-  REGEX_MAIN_CODEGEN_regex2_test,
-  REGEX_MAIN_CODEGEN_regex3, REGEX_MAIN_STRING_1_match
-} from "../../../../util/RegularUtils";
+import { fileUtils, regularUtils } from '@dcts/common';
 
 @Injectable()
 export class CodeGenerationService {
@@ -26,7 +21,7 @@ export class CodeGenerationService {
     try {
       const pathJoin = path.join(__dirname, '../../../../../../../');
       const prismaPath = path.join(pathJoin.endsWith('dist\\') ? pathJoin.substring(0, pathJoin.length - 5) : pathJoin, 'prisma');
-      const files = await getAllFiles(prismaPath);
+      const files = fileUtils.getAllFiles(prismaPath, { ifIncludeSubFolder: false });
       const prismaFiles = files.filter((item) => item.endsWith('.prisma'));
       for (const file of prismaFiles) {
         text = text + '\n' + fs.readFileSync(file, 'utf-8');
@@ -37,7 +32,7 @@ export class CodeGenerationService {
     const lines = text.split('\n');
     const tables: CgTablesInterface[] = [];
     for (let i = 0; i < lines.length - 1; i++) {
-      if (REGEX_MAIN_CODEGEN_regex1_test(lines[i]) && REGEX_MAIN_CODEGEN_regex2_test(lines[i + 1])) {
+      if (regularUtils.REGEX_MAIN_CODEGEN_regex1_test(lines[i]) && regularUtils.REGEX_MAIN_CODEGEN_regex2_test(lines[i + 1])) {
         tables.push({
           rowIndex: i,
           tableNameCnInitial: lines[i],
@@ -69,10 +64,10 @@ export class CodeGenerationService {
         }
         tables[i].cols.push({
           colInfo: lines[j],
-          colName: REGEX_MAIN_STRING_1_match(lines[j].replace(REGEX_MAIN_CODEGEN_regex3, '$1'))[0],
-          colType: lines[j].replace(REGEX_MAIN_CODEGEN_regex3, '$2').replace('?', ''),
-          ifMust: !lines[j].replace(REGEX_MAIN_CODEGEN_regex3, '$2').endsWith('?'),
-          colRemark: lines[j].replace(REGEX_MAIN_CODEGEN_regex3, '$3'),
+          colName: regularUtils.REGEX_MAIN_STRING_1_match(lines[j].replace(regularUtils.REGEX_MAIN_CODEGEN_regex3, '$1'))[0],
+          colType: lines[j].replace(regularUtils.REGEX_MAIN_CODEGEN_regex3, '$2').replace('?', ''),
+          ifMust: !lines[j].replace(regularUtils.REGEX_MAIN_CODEGEN_regex3, '$2').endsWith('?'),
+          colRemark: lines[j].replace(regularUtils.REGEX_MAIN_CODEGEN_regex3, '$3'),
         });
       }
     }

@@ -15,6 +15,7 @@ import { userDict } from "@/dict/module/main/sysManage/user.ts";
 import { roleDict } from "@/dict/module/main/sysManage/role.ts";
 import { useSysStore } from "@/store/module/sys.ts";
 import { userRoleDict } from "@/dict/module/main/sysManage/userRole.ts";
+import { base } from "@dcts/common";
 
 const sysStore = useSysStore()
 
@@ -58,7 +59,7 @@ const getInfo = () => {
   usersOfThisRole.value = []
   userRolesOfThisRole.value = []
   table1LoadingRef.value = true
-  userRoleApi.selectList({roleId: props.selectRole.id, loginRole: 'admin', ...state.pageParam1}).then(res => {
+  userRoleApi.selectList({roleId: props.selectRole.id, loginRole: base.LoginRoleEnum.admin, ...state.pageParam1}).then(res => {
     state.total1 = res.total
     userRolesOfThisRole.value = res.list
     userApi.selectByIds(userRolesOfThisRole.value.map(item => item.userId)).then(res => {
@@ -160,7 +161,7 @@ const dialogConfirm = () => {
   const param = {
     userId: selectRows2.value.map(item => item.id),
     roleId: props.selectRole.id,
-    loginRole: 'admin'
+    loginRole: base.LoginRoleEnum.admin
   }
   userRoleUpdRU(param).then(res => {
     getInfo()

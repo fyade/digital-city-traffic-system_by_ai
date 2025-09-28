@@ -2,7 +2,7 @@ import { io, Socket } from 'socket.io-client'
 import { adminConfig } from "@dcts/config";
 import { useUserStore } from "@/store/module/user.ts";
 import { idUtils, timeUtils } from "@dcts/common";
-import { NMessage } from "@/utils/naiveBase.ts";
+import { messageError, messageSuccess } from "@/utils/MessageUtils.ts";
 
 const currentConfig = adminConfig.currentConfig();
 
@@ -61,7 +61,7 @@ export class WsClient {
           return;
         }
         this.socket.on('connect', () => {
-          NMessage.success('服务端实时通信连接成功。')
+          messageSuccess('服务端实时通信连接成功。')
           if (!this.socket) {
             return;
           }
@@ -72,14 +72,14 @@ export class WsClient {
         });
         this.socket.on('disconnect', () => {
           if (this.ifSelfDisConnect) {
-            NMessage.success('服务端实时通信连接已正常断开。')
+            messageSuccess('服务端实时通信连接已正常断开。')
           } else {
-            NMessage.error('服务端实时通信连接断开。')
+            messageError('服务端实时通信连接断开。')
           }
           this.socket = null
         });
         this.socket.on('connect_error', (err) => {
-          NMessage.error('服务端实时通信连接发生错误。')
+          messageError('服务端实时通信连接发生错误。')
           console.error('服务端实时通信错误', err);
         })
         WsClient.instance = this

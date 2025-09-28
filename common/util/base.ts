@@ -1,12 +1,30 @@
+// 用户登录角色
+export enum LoginRoleEnum {
+  admin = "admin",
+  visitor = "visitor",
+}
+
+export const LoginRoleDict = {
+  [LoginRoleEnum.admin]: "系统管理员",
+  [LoginRoleEnum.visitor]: "访客",
+};
+
+export enum AuthTypeEnum {
+  token = "token",
+  apiKey = "apiKey",
+  unknown = "???",
+}
+
 // 颜色主题
 export enum ColorStyleEnum {
-  T_LIGHT = 'light',
+  T_LIGHT = "light",
   T_DARK = "dark",
 }
+
 export const colorStyleDict = {
-  [ColorStyleEnum.T_LIGHT]: '浅色',
-  [ColorStyleEnum.T_DARK]: '深色',
-}
+  [ColorStyleEnum.T_LIGHT]: "浅色",
+  [ColorStyleEnum.T_DARK]: "深色",
+};
 
 // 菜单
 export enum MenuTypeEnum {
@@ -54,6 +72,17 @@ export const uTDPTypeDict = {
   [UTDPTypeEnum.T_ROLE]: "角色",
   [UTDPTypeEnum.T_DEPT]: "部门",
   [UTDPTypeEnum.T_UG]: "用户组",
+};
+
+// 定时任务执行类型
+export enum LSTOTTypeEnum {
+  T_BYSELF = "by:self",
+  T_USERTRIGGER = "user:trigger",
+}
+
+export const LSTOTTypeDict = {
+  [LSTOTTypeEnum.T_BYSELF]: "系统自动触发",
+  [LSTOTTypeEnum.T_USERTRIGGER]: "用户手动触发",
 };
 
 // 信号灯策略类型类型
@@ -133,10 +162,4 @@ export const signalLightUnitStyleDict = {
   [SignalLightUnitStyleEnum.RIGHT]: '右转灯',
   [SignalLightUnitStyleEnum.ROUND]: '圆灯',
   [SignalLightUnitStyleEnum.NUMBER]: '倒计时',
-}
-
-export enum AuthTypeEnum {
-  token = 'token',
-  apiKey = 'apiKey',
-  unknown = '???',
 }

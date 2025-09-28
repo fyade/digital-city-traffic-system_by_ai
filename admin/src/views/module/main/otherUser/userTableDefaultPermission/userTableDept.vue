@@ -24,7 +24,6 @@ const state = reactive<State2<DeptDto, DeptUpdDto>>({
     remark: '',
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {},
 })
 const dFormRules: FormRules<DeptDto> = {
@@ -190,10 +189,12 @@ const choose = (row: DeptDto) => {
       <el-form
           ref="dialogFormsRef"
           v-loading="dialogLoadingRef"
+          :model="state.dialogForms"
+          :rules="dFormRules"
       >
         <el-table
+            class="tp-table-operate-more-row"
             :data="state.dialogForms"
-            v-if="state.dialogForms"
         >
           <el-table-column type="index" width="50">
             <template #header>
@@ -206,9 +207,9 @@ const choose = (row: DeptDto) => {
               <span :class="ifRequired('label')?'tp-table-header-required':''">{{ deptDict.label }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-label`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.label`" :rules="dFormRules.label">
                 <el-input v-model="state.dialogForms[$index].label" :placeholder="deptDict.label"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="ifAdmin" :label="deptDict.ifAdmin" width="70">
@@ -216,9 +217,9 @@ const choose = (row: DeptDto) => {
               <span :class="ifRequired('ifAdmin')?'tp-table-header-required':''">{{ deptDict.ifAdmin }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-ifAdmin`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.ifAdmin`" :rules="dFormRules.ifAdmin">
                 <el-checkbox v-model="state.dialogForms[$index].ifAdmin" :true-value="final.Y" :false-value="final.N"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="ifDisabled" :label="deptDict.ifDisabled" width="70">
@@ -226,9 +227,9 @@ const choose = (row: DeptDto) => {
               <span :class="ifRequired('ifDisabled')?'tp-table-header-required':''">{{ deptDict.ifDisabled }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-ifDisabled`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.ifDisabled`" :rules="dFormRules.ifDisabled">
                 <el-checkbox v-model="state.dialogForms[$index].ifDisabled" :true-value="final.Y" :false-value="final.N"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="parentId" :label="deptDict.parentId" width="300">
@@ -236,9 +237,9 @@ const choose = (row: DeptDto) => {
               <span :class="ifRequired('parentId')?'tp-table-header-required':''">{{ deptDict.parentId }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-parentId`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.parentId`" :rules="dFormRules.parentId">
                 <el-input-number v-model="state.dialogForms[$index].parentId" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="orderNum" :label="deptDict.orderNum" width="300">
@@ -246,9 +247,9 @@ const choose = (row: DeptDto) => {
               <span :class="ifRequired('orderNum')?'tp-table-header-required':''">{{ deptDict.orderNum }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-orderNum`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.orderNum`" :rules="dFormRules.orderNum">
                 <el-input-number v-model="state.dialogForms[$index].orderNum" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="remark" :label="deptDict.remark" width="300">
@@ -256,9 +257,9 @@ const choose = (row: DeptDto) => {
               <span :class="ifRequired('remark')?'tp-table-header-required':''">{{ deptDict.remark }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-remark`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.remark`" :rules="dFormRules.remark">
                 <el-input type="textarea" v-model="state.dialogForms[$index].remark" :placeholder="deptDict.remark"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <!--在此上方添加表格列-->

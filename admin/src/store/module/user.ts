@@ -6,7 +6,7 @@ import { LoginDto, MultiAuthUserDto, UserDto } from "@/type/module/main/sysManag
 import { getSelfInfo } from "@/api/module/main/sysManage/user.ts";
 import { ifWebsiteLink } from "@/utils/LinkUtils.ts";
 import { UserVisitorDto } from "@/type/module/main/otherUser/userVisitor.ts";
-import { objectUtils } from "@dcts/common";
+import { base, objectUtils } from "@dcts/common";
 import { BCService } from "@/services/broadcastChannel.ts";
 import { loginApi, logOutApi } from "@/api/module/main/sysManage/userLogin.ts";
 
@@ -34,11 +34,11 @@ export const useUserStore = defineStore('userStore', () => {
             token.value = res.token
             loginRole.value = res.loginRole
             ifLogin.value = true
-            if (loginRole.value === "admin") {
+            if (loginRole.value === base.LoginRoleEnum.admin) {
               userinfo.admin = new UserDto();
               objectUtils.copyObject(userinfo.admin, res.multiAuthUser.admin);
             }
-            if (loginRole.value === "visitor") {
+            if (loginRole.value === base.LoginRoleEnum.visitor) {
               userinfo.visitor = new UserVisitorDto();
               objectUtils.copyObject(userinfo.visitor, res.multiAuthUser.visitor);
             }
@@ -85,8 +85,8 @@ export const useUserStore = defineStore('userStore', () => {
   }
   const refreshSelfInfo = () => {
     getSelfInfo().then(res => {
-      if (loginRole.value === 'admin') objectUtils.copyObject(userinfo.admin, res.admin)
-      if (loginRole.value === 'visitor') objectUtils.copyObject(userinfo.visitor, res.visitor)
+      if (loginRole.value === base.LoginRoleEnum.admin) objectUtils.copyObject(userinfo.admin, res.admin)
+      if (loginRole.value === base.LoginRoleEnum.visitor) objectUtils.copyObject(userinfo.visitor, res.visitor)
     })
   }
   return {

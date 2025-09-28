@@ -4,9 +4,9 @@ import { getSystems } from "@/api/common/sys.ts";
 import { ElLoading } from "element-plus";
 import { LoadingInstance } from "element-plus/es/components/loading/src/loading";
 import { goToSystem } from "@/views/home/homeUtilFunc.ts";
-import { splitUrlByX } from "@/utils/RegularUtils.ts";
 import { onBeforeUnmount, ref } from "vue";
 import Header from "@/layout/sys/header.vue";
+import { regularUtils } from "@dcts/common";
 
 let loading: LoadingInstance | null
 onBeforeUnmount(() => {
@@ -19,7 +19,7 @@ const router = useRouter()
 const init = () => {
   msg.value = 'Loading...'
   const pushPath = route.path;
-  const allPaths = splitUrlByX(pushPath);
+  const allPaths = regularUtils.splitUrlByX(pushPath);
   if (allPaths.length === 0) {
     router.push('/')
     return

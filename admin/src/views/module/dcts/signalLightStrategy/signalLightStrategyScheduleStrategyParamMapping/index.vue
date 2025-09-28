@@ -23,7 +23,6 @@ const state = reactive<State2<SignalLightStrategyScheduleStrategyParamMappingDto
     strategyParamId: -1,
   },
   dialogForms: [],
-  dialogForms_error: {},
   filterForm: {},
 })
 const dFormRules: FormRules<SignalLightStrategyScheduleStrategyParamMappingDto> = {
@@ -144,10 +143,12 @@ const {
       <el-form
           ref="dialogFormsRef"
           v-loading="dialogLoadingRef"
+          :model="state.dialogForms"
+          :rules="dFormRules"
       >
         <el-table
+            class="tp-table-operate-more-row"
             :data="state.dialogForms"
-            v-if="state.dialogForms"
         >
           <el-table-column type="index" width="50">
             <template #header>
@@ -160,9 +161,9 @@ const {
               <span :class="ifRequired('strategyScheduleId')?'tp-table-header-required':''">{{ signalLightStrategyScheduleStrategyParamMappingDict.strategyScheduleId }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-strategyScheduleId`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.strategyScheduleId`" :rules="dFormRules.strategyScheduleId">
                 <el-input-number v-model="state.dialogForms[$index].strategyScheduleId" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="strategyParamId" :label="signalLightStrategyScheduleStrategyParamMappingDict.strategyParamId" width="300">
@@ -170,9 +171,9 @@ const {
               <span :class="ifRequired('strategyParamId')?'tp-table-header-required':''">{{ signalLightStrategyScheduleStrategyParamMappingDict.strategyParamId }}</span>
             </template>
             <template #default="{$index}">
-              <div :class="state.dialogForms_error?.[`${$index}-strategyParamId`] ? 'tp-table-cell-bg-red' : 'tp-table-cell'">
+              <el-form-item :prop="`${$index}.strategyParamId`" :rules="dFormRules.strategyParamId">
                 <el-input-number v-model="state.dialogForms[$index].strategyParamId" controls-position="right"/>
-              </div>
+              </el-form-item>
             </template>
           </el-table-column>
           <!--在此上方添加表格列-->
