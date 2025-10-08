@@ -1,10 +1,11 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import { useUserStore } from "@/store/module/user.ts";
 import { ifWebsiteLink } from "@/utils/LinkUtils.ts";
-import { adminConfig } from "@dcts/config";
+import { adminConfig, publicConfig } from "@dcts/config";
 import { goToLogin } from "@/utils/baseUtils.ts";
 import { ifDashboardPage } from "@/utils/DashboardUtils.ts";
 import { final } from "@/utils/base.ts";
+import { useSysStore } from "@/store/module/sys.ts";
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -244,11 +245,17 @@ const currentConfig = adminConfig.currentConfig();
 const whitelist = ['/login']
 router.beforeEach((to, from, next) => {
   if (currentConfig.VITE_MODE === final.DEV) {
-    console.log(from.path, `\n${to.path}`)
+    console.info(from.path, `\n${to.path}`)
   }
-  if (ifWebsiteLink(to.path, '/')) {
-    return
+  if (ifWebsiteLink(to.path, "/")) {
+    return;
   }
+  const sysStore = useSysStore();
+  if (to.path === "/home") {
+    sysStore.setCurrentSystem(null);
+  }
+  const name = sysStore.getCurrentSystem.name;
+  document.title = publicConfig.APP_NAME + (name?` | ${name}` : '')
   const userStore = useUserStore();
   if (!userStore.ifLogin && whitelist.indexOf(to.path) === -1) {
     if (ifDashboardPage(to.path)) {

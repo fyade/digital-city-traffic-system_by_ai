@@ -4,7 +4,6 @@ import { getButtons, getSystems, getSysVersion } from "@/api/common/sys.ts";
 import { SysDto } from "@/type/module/main/sysManage/sys.ts";
 import { useUserStore } from "@/store/module/user.ts";
 import { adminConfig } from '@dcts/config'
-import { objectUtils } from "@dcts/common";
 
 export const useSysStore = defineStore('sysStore', () => {
   const version = reactive({
@@ -15,12 +14,12 @@ export const useSysStore = defineStore('sysStore', () => {
     version.hd = res
   })
 
-  const currentSystem = reactive<SysDto>(new SysDto())
-  const setCurrentSystem = (dto: SysDto) => {
-    objectUtils.copyObject(currentSystem, dto)
-  }
+  const currentSystem = ref<SysDto>(new SysDto())
+  const setCurrentSystem = (dto: SysDto | null) => {
+    currentSystem.value = dto ? dto : new SysDto();
+  };
   const getCurrentSystem = computed(() => {
-    return currentSystem
+    return currentSystem.value;
   })
 
   const publicHeader = (): Record<string, string> => ({

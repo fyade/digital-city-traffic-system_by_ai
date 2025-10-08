@@ -31,7 +31,7 @@ async function main() {
   const newTag = regularUtils.getScriptTagFromHtmlText(html)
   const currentConfig = adminConfig.currentConfig();
   if (currentConfig.VITE_MODE === final.DEV) {
-    console.log(oldTag, newTag)
+    console.info(oldTag, newTag)
   }
   const ifNeedUpdate = !arrayUtils.ifSameArray(oldTag, newTag)
   if (ifNeedUpdate) {
