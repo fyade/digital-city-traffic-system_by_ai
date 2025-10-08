@@ -223,17 +223,19 @@ export class PrismaService {
               obj2.OR.push(items);
             }
           } else {
-            // 数字
-            if (baseUtils.toSnakeCases(numberKeys).includes(item)) {
-              obj2.OR.push({[item]: Number(datum)});
-            }
-            // 字符串完整匹配
-            else if (baseUtils.toSnakeCases(completeMatchingKeys).includes(item) && !!datum) {
-              obj2.OR.push({[item]: `${datum}`});
-            }
-            // 字符串模糊匹配
-            else {
-              obj2.OR.push({[item]: {contains: `${datum}`}});
+            if (objectUtils.ifValid(datum)) {
+              // 数字
+              if (baseUtils.toSnakeCases(numberKeys).includes(item)) {
+                obj2.OR.push({[item]: Number(datum)});
+              }
+              // 字符串完整匹配
+              else if (baseUtils.toSnakeCases(completeMatchingKeys).includes(item) && !!datum) {
+                obj2.OR.push({[item]: `${datum}`});
+              }
+              // 字符串模糊匹配
+              else {
+                obj2.OR.push({[item]: {contains: `${datum}`}});
+              }
             }
             // 可以为空
             if (!baseUtils.toSnakeCases(notNullKeys).includes(item)) {

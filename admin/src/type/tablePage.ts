@@ -4,7 +4,7 @@ import { PageVo } from "@/type/asiox.ts";
 export interface State2<T = object, T2 = T> {
   dialogForm: T2;
   dialogForms: T2[];
-  filterForm: Partial<T>;
+  filterForm: { [P in keyof T]?: T[P] | null };
 }
 
 export class BaseClass {
