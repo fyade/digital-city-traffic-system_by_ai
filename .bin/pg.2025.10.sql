@@ -46,5 +46,7 @@ create table public.three_d_file
     deleted     CHAR(1)                  NOT NULL DEFAULT 'N'
 );
 
+drop table manual_junctions;
+
 -- ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== =====
 -- ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== =====

@@ -8,7 +8,7 @@ let apiKey = ''
 if (currentConfig.mode === 'dev') {
   apiKey = 'xt6jjinic2y93fbb_1754479138269'
 } else if (currentConfig.mode === 'prod') {
-  apiKey = 'ik5kq7dpxc1djd8d_1754497513256'
+  apiKey = 'kexm4wmlr9zvvw87_1760019751694'
 }
 
 export const axi = axios.create({
