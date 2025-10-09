@@ -595,3 +595,49 @@ model vehicle_track_point {
 
   @@index([point], map: "idx_track_point", type: Gist)
 }
+
+// 三维文件
+model three_d_file {
+  id          Int      @id @default(autoincrement())
+  unit_id     Int
+  file_name   String   @dbPostgresql.VarChar(200)
+  order_num   Int
+  create_role String   @dbPostgresql.VarChar(30)
+  update_role String   @dbPostgresql.VarChar(30)
+  create_by   String   @dbPostgresql.VarChar(10)
+  update_by   String   @dbPostgresql.VarChar(10)
+  create_time DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted     String   @default("N") @dbPostgresql.Char(1)
+}
+
+// 三维文件组
+model three_d_file_group {
+  id          Int      @id @default(autoincrement())
+  name        String   @dbPostgresql.VarChar(100)
+  description String   @dbPostgresql.VarChar(100)
+  order_num   Int
+  create_role String   @dbPostgresql.VarChar(30)
+  update_role String   @dbPostgresql.VarChar(30)
+  create_by   String   @dbPostgresql.VarChar(10)
+  update_by   String   @dbPostgresql.VarChar(10)
+  create_time DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted     String   @default("N") @dbPostgresql.Char(1)
+}
+
+// 三维文件单元
+model three_d_file_unit {
+  id          Int      @id @default(autoincrement())
+  group_id    Int
+  name        String   @dbPostgresql.VarChar(100)
+  description String   @dbPostgresql.VarChar(100)
+  order_num   Int
+  create_role String   @dbPostgresql.VarChar(30)
+  update_role String   @dbPostgresql.VarChar(30)
+  create_by   String   @dbPostgresql.VarChar(10)
+  update_by   String   @dbPostgresql.VarChar(10)
+  create_time DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time DateTime @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted     String   @default("N") @dbPostgresql.Char(1)
+}
