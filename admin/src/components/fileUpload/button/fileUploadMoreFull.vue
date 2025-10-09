@@ -19,6 +19,10 @@ const props = defineProps({
   showIcon: {
     type: Boolean,
     default: true
+  },
+  module: {
+    type: String,
+    default: ''
   }
 });
 const emit = defineEmits<{
@@ -50,7 +54,7 @@ const upload2 = async () => {
         // const fd = new FormData();
         // fd.append('file', file)
         try {
-          const s = await fileUploadOneFull(file, file.name);
+          const s = await fileUploadOneFull(file, file.name, props.module);
           filenames.push(s)
         } catch (e) {
           uploadFail(`${file.name}上传失败。`)

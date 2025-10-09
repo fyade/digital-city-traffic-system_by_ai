@@ -8,6 +8,7 @@ export class ParamsFileUploadOneChunkCheck {
   fileMd5!: string
   fileSize!: number
   chunkNum!: number
+  module!: string
 }
 
 export class ParamsFileUploadOneChunkMerge {
@@ -106,11 +107,13 @@ export const fileUploadApi: ApiConfig<FileUploadDto, FileUploadUpdDto> = {
  * 单文件完整上传
  * @param file
  * @param fileName
+ * @param module
  */
-export function fileUploadOneFull(file: Blob, fileName: string = '') {
+export function fileUploadOneFull(file: Blob, fileName: string = '', module: string = '') {
   const formData = new FormData();
   formData.append('file', file)
   formData.append('fileName', fileName)
+  formData.append('module', module)
   return request<string>({
     url: `/main/sys/file-upload/one-full`,
     method: 'POST',
@@ -127,17 +130,7 @@ export function fileUploadOneFull(file: Blob, fileName: string = '') {
  * @param fileName
  */
 export function fileUploadAvatar(file: Blob, fileName: string = '') {
-  const formData = new FormData();
-  formData.append('file', file)
-  formData.append('fileName', fileName)
-  return request<string>({
-    url: `/main/sys/file-upload/one-full-avatar`,
-    method: 'POST',
-    headers: {
-      'Content-Type': 'multipart/form-data;charset=utf-8'
-    },
-    data: formData
-  })
+  return fileUploadOneFull(file, fileName, 'avatar')
 }
 
 /**

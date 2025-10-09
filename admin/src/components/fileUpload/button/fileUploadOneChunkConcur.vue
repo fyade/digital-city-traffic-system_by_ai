@@ -28,6 +28,10 @@ const props = defineProps({
   showIcon: {
     type: Boolean,
     default: true
+  },
+  module: {
+    type: String,
+    default: ''
   }
 });
 const emit = defineEmits<{
@@ -81,7 +85,8 @@ const upload6 = async () => {
     fileName: file.name,
     fileMd5: state.fileMd5,
     fileSize: state.fileSize,
-    chunkNum: state.chunkTotal
+    chunkNum: state.chunkTotal,
+    module: props.module,
   })
   if (res1.merge) {
     uploadSuccess(res1.fileNewName)

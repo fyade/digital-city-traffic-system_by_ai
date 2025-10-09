@@ -162,6 +162,7 @@ export class FileUploadService {
           ifFirst: final.N,
           ifMerge: final.Y,
           ifFinished: final.Y,
+          module: dto.module,
         };
         await this.mysqlPrisma.create<FileDto>('tbl_file', fillObj);
         return R.ok({
@@ -183,6 +184,7 @@ export class FileUploadService {
           ifFirst: final.N,
           ifMerge: final.N,
           ifFinished: final.N,
+          module: dto.module,
         };
         await this.mysqlPrisma.create<FileDto>('tbl_file', fillObj);
         const findMany = await this.mysqlPrisma.findAll<FileChunkDto>('tbl_file_chunk', {
@@ -212,6 +214,7 @@ export class FileUploadService {
         ifFirst: final.Y,
         ifMerge: final.N,
         ifFinished: final.N,
+        module: dto.module,
       };
       await this.mysqlPrisma.create<FileDto>('tbl_file', fillObj);
       return R.ok({

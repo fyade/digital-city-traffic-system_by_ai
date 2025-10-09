@@ -179,6 +179,9 @@ export class FileUploadOneFull_upload {
 
   @ApiProperty({ description: '文件', required: false })
   file: MulterFile;
+
+  @ApiProperty({ description: '业务模块', required: false })
+  module: string;
 }
 
 export class FileUploadOneChunk_check {
@@ -193,6 +196,9 @@ export class FileUploadOneChunk_check {
 
   @ApiProperty({ description: '分片数量', required: false })
   chunkNum: number;
+
+  @ApiProperty({ description: '业务模块', required: false })
+  module: string;
 }
 
 export class FileUploadOneChunk_upload {

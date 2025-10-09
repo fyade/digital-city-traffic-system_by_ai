@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, useTemplateRef } from "vue";
-import { blobToFile, selectFiles } from "@/utils/FileUtils.ts";
+import { selectFiles } from "@/utils/FileUtils.ts";
 import { ElMessage } from "element-plus";
 import { fileUploadAvatar } from "@/api/common/fileUpload.ts";
 

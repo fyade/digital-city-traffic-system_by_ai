@@ -54,23 +54,6 @@ export class FileUploadController {
     return this.fileUploadService.fileUploadOneFull(file, param);
   }
 
-  @Post('/one-full-avatar')
-  @ApiOperation({
-    summary: '文件上传-头像',
-  })
-  @UseInterceptors(FileInterceptor('file'))
-  @Authorize({
-    permission: 'main:system:fileupload:avatar',
-    label: '文件上传-头像',
-  })
-  async fileUploadAvatar(@Body() param: FileUploadOneFull_upload, @UploadedFile() file): Promise<R> {
-    if (file.size > this.env.file.maxSizeOfFull) {
-      throw new Exception('文件大小超出限制。');
-    }
-    delete param.file;
-    return this.fileUploadService.fileUploadOneFull(file, { fileName: param.fileName, module: 'avatar' });
-  }
-
   @Post('/one-chunk/check')
   @ApiOperation({
     summary: '文件上传-单文件分片上传前检查',

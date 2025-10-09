@@ -27,6 +27,10 @@ const props = defineProps({
   showIcon: {
     type: Boolean,
     default: true
+  },
+  module: {
+    type: String,
+    default: ''
   }
 });
 const emit = defineEmits<{
@@ -74,7 +78,7 @@ const upload5 = async () => {
     } else {
       // const fd = new FormData();
       // fd.append('file', file)
-      fileUploadRequests.push(() => fileUploadOneFull(file, file.name))
+      fileUploadRequests.push(() => fileUploadOneFull(file, file.name, props.module))
     }
   }
   state.total -= state.beyondMaxSizeNum
