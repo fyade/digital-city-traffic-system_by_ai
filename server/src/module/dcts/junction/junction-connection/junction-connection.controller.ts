@@ -1,4 +1,4 @@
 import { Controller } from '@nestjs/common';
 
-@Controller('junction-connection')
+@Controller('/dcts/junction/junction-connection')
 export class JunctionConnectionController {}

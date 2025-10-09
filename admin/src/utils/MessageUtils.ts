@@ -1,12 +1,12 @@
 import { NDialog, NMessage } from "@/utils/naiveBase.ts";
-import { ifDashboardPage } from "@/utils/DashboardUtils.ts";
+import { ifDashboardPage, ifThreePage } from "@/utils/DashboardUtils.ts";
 
 /**
  * message.success
  * @param msg
  */
 export function messageSuccess(msg: string) {
-  if (ifDashboardPage()) {
+  if (ifDashboardPage() || ifThreePage()) {
     NMessage.success(msg);
   } else {
     ElMessage.success(msg);
@@ -18,7 +18,7 @@ export function messageSuccess(msg: string) {
  * @param msg
  */
 export function messageError(msg: string) {
-  if (ifDashboardPage()) {
+  if (ifDashboardPage() || ifThreePage()) {
     NMessage.error(msg)
   } else {
     ElMessage.error(msg)
@@ -31,7 +31,7 @@ export function messageError(msg: string) {
  */
 export function messageBoxWarning(msg: string) {
   return new Promise((resolve, reject) => {
-    if (ifDashboardPage()) {
+    if (ifDashboardPage() || ifThreePage()) {
       NDialog.warning({
         title: '警告',
         content: msg,

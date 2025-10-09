@@ -23,7 +23,7 @@ export function nodesWithWaysInPolygon(dto: NodesWithWaysInPolygonDto) {
   // 查询所有道路
   const selAllRoadsSql = `
       WITH polygon AS (SELECT ST_SetSRID(ST_GeomFromText('POLYGON((${pointsstring}))'), 4326) AS geom)
-      SELECT osm_id,
+      SELECT osm_id::varchar,
              name,
              highway,
              motorcar,
@@ -33,13 +33,13 @@ export function nodesWithWaysInPolygon(dto: NodesWithWaysInPolygonDto) {
   // 查询所有节点
   const selAllNodesSql = `
       WITH polygon AS (SELECT ST_SetSRID(ST_GeomFromText('POLYGON((${pointsstring}))'), 4326) AS geom),
-           motor_vehicle_roads AS (SELECT osm_id,
+           motor_vehicle_roads AS (SELECT osm_id::varchar,
                                           name,
                                           highway,
                                           motorcar,
                                           way
                                               ${publicSql}),
-           nodes_in_polygon AS (SELECT id,
+           nodes_in_polygon AS (SELECT id::varchar,
                                        lat,
                                        lon,
                                        tags,
@@ -60,7 +60,7 @@ export function nodesWithWaysInPolygon(dto: NodesWithWaysInPolygonDto) {
       FROM node_road_connections;
   `
   const relation = (ids: string[]) => `
-      select id, nodes, tags
+      select id::varchar, nodes::varchar[], tags
       from planet_osm_ways
       where id in (${ids.join(', ')});
   `

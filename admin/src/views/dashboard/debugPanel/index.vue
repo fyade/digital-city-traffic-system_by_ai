@@ -52,7 +52,7 @@ const a2 = () => {
 
 <template>
   <n-divider title-placement="left">
-    算法相关调试
+    导航算法相关调试
   </n-divider>
   <n-space vertical>
     <n-button @click="sf1">入参可视化</n-button>

@@ -25,7 +25,9 @@ const state = reactive<State2<VehicleTrackPointDto, VehicleTrackPointUpdDto>>({
     heading: 0,
   },
   dialogForms: [],
-  filterForm: {},
+  filterForm: {
+    vehicleId: null,
+  },
 })
 const dFormRules: FormRules<VehicleTrackPointDto> = {
   vehicleId: [{required: true, trigger: 'change'}],
@@ -111,6 +113,12 @@ const fCan2 = () => {
     config.selectParam.createTime.between.value[1] = null
   }
   fCan()
+}
+
+const change = () => {
+  if (!state.filterForm.vehicleId) {
+    state.filterForm.vehicleId = null
+  }
 }
 </script>
 
@@ -258,9 +266,9 @@ const fCan2 = () => {
         @keyup.enter="fEnter"
     >
       <!--在此下方添加表单项-->
-      <!--<el-form-item :label="vehicleTrackPointDict." prop="">-->
-      <!--  <el-input v-model="state.filterForm." :placeholder="vehicleTrackPointDict."/>-->
-      <!--</el-form-item>-->
+      <el-form-item :label="vehicleTrackPointDict.vehicleId" prop="vehicleId">
+        <el-input v-model="state.filterForm.vehicleId" :placeholder="vehicleTrackPointDict.vehicleId" @change="change"/>
+      </el-form-item>
       <el-form-item :label="vehicleTrackPointDict.createTime" prop="createTime">
         <el-date-picker
             v-model="datePickerValue"

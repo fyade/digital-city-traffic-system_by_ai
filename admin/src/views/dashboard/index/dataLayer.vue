@@ -34,6 +34,9 @@ const goAdminPanel = () => {
 const goHome = () => {
   router.push('/');
 }
+const goThree = () => {
+  router.push('/three')
+}
 </script>
 
 <template>
@@ -53,6 +56,7 @@ const goHome = () => {
       <p v-if="userStore.ifLogin" @click="userStore.logOut(false)"><span class="no-underline">退出登录</span></p>
       <p v-if="userStore.ifLogin" @click="goAdminPanel"><span class="no-underline">管理端面板</span></p>
       <p v-if="userStore.ifLogin" @click="goHome"><span class="no-underline">→前往管理端→</span></p>
+      <p v-if="userStore.ifLogin" @click="goThree"><span class="no-underline">→前往三维端→</span></p>
       <p v-show="userStore.ifLogin&&currentConfig.VITE_MODE===final.DEV" @click="emits('openDebugPanel')"><span class="no-underline">调试面板</span></p>
       <p @click="goOperateGuidePanel"><span class="no-underline">操作指南</span></p>
     </div>

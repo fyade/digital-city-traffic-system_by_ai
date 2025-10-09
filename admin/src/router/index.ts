@@ -3,7 +3,7 @@ import { useUserStore } from "@/store/module/user.ts";
 import { ifWebsiteLink } from "@/utils/LinkUtils.ts";
 import { adminConfig, publicConfig } from "@dcts/config";
 import { goToLogin } from "@/utils/baseUtils.ts";
-import { ifDashboardPage } from "@/utils/DashboardUtils.ts";
+import { ifDashboardPage, ifThreePage } from "@/utils/DashboardUtils.ts";
 import { final } from "@/utils/base.ts";
 import { useSysStore } from "@/store/module/sys.ts";
 
@@ -226,6 +226,17 @@ export const routes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: '/three',
+    name: '~three',
+    component: () => import('@/views/three/index/index.vue'),
+    children: [
+      {
+        path: ':pathMatch(.*)*',
+        redirect: '/three'
+      }
+    ]
+  },
+  {
     path: '/:pathMatch(.*)*',
     component: () => import('@/views/redirect/index.vue')
   },
@@ -256,9 +267,18 @@ router.beforeEach((to, from, next) => {
   }
   const name = sysStore.getCurrentSystem.name;
   document.title = publicConfig.APP_NAME + (name?` | ${name}` : '')
+  let ifOtherPage = '';
+  if (ifDashboardPage(to.path)) {
+    ifOtherPage = '地图大屏端';
+  } else if (ifThreePage(to.path)) {
+    ifOtherPage = '三维端';
+  }
+  if (ifOtherPage) {
+    document.title = publicConfig.APP_NAME + ` | ${ifOtherPage}`;
+  }
   const userStore = useUserStore();
   if (!userStore.ifLogin && whitelist.indexOf(to.path) === -1) {
-    if (ifDashboardPage(to.path)) {
+    if (ifOtherPage) {
       next()
     } else {
       goToLogin()
