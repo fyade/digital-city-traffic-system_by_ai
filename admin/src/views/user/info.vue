@@ -5,25 +5,33 @@ import { ElMessage } from "element-plus";
 import { useUserStore } from "@/store/module/user.ts";
 import { MultiAuthUserDto } from "@/type/module/main/sysManage/user.ts";
 import { base } from "@dcts/common";
+import { useSysStore } from "@/store/module/sys.ts";
+import { fileBaseUrl } from "@/api/request.ts";
 
 const userStore = useUserStore();
+const sysStore = useSysStore();
 
 const state = reactive({
   id: '',
   nickname: '',
   username: '',
+  avatar: '',
 })
 const getUserInfo = () => {
   getSelfInfo().then(res => {
     if (userStore.loginRole === base.LoginRoleEnum.admin) {
-      state.id = res.admin!.id
-      state.nickname = res.admin!.nickname
-      state.username = res.admin!.username
+      const userDto = res.admin!;
+      state.id = userDto.id
+      state.nickname = userDto.nickname
+      state.username = userDto.username
+      state.avatar = userDto.avatar
     }
     if (userStore.loginRole === base.LoginRoleEnum.visitor) {
-      state.id = res.visitor!.id
-      state.nickname = res.visitor!.nickname
-      state.username = res.visitor!.username
+      const userDto = res.visitor!;
+      state.id = userDto.id
+      state.nickname = userDto.nickname
+      state.username = userDto.username
+      state.avatar = userDto.avatar
     }
   })
 }
@@ -58,6 +66,13 @@ const onSubmit = () => {
 <template>
   <div>
     <el-form :model="state" label-width="auto" style="max-width: 500px;">
+      <el-form-item label="头像">
+        <el-image
+          v-if="state.avatar"
+          :src="sysStore.urlAddAuth(fileBaseUrl+state.avatar)"
+          fit="contain"
+        />
+      </el-form-item>
       <el-form-item label="昵称">
         <el-input v-model="state.nickname"/>
       </el-form-item>

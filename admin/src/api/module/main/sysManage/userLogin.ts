@@ -1,6 +1,6 @@
 import request from "@/api/request.ts";
 import { LoginDto, MultiAuthUserDto } from "@/type/module/main/sysManage/user.ts";
-import { cryptUtils } from "@dcts/common";
+import { encryptUtils } from "@dcts/common";
 
 /**
  * 获取公钥
@@ -17,8 +17,23 @@ export function generateLoginKey() {
  * @param data
  */
 export async function loginApi(data: LoginDto) {
+  if (!window.isSecureContext) {
+    return request<{
+      token: string,
+      loginRole: string,
+      multiAuthUser: MultiAuthUserDto,
+    }>({
+      url: '/sys/user/adminlogin',
+      method: 'POST',
+      data: {
+        ...data,
+        password: encryptUtils.aes.encrypt(data.password),
+        psdType: 'b'
+      }
+    })
+  }
   const key = await generateLoginKey();
-  const newPassword = await cryptUtils.rsa.encrypt(key.publicKey, data.password);
+  const newPassword = await encryptUtils.rsa.encrypt(key.publicKey, data.password);
   return request<{
     token: string,
     loginRole: string,

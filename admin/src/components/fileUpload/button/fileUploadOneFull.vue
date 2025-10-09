@@ -7,7 +7,20 @@ import { selectFiles } from "@/utils/FileUtils.ts";
 import { adminConfig } from '@dcts/config';
 import { numberUtils } from "@dcts/common";
 
-const emit = defineEmits(['uploadSuccess', 'uploadFail']);
+const props = defineProps({
+  label: {
+    type: String,
+    default: '单文件完整上传'
+  },
+  showIcon: {
+    type: Boolean,
+    default: true
+  }
+});
+const emit = defineEmits<{
+  uploadSuccess: [filename: string];
+  uploadFail: [msg?: string];
+}>();
 const isDisabled = ref(false)
 const isLoading = ref(false)
 
@@ -33,17 +46,17 @@ const upload1 = async () => {
   // const fd = new FormData();
   // fd.append('file', file)
   fileUploadOneFull(file, file.name).then(res => {
-    uploadSuccess()
+    uploadSuccess(res)
   }).catch(err => {
     uploadFail(`${file.name}上传失败。`)
   }).finally(() => {
     // fd.delete('file')
   })
 }
-const uploadSuccess = () => {
+const uploadSuccess = (filename: string) => {
   isDisabled.value = false
   isLoading.value = false
-  emit('uploadSuccess')
+  emit('uploadSuccess', filename)
 }
 const uploadFail = (msg?: string) => {
   isDisabled.value = false
@@ -59,8 +72,13 @@ const uploadFail = (msg?: string) => {
 </script>
 
 <template>
-  <el-button :loading="isLoading" :disabled="isDisabled" theme="primary" @click="upload1" :icon="Upload">
-    单文件完整上传
+  <el-button :loading="isLoading" :disabled="isDisabled" theme="primary" @click="upload1">
+    <template v-if="props.showIcon" #icon>
+      <slot name="icon">
+        <Upload/>
+      </slot>
+    </template>
+    <span>{{ props.label }}</span>
   </el-button>
 </template>
 

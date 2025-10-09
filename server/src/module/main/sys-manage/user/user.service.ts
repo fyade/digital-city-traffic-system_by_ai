@@ -28,7 +28,7 @@ import { NOT_ADMIN, PASSWORD_ERROR } from '../../sys-log/log-user-login/dto';
 import { UserVisitorDto } from '../../other-user/user-visitor/dto';
 import * as svgCaptcha from 'svg-captcha';
 import { Exception } from "../../../../exception/exception";
-import { base, cryptUtils, encryptUtils, idUtils, timeUtils } from '@dcts/common'
+import { base, encryptUtils, idUtils, timeUtils } from '@dcts/common'
 import { serverConfig } from "@dcts/config";
 import { MysqlPrismaService } from '../../../../infra/prisma/mysql.prisma.service';
 import { MysqlPrismaoService } from "../../../../infra/prisma/mysql.prismao.service";
@@ -192,7 +192,7 @@ export class UserService {
     }
     await this.mysqlPrisma.create('sys_user', {
       ...dto,
-      password: await encryptUtils.hashPassword(dto.password),
+      password: await encryptUtils.bcrypt.hashPassword(dto.password),
       id: idUtils.genId(5, false),
     }, { ifCustomizeId: true });
     return R.ok(true);
@@ -217,25 +217,25 @@ export class UserService {
     const userId = this.bcs.getUserData().userId;
     if (loginRole === base.LoginRoleEnum.admin) {
       const user_ = await this.mysqlPrisma.findById<UserDto>('sys_user', userId);
-      const ifUserYes = await encryptUtils.comparePassword(dto.oldp, user_.password);
+      const ifUserYes = await encryptUtils.bcrypt.comparePassword(dto.oldp, user_.password);
       if (!ifUserYes) {
         throw new Exception('旧密码错误。');
       }
       await this.mysqlPrisma.updateById('sys_user', {
         id: user_.id,
-        password: await encryptUtils.hashPassword(dto.newp1),
+        password: await encryptUtils.bcrypt.hashPassword(dto.newp1),
       });
       return R.ok(true);
     }
     if (loginRole === base.LoginRoleEnum.visitor) {
       const user_ = await this.mysqlPrisma.findById<UserVisitorDto>('sys_user_visitor', userId);
-      const ifUserYes = await encryptUtils.comparePassword(dto.oldp, user_.password);
+      const ifUserYes = await encryptUtils.bcrypt.comparePassword(dto.oldp, user_.password);
       if (!ifUserYes) {
         throw new Exception('旧密码错误。');
       }
       await this.mysqlPrisma.updateById('sys_user_visitor', {
         id: user_.id,
-        password: await encryptUtils.hashPassword(dto.newp1),
+        password: await encryptUtils.bcrypt.hashPassword(dto.newp1),
       });
       return R.ok(true);
     }
@@ -246,12 +246,12 @@ export class UserService {
     if (!await this.authService.ifAdminUserUpdNotAdminUser(this.bcs.getUserData().userId, dto.id)) {
       throw new UserPermissionDeniedException();
     }
-    await this.mysqlPrisma.updateById('sys_user', { ...dto, password: await encryptUtils.hashPassword(dto.password) });
+    await this.mysqlPrisma.updateById('sys_user', { ...dto, password: await encryptUtils.bcrypt.hashPassword(dto.password) });
     return R.ok(true);
   }
 
   async generateKey(): Promise<R> {
-    const key = await cryptUtils.rsa.generateKey()
+    const key = await encryptUtils.rsa.generateKey()
     const uuid = idUtils.randomUUID();
     await this.cacheTokenService.savePasswordKey(uuid, key);
     return R.ok({
@@ -283,7 +283,7 @@ export class UserService {
       await this.mysqlPrisma.create<UserDto>('sys_user', {
         id: userid,
         username: dto.username,
-        password: await encryptUtils.hashPassword(dto.password),
+        password: await encryptUtils.bcrypt.hashPassword(dto.password),
         createRole: dto.loginRole,
         updateRole: dto.loginRole,
         createBy: userid,
@@ -302,7 +302,7 @@ export class UserService {
       await this.mysqlPrisma.create<UserVisitorDto>('sys_user_visitor', {
         id: userid,
         username: dto.username,
-        password: await encryptUtils.hashPassword(dto.password),
+        password: await encryptUtils.bcrypt.hashPassword(dto.password),
         createRole: dto.loginRole,
         updateRole: dto.loginRole,
         createBy: userid,
@@ -342,7 +342,7 @@ export class UserService {
         const number = Math.ceil(24 - (timeUtils.timestamp() - timeUtils.timestamp(sort[0].createTime)) / (1000 * 60 * 60));
         throw new Exception(`您的账号在当前IP密码错误次数过多，请${number}小时后重试或更换网络环境重试。`);
       }
-      const b1 = await encryptUtils.comparePassword(dto.password, user.password);
+      const b1 = await encryptUtils.bcrypt.comparePassword(dto.password, user.password);
       if (!b1) {
         await this.insLoginLog(loginIp, loginBrowser, '', loginOs, user.id, dto.loginRole, b1, PASSWORD_ERROR);
         throw new Exception(`密码错误，还剩${this.maxLoginFailCount - loginlogs.length - 1}次机会。`);
@@ -372,7 +372,7 @@ export class UserService {
         const number = Math.ceil(24 - (timeUtils.timestamp() - timeUtils.timestamp(sort[0].createTime)) / (1000 * 60 * 60));
         throw new Exception(`您的账号在当前IP密码错误次数过多，请${number}小时后重试或更换网络环境重试。`);
       }
-      const b1 = await encryptUtils.comparePassword(dto.password, user.password);
+      const b1 = await encryptUtils.bcrypt.comparePassword(dto.password, user.password);
       if (!b1) {
         await this.insLoginLog(loginIp, loginBrowser, '', loginOs, user.id, dto.loginRole, b1, PASSWORD_ERROR);
         throw new Exception(`密码错误，还剩${this.maxLoginFailCount - loginlogs.length - 1}次机会。`);

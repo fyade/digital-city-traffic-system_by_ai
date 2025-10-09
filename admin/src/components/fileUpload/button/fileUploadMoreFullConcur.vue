@@ -18,8 +18,21 @@ let pageNotUnmounted = true
 onBeforeUnmount(() => {
   pageNotUnmounted = false
 })
-const fileUploadRequests: (() => Promise<null>)[] = []
-const emit = defineEmits(['uploadSuccess', 'uploadFail']);
+const fileUploadRequests: (() => Promise<string>)[] = []
+const props = defineProps({
+  label: {
+    type: String,
+    default: '多文件并发完整上传'
+  },
+  showIcon: {
+    type: Boolean,
+    default: true
+  }
+});
+const emit = defineEmits<{
+  uploadSuccess: [filenames: string[]];
+  uploadFail: [msg?: string];
+}>();
 const isDisabled = computed(() => {
   return ['o', 'd'].indexOf(state.currentStage) === -1
 })
@@ -66,19 +79,19 @@ const upload5 = async () => {
   }
   state.total -= state.beyondMaxSizeNum
   state.currentStage = 'c'
-  await concurRequest2(fileUploadRequests, {
+  const filenames = await concurRequest2(fileUploadRequests, {
     downloadProgress: (progress: ProgressI) => {
       state.started = progress.started.length
       state.ended = progress.ended.length
     }
-  })
-  uploadSuccess()
+  });
+  uploadSuccess(filenames)
 }
-const uploadSuccess = () => {
+const uploadSuccess = (filenames: string[]) => {
   state.currentStage = 'd'
   isLoading.value = false
   fileUploadRequests.splice(0, fileUploadRequests.length)
-  emit('uploadSuccess')
+  emit('uploadSuccess', filenames)
 }
 const uploadFail = (msg?: string) => {
   state.currentStage = 'o'
@@ -98,7 +111,7 @@ const uploadFail = (msg?: string) => {
  * @param maxNum
  * @param downloadProgress
  */
-function concurRequest2(promises: (() => Promise<null>)[],
+function concurRequest2(promises: (() => Promise<string>)[],
                         {
                           maxNum = 4,
                           downloadProgress
@@ -106,7 +119,7 @@ function concurRequest2(promises: (() => Promise<null>)[],
                           maxNum?: number
                           downloadProgress?: Function
                         } = {}
-): Promise<(string | boolean | null)[]> {
+): Promise<string[]> {
   const progress = {
     started: [] as number[],
     ended: [] as number[],
@@ -118,7 +131,7 @@ function concurRequest2(promises: (() => Promise<null>)[],
     }
     let index = 0
     let count = 0
-    const result: (string | boolean | null)[] = []
+    const result: string[] = []
 
     async function request() {
       const i = index
@@ -126,9 +139,9 @@ function concurRequest2(promises: (() => Promise<null>)[],
       index++
       try {
         progress.started.push(i)
-        result[i] = await (pormis)()
+        const s = await (pormis)();
+        result.push(s)
       } catch (err) {
-        result[i] = err as string
       } finally {
         progress.ended.push(i)
         count++
@@ -154,8 +167,13 @@ function concurRequest2(promises: (() => Promise<null>)[],
 </script>
 
 <template>
-  <el-button :loading="isLoading" :disabled="isDisabled" theme="primary" @click="upload5" :icon="Upload">
-    <span>多文件并发完整上传</span>
+  <el-button :loading="isLoading" :disabled="isDisabled" theme="primary" @click="upload5">
+    <template v-if="props.showIcon" #icon>
+      <slot name="icon">
+        <Upload/>
+      </slot>
+    </template>
+    <span>{{ props.label }}</span>
     <template v-if="isDisabled">&nbsp;
       <span>(
         {{

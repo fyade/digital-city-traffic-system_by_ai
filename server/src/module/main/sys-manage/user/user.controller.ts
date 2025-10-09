@@ -67,7 +67,7 @@ export class UserController {
   })
   async insUser(@Body() dto: AdminNewUserDto) {
     if (dto.psdType === 'b') {
-      dto.password = encryptUtils.decrypt(dto.password);
+      dto.password = encryptUtils.aes.decrypt(dto.password);
     }
     delete dto.psdType;
     return this.userService.insUser(dto);
@@ -97,13 +97,13 @@ export class UserController {
   })
   async updPsd(@Body() dto: UpdPsdDto) {
     if (dto.oldpType === 'b') {
-      dto.oldp = encryptUtils.decrypt(dto.oldp);
+      dto.oldp = encryptUtils.aes.decrypt(dto.oldp);
     }
     if (dto.newp1Type === 'b') {
-      dto.newp1 = encryptUtils.decrypt(dto.newp1);
+      dto.newp1 = encryptUtils.aes.decrypt(dto.newp1);
     }
     if (dto.newp2Type === 'b') {
-      dto.newp2 = encryptUtils.decrypt(dto.newp2);
+      dto.newp2 = encryptUtils.aes.decrypt(dto.newp2);
     }
     delete dto.oldpType;
     delete dto.newp1Type;
@@ -123,7 +123,7 @@ export class UserController {
   })
   async adminResetUserPsd(@Body() dto: ResetUserPsdDto): Promise<R> {
     if (dto.psdType === 'b') {
-      dto.password = encryptUtils.decrypt(dto.password);
+      dto.password = encryptUtils.aes.decrypt(dto.password);
     }
     delete dto.psdType;
     return this.userService.adminResetUserPsd(dto);

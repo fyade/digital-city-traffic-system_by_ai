@@ -121,17 +121,39 @@ const download = async (row: FileUploadDto) => {
     }
   })
 }
+
+const fileUploadOneFullSuccess = (filename: string) => {
+  gRefresh();
+}
+const fileUploadMoreFullSuccess = (filenames: string[]) => {
+  gRefresh();
+}
+const fileUploadOneChunkSuccess = (filename: string) => {
+  gRefresh();
+}
+const fileUploadMoreChunkSuccess = (filenames: string[]) => {
+  gRefresh();
+}
+const fileUploadMoreFullConcurSuccess = (filenames: string[]) => {
+  gRefresh();
+}
+const fileUploadOneChunkConcurSuccess = (filename: string) => {
+  gRefresh();
+}
+const fileUploadMoreChunkConcurSuccess = (filenames: string[]) => {
+  gRefresh();
+}
 </script>
 
 <template>
   <el-space style="margin-bottom: 12px;" wrap>
-    <FileUploadOneFull @uploadSuccess="gRefresh"/>
-    <FileUploadMoreFull @uploadSuccess="gRefresh"/>
-    <FileUploadOneChunk @uploadSuccess="gRefresh"/>
-    <FileUploadMoreChunk @uploadSuccess="gRefresh"/>
-    <FileUploadMoreFullConcur @uploadSuccess="gRefresh"/>
-    <FileUploadOneChunkConcur @uploadSuccess="gRefresh"/>
-    <FileUploadMoreChunkConcur @uploadSuccess="gRefresh"/>
+    <FileUploadOneFull @uploadSuccess="fileUploadOneFullSuccess"/>
+    <FileUploadMoreFull @uploadSuccess="fileUploadMoreFullSuccess"/>
+    <FileUploadOneChunk @uploadSuccess="fileUploadOneChunkSuccess"/>
+    <FileUploadMoreChunk @uploadSuccess="fileUploadMoreChunkSuccess"/>
+    <FileUploadMoreFullConcur @uploadSuccess="fileUploadMoreFullConcurSuccess"/>
+    <FileUploadOneChunkConcur @uploadSuccess="fileUploadOneChunkConcurSuccess"/>
+    <FileUploadMoreChunkConcur @uploadSuccess="fileUploadMoreChunkConcurSuccess"/>
   </el-space>
 
   <!--顶部筛选表单-->

@@ -164,7 +164,12 @@ export class FileUploadService {
           ifFinished: final.Y,
         };
         await this.mysqlPrisma.create<FileDto>('tbl_file', fillObj);
-        return R.ok({ merge: true });
+        return R.ok({
+          merge: true,
+          fileNewName: sameFileElement1.fileNewName,
+          count: 0,
+          uploadedIndexs: [],
+        });
       } else {
         // 未合并
         // 保存文件信息至数据库
@@ -190,8 +195,8 @@ export class FileUploadService {
         });
         return R.ok({
           merge: false,
-          count: findMany.length,
           fileNewName: sameFileElement1.fileNewName,
+          count: findMany.length,
           uploadedIndexs: findMany.map(item => item.chunkIndex),
         });
       }
@@ -211,8 +216,8 @@ export class FileUploadService {
       await this.mysqlPrisma.create<FileDto>('tbl_file', fillObj);
       return R.ok({
         merge: false,
-        count: 0,
         fileNewName: fileNewName2,
+        count: 0,
         uploadedIndexs: [],
       });
     }

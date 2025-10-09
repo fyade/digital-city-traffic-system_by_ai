@@ -113,7 +113,7 @@ export function newUser(params: Omit<RegistDto, 'loginRole'>) {
     method: 'POST',
     data: {
       ...params,
-      password: encryptUtils.encrypt(params.password),
+      password: encryptUtils.aes.encrypt(params.password),
       psdType: 'b'
     }
   })
@@ -132,9 +132,9 @@ export function updPsd(params: UserUpdPsdDto) {
     url: '/main/sys-manage/user/upd-psd',
     method: 'POST',
     data: {
-      oldp: encryptUtils.encrypt(params.oldp),
-      newp1: encryptUtils.encrypt(params.newp1),
-      newp2: encryptUtils.encrypt(params.newp2),
+      oldp: encryptUtils.aes.encrypt(params.oldp),
+      newp1: encryptUtils.aes.encrypt(params.newp1),
+      newp2: encryptUtils.aes.encrypt(params.newp2),
       oldpType: 'b',
       newp1Type: 'b',
       newp2Type: 'b'
@@ -148,7 +148,7 @@ export function resetUserPsd(params: AdminResetUserPsdDto) {
     method: 'POST',
     data: {
       ...params,
-      password: encryptUtils.encrypt(params.password),
+      password: encryptUtils.aes.encrypt(params.password),
       psdType: 'b'
     }
   })

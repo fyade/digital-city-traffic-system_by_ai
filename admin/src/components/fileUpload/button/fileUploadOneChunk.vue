@@ -13,7 +13,20 @@ let pageNotUnmounted = true
 onBeforeUnmount(() => {
   pageNotUnmounted = false
 })
-const emit = defineEmits(['uploadSuccess', 'uploadFail']);
+const props = defineProps({
+  label: {
+    type: String,
+    default: '单文件分片上传'
+  },
+  showIcon: {
+    type: Boolean,
+    default: true
+  }
+});
+const emit = defineEmits<{
+  uploadSuccess: [filename: string];
+  uploadFail: [msg?: string];
+}>();
 const isDisabled = computed(() => {
   return ['o', 'd'].indexOf(state.currentStage) === -1
 })
@@ -62,7 +75,7 @@ const upload3 = async () => {
     chunkNum: state.chunkTotal
   })
   if (res1.merge) {
-    uploadSuccess()
+    uploadSuccess(res1.fileNewName)
     return
   }
   const indexs = arrayUtils.removeElementsByIndices(new Array(chunks.length).fill(null).map((item, i) => i), ...res1.uploadedIndexs)
@@ -79,10 +92,10 @@ const upload3 = async () => {
       fileMd5: state.fileMd5
     })
   } catch (e) {
-    uploadFail(`${file.name}合并失败`)
+    uploadFail(`${file.name}上传失败。`)
   }
   // 分片合并完成
-  uploadSuccess()
+  uploadSuccess(state.fileNewName)
 }
 /**
  * 创建分片
@@ -163,11 +176,11 @@ const startUpload = (indexs: number[], chunks: Blob[]): Promise<null> => {
 /**
  * 上传完成
  */
-const uploadSuccess = () => {
+const uploadSuccess = (filename: string) => {
   state.currentStage = 'd'
   state.chunkNum = 0
   isLoading.value = false
-  emit('uploadSuccess')
+  emit('uploadSuccess', filename)
 }
 /**
  * 上传失败
@@ -186,8 +199,13 @@ const uploadFail = (msg?: string) => {
 </script>
 
 <template>
-  <el-button :loading="isLoading" :disabled="isDisabled" theme="primary" @click="upload3" :icon="Upload">
-    <span>单文件分片上传</span>
+  <el-button :loading="isLoading" :disabled="isDisabled" theme="primary" @click="upload3">
+    <template v-if="props.showIcon" #icon>
+      <slot name="icon">
+        <Upload/>
+      </slot>
+    </template>
+    <span>{{ props.label }}</span>
     <template v-if="isDisabled">&nbsp;
       <span>({{
           ['a', 'b', 'e'].indexOf(state.currentStage) > -1 ? state.dictStage[state.currentStage] : `${state.chunkNum}/${state.progress_total}`

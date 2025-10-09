@@ -4,7 +4,9 @@ import { blobToFile, selectFiles } from "@/utils/FileUtils.ts";
 import { ElMessage } from "element-plus";
 import { fileUploadAvatar } from "@/api/common/fileUpload.ts";
 
-const emits = defineEmits(['uploadSuccess']);
+const emits = defineEmits<{
+  uploadSuccess: [filename: string];
+}>();
 
 let cSize = 200 // 画布大小
 let scale = 1 // 画布缩放
@@ -131,17 +133,21 @@ const setCenter = () => {
 <template>
   <!--<el-button :disabled="isDisabled" type="primary" :icon="Upload" @click="inpClick">上传文件</el-button>-->
   <div>
-    <canvas
+    <div>
+      <canvas
         class="c1"
         ref="c1"
         :width="cSize"
         :height="cSize"
         @mousedown="onMouseDown"
         @wheel="onWheel"
-    ></canvas>
+      ></canvas>
+    </div>
+    <div>
+      <el-button :disabled="isDisabled" type="primary" @click="setCenter">居中</el-button>
+      <el-button :disabled="isDisabled" type="primary" @click="upload">上传</el-button>
+    </div>
   </div>
-  <el-button :disabled="isDisabled" type="primary" @click="setCenter">居中</el-button>
-  <el-button :disabled="isDisabled" type="primary" @click="upload">保存</el-button>
 </template>
 
 <style scoped>

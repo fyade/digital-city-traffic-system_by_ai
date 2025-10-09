@@ -46,7 +46,7 @@ export class UserVisitorService {
             value: userIds
           },
         },
-        login_role: 'visitor',
+        login_role: base.LoginRoleEnum.visitor,
       },
     });
     const allRoleIdsOfThoseUsers = allUserRolesOfThoseUsers.map(item => item.roleId);
@@ -126,14 +126,14 @@ export class UserVisitorService {
     }
     await this.mysqlPrisma.create('sys_user_visitor', {
       ...dto,
-      password: await encryptUtils.hashPassword(dto.password),
+      password: await encryptUtils.bcrypt.hashPassword(dto.password),
       id: idUtils.genId(10, false),
     }, { ifCustomizeId: true });
     return R.ok(true);
   }
 
   async adminResetUserVisitorPsd(dto: ResetUserVisitorPsdDto): Promise<R> {
-    await this.mysqlPrisma.updateById('sys_user_visitor', { ...dto, password: await encryptUtils.hashPassword(dto.password) });
+    await this.mysqlPrisma.updateById('sys_user_visitor', { ...dto, password: await encryptUtils.bcrypt.hashPassword(dto.password) });
     return R.ok(true);
   }
 }

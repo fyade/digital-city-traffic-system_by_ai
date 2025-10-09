@@ -6,7 +6,7 @@ import { Authorize } from '../../../../decorator/authorize.decorator';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { getIpInfoFromRequest } from '../../../../util/RequestUtils';
 import { Request } from 'express';
-import { cryptUtils, encryptUtils } from '@dcts/common'
+import { encryptUtils } from '@dcts/common'
 import { CacheTokenService } from "../../../../infra/cache/cache.token.service";
 
 @Controller('/sys/user')
@@ -46,7 +46,7 @@ export class UserLoginController {
   })
   async regist(@Body() dto: RegistDto): Promise<R> {
     if (dto.psdType === 'b') {
-      dto.password = encryptUtils.decrypt(dto.password);
+      dto.password = encryptUtils.aes.decrypt(dto.password);
     }
     delete dto.psdType;
     return this.userService.regist(dto);
@@ -64,7 +64,7 @@ export class UserLoginController {
   })
   async login(@Body() dto: LoginDto, @Req() request: Request): Promise<R> {
     if (dto.psdType === 'b') {
-      dto.password = encryptUtils.decrypt(dto.password);
+      dto.password = encryptUtils.aes.decrypt(dto.password);
     }
     delete dto.psdType;
     const { ip: loginIp, browser: loginBrowser, os: loginOs } = getIpInfoFromRequest(request);
@@ -83,11 +83,11 @@ export class UserLoginController {
   })
   async adminLogin(@Body() dto: LoginDto, @Req() request: Request): Promise<R> {
     if (dto.psdType === 'b') {
-      dto.password = encryptUtils.decrypt(dto.password);
+      dto.password = encryptUtils.aes.decrypt(dto.password);
     }
     if (dto.psdType === 'c') {
       const key = await this.cacheTokenService.getPasswordKey(dto.passwordKeyUuid);
-      dto.password = await cryptUtils.rsa.decrypt(key.privateKey, dto.password);
+      dto.password = await encryptUtils.rsa.decrypt(key.privateKey, dto.password);
     }
     delete dto.psdType;
     const { ip: loginIp, browser: loginBrowser, os: loginOs } = getIpInfoFromRequest(request);

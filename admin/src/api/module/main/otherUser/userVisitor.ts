@@ -101,7 +101,7 @@ export function newUserVisitor(params: UserVisitorRegistDto) {
     method: 'POST',
     data: {
       ...params,
-      password: encryptUtils.encrypt(params.password),
+      password: encryptUtils.aes.encrypt(params.password),
       psdType: 'b'
     }
   })
@@ -113,7 +113,7 @@ export function resetUserVisitorPsd(params: AdminResetUserVisitorPsdDto) {
     method: 'POST',
     data: {
       ...params,
-      password: encryptUtils.encrypt(params.password),
+      password: encryptUtils.aes.encrypt(params.password),
       psdType: 'b'
     }
   })

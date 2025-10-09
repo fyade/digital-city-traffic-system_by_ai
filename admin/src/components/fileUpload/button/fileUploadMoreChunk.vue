@@ -13,7 +13,20 @@ let pageNotUnmounted = true
 onBeforeUnmount(() => {
   pageNotUnmounted = false
 })
-const emit = defineEmits(['uploadSuccess', 'uploadFail']);
+const props = defineProps({
+  label: {
+    type: String,
+    default: '多文件分片上传'
+  },
+  showIcon: {
+    type: Boolean,
+    default: true
+  }
+});
+const emit = defineEmits<{
+  uploadSuccess: [filenames: string[]];
+  uploadFail: [msg?: string];
+}>();
 const isDisabled = computed(() => {
   return ['o', 'd'].indexOf(state.currentStage) === -1
 })
@@ -52,6 +65,7 @@ const upload4 = async () => {
     return
   }
   state.fileTotal = filepicks.length
+  const filenames: string[] = []
   for (let i = 0; i < filepicks.length; i++) {
     state.fileNum = i + 1
     state.currentStage = 'b'
@@ -82,13 +96,16 @@ const upload4 = async () => {
           fileNewName: state.fileNewName,
           fileMd5: state.fileMd5
         })
+        filenames.push(state.fileNewName)
       } catch (e) {
-        uploadFail(`${file.name}合并失败。`)
+        uploadFail(`${file.name}上传失败。`)
       }
       // 分片合并完成
+    } else {
+      filenames.push(res1.fileNewName)
     }
   }
-  uploadSuccess()
+  uploadSuccess(filenames)
 }
 /**
  * 创建分片
@@ -169,11 +186,11 @@ const startUpload = (indexs: number[], chunks: Blob[]): Promise<null> => {
 /**
  * 上传完成
  */
-const uploadSuccess = () => {
+const uploadSuccess = (filenames: string[]) => {
   state.currentStage = 'd'
   state.chunkNum = 0
   isLoading.value = false
-  emit('uploadSuccess')
+  emit('uploadSuccess', filenames)
 }
 /**
  * 上传失败
@@ -192,8 +209,13 @@ const uploadFail = (msg?: string) => {
 </script>
 
 <template>
-  <el-button :loading="isLoading" :disabled="isDisabled" theme="primary" @click="upload4" :icon="Upload">
-    <span>多文件分片上传</span>
+  <el-button :loading="isLoading" :disabled="isDisabled" theme="primary" @click="upload4">
+    <template v-if="props.showIcon" #icon>
+      <slot name="icon">
+        <Upload/>
+      </slot>
+    </template>
+    <span>{{ props.label }}</span>
     <template v-if="isDisabled">&nbsp;
       <span>(
         {{

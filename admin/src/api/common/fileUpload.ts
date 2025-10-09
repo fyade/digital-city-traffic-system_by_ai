@@ -111,7 +111,7 @@ export function fileUploadOneFull(file: Blob, fileName: string = '') {
   const formData = new FormData();
   formData.append('file', file)
   formData.append('fileName', fileName)
-  return request({
+  return request<string>({
     url: `/main/sys/file-upload/one-full`,
     method: 'POST',
     headers: {
@@ -130,7 +130,7 @@ export function fileUploadAvatar(file: Blob, fileName: string = '') {
   const formData = new FormData();
   formData.append('file', file)
   formData.append('fileName', fileName)
-  return request({
+  return request<string>({
     url: `/main/sys/file-upload/one-full-avatar`,
     method: 'POST',
     headers: {
@@ -145,7 +145,12 @@ export function fileUploadAvatar(file: Blob, fileName: string = '') {
  * @param data
  */
 export function fileUploadOneChunk_check(data: ParamsFileUploadOneChunkCheck) {
-  return request({
+  return request<{
+    merge: boolean;
+    fileNewName: string;
+    count: number;
+    uploadedIndexs: number[];
+  }>({
     url: '/main/sys/file-upload/one-chunk/check',
     method: 'POST',
     data

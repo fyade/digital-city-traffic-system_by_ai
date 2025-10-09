@@ -36,7 +36,7 @@ export class UserVisitorController {
   })
   async insUserVisitor(@Body() dto: AdminNewUserVisitorDto): Promise<R> {
     if (dto.psdType === 'b') {
-      dto.password = encryptUtils.decrypt(dto.password);
+      dto.password = encryptUtils.aes.decrypt(dto.password);
     }
     delete dto.psdType;
     return this.userVisitorService.insUserVisitor(dto);
@@ -52,7 +52,7 @@ export class UserVisitorController {
   })
   async adminResetUserVisitorPsd(@Body() dto: ResetUserVisitorPsdDto): Promise<R> {
     if (dto.psdType === 'b') {
-      dto.password = encryptUtils.decrypt(dto.password);
+      dto.password = encryptUtils.aes.decrypt(dto.password);
     }
     delete dto.psdType;
     return this.userVisitorService.adminResetUserVisitorPsd(dto);
