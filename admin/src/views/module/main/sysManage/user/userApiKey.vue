@@ -48,7 +48,7 @@ const config = new TablePageConfig<UserApiKeyDto>({
   },
   dialogFormLoadingFinishCallback: () => {
     state.dialogForm.apiKey = '#'
-    state.dialogForms?.forEach((item) => {
+    state.dialogForms.forEach((item) => {
       item.apiKey = '#'
     })
   }

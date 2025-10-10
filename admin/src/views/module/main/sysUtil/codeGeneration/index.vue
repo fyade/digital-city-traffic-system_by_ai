@@ -627,14 +627,14 @@ const gUpd2 = () => {
       <el-form-item :label="codeGenTableDict.entityName" prop="entityName">
         <el-input v-model="state.filterForm.entityName" :placeholder="codeGenTableDict.entityName"/>
       </el-form-item>
-      <el-form-item :label="codeGenTableDict.tableRemark" prop="tableRemark">
-        <el-input v-model="state.filterForm.tableRemark" :placeholder="codeGenTableDict.tableRemark"/>
-      </el-form-item>
       <el-form-item :label="codeGenTableDict.businessName" prop="businessName">
         <el-input v-model="state.filterForm.businessName" :placeholder="codeGenTableDict.businessName"/>
       </el-form-item>
       <el-form-item :label="codeGenTableDict.moduleName" prop="moduleName">
         <el-input v-model="state.filterForm.moduleName" :placeholder="codeGenTableDict.moduleName"/>
+      </el-form-item>
+      <el-form-item :label="codeGenTableDict.tableRemark" prop="tableRemark">
+        <el-input v-model="state.filterForm.tableRemark" :placeholder="codeGenTableDict.tableRemark"/>
       </el-form-item>
       <!--在此上方添加表单项-->
       <el-form-item>
@@ -670,6 +670,11 @@ const gUpd2 = () => {
       <!--<el-table-column fixed prop="id" :label="codeGenTableDict.id" width="180"/>-->
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
+      <el-table-column prop="sysId" :label="codeGenTableDict.sysId" width="180">
+        <template #default="{row}">
+          {{ allSyss.find(item => item.id === row.sysId)?.name }}
+        </template>
+      </el-table-column>
       <el-table-column prop="tableName" :label="codeGenTableDict.tableName" width="240"/>
       <el-table-column prop="tableDescr" :label="codeGenTableDict.tableDescr" width="180"/>
       <el-table-column prop="entityName" :label="codeGenTableDict.entityName" width="180"/>
