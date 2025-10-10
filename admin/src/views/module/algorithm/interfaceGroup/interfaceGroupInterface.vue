@@ -25,8 +25,8 @@ const props = defineProps({
 const interfaceInterfaceGroupState = reactive<State2<InterfaceInterfaceGroupDto, InterfaceInterfaceGroupUpdDto>>({
   dialogForm: {
     id: -1,
-    interfaceId: -1,
-    interfaceGroupId: -1,
+    interfaceId: final.DEFAULT_NUMBER,
+    interfaceGroupId: final.DEFAULT_NUMBER,
   },
   dialogForms: [],
   filterForm: {},

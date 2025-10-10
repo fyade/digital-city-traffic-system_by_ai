@@ -21,7 +21,7 @@ const props = defineProps({
 const state = reactive<State2<LogAlgorithmCallDto, LogAlgorithmCallUpdDto>>({
   dialogForm: {
     id: -1,
-    userGroupPermissionId: -1,
+    userGroupPermissionId: final.DEFAULT_NUMBER,
     pperms: '',
     perms: '',
     userId: '',

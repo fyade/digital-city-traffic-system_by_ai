@@ -172,8 +172,8 @@ const {
 const userGroupPermissionState = reactive<State2<UserGroupPermissionDto, UserGroupPermissionUpdDto>>({
   dialogForm: {
     id: -1,
-    userGroupId: -1,
-    permissionId: -1,
+    userGroupId: final.DEFAULT_NUMBER,
+    permissionId: final.DEFAULT_NUMBER,
     ifLongTerm: final.N,
     ifLimitRequestTimes: final.Y,
     ifRejectRequestUseUp: final.Y,

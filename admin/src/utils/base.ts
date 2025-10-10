@@ -1,5 +1,5 @@
-import { CascaderProps, TreeOptionProps } from "element-plus";
-import { INS, MORE, N, O, ONE, UPD, Y } from "@/type/utils/base.ts";
+import { CascaderProps } from "element-plus";
+import { INS, MORE, ONE, UPD } from "@/type/utils/base.ts";
 
 export class LV {
   label!: string;
@@ -42,20 +42,7 @@ export const publicDict = {
   deleted: "逻辑删除",
 };
 
-export const final: {
-  Y: Y;
-  N: N;
-  O: O;
-  DEV: "dev";
-  TEST: "test";
-  PROD: "prod";
-  DEFAULT_PARENT_ID: 0;
-  DEFAULT_ORDER_NUM: 0;
-  one: ONE;
-  more: MORE;
-  ins: INS;
-  upd: UPD;
-} = {
+export const final = {
   Y: "Y",
   N: "N",
   O: "O",
@@ -64,10 +51,11 @@ export const final: {
   PROD: "prod",
   DEFAULT_PARENT_ID: 0,
   DEFAULT_ORDER_NUM: 0,
-  one: "ONE",
-  more: "MORE",
-  ins: "INS",
-  upd: "UPD",
+  DEFAULT_NUMBER: 0,
+  one: "ONE" as ONE,
+  more: "MORE" as MORE,
+  ins: "INS" as INS,
+  upd: "UPD" as UPD,
 };
 
 export interface PublicDictInterface {

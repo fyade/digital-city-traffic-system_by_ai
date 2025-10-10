@@ -23,7 +23,7 @@ const props = defineProps({
 const state = reactive<State2<UserApiKeyDto, UserApiKeyUpdDto>>({
   dialogForm: {
     id: -1,
-    userId: props.user?.id,
+    userId: props.user.id,
     userRole: '#',
     apiKey: '#',
     remark: '',
@@ -39,11 +39,11 @@ const dFormRules: FormRules<UserApiKeyDto> = {
 const config = new TablePageConfig<UserApiKeyDto>({
   bulkOperation: true,
   selectParam: {
-    userId: props.user?.id,
+    userId: props.user.id,
     userRole: base.LoginRoleEnum.admin,
   },
   insUpdParam: {
-    userId: props.user?.id,
+    userId: props.user.id,
     userRole: base.LoginRoleEnum.admin,
   },
   dialogFormLoadingFinishCallback: () => {
