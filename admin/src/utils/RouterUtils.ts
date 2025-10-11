@@ -7,13 +7,14 @@ const routerStore = useRouterStore()
 /**
  * 前往隐藏的菜单
  * @param perm
+ * @param query
  */
-export function gotoHiddenPath(perm: string) {
+export function gotoHiddenPath(perm: string, query?: LocationQueryRaw) {
   const allMenus2 = routerStore.allMenus2
   const find = allMenus2.find((item) => item.name === perm);
   if (find) {
     routerStore.addMenu(find);
-    router.push(find.path)
+    router.push({name: perm, query: query})
   }
 }
 
