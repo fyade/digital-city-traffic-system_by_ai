@@ -92,8 +92,14 @@ export class VehicleModule {
     const now = Cesium.JulianDate.toDate(this.viewer.clock.currentTime).getTime();
     if (!this.lastTickTime || (now % 500 <= this._tick_deviation_time && Math.abs(now - this.lastTickTime) >= (500 - this._tick_deviation_time))) {
       this.lastTickTime = now
+      const vehicleIds: number[] = []
       for (const datum of this.datas) {
-        const point = datum.points[0].point.replace('POINT(', '').replace(')', '').split(' ').map(Number);
+        const firstPoint1 = datum.points[0];
+        if (Math.abs(new Date(firstPoint1.createTime).getTime() - now) >= 5000) {
+          continue
+        }
+        vehicleIds.push(datum.vehicleId)
+        const point = firstPoint1.point.replace('POINT(', '').replace(')', '').split(' ').map(Number);
         if (!this.hasDrawedVehicleIds.includes(datum.vehicleId)) {
           this.hasDrawedVehicleIds.push(datum.vehicleId)
           this.viewer.entities.add({
@@ -102,7 +108,7 @@ export class VehicleModule {
               image: busTopImage,
               width: 40,
               height: 40,
-              rotation: Cesium.Math.toRadians(datum.points[0].heading),
+              rotation: Cesium.Math.toRadians(firstPoint1.heading),
               alignedAxis: Cesium.Cartesian3.UNIT_Z
             },
             id: `${ID_PREFIX_VEHICLE_REAL_TIME}${datum.vehicleId}`
@@ -111,11 +117,10 @@ export class VehicleModule {
           const entity = this.viewer.entities.getById(`${ID_PREFIX_VEHICLE_REAL_TIME}${datum.vehicleId}`);
           if (entity && entity.billboard) {
             entity.position = new Cesium.ConstantPositionProperty(Cesium.Cartesian3.fromDegrees(point[0], point[1], CESIUM_DEFAULT.HEIGHT_VEHICLE))
-            entity.billboard.rotation = new Cesium.ConstantProperty(Cesium.Math.toRadians(datum.points[0].heading))
+            entity.billboard.rotation = new Cesium.ConstantProperty(Cesium.Math.toRadians(firstPoint1.heading))
           }
         }
       }
-      const vehicleIds = this.datas.map(item => item.vehicleId);
       const needDelIds: number[] = this.hasDrawedVehicleIds.filter(item => !vehicleIds.includes(item))
       for (const needDelId of needDelIds) {
         this.hasDrawedVehicleIds.splice(this.hasDrawedVehicleIds.indexOf(needDelId), 1)
