@@ -346,7 +346,15 @@ export class UseCesium {
   // 地图中心点位置[经度、纬度]
   public mapCenterPosition: [number, number] = [118.92269000122111, 32.10650387256775]
   // 当前聚焦的实体
-  public trackedEntityId: string | null = null
+  private _trackedEntityId: string | null = null
+  get trackedEntityId(): string | null {
+    return this._trackedEntityId;
+  }
+
+  set trackedEntityId(value: string | null) {
+    this._trackedEntityId = value;
+  }
+
   // 鼠标按下时的位置
   public mouseDownPosition: 'timeline' | 'canvas' | null = null
 

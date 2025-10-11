@@ -1,4 +1,5 @@
 import * as Cesium from 'cesium'
+import { DropdownDividerOption, DropdownGroupOption, DropdownOption, DropdownRenderOption } from "naive-ui";
 
 export const ID_PREFIX_POINT = 'ID_PREFIX_POINT::::::::::'
 export const ID_PREFIX_LINE = 'ID_PREFIX_LINE::::::::::'
@@ -52,3 +53,5 @@ export const CESIUM_DEFAULT = {
   // 车辆轨迹标识高度
   HEIGHT_VEHICLE_TRAJECTORY_MARK: 0.1
 }
+
+export type ContextMenuOptionType = Array<DropdownOption | DropdownGroupOption | DropdownDividerOption | DropdownRenderOption>;

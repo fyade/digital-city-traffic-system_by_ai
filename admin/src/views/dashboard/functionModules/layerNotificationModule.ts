@@ -19,9 +19,9 @@ export class LayerNotificationModule {
     this.viewer = viewer;
   }
 
-  private setAllLabelsCB: (() => void) | null = null
+  private setAllLabelsCB: ((data: string[][]) => void) | null = null
 
-  public setSetAllLabelsCB(func: () => void) {
+  public setSetAllLabelsCB(func: (data: string[][]) => void) {
     this.setAllLabelsCB = func
   }
 
@@ -265,7 +265,7 @@ export class LayerNotificationModule {
   private set allLabels(value: string[][]) {
     this._allLabels = value;
     if (this.setAllLabelsCB) {
-      this.setAllLabelsCB()
+      this.setAllLabelsCB(this.allLabels)
     }
   }
 

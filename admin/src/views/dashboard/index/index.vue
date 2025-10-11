@@ -5,6 +5,7 @@ import DebugPanel from '@/views/dashboard/debugPanel/index.vue';
 import { useSysStore } from "@/store/module/sys.ts";
 import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
 import EntityHub from "@/views/dashboard/index/entityHub.vue";
+import { ContextMenuOptionType } from "@/views/dashboard/functionModules/constant.ts";
 
 const sysStore = useSysStore();
 
@@ -16,8 +17,19 @@ onBeforeUnmount(() => {
 })
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 变量 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-const cesiumClass = ref(useDashboardCesium)
+const cesiumClass = useDashboardCesium
 const ifInited = ref(false)
+
+const allLabels = ref<string[][]>([])
+cesiumClass.setSetAllLabelsCB(data => allLabels.value = data)
+const currentTime = ref(0)
+cesiumClass.setSetCurrentTimeCB(data => currentTime.value = data)
+const contextMenuShow = ref(false)
+cesiumClass.setSetContextMenuShowCB(data => contextMenuShow.value = data)
+const contextMenuXY = ref<[number, number]>([0, 0])
+cesiumClass.setSetContextMenuXYCB(data => contextMenuXY.value = data)
+const contextMenuOption = ref<ContextMenuOptionType>([])
+cesiumClass.setSetContextMenuOptionCB(data => contextMenuOption.value = data)
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 操作 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 /**
@@ -26,8 +38,8 @@ const ifInited = ref(false)
 const init = async () => {
   console.info('开始加载');
 
-  cesiumClass.value.setContainer('cesiumContainer')
-  cesiumClass.value.init2()
+  cesiumClass.setContainer('cesiumContainer')
+  cesiumClass.init2()
 
   await sysStore.refreshVisibleButton('sys:dcts')
   console.info('加载完成')
@@ -44,8 +56,8 @@ const openDebugLayerChange = () => {
 
 <template>
   <DataLayer
-      :labels="cesiumClass.allLabels"
-      :current-time="cesiumClass.currentTime"
+      :labels="allLabels"
+      :current-time="currentTime"
       @open-debug-panel="openDebugLayerChange"
   />
   <div id="cesiumContainer"></div>
@@ -57,13 +69,12 @@ const openDebugLayerChange = () => {
   </n-drawer>
 
   <n-dropdown
-      v-if="cesiumClass"
-      v-model:show="cesiumClass.contextMenuShow"
+      v-model:show="contextMenuShow"
       trigger="manual"
       placement="bottom-start"
-      :x="cesiumClass.contextMenuXY[0]"
-      :y="cesiumClass.contextMenuXY[1]"
-      :options="cesiumClass.contextMenuOption"
+      :x="contextMenuXY[0]"
+      :y="contextMenuXY[1]"
+      :options="contextMenuOption"
       @select="cesiumClass.contextMenuSelect"
   />
 

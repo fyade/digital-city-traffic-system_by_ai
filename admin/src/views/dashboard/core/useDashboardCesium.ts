@@ -16,7 +16,8 @@ import { useSysStore } from "@/store/module/sys.ts";
 import { adminConfig } from "@dcts/config";
 import { CalculateLightsInPolygonVo, GetVehiclesInPolygonVo } from "@/type/module/dcts/spatialData.ts";
 import { final } from "@/utils/base.ts";
-import { ID_PREFIX_VEHICLE_REAL_TIME } from "@/views/dashboard/functionModules/constant.ts";
+import { ContextMenuOptionType, ID_PREFIX_VEHICLE_REAL_TIME } from "@/views/dashboard/functionModules/constant.ts";
+import { DrawedVehicleTrajectoryClass } from "@/views/dashboard/utils/class.ts";
 
 const currentConfig = adminConfig.currentConfig()
 
@@ -60,13 +61,56 @@ class UseDashboardCesium extends UseCesium {
     })
   }
 
-  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 外部访问 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-  public currentTime = this.cModule.currentTime
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+  // ===== Module =====
+  private setTrackedEntityIdCB: ((data: string | null) => void) | null = null
 
+  public setSetTrackedEntityIdCB(func: (data: string | null) => void) {
+    this.setTrackedEntityIdCB = func
+  }
+
+  // ===== cModule =====
+  private setCurrentTimeCB: ((data: number) => void) | null = null
+
+  public setSetCurrentTimeCB(func: (data: number) => void) {
+    this.setCurrentTimeCB = func
+  }
+
+  // ===== cmModule =====
+  private setContextMenuShowCB: ((data: boolean) => void) | null = null
+
+  public setSetContextMenuShowCB(func: (data: boolean) => void) {
+    this.setContextMenuShowCB = func
+  }
+
+  private setContextMenuXYCB: ((data: [number, number]) => void) | null = null
+
+  public setSetContextMenuXYCB(func: (data: [number, number]) => void) {
+    this.setContextMenuXYCB = func
+  }
+
+  private setContextMenuOptionCB: ((data: ContextMenuOptionType) => void) | null = null
+
+  public setSetContextMenuOptionCB(func: (data: ContextMenuOptionType) => void) {
+    this.setContextMenuOptionCB = func
+  }
+
+  // ===== lnModule =====
+  private setAllLabelsCB: ((data: string[][]) => void) | null = null
+
+  public setSetAllLabelsCB(func: (data: string[][]) => void) {
+    this.setAllLabelsCB = func
+  }
+
+  // ===== veModule =====
+  private setDrawedVehicleTrajectoryIdsCB: ((data: DrawedVehicleTrajectoryClass[]) => void) | null = null
+
+  public setSetDrawedVehicleTrajectoryIdsCB(func: (data: DrawedVehicleTrajectoryClass[]) => void) {
+    this.setDrawedVehicleTrajectoryIdsCB = func
+  }
+
+  // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 外部访问 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   public readonly refreshContextMenuOption = this.cmModule.refreshContextMenuOption.bind(this.cmModule)
-  public contextMenuShow = this.cmModule.contextMenuShow
-  public contextMenuXY = this.cmModule.contextMenuXY
-  public contextMenuOption = this.cmModule.contextMenuOption
   public readonly contextMenuSelect = this.cmModule.contextMenuSelect.bind(this.cmModule)
   public formPanelTitle = this.cmModule.formPanelTitle
 
@@ -74,7 +118,6 @@ class UseDashboardCesium extends UseCesium {
   public readonly debugModuleSf2 = this.debugModule.sf2.bind(this.debugModule)
   public readonly debugModuleCesiumModelPathAnimation = this.debugModule.cesiumModelPathAnimation.bind(this.debugModule)
 
-  public allLabels = this.lnModule.allLabels
   public allLayers = this.lnModule.allLayers
   public readonly setLayer = this.lnModule.setLayer.bind(this.lnModule)
 
@@ -86,7 +129,6 @@ class UseDashboardCesium extends UseCesium {
   public readonly setLastActiveInterval = this.meModule.setLastActiveInterval.bind(this.meModule)
   public readonly refreshScreenEntities = this.meModule.refreshScreenEntities.bind(this.meModule)
 
-  public drawedVehicleTrajectoryIds = this.veModule.drawedVehicleTrajectoryIds
   public readonly drawVehicleTrajectory = this.veModule.drawVehicleTrajectory.bind(this.veModule)
   public readonly setVehicleTrajectoryOpacity = this.veModule.setVehicleTrajectoryOpacity.bind(this.veModule)
   public readonly closeVehicleTrajectory = this.veModule.closeVehicleTrajectory.bind(this.veModule)
@@ -100,14 +142,30 @@ class UseDashboardCesium extends UseCesium {
     }
 
     this.cModule.setViewer(this.viewer)
-    this.cModule.setSetCurrentTimeCB(() => this.currentTime = this.cModule.currentTime)
+    this.cModule.setSetCurrentTimeCB((data) => {
+      if (this.setCurrentTimeCB) {
+        this.setCurrentTimeCB(data)
+      }
+    })
 
     this.cmModule.setMeModule(this.meModule);
     this.cmModule.setMiModule(this.miModule);
     this.cmModule.setPModule(this.pModule);
-    this.cmModule.setSetContextMenuShowCB(() => this.contextMenuShow = this.cmModule.contextMenuShow)
-    this.cmModule.setSetContextMenuXYCB(() => this.contextMenuXY = this.cmModule.contextMenuXY)
-    this.cmModule.setSetContextMenuOptionCB(() => this.contextMenuOption = this.cmModule.contextMenuOption)
+    this.cmModule.setSetContextMenuShowCB((data) => {
+      if (this.setContextMenuShowCB) {
+        this.setContextMenuShowCB(data)
+      }
+    })
+    this.cmModule.setSetContextMenuXYCB((data) => {
+      if (this.setContextMenuXYCB) {
+        this.setContextMenuXYCB(data)
+      }
+    })
+    this.cmModule.setSetContextMenuOptionCB((data) => {
+      if (this.setContextMenuOptionCB) {
+        this.setContextMenuOptionCB(data)
+      }
+    })
     this.cmModule.setSetFormPanelTitleCB(() => this.formPanelTitle = this.cmModule.formPanelTitle)
     this.cmModule.setTrackEntity(this.trackEntity.bind(this))
 
@@ -117,7 +175,11 @@ class UseDashboardCesium extends UseCesium {
     this.debugModule.setSetViewTo(this.setViewTo.bind(this))
 
     this.lnModule.setViewer(this.viewer)
-    this.lnModule.setSetAllLabelsCB(() => this.allLabels = this.lnModule.allLabels)
+    this.lnModule.setSetAllLabelsCB((data) => {
+      if (this.setAllLabelsCB) {
+        this.setAllLabelsCB(data)
+      }
+    })
     this.lnModule.setLayerLoadingEndCB(this.LnModuleCloseCB.bind(this))
 
     this.meModule.setLnModule(this.lnModule)
@@ -148,7 +210,11 @@ class UseDashboardCesium extends UseCesium {
     this.veModule.setUpdLine(this.updLine.bind(this))
     this.veModule.setDelLine(this.delLine.bind(this))
     this.veModule.setGetViewCornerCoordinates(this.getViewCornerCoordinates.bind(this))
-    this.veModule.setSetDrawedVehicleTrajectoryIdsCB(() => this.drawedVehicleTrajectoryIds = this.veModule.drawedVehicleTrajectoryIds)
+    this.veModule.setSetDrawedVehicleTrajectoryIdsCB((data) => {
+      if (this.setDrawedVehicleTrajectoryIdsCB) {
+        this.setDrawedVehicleTrajectoryIdsCB(data)
+      }
+    })
 
     this.cModule.init()
     this.lnModule.init()
@@ -302,6 +368,17 @@ class UseDashboardCesium extends UseCesium {
   }
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 其他 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+  get trackedEntityId(): string | null {
+    return super.trackedEntityId;
+  }
+
+  set trackedEntityId(value: string | null) {
+    super.trackedEntityId = value;
+    if (this.setTrackedEntityIdCB) {
+      this.setTrackedEntityIdCB(this.trackedEntityId)
+    }
+  }
+
   private LnModuleCloseCB(count: number) {
     if (count === 1) {
       this.refreshScreenEntities()

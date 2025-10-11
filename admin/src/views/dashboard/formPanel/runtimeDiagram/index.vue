@@ -13,16 +13,13 @@ import { SignalLightInfoDto } from "@/type/module/dcts/signalLight/signalLightIn
 import { signalLightInfoApi } from "@/api/module/dcts/signalLight/signalLightInfo.ts";
 
 const route = useRoute();
-const useCesium = ref(useDashboardCesium);
+const useCesium = useDashboardCesium
+useCesium.setSetCurrentTimeCB(data => currentTime.value = data)
 
 const itemId = route.query.id as string | undefined
 if (!itemId) {
   gotoDashboardHome()
 }
-
-watch(() => useCesium.value.currentTime, () => {
-  currentTime.value = useCesium.value.currentTime
-})
 
 const loading = ref(false)
 const startTime = ref(0)

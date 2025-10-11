@@ -1,12 +1,14 @@
 import { ContextMenuItem } from "@/views/dashboard/index/dto.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
 import {
+  ContextMenuOptionType,
   EDIT_TYPE_1,
   ID_PREFIX_SIGNAL_LIGHT,
-  ID_PREFIX_SIGNAL_LIGHT_GROUP, ID_PREFIX_VEHICLE_REAL_TIME
+  ID_PREFIX_SIGNAL_LIGHT_GROUP,
+  ID_PREFIX_VEHICLE_REAL_TIME
 } from "@/views/dashboard/functionModules/constant.ts";
 import { MapInteractionModule } from "@/views/dashboard/functionModules/mapInteractionModule.ts";
-import { DropdownDividerOption, DropdownGroupOption, DropdownOption, DropdownRenderOption } from "naive-ui";
+import { DropdownOption } from "naive-ui";
 import { PermissionModule } from "@/views/dashboard/functionModules/permissionModule.ts";
 import { routerPushByName } from "@/utils/RouterUtils.ts";
 
@@ -32,21 +34,21 @@ export class ContextMenuModule {
     this.pModule = pModule;
   }
 
-  private setContextMenuShowCB: (() => void) | null = null
+  private setContextMenuShowCB: ((data: boolean) => void) | null = null
 
-  public setSetContextMenuShowCB(func: () => void) {
+  public setSetContextMenuShowCB(func: (data: boolean) => void) {
     this.setContextMenuShowCB = func
   }
 
-  private setContextMenuXYCB: (() => void) | null = null
+  private setContextMenuXYCB: ((data: [number, number]) => void) | null = null
 
-  public setSetContextMenuXYCB(func: () => void) {
+  public setSetContextMenuXYCB(func: (data: [number, number]) => void) {
     this.setContextMenuXYCB = func
   }
 
-  private setContextMenuOptionCB: (() => void) | null = null
+  private setContextMenuOptionCB: ((data: ContextMenuOptionType) => void) | null = null
 
-  public setSetContextMenuOptionCB(func: () => void) {
+  public setSetContextMenuOptionCB(func: (data: ContextMenuOptionType) => void) {
     this.setContextMenuOptionCB = func
   }
 
@@ -74,23 +76,23 @@ export class ContextMenuModule {
   public set contextMenuShow(value: boolean) {
     this._contextMenuShow = value;
     if (this.setContextMenuShowCB) {
-      this.setContextMenuShowCB()
+      this.setContextMenuShowCB(this.contextMenuShow)
     }
   }
 
   // 右键菜单的坐标，注意，添加数据时，禁止使用数组方法
-  private _contextMenuXY = [0, 0]
+  private _contextMenuXY: [number, number] = [0, 0]
 
   // 右键菜单的坐标，注意，添加数据时，禁止使用数组方法
-  get contextMenuXY(): number[] {
+  get contextMenuXY(): [number, number] {
     return this._contextMenuXY;
   }
 
   // 右键菜单的坐标，注意，添加数据时，禁止使用数组方法
-  public set contextMenuXY(value: number[]) {
+  public set contextMenuXY(value: [number, number]) {
     this._contextMenuXY = value;
     if (this.setContextMenuXYCB) {
-      this.setContextMenuXYCB()
+      this.setContextMenuXYCB(this.contextMenuXY)
     }
   }
 
@@ -270,18 +272,18 @@ export class ContextMenuModule {
     }
   ]
   // 右键菜单项，注意，添加数据时，禁止使用数组方法
-  private _contextMenuOption: Array<DropdownOption | DropdownGroupOption | DropdownDividerOption | DropdownRenderOption> = []
+  private _contextMenuOption: ContextMenuOptionType = []
 
   // 右键菜单项，注意，添加数据时，禁止使用数组方法
-  get contextMenuOption(): Array<DropdownOption | DropdownGroupOption | DropdownDividerOption | DropdownRenderOption> {
+  get contextMenuOption(): ContextMenuOptionType {
     return this._contextMenuOption;
   }
 
   // 右键菜单项，注意，添加数据时，禁止使用数组方法
-  private set contextMenuOption(value: Array<DropdownOption | DropdownGroupOption | DropdownDividerOption | DropdownRenderOption>) {
+  private set contextMenuOption(value: ContextMenuOptionType) {
     this._contextMenuOption = value;
     if (this.setContextMenuOptionCB) {
-      this.setContextMenuOptionCB()
+      this.setContextMenuOptionCB(this.contextMenuOption)
     }
   }
 

@@ -49,9 +49,9 @@ export class VehicleModule {
     this.getViewCornerCoordinates = func
   }
 
-  private setDrawedVehicleTrajectoryIdsCB: (() => void) | null = null
+  private setDrawedVehicleTrajectoryIdsCB: ((data: DrawedVehicleTrajectoryClass[]) => void) | null = null
 
-  public setSetDrawedVehicleTrajectoryIdsCB(func: () => void) {
+  public setSetDrawedVehicleTrajectoryIdsCB(func: (data: DrawedVehicleTrajectoryClass[]) => void) {
     this.setDrawedVehicleTrajectoryIdsCB = func
   }
 
@@ -173,7 +173,7 @@ export class VehicleModule {
   set drawedVehicleTrajectoryIds(value: DrawedVehicleTrajectoryClass[]) {
     this._drawedVehicleTrajectoryIds = value;
     if (this.setDrawedVehicleTrajectoryIdsCB) {
-      this.setDrawedVehicleTrajectoryIdsCB()
+      this.setDrawedVehicleTrajectoryIdsCB(this.drawedVehicleTrajectoryIds)
     }
   }
 

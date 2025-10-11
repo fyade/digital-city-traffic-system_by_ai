@@ -12,9 +12,9 @@ export class ClockModule {
     this.viewer = viewer;
   }
 
-  private setCurrentTimeCB: (() => void) | null = null
+  private setCurrentTimeCB: ((data: number) => void) | null = null
 
-  public setSetCurrentTimeCB(func: () => void) {
+  public setSetCurrentTimeCB(func: (data: number) => void) {
     this.setCurrentTimeCB = func
   }
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -50,7 +50,7 @@ export class ClockModule {
   private set currentTime(value: number) {
     this._currentTime = value;
     if (this.setCurrentTimeCB) {
-      this.setCurrentTimeCB()
+      this.setCurrentTimeCB(this.currentTime)
     }
   }
 

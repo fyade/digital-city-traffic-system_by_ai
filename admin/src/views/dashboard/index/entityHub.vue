@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { Close } from '@vicons/ionicons5'
 import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
 import { ID_PREFIX_VEHICLE_REAL_TIME } from "@/views/dashboard/functionModules/constant.ts";
@@ -7,16 +7,20 @@ import { vehicleInfoApi } from "@/api/module/dcts/vehicle/vehicleInfo.ts";
 import { VehicleInfoDto } from "@/type/module/dcts/vehicle/vehicleInfo.ts";
 import { vehicleInfoDict } from "@/dict/module/dcts/vehicle/vehicleInfo.ts";
 import { queryVehicleTrajectoryDict } from "@/dict/module/dcts/spatialData.ts";
+import { DrawedVehicleTrajectoryClass } from "@/views/dashboard/utils/class.ts";
 
-const cesiumClass = ref(useDashboardCesium)
+const cesiumClass = useDashboardCesium
+
+const drawedVehicleTrajectoryIds = ref<DrawedVehicleTrajectoryClass[]>([])
+cesiumClass.setSetDrawedVehicleTrajectoryIdsCB(data => {
+  drawedVehicleTrajectoryIds.value = data
+  watchDrawedVehicleTrajectoryIds()
+})
 
 const trackedEntityId = ref<string | null>(null)
 const trackedEntityType = ref<string | null>(null)
-
-const vehicleInfoRef = ref<VehicleInfoDto>(new VehicleInfoDto())
-
-watch(() => cesiumClass.value.trackedEntityId, () => {
-  trackedEntityId.value = cesiumClass.value.trackedEntityId
+cesiumClass.setSetTrackedEntityIdCB(data => {
+  trackedEntityId.value = data
   trackedEntityType.value = null
   if (trackedEntityId.value && trackedEntityId.value.startsWith(ID_PREFIX_VEHICLE_REAL_TIME)) {
     trackedEntityType.value = ID_PREFIX_VEHICLE_REAL_TIME
@@ -27,33 +31,34 @@ watch(() => cesiumClass.value.trackedEntityId, () => {
     })
   }
 })
+
+const vehicleInfoRef = ref<VehicleInfoDto>(new VehicleInfoDto())
+
 const cancelTrackEntity = () => {
-  cesiumClass.value.trackEntity(null)
+  cesiumClass.trackEntity(null)
 }
 
 const vals1 = ref<boolean[]>([])
-watch(() => cesiumClass.value.drawedVehicleTrajectoryIds, () => {
-  const number = cesiumClass.value.drawedVehicleTrajectoryIds.length - vals1.value.length;
+const watchDrawedVehicleTrajectoryIds = () => {
+  const number = drawedVehicleTrajectoryIds.value.length - vals1.value.length;
   if (number > 0) {
     for (let i = 0; i < number; i++) {
       vals1.value.push(true)
     }
   }
-}, {
-  immediate: true,
-})
+}
 const close1 = (index: number) => {
   vals1.value.splice(index, 1)
-  const cesiumLineId = cesiumClass.value.drawedVehicleTrajectoryIds[index].cesiumLineId;
-  cesiumClass.value.closeVehicleTrajectory(cesiumLineId)
+  const cesiumLineId = drawedVehicleTrajectoryIds.value[index].cesiumLineId;
+  cesiumClass.closeVehicleTrajectory(cesiumLineId)
 }
 const update1 = (index: number) => {
   vals1.value[index] = !vals1.value[index]
-  const cesiumLineId = cesiumClass.value.drawedVehicleTrajectoryIds[index].cesiumLineId;
+  const cesiumLineId = drawedVehicleTrajectoryIds.value[index].cesiumLineId;
   if (vals1.value[index]) {
-    cesiumClass.value.setVehicleTrajectoryOpacity(cesiumLineId, 1)
+    cesiumClass.setVehicleTrajectoryOpacity(cesiumLineId, 1)
   } else {
-    cesiumClass.value.setVehicleTrajectoryOpacity(cesiumLineId, 0)
+    cesiumClass.setVehicleTrajectoryOpacity(cesiumLineId, 0)
   }
 }
 </script>
@@ -63,7 +68,7 @@ const update1 = (index: number) => {
       class="card"
       v-if="
         trackedEntityId
-        || cesiumClass.drawedVehicleTrajectoryIds.length > 0
+        || drawedVehicleTrajectoryIds.length > 0
       "
   >
     <n-grid :y-gap="20" :cols="1">
@@ -103,11 +108,11 @@ const update1 = (index: number) => {
         </n-gi>
       </template>
 
-      <template v-if="cesiumClass.drawedVehicleTrajectoryIds.length>0">
+      <template v-if="drawedVehicleTrajectoryIds.length>0">
         <n-gi>
           <n-divider style="margin: 0;" title-placement="left">车辆轨迹</n-divider>
         </n-gi>
-        <n-gi v-for="(item, index) in cesiumClass.drawedVehicleTrajectoryIds">
+        <n-gi v-for="(item, index) in drawedVehicleTrajectoryIds">
           <n-grid>
             <n-gi :span="8">轨迹{{ index + 1 }}</n-gi>
             <n-gi :span="16">

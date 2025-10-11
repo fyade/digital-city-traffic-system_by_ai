@@ -19,6 +19,9 @@ import { ExternalModule } from './external/external.module';
 import { VehicleInfoModule } from './vehicle/vehicle-info/vehicle-info.module';
 import { VehicleTrackPointModule } from './vehicle/vehicle-track-point/vehicle-track-point.module';
 import { ScriptModule } from './script/script.module';
+import { ThreeDFileGroupModule } from './asset/three-d-file-group/three-d-file-group.module';
+import { ThreeDFileUnitModule } from './asset/three-d-file-unit/three-d-file-unit.module';
+import { ThreeDFileModule } from './asset/three-d-file/three-d-file.module';
 
 @Module({
   imports: [
@@ -41,7 +44,10 @@ import { ScriptModule } from './script/script.module';
     ExternalModule,
     VehicleInfoModule,
     VehicleTrackPointModule,
-    ScriptModule
+    ScriptModule,
+    ThreeDFileGroupModule,
+    ThreeDFileUnitModule,
+    ThreeDFileModule
   ]
 })
 export class DctsModule {
