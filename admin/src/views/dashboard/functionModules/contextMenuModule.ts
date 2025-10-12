@@ -2,7 +2,7 @@ import { ContextMenuItem } from "@/views/dashboard/index/dto.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
 import {
   ContextMenuOptionType,
-  EDIT_TYPE_1,
+  EDIT_TYPE_ENUM,
   ID_PREFIX_SIGNAL_LIGHT,
   ID_PREFIX_SIGNAL_LIGHT_GROUP,
   ID_PREFIX_VEHICLE_REAL_TIME
@@ -140,8 +140,7 @@ export class ContextMenuModule {
         if (!this.miModule) {
           return
         }
-        this.miModule.editType = EDIT_TYPE_1.value
-        this.miModule.ifEditing = true
+        this.miModule.setEditType(EDIT_TYPE_ENUM.INS_SIGNAL_LIGHT)
       }
     },
     {

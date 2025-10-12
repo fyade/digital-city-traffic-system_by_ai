@@ -372,19 +372,24 @@ export class UseCesium {
       sceneModePicker: false, // 场景模式选择器
       baseLayerPicker: false, // 底图选择器
       navigationHelpButton: false, // 帮助按钮
-      animation: true, // 动画控制器
+      animation: false, // 动画控制器
       shouldAnimate: true, // 自动播放
       timeline: true, // 时间轴
       fullscreenButton: false, // 全屏按钮
     });
     (this.viewer.cesiumWidget.creditContainer as HTMLElement).style.display = "none";
-    this.viewer.animation.viewModel.dateFormatter = time => timeUtils.formatDate(Cesium.JulianDate.toDate(time), 'YYYY-MM-DD');
-    this.viewer.animation.viewModel.timeFormatter = time => timeUtils.formatDate(Cesium.JulianDate.toDate(time), 'HH:mm:ss');
+    // this.viewer.animation.viewModel.dateFormatter = time => timeUtils.formatDate(Cesium.JulianDate.toDate(time), 'YYYY-MM-DD');
+    // this.viewer.animation.viewModel.timeFormatter = time => timeUtils.formatDate(Cesium.JulianDate.toDate(time), 'HH:mm:ss');
     this.viewer.timeline.makeLabel = time => timeUtils.formatDate(Cesium.JulianDate.toDate(time));
 
     if (currentConfig.VITE_MODE === final.DEV) {
       this.viewer.scene.debugShowFramesPerSecond = true
     }
+
+    const cameraController = this.viewer.scene.screenSpaceCameraController;
+    cameraController.minimumZoomDistance = 500 // 最小高度
+    cameraController.maximumZoomDistance = 1000000 // 最大高度
+    cameraController.maximumTiltAngle = Math.PI / 180 * 45 // 最大俯仰角
 
     this.setViewTo(this.mapCenterPosition[0], this.mapCenterPosition[1], {height: this.cameraHeight})
 

@@ -129,6 +129,8 @@ class UseDashboardCesium extends UseCesium {
   public readonly setLastActiveInterval = this.meModule.setLastActiveInterval.bind(this.meModule)
   public readonly refreshScreenEntities = this.meModule.refreshScreenEntities.bind(this.meModule)
 
+  public readonly setEditType = this.miModule.setEditType.bind(this.miModule)
+
   public readonly drawVehicleTrajectory = this.veModule.drawVehicleTrajectory.bind(this.veModule)
   public readonly setVehicleTrajectoryOpacity = this.veModule.setVehicleTrajectoryOpacity.bind(this.veModule)
   public readonly closeVehicleTrajectory = this.veModule.closeVehicleTrajectory.bind(this.veModule)
@@ -343,6 +345,9 @@ class UseDashboardCesium extends UseCesium {
     if (!this.viewer) {
       return
     }
+    if (this.miModule.ifEditing) {
+      return;
+    }
     let ifHasObj = false
     const cartesian2 = new Cesium.Cartesian2(this.mouseClickPositionXY[0], this.mouseClickPositionXY[1]);
     const pickedObject = this.viewer.scene.pick(cartesian2);
@@ -390,6 +395,12 @@ class UseDashboardCesium extends UseCesium {
       this.viewer.clock.shouldAnimate = true
     }
     this.refreshScreenEntities({ifReplay: true})
+  }
+
+  public refreshServerTime() {
+    this.cModule.refreshServerTime(() => {
+      this.timelineChangeManually()
+    })
   }
 }
 

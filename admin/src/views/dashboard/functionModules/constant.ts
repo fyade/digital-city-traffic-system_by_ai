@@ -11,10 +11,18 @@ export const ID_SPECIAL_MouseMovingPoint = `${ID_PREFIX_SPECIAL}MouseMovingPoint
 export const ID_PREFIX_SIGNAL_LIGHT_GROUP = 'ID_PREFIX_SIGNAL_LIGHT_GROUP::::::::::'
 // 子信号灯
 export const ID_PREFIX_SIGNAL_LIGHT = 'ID_PREFIX_SIGNAL_LIGHT::::::::::'
-// 新增子信号灯
-export const EDIT_TYPE_1 = {
-  label: '新增子信号灯',
-  value: 'EDIT_TYPE_1'
+
+export enum EDIT_TYPE_ENUM {
+  INS_SIGNAL_LIGHT_GROUP = 'INS_SIGNAL_LIGHT_GROUP',
+  UPD_SIGNAL_LIGHT_GROUP = 'UPD_SIGNAL_LIGHT_GROUP',
+  INS_SIGNAL_LIGHT = 'INS_SIGNAL_LIGHT',
+  UPD_SIGNAL_LIGHT = 'UPD_SIGNAL_LIGHT'
+}
+export const EDIT_TYPE_DICT = {
+  [EDIT_TYPE_ENUM.INS_SIGNAL_LIGHT_GROUP]: '新增信号灯组',
+  [EDIT_TYPE_ENUM.UPD_SIGNAL_LIGHT_GROUP]: '修改信号灯组',
+  [EDIT_TYPE_ENUM.INS_SIGNAL_LIGHT]: '新增子信号灯',
+  [EDIT_TYPE_ENUM.UPD_SIGNAL_LIGHT]: '修改子信号灯'
 }
 
 // 车辆

@@ -1,5 +1,5 @@
 import {
-  EDIT_TYPE_1,
+  EDIT_TYPE_ENUM, ID_PREFIX_SIGNAL_LIGHT,
   ID_PREFIX_SIGNAL_LIGHT_GROUP,
   ID_SPECIAL_MouseMovingPoint
 } from "@/views/dashboard/functionModules/constant.ts";
@@ -49,7 +49,6 @@ export class MapInteractionModule {
         color: Cesium.Color.YELLOW.withAlpha(0.9),
         outlineColor: Cesium.Color.BLACK,
         outlineWidth: 1,
-        heightReference: Cesium.HeightReference.CLAMP_TO_GROUND // 贴地
       },
       show: false, // 初始隐藏
       id: ID_SPECIAL_MouseMovingPoint
@@ -96,11 +95,40 @@ export class MapInteractionModule {
   }
 
   // 编辑所属业务
-  public editType = ''
+  public editType: EDIT_TYPE_ENUM = ''
   // 对应的事件
-  private editHandles: { id: string, func: () => void }[] = [
+  private editHandles: { id: EDIT_TYPE_ENUM, func: () => void }[] = [
     {
-      id: EDIT_TYPE_1.value,
+      id: EDIT_TYPE_ENUM.INS_SIGNAL_LIGHT_GROUP,
+      func: () => {
+        if (!this.getMouseMovePosition) {
+          return
+        }
+        if (!this.vdModule) {
+          return
+        }
+        routerPushByName('~fp~:signalLight:signalLightGroupInfo:ins', {xy: true})
+      }
+    },
+    {
+      id: EDIT_TYPE_ENUM.UPD_SIGNAL_LIGHT_GROUP,
+      func: () => {
+        if (!this.getMouseMovePosition) {
+          return
+        }
+        if (!this.vdModule) {
+          return
+        }
+        let id = ''
+        const hseids = this.vdModule.getHistorySelectedEntityIds(0);
+        if (hseids) {
+          id = hseids.data[0].replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, '')
+        }
+        routerPushByName('~fp~:signalLight:signalLightGroupInfo:upd', {id: id, xy: true})
+      }
+    },
+    {
+      id: EDIT_TYPE_ENUM.INS_SIGNAL_LIGHT,
       func: () => {
         if (!this.getMouseMovePosition) {
           return
@@ -109,14 +137,36 @@ export class MapInteractionModule {
           return
         }
         let pid = ''
-        const hseids = this.vdModule.getHistorySelectedEntityIds(-1);
+        const hseids = this.vdModule.getHistorySelectedEntityIds(0);
         if (hseids) {
           pid = hseids.data[0].replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, '')
         }
-        routerPushByName('~fp~:signalLight:signalLightInfo:ins', {pid: pid})
+        routerPushByName('~fp~:signalLight:signalLightInfo:ins', {pid: pid, xy: true})
+      }
+    },
+    {
+      id: EDIT_TYPE_ENUM.UPD_SIGNAL_LIGHT,
+      func: () => {
+        if (!this.getMouseMovePosition) {
+          return
+        }
+        if (!this.vdModule) {
+          return
+        }
+        let id = ''
+        const hseids = this.vdModule.getHistorySelectedEntityIds(0);
+        if (hseids) {
+          id = hseids.data[0].replace(ID_PREFIX_SIGNAL_LIGHT, '')
+        }
+        routerPushByName('~fp~:signalLight:signalLightInfo:upd', {id: id, xy: true})
       }
     }
   ]
+
+  public setEditType(editType: EDIT_TYPE_ENUM) {
+    this.ifEditing = true;
+    this.editType = editType;
+  }
 
   public doEditHandles() {
     this.ifEditing = false

@@ -52,6 +52,10 @@ const debugDrawerActive = ref(false)
 const openDebugLayerChange = () => {
   debugDrawerActive.value = true
 }
+
+const refreshServerTime = () => {
+  cesiumClass.refreshServerTime()
+}
 </script>
 
 <template>
@@ -80,6 +84,10 @@ const openDebugLayerChange = () => {
 
   <EntityHub/>
 
+  <div class="button1">
+    <el-button @click="refreshServerTime">点此同步服务器时间</el-button>
+  </div>
+
   <template v-if="ifInited">
     <router-view/>
   </template>
@@ -89,5 +97,13 @@ const openDebugLayerChange = () => {
 #cesiumContainer {
   width: 100vw;
   height: 100vh;
+}
+
+.button1 {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  height: 28px;
+  line-height: 28px;
 }
 </style>

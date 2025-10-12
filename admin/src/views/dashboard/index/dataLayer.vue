@@ -78,7 +78,7 @@ const goThree = () => {
   > .footer {
     position: absolute;
     bottom: 32px;
-    left: 188px;
+    left: 8px;
     width: calc(100% - 12px * 2);
     height: 0;
     transform: translateY(-12px);

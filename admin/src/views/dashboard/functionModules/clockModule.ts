@@ -61,7 +61,7 @@ export class ClockModule {
     this.jobs = []
   }
 
-  private longIntervalTask() {
+  private longIntervalTask(cb?: () => void) {
     getSysTime().then(res => {
       const date = new Date(res);
       this.__currentTime = date.getTime();
@@ -74,6 +74,10 @@ export class ClockModule {
           Cesium.JulianDate.fromDate(new Date(this.__currentTime + 1000 * 60 * 60 * .5)),
       )
       this.viewer.clock.currentTime = Cesium.JulianDate.fromDate(date)
+    }).finally(() => {
+      if (cb) {
+        cb()
+      }
     })
   }
 
@@ -101,7 +105,7 @@ export class ClockModule {
     }, a);
   }
 
-  public refreshServerTime() {
-    this.longIntervalTask()
+  public refreshServerTime(cb?: () => void) {
+    this.longIntervalTask(cb)
   }
 }

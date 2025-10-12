@@ -8,6 +8,7 @@ import { SignalLightGroupInfoDto } from "@/type/module/dcts/signalLight/signalLi
 import { signalLightGroupInfoDict } from "@/dict/module/dcts/signalLight/signalLightGroupInfo.ts";
 import { signalLightGroupInfoApi, signalLightGroupInfoDelV2 } from "@/api/module/dcts/signalLight/signalLightGroupInfo.ts";
 import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
+import { EDIT_TYPE_ENUM } from "@/views/dashboard/functionModules/constant.ts";
 
 const route = useRoute();
 const useCesium = useDashboardCesium;
@@ -16,6 +17,7 @@ const ifIns = route.path.endsWith('ins')
 const ifUpd = route.path.endsWith('upd')
 const ifDel = route.path.endsWith('del')
 const itemId = route.query.id as string | undefined
+const itemXy = route.query.xy as string | undefined
 if (ifUpd && !itemId) {
   gotoDashboardHome()
 }
@@ -32,6 +34,9 @@ const init = () => {
     signalLightGroupInfoApi.selectById(itemId!).then(res => {
       if (res) {
         form.value = res
+      }
+      if (itemXy) {
+        form.value.location = `${useCesium.mouseClickPosition[0]},${useCesium.mouseClickPosition[1]}`
       }
     }).finally(() => {
       formLoading.value = false
@@ -81,6 +86,17 @@ const submitCallback = () => {
     formLoading.value = false
   })
 }
+
+const mapPoint = () => {
+  if (ifIns) {
+    gotoDashboardHome()
+    useCesium.setEditType(EDIT_TYPE_ENUM.INS_SIGNAL_LIGHT_GROUP)
+  }
+  if (ifUpd) {
+    gotoDashboardHome()
+    useCesium.setEditType(EDIT_TYPE_ENUM.UPD_SIGNAL_LIGHT_GROUP)
+  }
+}
 </script>
 
 <template>
@@ -105,7 +121,11 @@ const submitCallback = () => {
             <n-input v-model:value="form.name" :placeholder="signalLightGroupInfoDict.name"/>
           </n-form-item>
           <n-form-item path="location" :label="signalLightGroupInfoDict.location">
-            <n-input v-model:value="form.location" :placeholder="signalLightGroupInfoDict.location" disabled/>
+            <n-input v-model:value="form.location" :placeholder="signalLightGroupInfoDict.location" disabled>
+              <template #suffix>
+                <n-button @click="mapPoint">地图选点</n-button>
+              </template>
+            </n-input>
           </n-form-item>
           <n-form-item path="description" :label="signalLightGroupInfoDict.description">
             <n-input v-model:value="form.description" :placeholder="signalLightGroupInfoDict.description"/>
@@ -120,5 +140,7 @@ const submitCallback = () => {
 </template>
 
 <style scoped>
-
+:deep(.n-input .n-input-wrapper) {
+  padding-right: 0;
+}
 </style>
