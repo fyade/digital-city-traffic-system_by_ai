@@ -95,7 +95,7 @@ export class MapInteractionModule {
   }
 
   // 编辑所属业务
-  public editType: EDIT_TYPE_ENUM = ''
+  private editType: EDIT_TYPE_ENUM | null = null
   // 对应的事件
   private editHandles: { id: EDIT_TYPE_ENUM, func: () => void }[] = [
     {
@@ -107,7 +107,7 @@ export class MapInteractionModule {
         if (!this.vdModule) {
           return
         }
-        routerPushByName('~fp~:signalLight:signalLightGroupInfo:ins', {xy: true})
+        routerPushByName('~fp~:signalLight:signalLightGroupInfo:ins', {xy: 'true'})
       }
     },
     {
@@ -124,7 +124,7 @@ export class MapInteractionModule {
         if (hseids) {
           id = hseids.data[0].replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, '')
         }
-        routerPushByName('~fp~:signalLight:signalLightGroupInfo:upd', {id: id, xy: true})
+        routerPushByName('~fp~:signalLight:signalLightGroupInfo:upd', {id: id, xy: 'true'})
       }
     },
     {
@@ -141,7 +141,7 @@ export class MapInteractionModule {
         if (hseids) {
           pid = hseids.data[0].replace(ID_PREFIX_SIGNAL_LIGHT_GROUP, '')
         }
-        routerPushByName('~fp~:signalLight:signalLightInfo:ins', {pid: pid, xy: true})
+        routerPushByName('~fp~:signalLight:signalLightInfo:ins', {pid: pid, xy: 'true'})
       }
     },
     {
@@ -158,7 +158,7 @@ export class MapInteractionModule {
         if (hseids) {
           id = hseids.data[0].replace(ID_PREFIX_SIGNAL_LIGHT, '')
         }
-        routerPushByName('~fp~:signalLight:signalLightInfo:upd', {id: id, xy: true})
+        routerPushByName('~fp~:signalLight:signalLightInfo:upd', {id: id, xy: 'true'})
       }
     }
   ]
