@@ -8,7 +8,7 @@ import {
   SignalLightGroupsInPolygonDto,
   CalculateLightsInPolygonDto,
   GetVehiclesInPolygonDto,
-  QueryVehicleTrajectoryDto,
+  QueryVehicleTrajectoryDto, GetAirspaceInPolygonDto,
 } from "./dto";
 import { publicConfig } from "@dcts/config";
 import { Exception } from "../../../exception/exception";
@@ -54,7 +54,7 @@ export class SpatialDataController {
     label: '计算多边形内的所有信号灯'
   })
   async calculateLightsInPolygon(@Body() dto: CalculateLightsInPolygonDto): Promise<R> {
-    if (!dto.groupIds && (!dto.points || dto.points.length < 3)) {
+    if (!dto.groupIds && !dto.points) {
       throw new Exception('多边形至少需要 3 个顶点。')
     }
     if (dto.timeRange && dto.timeRange[1] - dto.timeRange[0] > 1000 * 60 * 60) {
@@ -88,5 +88,17 @@ export class SpatialDataController {
   })
   async queryVehicleTrajectory(@Body() dto: QueryVehicleTrajectoryDto): Promise<R> {
     return this.spatialDataService.queryVehicleTrajectory(dto);
+  }
+
+  @Post('/get-airspace-in-polygon')
+  @ApiOperation({
+    summary: '查询多边形内的空域'
+  })
+  @Authorize({
+    permission: 'dcts:spatialData:getAirspaceInPolygon',
+    label: '查询多边形内的空域'
+  })
+  async getAirspaceInPolygon(@Body() dto: GetAirspaceInPolygonDto): Promise<R> {
+    return this.spatialDataService.getAirspaceInPolygon(dto);
   }
 }

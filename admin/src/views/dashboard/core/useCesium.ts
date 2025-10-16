@@ -1,7 +1,7 @@
 import * as Cesium from "cesium";
 import { CesiumLine, CesiumPoint } from "@/views/dashboard/utils/dto.ts";
 import { adminConfig } from "@dcts/config";
-import { idUtils, timeUtils } from "@dcts/common";
+import { timeUtils } from "@dcts/common";
 import { final } from "@/utils/base.ts";
 
 const currentConfig = adminConfig.currentConfig();
@@ -169,6 +169,9 @@ export class UseCesium {
       if (!cartographicCorner) {
         return null;
       }
+    }
+    if (cartographicCorners.length < 3) {
+      return null;
     }
     // 转换为经纬度十进制度数
     return cartographicCorners.map(c => {

@@ -123,6 +123,11 @@ export class GetVehiclesInPolygonDto {
 }
 
 export class QueryVehicleTrajectoryDto {
+  @ApiProperty({description: '参数版本', default: '1.0'})
+  @IsOptional()
+  @IsIn(['1.0'], {message: '参数版本值不在允许的值中'})
+  version?: string = '1.0';
+
   @ApiProperty({description: '开始时间', default: null})
   @IsNotEmpty({message: '开始时间不能为空'})
   @IsNumber({}, {message: '开始时间必须是数值类型'})
@@ -137,4 +142,19 @@ export class QueryVehicleTrajectoryDto {
   @IsNotEmpty({message: '车牌号不能为空'})
   @IsString({message: '车牌号必须是字符串类型'})
   plateNumber: string
+}
+
+export class GetAirspaceInPolygonDto {
+  @ApiProperty({description: '参数版本', default: '1.0'})
+  @IsOptional()
+  @IsIn(['1.0'], {message: '参数版本值不在允许的值中'})
+  version?: string = '1.0';
+
+  @ApiProperty({description: '多边形', required: true, type: [PolygonPointDto]})
+  @IsNotEmpty({message: '多边形不能为空'})
+  @IsArray({message: '多边形必须为数组'})
+  @ArrayMinSize(3, {message: '多边形至少需要 3 个顶点'})
+  @ValidateNested({each: true})
+  @Type(() => PolygonPointDto)
+  points: PolygonPointDto[]
 }

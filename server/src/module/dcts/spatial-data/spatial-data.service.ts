@@ -5,10 +5,11 @@ import {
   SignalLightGroupsInPolygonDto,
   CalculateLightsInPolygonDto,
   GetVehiclesInPolygonDto,
-  QueryVehicleTrajectoryDto,
+  QueryVehicleTrajectoryDto, GetAirspaceInPolygonDto,
 } from "./dto";
 import { PostgresqlPrismaoService } from "../../../infra/prisma/postgresql.prismao.service";
 import {
+  getAirspaceInPolygon,
   getVehiclesInPolygon,
   nodesWithWaysInPolygon, queryVehicleTrajectory,
   signalLightGroupsInPolygon,
@@ -145,6 +146,12 @@ export class SpatialDataService {
       throw new Exception('车辆不存在')
     }
     const sql = queryVehicleTrajectory(dto, vehicles[0].id);
+    const s = await this.pgsqlPrismao.$queryRawUnsafe(sql);
+    return R.ok(s)
+  }
+
+  async getAirspaceInPolygon(dto: GetAirspaceInPolygonDto): Promise<R> {
+    const sql = getAirspaceInPolygon(dto);
     const s = await this.pgsqlPrismao.$queryRawUnsafe(sql);
     return R.ok(s)
   }

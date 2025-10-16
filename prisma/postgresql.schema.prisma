@@ -641,3 +641,20 @@ model three_d_file_unit {
   update_time DateTime @default(now()) @dbPostgresql.Timestamptz(6)
   deleted     String   @default("N") @dbPostgresql.Char(1)
 }
+
+// 限飞区表
+model flight_restriction_zone {
+  id          Int                     @id @default(autoincrement())
+  name        String                  @dbPostgresql.VarChar(100)
+  code        String                  @dbPostgresql.VarChar(50)
+  type        String                  @dbPostgresql.VarChar(50)
+  geometry    Unsupported("geometry")
+  descr       String                  @dbPostgresql.VarChar(500)
+  create_role String                  @dbPostgresql.VarChar(30)
+  update_role String                  @dbPostgresql.VarChar(30)
+  create_by   String                  @dbPostgresql.VarChar(10)
+  update_by   String                  @dbPostgresql.VarChar(10)
+  create_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted     String                  @default("N") @dbPostgresql.Char(1)
+}

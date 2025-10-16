@@ -5,6 +5,7 @@ import { SignalLightChildStyleMappingDto } from "@/type/module/dcts/signalLight/
 import { SignalLightStyleDto } from "@/type/module/dcts/signalLight/signalLightStyle.ts";
 import { base } from "@dcts/common";
 import { VehicleTrackPointDto } from "@/type/module/dcts/vehicle/vehicleTrackPoint.ts";
+import { FlightRestrictionZoneDto } from "@/type/module/dcts/airspace/flightRestrictionZone.ts";
 
 class PolygonPointDto {
   lon!: number;
@@ -78,7 +79,16 @@ export class GetVehiclesInPolygonVo {
 }
 
 export class QueryVehicleTrajectoryDto {
+  version?: string
   startTime!: number
   endTime!: number
   plateNumber!: string
+}
+
+export class GetAirspaceInPolygonDto {
+  version?: string
+  points!: PolygonPointDto[]
+}
+
+export class GetAirspaceInPolygonVo extends FlightRestrictionZoneDto {
 }

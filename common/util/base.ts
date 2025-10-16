@@ -85,6 +85,7 @@ export const LSTOTTypeDict = {
   [LSTOTTypeEnum.T_USERTRIGGER]: "用户手动触发",
 };
 
+
 // 信号灯策略类型类型
 export enum SLSTTTypeEnum {
   T_CUSTOM = 'custom',

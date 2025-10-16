@@ -15,10 +15,12 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { ThreeDFileUnitDto, ThreeDFileUnitUpdDto } from "@/type/module/dcts/asset/threeDFileUnit.ts";
 import { threeDFileUnitApi } from "@/api/module/dcts/asset/threeDFileUnit.ts";
 import { threeDFileUnitDict } from "@/dict/module/dcts/asset/threeDFileUnit.ts";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { gotoHiddenPath } from "@/utils/RouterUtils.ts";
+import { ifDashboardPage } from "@/utils/DashboardUtils.ts";
 
 const route = useRoute();
+const router = useRouter();
 let groupid = 0
 const fun = (cb?: () => void) => {
   const groupid_ = route.query.groupid;
@@ -26,7 +28,11 @@ const fun = (cb?: () => void) => {
   if (groupid_) {
     groupid = Number(groupid_)
   } else {
-    gotoHiddenPath('dcts:asset:threeDFileGroup')
+    if (ifDashboardPage()) {
+      router.push('/dashboard/admin-panel/asset/three-d-file-group')
+    } else {
+      gotoHiddenPath('dcts:asset:threeDFileGroup')
+    }
   }
   state.dialogForm.groupId = groupid
   config.selectParam.groupId = groupid
@@ -114,7 +120,11 @@ const {
 })
 
 const setThreeDFileUnit = (row: ThreeDFileUnitDto) => {
-  gotoHiddenPath('dcts:asset:threeDFile', {unitid: row.id})
+  if (ifDashboardPage()) {
+    router.push({path: '/dashboard/admin-panel/asset/three-d-file', query: {unitid: row.id}})
+  } else {
+    gotoHiddenPath('dcts:asset:threeDFile', {unitid: row.id})
+  }
 }
 </script>
 

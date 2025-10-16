@@ -16,6 +16,10 @@ import { ThreeDFileGroupDto, ThreeDFileGroupUpdDto } from "@/type/module/dcts/as
 import { threeDFileGroupApi } from "@/api/module/dcts/asset/threeDFileGroup.ts";
 import { threeDFileGroupDict } from "@/dict/module/dcts/asset/threeDFileGroup.ts";
 import { gotoHiddenPath } from "@/utils/RouterUtils.ts";
+import { ifDashboardPage } from "@/utils/DashboardUtils.ts";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const state = reactive<State2<ThreeDFileGroupDto, ThreeDFileGroupUpdDto>>({
   dialogForm: {
@@ -82,7 +86,11 @@ const {
 })
 
 const setThreeDFileGroup = (row: ThreeDFileGroupDto) => {
-  gotoHiddenPath('dcts:asset:threeDFileUnit', {groupid: row.id})
+  if (ifDashboardPage()) {
+    router.push({path: '/dashboard/admin-panel/asset/three-d-file-unit', query: {groupid: row.id}})
+  } else {
+    gotoHiddenPath('dcts:asset:threeDFileUnit', {groupid: row.id})
+  }
 }
 </script>
 

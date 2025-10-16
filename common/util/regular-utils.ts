@@ -23,9 +23,6 @@ export function StrRegTest(reg: string, str: string) {
 }
 
 // ===== ===== ===== ===== ===== ===== 字符串匹配 ===== ===== ===== ===== ===== =====
-// 匹配该格式：数值,数值
-export const REGEX_DCTS_GEOM = /^[0-9]+(|.[0-9]+),[0-9]+(|.[0-9]+)$/
-export const REGEX_DCTS_GEOM_DESCR = '数值(可包含一个小数点),数值(可包含一个小数点)'
 // 至少一个 大小写字母或下划线
 const REGEX_MAIN_STRING_1 = /([a-zA-Z_]+)/g;
 
@@ -206,3 +203,16 @@ export function ifRouterEndsWithParam(str: string) {
 export function packageMonitorMatchStorage(str: string) {
   return str.match(/(\d+G)\s+(\d+G)\s+(\d+G)\s+(\d+)%/);
 }
+
+
+
+
+
+
+
+
+// 匹配该格式：数值,数值
+export const REGEX_DCTS_GEOM = /^-?\d+(|.\d+),-?\d+(|.\d+)$/
+export const REGEX_DCTS_GEOM_DESCR = '数值可包含一个小数点,数值可包含一个小数点'
+export const REGEX_DCTS_GEOMETRY = /^-?\d+(\.\d+)? -?\d+(\.\d+)?(, -?\d+(\.\d+)? -?\d+(\.\d+)?){3,}$/
+export const REGEX_DCTS_GEOMETRY_DESCR = '数值可包含一个小数点 数值可包含一个小数点(, 数值可包含一个小数点 数值可包含一个小数点){至少3个}'

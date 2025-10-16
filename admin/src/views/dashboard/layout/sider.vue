@@ -5,6 +5,7 @@ import { h, onBeforeUnmount, ref, watch, WatchHandle } from "vue";
 import { arr2ToDiguiObj2, diguiRun } from "@/utils/baseUtils.ts";
 import { MenuDto } from "@/type/module/main/sysManage/menu.ts";
 import SvgIcon from "@/components/svgIcon/svgIcon.vue";
+import { final } from "@/utils/base.ts";
 
 const route = useRoute();
 const router = useRouter();
@@ -49,6 +50,7 @@ const getRoutes = () => {
   const routes = allRoutes.filter(route => route.path.startsWith('/dashboard/admin-panel/'));
   const allKeyLabels = new Map<string, string>();
   const _menuOptions: MenuOption[] = routes
+      .filter(item => item.meta.ifVisible === final.Y)
       .sort((r1, r2) => Number(r1.meta.orderNum) - Number(r2.meta.orderNum))
       .map((route) => {
         const meta = route.meta as unknown as MenuDto;

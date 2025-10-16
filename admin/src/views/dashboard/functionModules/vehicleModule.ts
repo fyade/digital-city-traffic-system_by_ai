@@ -64,6 +64,12 @@ export class VehicleModule {
     if (!this.viewer) {
       return
     }
+    if (!this.meModule) {
+      return;
+    }
+    if (!this.meModule.getIfShowVehicleRealTime()) {
+      return;
+    }
     const _datas = this.datas.map(item => item.vehicleId);
     const _results = results.data.map(item => item.vehicleId);
     const now = Cesium.JulianDate.toDate(this.viewer.clock.currentTime).getTime();
@@ -88,6 +94,12 @@ export class VehicleModule {
   public tick() {
     if (!this.viewer) {
       return
+    }
+    if (!this.meModule) {
+      return;
+    }
+    if (!this.meModule.getIfShowVehicleRealTime()) {
+      return;
     }
     const now = Cesium.JulianDate.toDate(this.viewer.clock.currentTime).getTime();
     if (!this.lastTickTime || (now % 500 <= this._tick_deviation_time && Math.abs(now - this.lastTickTime) >= (500 - this._tick_deviation_time))) {
@@ -145,7 +157,7 @@ export class VehicleModule {
       return
     }
     const coordinates = this.getViewCornerCoordinates();
-    if (!coordinates || coordinates.length < 3) {
+    if (!coordinates) {
       return
     }
     if (!this.ifFinished) {

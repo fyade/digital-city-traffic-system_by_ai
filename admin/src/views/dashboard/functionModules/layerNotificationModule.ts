@@ -314,8 +314,8 @@ export class LayerNotificationModule {
         }
       }
     }
+    this.setLabel()
     this.hiddenLayer(___delids)
-    this.initLayer()
     this.setLayerToStore()
   }
 
@@ -326,9 +326,8 @@ export class LayerNotificationModule {
     const credits = ids.map(id => new Cesium.Credit(id));
     for (let i = 0; i < this.viewer.imageryLayers.length; i++) {
       const data = this.viewer.imageryLayers.get(i);
-      if (credits.includes(data.imageryProvider.credit)) {
-        data.destroy()
-        this.viewer.imageryLayers.remove(data)
+      if (credits.some(delid => data.imageryProvider.credit.equals(delid))) {
+        this.viewer.imageryLayers.remove(data);
       }
     }
   }
@@ -351,16 +350,27 @@ export class LayerNotificationModule {
   }
 
   private initLayer() {
-    this.allLabels = []
     const filter1 = this.allLayersOfBaseMap.filter(item => this.currentIdOfBaseMap[1].includes(item.id));
     for (const f of filter1) {
       f.func()
-      this.allLabels = [...deepClone(this.allLabels), [f.id, f.dataType, f.fromCompany, f.fromUrl]]
     }
     const filter2 = this.allLayersOfRoadData.filter(item => this.currentIdOfRoadData[1].includes(item.id));
     for (const f of filter2) {
       f.func()
-      this.allLabels = [...deepClone(this.allLabels), [f.id, f.dataType, f.fromCompany, f.fromUrl]]
     }
+    this.setLabel()
+  }
+
+  private setLabel() {
+    const allLabels: string[][] = []
+    const filter1 = this.allLayersOfBaseMap.filter(item => this.currentIdOfBaseMap[1].includes(item.id));
+    for (const f of filter1) {
+      allLabels.push([f.id, f.dataType, f.fromCompany, f.fromUrl])
+    }
+    const filter2 = this.allLayersOfRoadData.filter(item => this.currentIdOfRoadData[1].includes(item.id));
+    for (const f of filter2) {
+      allLabels.push([f.id, f.dataType, f.fromCompany, f.fromUrl])
+    }
+    this.allLabels = allLabels
   }
 }

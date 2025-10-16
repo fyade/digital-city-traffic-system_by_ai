@@ -24,7 +24,10 @@ const state = reactive<State2<SignalLightInfoDto, SignalLightInfoUpdDto>>({
     description: '',
   },
   dialogForms: [],
-  filterForm: {},
+  filterForm: {
+    name: '',
+    description: '',
+  },
 })
 const dFormRules: FormRules<SignalLightInfoDto> = {
   name: [{required: true, trigger: 'change'}],
@@ -225,9 +228,12 @@ const {
         @keyup.enter="fEnter"
     >
       <!--在此下方添加表单项-->
-      <!--<el-form-item :label="signalLightInfoDict." prop="">-->
-      <!--  <el-input v-model="state.filterForm." :placeholder="signalLightInfoDict."/>-->
-      <!--</el-form-item>-->
+      <el-form-item :label="signalLightInfoDict.name" prop="name">
+        <el-input v-model="state.filterForm.name" :placeholder="signalLightInfoDict.name"/>
+      </el-form-item>
+      <el-form-item :label="signalLightInfoDict.description" prop="description">
+        <el-input v-model="state.filterForm.description" :placeholder="signalLightInfoDict.description"/>
+      </el-form-item>
       <!--在此上方添加表单项-->
       <el-form-item>
         <el-button type="primary" @click="fCon">筛选</el-button>

@@ -2,7 +2,11 @@
 import { ref } from "vue";
 import { Close } from '@vicons/ionicons5'
 import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
-import { ID_PREFIX_VEHICLE_REAL_TIME } from "@/views/dashboard/functionModules/constant.ts";
+import {
+  EDIT_TYPE_DICT,
+  EDIT_TYPE_ENUM,
+  ID_PREFIX_VEHICLE_REAL_TIME
+} from "@/views/dashboard/functionModules/constant.ts";
 import { vehicleInfoApi } from "@/api/module/dcts/vehicle/vehicleInfo.ts";
 import { VehicleInfoDto } from "@/type/module/dcts/vehicle/vehicleInfo.ts";
 import { vehicleInfoDict } from "@/dict/module/dcts/vehicle/vehicleInfo.ts";
@@ -11,6 +15,13 @@ import { DrawedVehicleTrajectoryClass } from "@/views/dashboard/utils/class.ts";
 
 const cesiumClass = useDashboardCesium
 
+// 正在编辑
+const ifEditing = ref(false)
+cesiumClass.setSetIfEditingCB(data => ifEditing.value = data)
+const editType = ref<EDIT_TYPE_ENUM>(EDIT_TYPE_ENUM.DEFAULT)
+cesiumClass.setSetEditTypeCB(data => editType.value = data)
+
+// 聚焦实体,车辆轨迹
 const drawedVehicleTrajectoryIds = ref<DrawedVehicleTrajectoryClass[]>([])
 cesiumClass.setSetDrawedVehicleTrajectoryIdsCB(data => {
   drawedVehicleTrajectoryIds.value = data
@@ -61,17 +72,36 @@ const update1 = (index: number) => {
     cesiumClass.setVehicleTrajectoryOpacity(cesiumLineId, 0)
   }
 }
+
+// 限飞区
+const endInsFlightRestrictionZone = () => {
+  cesiumClass.endInsFlightRestrictionZone()
+}
 </script>
 
 <template>
   <n-card
       class="card"
       v-if="
-        trackedEntityId
+        ifEditing
+        || trackedEntityId
         || drawedVehicleTrajectoryIds.length > 0
       "
   >
     <n-grid :y-gap="20" :cols="1">
+
+      <template v-if="ifEditing">
+        <n-gi>
+          <n-divider style="margin: 0;" title-placement="left">
+            <span>正在{{ EDIT_TYPE_DICT[editType] }}</span>
+          </n-divider>
+        </n-gi>
+        <n-gi
+            v-if="[EDIT_TYPE_ENUM.INS_FLIGHT_RESTRICTION_ZONE, EDIT_TYPE_ENUM.UPD_FLIGHT_RESTRICTION_ZONE].includes(editType)"
+        >
+          <n-button @click="endInsFlightRestrictionZone">点击完成限飞区绘制</n-button>
+        </n-gi>
+      </template>
 
       <template v-if="trackedEntityType===ID_PREFIX_VEHICLE_REAL_TIME">
         <n-gi>
@@ -112,7 +142,7 @@ const update1 = (index: number) => {
         <n-gi>
           <n-divider style="margin: 0;" title-placement="left">车辆轨迹</n-divider>
         </n-gi>
-        <n-gi v-for="(item, index) in drawedVehicleTrajectoryIds">
+        <n-gi v-for="(item, index) in drawedVehicleTrajectoryIds" :key="index">
           <n-grid>
             <n-gi :span="8">轨迹{{ index + 1 }}</n-gi>
             <n-gi :span="16">

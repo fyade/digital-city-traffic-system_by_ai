@@ -1,5 +1,6 @@
 import * as Cesium from "cesium";
 import {
+  ID_PREFIX_FLIGHT_RESTRICTION_ZONE,
   ID_PREFIX_SIGNAL_LIGHT,
   ID_PREFIX_SIGNAL_LIGHT_GROUP,
   ID_PREFIX_VEHICLE_REAL_TIME
@@ -122,11 +123,16 @@ export class MapEntityModule {
       get vehicleRealTimeCount() {
         return this.vehicleRealTime.length
       },
+      flightRestrictionZone: [] as string[],
+      get flightRestrictionZoneCount() {
+        return this.flightRestrictionZone.length
+      },
       get allIds() {
         return [
           ...this.signalLightGroupInfo,
           ...this.signalLightInfo,
           ...this.vehicleRealTime,
+          ...this.flightRestrictionZone,
         ]
       },
       get count() {
@@ -143,47 +149,11 @@ export class MapEntityModule {
       if (selectedEntityId.startsWith(ID_PREFIX_VEHICLE_REAL_TIME)) {
         obj.vehicleRealTime.push(selectedEntityId.replace(ID_PREFIX_VEHICLE_REAL_TIME, ''))
       }
-    }
-    return obj
-  }
-
-  /**
-   * 刷新可视区域内的实体
-   * @param ifRefresh
-   * @param ifReplay
-   */
-  public refreshScreenEntities({
-                                 ifRefresh = false,
-                                 ifReplay = false,
-                               }: {
-                                 ifRefresh?: boolean
-                                 ifReplay?: boolean
-                               } = {}
-  ) {
-    if (this.slModule) {
-      this.slModule.drawSignalLightsWhenMapMove({ifRefresh, ifReplay})
-    }
-  }
-
-  /**
-   * 清除地图上的所有实体
-   */
-  public deleteScreenEntities() {
-    if (!this.viewer) {
-      return
-    }
-    const delids: string[] = []
-    for (const value of this.viewer.entities.values) {
-      if (
-          value.id.startsWith(ID_PREFIX_SIGNAL_LIGHT)
-          || value.id.startsWith(ID_PREFIX_SIGNAL_LIGHT_GROUP)
-      ) {
-        delids.push(value.id)
+      if (selectedEntityId.startsWith(ID_PREFIX_FLIGHT_RESTRICTION_ZONE)) {
+        obj.flightRestrictionZone.push(selectedEntityId.replace(ID_PREFIX_FLIGHT_RESTRICTION_ZONE, ''))
       }
     }
-    for (const id of delids) {
-      this.viewer.entities.removeById(id)
-    }
+    return obj
   }
 
   // 信号灯是否显示
@@ -193,9 +163,13 @@ export class MapEntityModule {
     this._ifShowSignalLight = value
     dashboardStore.setIfShowSignalLight(this._ifShowSignalLight)
     if (this._ifShowSignalLight) {
-      this.refreshScreenEntities()
+      if (this.slModule) {
+        this.slModule.drawSignalLightsWhenMapMove()
+      }
     } else {
-      this.deleteScreenEntities()
+      if (this.slModule) {
+        this.slModule.clearSignalLights()
+      }
     }
   }
 

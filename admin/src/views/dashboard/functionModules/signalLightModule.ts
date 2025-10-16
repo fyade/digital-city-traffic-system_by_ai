@@ -195,7 +195,7 @@ export class SignalLightModule {
                                      }: {
                                        ifRefresh?: boolean
                                        ifReplay?: boolean
-                                     }
+                                     } = {}
   ) {
     if (!this.viewer) {
       return
@@ -210,7 +210,7 @@ export class SignalLightModule {
       return
     }
     const viewCornerCoordinates = this.getViewCornerCoordinates();
-    if (!viewCornerCoordinates || viewCornerCoordinates.length < 3) {
+    if (!viewCornerCoordinates) {
       return
     }
     if (this.lnModule) {
@@ -320,5 +320,15 @@ export class SignalLightModule {
       ]
     }
     calculateLightsInPolygonApi(reqparam)
+  }
+
+  public clearSignalLights() {
+    if (!this.viewer) {
+      return
+    }
+    for (const renderedItemId of this.renderedItemIds) {
+      this.viewer.entities.removeById(renderedItemId)
+    }
+    this.renderedItemIds = []
   }
 }

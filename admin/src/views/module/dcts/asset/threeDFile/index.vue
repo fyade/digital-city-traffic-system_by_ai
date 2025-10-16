@@ -15,10 +15,12 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { ThreeDFileDto, ThreeDFileUpdDto } from "@/type/module/dcts/asset/threeDFile.ts";
 import { threeDFileApi } from "@/api/module/dcts/asset/threeDFile.ts";
 import { threeDFileDict } from "@/dict/module/dcts/asset/threeDFile.ts";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { gotoHiddenPath } from "@/utils/RouterUtils.ts";
+import { ifDashboardPage } from "@/utils/DashboardUtils.ts";
 
 const route = useRoute()
+const router = useRouter()
 let unitid = 0
 const fun = (cb?: () => void) => {
   const unitid_ = route.query.unitid
@@ -26,7 +28,11 @@ const fun = (cb?: () => void) => {
   if (unitid_) {
     unitid = Number(unitid_)
   } else {
-    gotoHiddenPath('dcts:asset:threeDFileUnit')
+    if (ifDashboardPage()) {
+      router.push('/dashboard/admin-panel/asset/three-d-file-unit')
+    } else {
+      gotoHiddenPath('dcts:asset:threeDFileUnit')
+    }
   }
   state.dialogForm.unitId = unitid
   config.selectParam.unitId = unitid

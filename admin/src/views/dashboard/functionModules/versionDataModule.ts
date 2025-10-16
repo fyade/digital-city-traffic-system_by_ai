@@ -1,4 +1,4 @@
-import { SignalLightGroupsInPolygonVo } from "@/type/module/dcts/spatialData.ts";
+import { GetAirspaceInPolygonVo, SignalLightGroupsInPolygonVo } from "@/type/module/dcts/spatialData.ts";
 import { deepClone } from "@/utils/ObjectUtils.ts";
 
 class VersionDataType<T> {
@@ -54,6 +54,17 @@ export class VersionDataModule {
 
   public getHistoryRunningSignalLightIds(index = 0, ifLast = true) {
     return this.___(index, this._history_runningSignalLightIds, ifLast)
+  }
+
+  // 曾经地图可视区域内的空域
+  private _history_airspaceInPolygonVo: VersionDataType<GetAirspaceInPolygonVo[]>[] = []
+
+  public setHistoryAirspaceInPolygonVo(value: GetAirspaceInPolygonVo[]) {
+    this._history_airspaceInPolygonVo = this.__(value, this._history_airspaceInPolygonVo)
+  }
+
+  public getHistoryAirspaceInPolygonVo(index = 0, ifLast = true) {
+    return this.___(index, this._history_airspaceInPolygonVo, ifLast)
   }
 
   //

@@ -2,6 +2,7 @@ import { useSysStore } from "@/store/module/sys.ts";
 import { useUserStore } from "@/store/module/user.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
 import {
+  ID_PREFIX_FLIGHT_RESTRICTION_ZONE,
   ID_PREFIX_SIGNAL_LIGHT,
   ID_PREFIX_SIGNAL_LIGHT_GROUP,
   ID_PREFIX_VEHICLE_REAL_TIME
@@ -47,6 +48,9 @@ export class PermissionModule {
           if (basedOn.includes(ID_PREFIX_VEHICLE_REAL_TIME) && seidsByGroup.vehicleRealTimeCount > 0) {
             entityPermission = true
           }
+          if (basedOn.includes(ID_PREFIX_FLIGHT_RESTRICTION_ZONE) && seidsByGroup.flightRestrictionZoneCount > 0) {
+            entityPermission = true
+          }
         }
         if (notBasedOn.length > 0) {
           if (notBasedOn.includes(ID_PREFIX_SIGNAL_LIGHT_GROUP) && seidsByGroup.signalLightGroupInfoCount > 0) {
@@ -56,6 +60,9 @@ export class PermissionModule {
             entityPermission = false
           }
           if (notBasedOn.includes(ID_PREFIX_VEHICLE_REAL_TIME) && seidsByGroup.vehicleRealTimeCount > 0) {
+            entityPermission = false
+          }
+          if (notBasedOn.includes(ID_PREFIX_FLIGHT_RESTRICTION_ZONE) && seidsByGroup.flightRestrictionZoneCount > 0) {
             entityPermission = false
           }
         }

@@ -214,6 +214,35 @@ export const routes: RouteRecordRaw[] = [
             ]
           },
           {
+            path: 'airspace',
+            name: '~fp~:airspace',
+            component: () => import('@/views/dashboard/formPanel/airspace/index.vue'),
+            children: [
+              {
+                path: 'flight-restriction-zone',
+                name: '~fp~:airspace:flightRestrictionZone',
+                component: () => import('@/views/dashboard/formPanel/airspace/flightRestrictionZone/index.vue'),
+                children: [
+                  {
+                    path: 'ins',
+                    name: '~fp~:airspace:flightRestrictionZone:ins',
+                    component: () => import('@/views/dashboard/formPanel/airspace/flightRestrictionZone/form.vue')
+                  },
+                  {
+                    path: 'upd',
+                    name: '~fp~:airspace:flightRestrictionZone:upd',
+                    component: () => import('@/views/dashboard/formPanel/airspace/flightRestrictionZone/form.vue')
+                  },
+                  {
+                    path: 'del',
+                    name: '~fp~:airspace:flightRestrictionZone:del',
+                    component: () => import('@/views/dashboard/formPanel/airspace/flightRestrictionZone/form.vue')
+                  }
+                ]
+              }
+            ]
+          },
+          {
             path: ':pathMatch(.*)*',
             redirect: '/dashboard'
           }

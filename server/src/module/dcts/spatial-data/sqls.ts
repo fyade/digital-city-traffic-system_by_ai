@@ -1,4 +1,5 @@
 import {
+  GetAirspaceInPolygonDto,
   GetVehiclesInPolygonDto,
   NodesWithWaysInPolygonDto,
   QueryVehicleTrajectoryDto,
@@ -158,5 +159,30 @@ export function queryVehicleTrajectory(dto: QueryVehicleTrajectoryDto, vehicleId
         AND vtp.create_time BETWEEN '${new Date(dto.startTime).toISOString()}' AND '${new Date(dto.endTime).toISOString()}'
         AND vtp.deleted = '${final.N}'
       order by vehicle_id asc, create_time desc;
+  `
+}
+
+export function getAirspaceInPolygon(dto: GetAirspaceInPolygonDto) {
+  const pointsStr = dto.points.map(point => `${point.lon} ${point.lat}`).join(', ');
+  return `
+      select id                                                                                   as "id",
+             name                                                                                 as "name",
+             code                                                                                 as "code",
+             type                                                                                 as "type",
+             replace(replace(replace(st_astext(geometry), 'POLYGON((', ''), '))', ''), ',', ', ') as "geometry",
+             descr                                                                                as "descr",
+             create_role                                                                          as "createRole",
+             update_role                                                                          as "updateRole",
+             create_by                                                                            as "createBy",
+             update_by                                                                            as "updateBy",
+             create_time                                                                          as "createTime",
+             update_time                                                                          as "updateTime",
+             deleted                                                                              as "deleted"
+      from flight_restriction_zone
+      where deleted = '${final.N}'
+        and st_intersects(
+              geometry,
+              st_geomfromtext('POLYGON((${pointsStr}))', 4326)
+            );
   `
 }

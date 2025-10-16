@@ -16,8 +16,14 @@ import { useSysStore } from "@/store/module/sys.ts";
 import { adminConfig } from "@dcts/config";
 import { CalculateLightsInPolygonVo, GetVehiclesInPolygonVo } from "@/type/module/dcts/spatialData.ts";
 import { final } from "@/utils/base.ts";
-import { ContextMenuOptionType, ID_PREFIX_VEHICLE_REAL_TIME } from "@/views/dashboard/functionModules/constant.ts";
+import {
+  ContextMenuOptionType,
+  EDIT_TYPE_ENUM,
+  ID_PREFIX_VEHICLE_REAL_TIME
+} from "@/views/dashboard/functionModules/constant.ts";
 import { DrawedVehicleTrajectoryClass } from "@/views/dashboard/utils/class.ts";
+import { AircraftModule } from "@/views/dashboard/functionModules/aircraftModule.ts";
+import { AirspaceModule } from "@/views/dashboard/functionModules/airspaceModule.ts";
 
 const currentConfig = adminConfig.currentConfig()
 
@@ -31,6 +37,8 @@ const visibleButtons = sysStore.getVisibleButtons();
 class UseDashboardCesium extends UseCesium {
   constructor(
       private readonly wsClient: WsClient,
+      private readonly acModule: AircraftModule,
+      private readonly asModule: AirspaceModule,
       private readonly cModule: ClockModule,
       private readonly cmModule: ContextMenuModule,
       private readonly debugModule: DebugModule,
@@ -53,7 +61,7 @@ class UseDashboardCesium extends UseCesium {
       this.lnModule.closeSignalLightLoading()
     })
     this.wsClient.addEventListener('dcts:spatialData:refreshLightWhenDatabaseChange', () => {
-      this.refreshScreenEntities()
+      this.refreshScreenEntities({module: ['slModule']})
     })
     this.wsClient.addEventListener('dcts:spatialData:getVehiclesInPolygon', data => {
       const result = JSON.parse(data.msg) as GetVehiclesInPolygonVo;
@@ -102,6 +110,19 @@ class UseDashboardCesium extends UseCesium {
     this.setAllLabelsCB = func
   }
 
+  // ===== miModule =====
+  private setIfEditingCB: ((data: boolean) => void) | null = null
+
+  public setSetIfEditingCB(func: (data: boolean) => void) {
+    this.setIfEditingCB = func
+  }
+
+  private setEditTypeCB: ((data: EDIT_TYPE_ENUM) => void) | null = null
+
+  public setSetEditTypeCB(func: (data: EDIT_TYPE_ENUM) => void) {
+    this.setEditTypeCB = func
+  }
+
   // ===== veModule =====
   private setDrawedVehicleTrajectoryIdsCB: ((data: DrawedVehicleTrajectoryClass[]) => void) | null = null
 
@@ -110,6 +131,8 @@ class UseDashboardCesium extends UseCesium {
   }
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 外部访问 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+  public readonly endInsFlightRestrictionZone = this.asModule.endInsFlightRestrictionZone.bind(this.asModule)
+
   public readonly refreshContextMenuOption = this.cmModule.refreshContextMenuOption.bind(this.cmModule)
   public readonly contextMenuSelect = this.cmModule.contextMenuSelect.bind(this.cmModule)
   public formPanelTitle = this.cmModule.formPanelTitle
@@ -127,7 +150,6 @@ class UseDashboardCesium extends UseCesium {
   public readonly setIfShowVehicleRealTime = this.meModule.setIfShowVehicleRealTime.bind(this.meModule)
   public readonly getLastActiveInterval = this.meModule.getLastActiveInterval.bind(this.meModule)
   public readonly setLastActiveInterval = this.meModule.setLastActiveInterval.bind(this.meModule)
-  public readonly refreshScreenEntities = this.meModule.refreshScreenEntities.bind(this.meModule)
 
   public readonly setEditType = this.miModule.setEditType.bind(this.miModule)
 
@@ -143,6 +165,12 @@ class UseDashboardCesium extends UseCesium {
       return
     }
 
+    this.asModule.setMeModule(this.meModule)
+    this.asModule.setMiModule(this.miModule)
+    this.asModule.setVdModule(this.vdModule)
+    this.asModule.setViewer(this.viewer)
+    this.asModule.setGetViewCornerCoordinates(this.getViewCornerCoordinates.bind(this))
+
     this.cModule.setViewer(this.viewer)
     this.cModule.setSetCurrentTimeCB((data) => {
       if (this.setCurrentTimeCB) {
@@ -153,6 +181,7 @@ class UseDashboardCesium extends UseCesium {
     this.cmModule.setMeModule(this.meModule);
     this.cmModule.setMiModule(this.miModule);
     this.cmModule.setPModule(this.pModule);
+    this.cmModule.setSlModule(this.slModule);
     this.cmModule.setSetContextMenuShowCB((data) => {
       if (this.setContextMenuShowCB) {
         this.setContextMenuShowCB(data)
@@ -168,7 +197,9 @@ class UseDashboardCesium extends UseCesium {
         this.setContextMenuOptionCB(data)
       }
     })
-    this.cmModule.setSetFormPanelTitleCB(() => this.formPanelTitle = this.cmModule.formPanelTitle)
+    this.cmModule.setSetFormPanelTitleCB(() => {
+      this.formPanelTitle = this.cmModule.formPanelTitle
+    })
     this.cmModule.setTrackEntity(this.trackEntity.bind(this))
 
     this.debugModule.setViewer(this.viewer)
@@ -192,10 +223,21 @@ class UseDashboardCesium extends UseCesium {
     this.meModule.setRefreshContextMenuOption(this.refreshContextMenuOption.bind(this))
     this.meModule.setGetViewCornerCoordinates(this.getViewCornerCoordinates.bind(this))
 
+    this.miModule.setAsModule(this.asModule)
     this.miModule.setMeModule(this.meModule)
     this.miModule.setVdModule(this.vdModule)
     this.miModule.setViewer(this.viewer)
-    this.miModule.setGetMouseMovePosition(() => this.mouseMovePosition)
+    this.miModule.setGetMouseMovePosition(() => structuredClone(this.mouseMovePosition))
+    this.miModule.setSetIfEditingCB(data => {
+      if (this.setIfEditingCB) {
+        this.setIfEditingCB(data)
+      }
+    })
+    this.miModule.setSetEditTypeCB(data => {
+      if (this.setEditTypeCB) {
+        this.setEditTypeCB(data)
+      }
+    })
 
     this.pModule.setMeModule(this.meModule)
 
@@ -250,7 +292,7 @@ class UseDashboardCesium extends UseCesium {
 
   protected cameraMoveEndCB() {
     super.cameraMoveEndCB();
-    this.refreshScreenEntities()
+    this.refreshScreenEntities({module: ['slModule', 'asModule']})
   }
 
   protected clockOnStopCB() {
@@ -339,7 +381,7 @@ class UseDashboardCesium extends UseCesium {
   protected ScreenSpaceEventTypeClickCB() {
     super.ScreenSpaceEventTypeClickCB();
     if (currentConfig.VITE_MODE === final.DEV) {
-      console.log(this.mouseClickPosition)
+      console.info(`mouseClickPosition-${this.mouseClickPosition.join('-')}`)
     }
     // 拾取该位置的物体
     if (!this.viewer) {
@@ -386,7 +428,7 @@ class UseDashboardCesium extends UseCesium {
 
   private LnModuleCloseCB(count: number) {
     if (count === 1) {
-      this.refreshScreenEntities()
+      this.refreshScreenEntities({module: ['slModule', 'asModule']})
     }
   }
 
@@ -394,7 +436,7 @@ class UseDashboardCesium extends UseCesium {
     if (this.viewer) {
       this.viewer.clock.shouldAnimate = true
     }
-    this.refreshScreenEntities({ifReplay: true})
+    this.refreshScreenEntities({ifReplay: true, module: ['slModule']})
   }
 
   public refreshServerTime() {
@@ -402,10 +444,30 @@ class UseDashboardCesium extends UseCesium {
       this.timelineChangeManually()
     })
   }
+
+  public refreshScreenEntities({
+                                 ifRefresh = false,
+                                 ifReplay = false,
+                                 module = [],
+                               }: {
+                                 ifRefresh?: boolean
+                                 ifReplay?: boolean
+                                 module?: ('slModule' | 'asModule')[]
+                               } = {}
+  ) {
+    if (module.includes('slModule')) {
+      this.slModule.drawSignalLightsWhenMapMove({ifRefresh, ifReplay})
+    }
+    if (module.includes('asModule')) {
+      this.asModule.refreshScreenAirspace({ifRefresh})
+    }
+  }
 }
 
 export function createDashboardCesium() {
   const wsClient = new WsClient({ifInit: false, pageContext: 'dashboard'});
+  const acModule = new AircraftModule();
+  const asModule = new AirspaceModule();
   const cModule = new ClockModule();
   const cmModule = new ContextMenuModule();
   const debugModule = new DebugModule();
@@ -418,6 +480,8 @@ export function createDashboardCesium() {
   const veModule = new VehicleModule();
   return new UseDashboardCesium(
       wsClient,
+      acModule,
+      asModule,
       cModule,
       cmModule,
       debugModule,

@@ -2,7 +2,7 @@ import { ContextMenuItem } from "@/views/dashboard/index/dto.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
 import {
   ContextMenuOptionType,
-  EDIT_TYPE_ENUM,
+  EDIT_TYPE_ENUM, ID_PREFIX_FLIGHT_RESTRICTION_ZONE,
   ID_PREFIX_SIGNAL_LIGHT,
   ID_PREFIX_SIGNAL_LIGHT_GROUP,
   ID_PREFIX_VEHICLE_REAL_TIME
@@ -11,6 +11,7 @@ import { MapInteractionModule } from "@/views/dashboard/functionModules/mapInter
 import { DropdownOption } from "naive-ui";
 import { PermissionModule } from "@/views/dashboard/functionModules/permissionModule.ts";
 import { routerPushByName } from "@/utils/RouterUtils.ts";
+import { SignalLightModule } from "@/views/dashboard/functionModules/signalLightModule.ts";
 
 /**
  * 右键菜单模块
@@ -32,6 +33,12 @@ export class ContextMenuModule {
 
   public setPModule(pModule: PermissionModule) {
     this.pModule = pModule;
+  }
+
+  private slModule: SignalLightModule | null = null
+
+  public setSlModule(slModule: SignalLightModule) {
+    this.slModule = slModule
   }
 
   private setContextMenuShowCB: ((data: boolean) => void) | null = null
@@ -244,10 +251,10 @@ export class ContextMenuModule {
     {
       id: '~dctsDashboard~:refreshSignalLight',
       func: () => {
-        if (!this.meModule) {
+        if (!this.slModule) {
           return
         }
-        this.meModule.refreshScreenEntities()
+        this.slModule.drawSignalLightsWhenMapMove()
       }
     },
     {
@@ -261,6 +268,43 @@ export class ContextMenuModule {
         if (this.trackEntity) {
           this.trackEntity(entityId)
         }
+      }
+    },
+    {
+      id: '~dctsDashboard~:airspace:insFlightRestrictionZone',
+      func: () => {
+        if (!this.miModule) {
+          return
+        }
+        this.miModule.setEditType(EDIT_TYPE_ENUM.INS_FLIGHT_RESTRICTION_ZONE)
+      }
+    },
+    {
+      id: '~dctsDashboard~:airspace:updFlightRestrictionZone',
+      func: () => {
+        if (!this.meModule) {
+          return
+        }
+        let itemId = ''
+        const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
+        if (seidsByGroup.flightRestrictionZoneCount > 0) {
+          itemId = seidsByGroup.flightRestrictionZone[0]
+        }
+        routerPushByName('~fp~:airspace:flightRestrictionZone:upd', {id: itemId})
+      }
+    },
+    {
+      id: '~dctsDashboard~:airspace:delFlightRestrictionZone',
+      func: () => {
+        if (!this.meModule) {
+          return
+        }
+        let itemId = ''
+        const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
+        if (seidsByGroup.flightRestrictionZoneCount > 0) {
+          itemId = seidsByGroup.flightRestrictionZone[0]
+        }
+        routerPushByName('~fp~:airspace:flightRestrictionZone:del', {id: itemId})
       }
     },
     {
@@ -414,6 +458,31 @@ export class ContextMenuModule {
         label: '聚焦并跟踪该实体',
         key: '~dctsDashboard~:jvjiaobinggenzonggaishiti',
         show: !this.pModule || this.pModule.cmihp('', [ID_PREFIX_VEHICLE_REAL_TIME])
+      },
+      {
+        type: 'divider'
+      },
+      {
+        label: '空域管理',
+        key: '~dctsDashboard~:airspace',
+        show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:airspace'),
+        children: [
+          {
+            label: '新增限飞区',
+            key: '~dctsDashboard~:airspace:insFlightRestrictionZone',
+            show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:airspace:insFlightRestrictionZone')
+          },
+          {
+            label: '修改限飞区',
+            key: '~dctsDashboard~:airspace:updFlightRestrictionZone',
+            show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:airspace:updFlightRestrictionZone', [ID_PREFIX_FLIGHT_RESTRICTION_ZONE])
+          },
+          {
+            label: '删除限飞区',
+            key: '~dctsDashboard~:airspace:delFlightRestrictionZone',
+            show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:airspace:delFlightRestrictionZone', [ID_PREFIX_FLIGHT_RESTRICTION_ZONE])
+          }
+        ]
       },
       {
         type: 'divider'

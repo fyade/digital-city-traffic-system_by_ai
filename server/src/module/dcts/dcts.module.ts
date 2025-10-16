@@ -22,6 +22,7 @@ import { ScriptModule } from './script/script.module';
 import { ThreeDFileGroupModule } from './asset/three-d-file-group/three-d-file-group.module';
 import { ThreeDFileUnitModule } from './asset/three-d-file-unit/three-d-file-unit.module';
 import { ThreeDFileModule } from './asset/three-d-file/three-d-file.module';
+import { FlightRestrictionZoneModule } from './airspace/flight-restriction-zone/flight-restriction-zone.module';
 
 @Module({
   imports: [
@@ -47,7 +48,8 @@ import { ThreeDFileModule } from './asset/three-d-file/three-d-file.module';
     ScriptModule,
     ThreeDFileGroupModule,
     ThreeDFileUnitModule,
-    ThreeDFileModule
+    ThreeDFileModule,
+    FlightRestrictionZoneModule
   ]
 })
 export class DctsModule {

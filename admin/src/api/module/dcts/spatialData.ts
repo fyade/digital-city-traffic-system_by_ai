@@ -1,6 +1,6 @@
 import {
   CalculateLightsInPolygonDto,
-  CalculateLightsInPolygonVo,
+  CalculateLightsInPolygonVo, GetAirspaceInPolygonDto, GetAirspaceInPolygonVo,
   GetVehiclesInPolygonDto,
   NodesWithWaysInPolygonDto,
   NodesWithWaysInPolygonVo,
@@ -66,6 +66,18 @@ export function getVehiclesInPolygonApi(data: GetVehiclesInPolygonDto) {
 export function queryVehicleTrajectoryApi(data: QueryVehicleTrajectoryDto) {
   return request<VehicleTrackPointDto[]>({
     url: '/dcts/spatial-data/query-vehicle-trajectory',
+    method: 'POST',
+    data: data,
+  })
+}
+
+/**
+ * 查询多边形内的空域
+ * @param data
+ */
+export function getAirspaceInPolygonApi(data: GetAirspaceInPolygonDto) {
+  return request<GetAirspaceInPolygonVo[]>({
+    url: '/dcts/spatial-data/get-airspace-in-polygon',
     method: 'POST',
     data: data,
   })
