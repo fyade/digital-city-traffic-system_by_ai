@@ -83,4 +83,10 @@ create table public.flight_route
     deleted     CHAR(1)                     NOT NULL DEFAULT 'N'
 );
 
+alter table public.flight_route
+    add color varchar(20);
+
+alter table public.flight_route
+    alter column color set not null;
+
 -- ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== =====

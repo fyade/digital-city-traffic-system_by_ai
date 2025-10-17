@@ -239,7 +239,7 @@ export class AirspaceModule {
           polyline: {
             positions: Cesium.Cartesian3.fromDegreesArrayHeights(ps),
             width: 3,
-            material: CESIUM_DEFAULT.COLOR_DEFAULT_FLIGHT_ROUTE,
+            material: Cesium.Color.fromCssColorString(re.color),
             arcType: Cesium.ArcType.NONE
           },
           id: d

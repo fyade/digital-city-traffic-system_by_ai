@@ -12,11 +12,14 @@ export class FlightRouteDto extends BaseDto {
 
   path: string;
 
+  color: string;
+
   constructor() {
     super();
     this.id = null;
     this.name = null;
     this.path = null;
+    this.color = null;
   }
 }
 
@@ -26,6 +29,9 @@ export class FlightRouteSelListDto extends PageDto {
 
   @ApiProperty({ description: '航线路径', required: false })
   path: string;
+
+  @ApiProperty({ description: '航线颜色', required: false })
+  color: string;
 }
 
 export class FlightRouteSelAllDto {
@@ -34,6 +40,9 @@ export class FlightRouteSelAllDto {
 
   @ApiProperty({ description: '航线路径', required: false })
   path: string;
+
+  @ApiProperty({ description: '航线颜色', required: false })
+  color: string;
 }
 
 export class FlightRouteInsOneDto {
@@ -46,6 +55,11 @@ export class FlightRouteInsOneDto {
   @IsNotEmpty({ message: '航线路径不能为空' })
   @Matches(regularUtils.REGEX_DCTS_PATH_Z, { message: `航线路径必须为[${regularUtils.REGEX_DCTS_PATH_Z_DESCR}]格式` })
   path: string;
+
+  @ApiProperty({ description: '航线颜色', required: true })
+  @IsNotEmpty({ message: '航线颜色不能为空' })
+  @MaxLength(20, { message: '航线颜色不能超过20个字符' })
+  color: string;
 }
 
 export class FlightRouteUpdOneDto extends FlightRouteInsOneDto {

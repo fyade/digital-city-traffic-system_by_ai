@@ -189,6 +189,7 @@ export function getAirspaceInPolygon(dto: GetAirspaceInPolygonDto) {
       select id                                                                                   as "id",
              name                                                                                 as "name",
              replace(replace(replace(st_astext(path), 'LINESTRING Z (', ''), ')', ''), ',', ', ') as "path",
+             color                                                                                as "color",
              create_role                                                                          as "createRole",
              update_role                                                                          as "updateRole",
              create_by                                                                            as "createBy",

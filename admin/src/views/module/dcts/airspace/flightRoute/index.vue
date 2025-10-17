@@ -21,6 +21,7 @@ const state = reactive<State2<FlightRouteDto, FlightRouteUpdDto>>({
     id: -1,
     name: '',
     path: '',
+    color: '',
   },
   dialogForms: [],
   filterForm: {
@@ -30,6 +31,7 @@ const state = reactive<State2<FlightRouteDto, FlightRouteUpdDto>>({
 const dFormRules: FormRules<FlightRouteDto> = {
   name: [{required: true, trigger: 'change'}],
   path: [{required: true, trigger: 'change'}],
+  color: [{required: true, trigger: 'change'}],
 }
 const config = new TablePageConfig<FlightRouteDto>({
   bulkOperation: true,
@@ -122,6 +124,14 @@ const {
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item :label="flightRouteDict.color" prop="color">
+              <!--<el-input v-model="state.dialogForm.color" :placeholder="flightRouteDict.color"/>-->
+              <el-color-picker v-model="state.dialogForm.color"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <!--在此上方添加表单项-->
         <!--<el-form-item :label="flightRouteDict.orderNum" prop='orderNum'>-->
         <!--  <el-input-number v-model="state.dialogForm.orderNum" controls-position="right"/>-->
@@ -175,6 +185,17 @@ const {
             <template #default="{$index}">
               <el-form-item :prop="`${$index}.path`" :rules="dFormRules.path">
                 <el-input v-model="state.dialogForms[$index].path" :placeholder="flightRouteDict.path"/>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column prop="color" :label="flightRouteDict.color" width="300">
+            <template #header>
+              <span :class="ifRequired('color')?'tp-table-header-required':''">{{ flightRouteDict.color }}</span>
+            </template>
+            <template #default="{$index}">
+              <el-form-item :prop="`${$index}.color`" :rules="dFormRules.color">
+                <!--<el-input v-model="state.dialogForms[$index].color" :placeholder="flightRouteDict.color"/>-->
+                <el-color-picker v-model="state.dialogForms[$index].color"/>
               </el-form-item>
             </template>
           </el-table-column>
@@ -249,6 +270,11 @@ const {
       <el-table-column prop="path" :label="flightRouteDict.path" width="480">
         <template #default="{row}">
           <div style="max-height: 100px;overflow: auto;">{{ row.path }}</div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="color" :label="flightRouteDict.color" width="120">
+        <template #default="{row}">
+          <div :style="{backgroundColor: row.color}">{{ row.color }}</div>
         </template>
       </el-table-column>
       <!--在此上方添加表格列-->

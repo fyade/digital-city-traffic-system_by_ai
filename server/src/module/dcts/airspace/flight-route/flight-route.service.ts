@@ -15,7 +15,7 @@ export class FlightRouteService {
       private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('flight_route', {
-      notNullKeys: ['name', 'path'],
+      notNullKeys: ['name', 'path', 'color'],
     });
   }
 

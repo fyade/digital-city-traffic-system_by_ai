@@ -671,4 +671,5 @@ model flight_route {
   create_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
   update_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
   deleted     String                  @default("N") @dbPostgresql.Char(1)
+  color       String                  @dbPostgresql.VarChar(20)
 }

@@ -5,4 +5,5 @@ export const flightRouteDict: { [P in keyof FlightRouteDto]: string } = {
   ...publicDict,
   name: '航线名',
   path: '航线路径',
+  color: '航线颜色',
 }

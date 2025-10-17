@@ -45,6 +45,7 @@ const form = ref(new FlightRouteDto())
 const formRules: FormRules = {
   name: [{required: true, trigger: 'change'}],
   path: [{required: true, trigger: 'change'}],
+  color: [{required: true, trigger: 'change'}],
 }
 const dCon = () => {
   dialogFormRef.value?.validate(errors => {
@@ -140,6 +141,9 @@ watchEffect(() => {
                 <n-button @click="mapPoint">地图选点</n-button>
               </template>
             </n-input>
+          </n-form-item>
+          <n-form-item path="color" :label="flightRouteDict.color">
+            <n-color-picker v-model:value="form.color" modes="hex"/>
           </n-form-item>
           <template v-for="(item, index) in pointsss" :key="index">
             <n-form-item :label="`第${index+1}个点的高度`">
