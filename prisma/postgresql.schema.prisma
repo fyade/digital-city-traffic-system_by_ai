@@ -658,3 +658,17 @@ model flight_restriction_zone {
   update_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
   deleted     String                  @default("N") @dbPostgresql.Char(1)
 }
+
+// 航线表
+model flight_route {
+  id          Int                     @id @default(autoincrement())
+  name        String                  @dbPostgresql.VarChar(100)
+  path        Unsupported("geometry")
+  create_role String                  @dbPostgresql.VarChar(30)
+  update_role String                  @dbPostgresql.VarChar(30)
+  create_by   String                  @dbPostgresql.VarChar(10)
+  update_by   String                  @dbPostgresql.VarChar(10)
+  create_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted     String                  @default("N") @dbPostgresql.Char(1)
+}

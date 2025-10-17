@@ -2,7 +2,7 @@ import { ContextMenuItem } from "@/views/dashboard/index/dto.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
 import {
   ContextMenuOptionType,
-  EDIT_TYPE_ENUM, ID_PREFIX_FLIGHT_RESTRICTION_ZONE,
+  EDIT_TYPE_ENUM, ID_PREFIX_FLIGHT_RESTRICTION_ZONE, ID_PREFIX_FLIGHT_ROUTE,
   ID_PREFIX_SIGNAL_LIGHT,
   ID_PREFIX_SIGNAL_LIGHT_GROUP,
   ID_PREFIX_VEHICLE_REAL_TIME
@@ -70,6 +70,7 @@ export class ContextMenuModule {
   public setTrackEntity(func: (entityId: string) => void) {
     this.trackEntity = func
   }
+
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
@@ -178,6 +179,7 @@ export class ContextMenuModule {
         routerPushByName('~fp~:signalLight:signalLightInfo:del', {id: itemId})
       }
     },
+    // 子信号灯样式关联
     {
       id: '~dctsDashboard~:signalLight:signalLightChildStyleMapping:ins',
       func: () => {
@@ -192,6 +194,7 @@ export class ContextMenuModule {
         routerPushByName('~fp~:signalLight:signalLightChildStyleMapping:ins', {clid: itemId})
       }
     },
+    // 信号灯策略管理
     {
       id: '~dctsDashboard~:signalLightStrategy:signalLightGroupStrategyTypeMapping:ins',
       func: () => {
@@ -220,6 +223,7 @@ export class ContextMenuModule {
         routerPushByName('~fp~:signalLightStrategy:signalLightChildStrategyScheduleMapping:ins', {clid: itemId})
       }
     },
+    // 车辆管理
     {
       id: '~dctsDashboard~:vehicle:queryVehicleTrajectory',
       func: () => {
@@ -234,6 +238,7 @@ export class ContextMenuModule {
         routerPushByName('~fp~:vehicle:trajectory', {vid: itemId})
       }
     },
+    // 查看运行时刻图
     {
       id: '~dctsDashboard~:queryRuntimeDiagram',
       func: () => {
@@ -248,6 +253,7 @@ export class ContextMenuModule {
         routerPushByName('~fp~:runtimeDiagram', {id: itemId})
       }
     },
+    // 刷新信号灯状态
     {
       id: '~dctsDashboard~:refreshSignalLight',
       func: () => {
@@ -257,6 +263,7 @@ export class ContextMenuModule {
         this.slModule.drawSignalLightsWhenMapMove()
       }
     },
+    // 聚焦并跟踪该实体
     {
       id: '~dctsDashboard~:jvjiaobinggenzonggaishiti',
       func: () => {
@@ -270,8 +277,9 @@ export class ContextMenuModule {
         }
       }
     },
+    // 限飞区管理
     {
-      id: '~dctsDashboard~:airspace:insFlightRestrictionZone',
+      id: '~dctsDashboard~:airspace:flightRestrictionZone:ins',
       func: () => {
         if (!this.miModule) {
           return
@@ -280,7 +288,7 @@ export class ContextMenuModule {
       }
     },
     {
-      id: '~dctsDashboard~:airspace:updFlightRestrictionZone',
+      id: '~dctsDashboard~:airspace:flightRestrictionZone:upd',
       func: () => {
         if (!this.meModule) {
           return
@@ -294,7 +302,7 @@ export class ContextMenuModule {
       }
     },
     {
-      id: '~dctsDashboard~:airspace:delFlightRestrictionZone',
+      id: '~dctsDashboard~:airspace:flightRestrictionZone:del',
       func: () => {
         if (!this.meModule) {
           return
@@ -307,6 +315,45 @@ export class ContextMenuModule {
         routerPushByName('~fp~:airspace:flightRestrictionZone:del', {id: itemId})
       }
     },
+    // 航线管理
+    {
+      id: '~dctsDashboard~:airspace:flightRoute:ins',
+      func: () => {
+        if (!this.miModule) {
+          return
+        }
+        this.miModule.setEditType(EDIT_TYPE_ENUM.INS_FLIGHT_ROUTE)
+      }
+    },
+    {
+      id: '~dctsDashboard~:airspace:flightRoute:upd',
+      func: () => {
+        if (!this.meModule) {
+          return
+        }
+        let itemId = ''
+        const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
+        if (seidsByGroup.flightRouteCount > 0) {
+          itemId = seidsByGroup.flightRoute[0]
+        }
+        routerPushByName('~fp~:airspace:flightRoute:upd', {id: itemId})
+      }
+    },
+    {
+      id: '~dctsDashboard~:airspace:flightRoute:del',
+      func: () => {
+        if (!this.meModule) {
+          return
+        }
+        let itemId = ''
+        const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
+        if (seidsByGroup.flightRouteCount > 0) {
+          itemId = seidsByGroup.flightRoute[0]
+        }
+        routerPushByName('~fp~:airspace:flightRoute:del', {id: itemId})
+      }
+    },
+    // 关闭
     {
       id: '~dctsDashboard~:closeMenuOption',
       func: () => {
@@ -468,19 +515,48 @@ export class ContextMenuModule {
         show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:airspace'),
         children: [
           {
-            label: '新增限飞区',
-            key: '~dctsDashboard~:airspace:insFlightRestrictionZone',
-            show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:airspace:insFlightRestrictionZone')
+            label: '限飞区管理',
+            key: '~dctsDashboard~:airspace:flightRestrictionZone',
+            show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:airspace:flightRestrictionZone'),
+            children: [
+              {
+                label: '新增限飞区',
+                key: '~dctsDashboard~:airspace:flightRestrictionZone:ins',
+                show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:airspace:flightRestrictionZone:ins')
+              },
+              {
+                label: '修改限飞区',
+                key: '~dctsDashboard~:airspace:flightRestrictionZone:upd',
+                show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:airspace:flightRestrictionZone:upd', [ID_PREFIX_FLIGHT_RESTRICTION_ZONE])
+              },
+              {
+                label: '删除限飞区',
+                key: '~dctsDashboard~:airspace:flightRestrictionZone:del',
+                show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:airspace:flightRestrictionZone:del', [ID_PREFIX_FLIGHT_RESTRICTION_ZONE])
+              }
+            ]
           },
           {
-            label: '修改限飞区',
-            key: '~dctsDashboard~:airspace:updFlightRestrictionZone',
-            show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:airspace:updFlightRestrictionZone', [ID_PREFIX_FLIGHT_RESTRICTION_ZONE])
-          },
-          {
-            label: '删除限飞区',
-            key: '~dctsDashboard~:airspace:delFlightRestrictionZone',
-            show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:airspace:delFlightRestrictionZone', [ID_PREFIX_FLIGHT_RESTRICTION_ZONE])
+            label: '航线管理',
+            key: '~dctsDashboard~:airspace:flightRoute',
+            show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:airspace:flightRoute'),
+            children: [
+              {
+                label: '新增航线',
+                key: '~dctsDashboard~:airspace:flightRoute:ins',
+                show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:airspace:flightRoute:ins')
+              },
+              {
+                label: '修改航线',
+                key: '~dctsDashboard~:airspace:flightRoute:upd',
+                show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:airspace:flightRoute:upd', [ID_PREFIX_FLIGHT_ROUTE])
+              },
+              {
+                label: '删除航线',
+                key: '~dctsDashboard~:airspace:flightRoute:del',
+                show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:airspace:flightRoute:del', [ID_PREFIX_FLIGHT_ROUTE])
+              }
+            ]
           }
         ]
       },

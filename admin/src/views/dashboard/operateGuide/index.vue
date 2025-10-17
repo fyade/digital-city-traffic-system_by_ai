@@ -4,6 +4,7 @@ import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
 
 <template>
   <n-modal
+      :auto-focus="false"
       style="width: 60%;height: 60vh;"
       content-style="overflow: auto;"
       show

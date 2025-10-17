@@ -164,7 +164,7 @@ export function queryVehicleTrajectory(dto: QueryVehicleTrajectoryDto, vehicleId
 
 export function getAirspaceInPolygon(dto: GetAirspaceInPolygonDto) {
   const pointsStr = dto.points.map(point => `${point.lon} ${point.lat}`).join(', ');
-  return `
+  const sql1 =  `
       select id                                                                                   as "id",
              name                                                                                 as "name",
              code                                                                                 as "code",
@@ -185,4 +185,26 @@ export function getAirspaceInPolygon(dto: GetAirspaceInPolygonDto) {
               st_geomfromtext('POLYGON((${pointsStr}))', 4326)
             );
   `
+  const sql2 = `
+      select id                                                                                   as "id",
+             name                                                                                 as "name",
+             replace(replace(replace(st_astext(path), 'LINESTRING Z (', ''), ')', ''), ',', ', ') as "path",
+             create_role                                                                          as "createRole",
+             update_role                                                                          as "updateRole",
+             create_by                                                                            as "createBy",
+             update_by                                                                            as "updateBy",
+             create_time                                                                          as "createTime",
+             update_time                                                                          as "updateTime",
+             deleted                                                                              as "deleted"
+      from flight_route
+      where deleted = '${final.N}'
+        and st_intersects(
+              path,
+              st_geomfromtext('POLYGON((${pointsStr}))', 4326)
+            );
+  `
+  return {
+    sql1,
+    sql2,
+  }
 }

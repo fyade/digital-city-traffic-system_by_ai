@@ -3,6 +3,8 @@ import { SignalLightInfoDto } from "../signal-light/signal-light-info/dto";
 import { SignalLightGroupChildMappingDto } from "../signal-light/signal-light-group-child-mapping/dto";
 import { SignalLightChildStyleMappingDto } from "../signal-light/signal-light-child-style-mapping/dto";
 import { SignalLightStyleDto } from "../signal-light/signal-light-style/dto";
+import { FlightRestrictionZoneDto } from "../airspace/flight-restriction-zone/dto";
+import { FlightRouteDto } from "../airspace/flight-route/dto";
 
 class NodesWithWaysInPolygonVoTags {
 }
@@ -26,5 +28,15 @@ export class SignalLightGroupsInPolygonVo {
     this.signalLightInfos = []
     this.signalLightChildStyleMappings = []
     this.signalLightStyles = []
+  }
+}
+
+export class GetAirspaceInPolygonVo {
+  flightRestrictionZones: FlightRestrictionZoneDto[]
+  flightRoutes: FlightRouteDto[]
+
+  constructor() {
+    this.flightRestrictionZones = []
+    this.flightRoutes = []
   }
 }

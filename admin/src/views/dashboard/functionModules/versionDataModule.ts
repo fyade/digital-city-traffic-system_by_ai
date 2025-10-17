@@ -57,9 +57,9 @@ export class VersionDataModule {
   }
 
   // 曾经地图可视区域内的空域
-  private _history_airspaceInPolygonVo: VersionDataType<GetAirspaceInPolygonVo[]>[] = []
+  private _history_airspaceInPolygonVo: VersionDataType<GetAirspaceInPolygonVo>[] = []
 
-  public setHistoryAirspaceInPolygonVo(value: GetAirspaceInPolygonVo[]) {
+  public setHistoryAirspaceInPolygonVo(value: GetAirspaceInPolygonVo) {
     this._history_airspaceInPolygonVo = this.__(value, this._history_airspaceInPolygonVo)
   }
 

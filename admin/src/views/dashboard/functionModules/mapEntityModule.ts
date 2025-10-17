@@ -1,6 +1,6 @@
 import * as Cesium from "cesium";
 import {
-  ID_PREFIX_FLIGHT_RESTRICTION_ZONE,
+  ID_PREFIX_FLIGHT_RESTRICTION_ZONE, ID_PREFIX_FLIGHT_ROUTE,
   ID_PREFIX_SIGNAL_LIGHT,
   ID_PREFIX_SIGNAL_LIGHT_GROUP,
   ID_PREFIX_VEHICLE_REAL_TIME
@@ -127,12 +127,17 @@ export class MapEntityModule {
       get flightRestrictionZoneCount() {
         return this.flightRestrictionZone.length
       },
+      flightRoute: [] as string[],
+      get flightRouteCount() {
+        return this.flightRoute.length
+      },
       get allIds() {
         return [
           ...this.signalLightGroupInfo,
           ...this.signalLightInfo,
           ...this.vehicleRealTime,
           ...this.flightRestrictionZone,
+          ...this.flightRoute,
         ]
       },
       get count() {
@@ -151,6 +156,9 @@ export class MapEntityModule {
       }
       if (selectedEntityId.startsWith(ID_PREFIX_FLIGHT_RESTRICTION_ZONE)) {
         obj.flightRestrictionZone.push(selectedEntityId.replace(ID_PREFIX_FLIGHT_RESTRICTION_ZONE, ''))
+      }
+      if (selectedEntityId.startsWith(ID_PREFIX_FLIGHT_ROUTE)) {
+        obj.flightRoute.push(selectedEntityId.replace(ID_PREFIX_FLIGHT_ROUTE, ''))
       }
     }
     return obj

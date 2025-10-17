@@ -67,4 +67,20 @@ create table public.flight_restriction_zone
     deleted     CHAR(1)                  NOT NULL DEFAULT 'N'
 );
 
+-- ===== ===== ===== ===== ===== ===== 2025.10.17 ===== ===== ===== ===== ===== =====
+
+create table public.flight_route
+(
+    id          serial PRIMARY KEY,
+    name        VARCHAR(100)                NOT NULL,
+    path        geometry(LineStringZ, 4326) NOT NULL,
+    create_role VARCHAR(30)                 NOT NULL,
+    update_role VARCHAR(30)                 NOT NULL,
+    create_by   VARCHAR(10)                 NOT NULL,
+    update_by   VARCHAR(10)                 NOT NULL,
+    create_time TIMESTAMP WITH TIME ZONE    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP WITH TIME ZONE    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted     CHAR(1)                     NOT NULL DEFAULT 'N'
+);
+
 -- ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== =====

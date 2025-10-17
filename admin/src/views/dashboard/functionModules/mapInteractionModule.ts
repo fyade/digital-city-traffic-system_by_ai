@@ -1,10 +1,14 @@
 import {
   CESIUM_DEFAULT,
   EDIT_TYPE_ENUM,
+  EDIT_TYPES_SPECIAL_1,
+  EDIT_TYPES_SPECIAL_1_GEOMETRY,
+  EDIT_TYPES_SPECIAL_1_POLYLINE,
   ID_PREFIX_SIGNAL_LIGHT,
-  ID_PREFIX_SIGNAL_LIGHT_GROUP, ID_SPECIAL_MouseMovingGeometry,
+  ID_PREFIX_SIGNAL_LIGHT_GROUP,
+  ID_SPECIAL_MouseMovingGeometry,
   ID_SPECIAL_MouseMovingPoint,
-  NOT_END_EDIT_TYPE
+  ID_SPECIAL_MouseMovingPolyline
 } from "@/views/dashboard/functionModules/constant.ts";
 import * as Cesium from "cesium";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
@@ -77,9 +81,39 @@ export class MapInteractionModule {
       show: false, // 初始隐藏
       id: ID_SPECIAL_MouseMovingPoint
     });
+    this.viewer.entities.add({
+      polygon: {
+        hierarchy: new Cesium.PolygonHierarchy([]),
+        material: CESIUM_DEFAULT.COLOR_DEFAULT_FLIGHT_RESTRICTION_ZONE,
+        outline: true,
+        outlineColor: CESIUM_DEFAULT.COLOR_OUTLINE_DEFAULT_FLIGHT_RESTRICTION_ZONE,
+        outlineWidth: CESIUM_DEFAULT.WIDTH_OUTLINE_DEFAULT_FLIGHT_RESTRICTION_ZONE,
+      },
+      show: false, // 初始隐藏
+      id: ID_SPECIAL_MouseMovingGeometry
+    });
+    this.viewer.entities.add({
+      polyline: {
+        positions: Cesium.Cartesian3.fromDegreesArrayHeights([0, 0, 0]),
+        width: 3,
+        material: CESIUM_DEFAULT.COLOR_DEFAULT_FLIGHT_ROUTE,
+        arcType: Cesium.ArcType.NONE
+      },
+      show: false, // 初始隐藏
+      id: ID_SPECIAL_MouseMovingPolyline
+    });
   }
 
   public setMovingPointPosition() {
+    this.setMovingPointPosition_drawPoint()
+    this.setMovingPointPosition_drawGeometry()
+    this.setMovingPointPosition_drawPolyline()
+  }
+
+  private setMovingPointPosition_drawPoint() {
+    if (!this.ifEditing) {
+      return;
+    }
     if (!this.viewer) {
       return
     }
@@ -92,44 +126,61 @@ export class MapInteractionModule {
       const position = Cesium.Cartesian3.fromDegrees(lonlat[0], lonlat[1]);
       entity.position = new Cesium.ConstantPositionProperty(position)
     }
-    this.setMovingPointPosition_DRAW_FLIGHT_RESTRICTION_ZONE()
   }
 
-  private setMovingPointPosition_DRAW_FLIGHT_RESTRICTION_ZONE = funcUtils.throttle(this.setMovingPointPosition_DRAW_FLIGHT_RESTRICTION_ZONE_.bind(this), 25)
+  private setMovingPointPosition_drawGeometry = funcUtils.throttle(this.setMovingPointPosition_drawGeometry_.bind(this), 25)
 
-  private setMovingPointPosition_DRAW_FLIGHT_RESTRICTION_ZONE_() {
+  private setMovingPointPosition_drawGeometry_() {
+    if (!this.ifEditing) {
+      return;
+    }
     if (!this.viewer) {
       return;
     }
-    if (this.editType === EDIT_TYPE_ENUM.INS_FLIGHT_RESTRICTION_ZONE) {
-      if (!this.asModule) {
-        return;
-      }
-      const tempPoints_ = this.asModule.getTempPoints();
-      if (!this.getMouseMovePosition) {
-        return;
-      }
-      const lonlat = this.getMouseMovePosition();
-      const tempPoints = [...tempPoints_, lonlat]
-      // 绘制tempPoints
-      const positions = tempPoints.map(point => Cesium.Cartesian3.fromDegrees(point[0], point[1], CESIUM_DEFAULT.HEIGHT_FLIGHT_RESTRICTION_ZONE))
-      const entity = this.viewer.entities.getById(ID_SPECIAL_MouseMovingGeometry);
-      if (entity) {
-        if (entity.polygon) {
-          entity.polygon.hierarchy = new Cesium.ConstantProperty(new Cesium.PolygonHierarchy(positions))
-        }
-      } else {
-        this.viewer.entities.add({
-          polygon: {
-            hierarchy: new Cesium.PolygonHierarchy(positions),
-            material: CESIUM_DEFAULT.COLOR_DEFAULT_FLIGHT_RESTRICTION_ZONE,
-            outline: true,
-            outlineColor: CESIUM_DEFAULT.COLOR_OUTLINE_DEFAULT_FLIGHT_RESTRICTION_ZONE,
-            outlineWidth: CESIUM_DEFAULT.WIDTH_OUTLINE_DEFAULT_FLIGHT_RESTRICTION_ZONE,
-          },
-          id: ID_SPECIAL_MouseMovingGeometry
-        })
-      }
+    if (!this.asModule) {
+      return;
+    }
+    if (!EDIT_TYPES_SPECIAL_1_GEOMETRY.includes(this.editType)) {
+      return;
+    }
+    const tempPoints_ = this.asModule.getTempPoints();
+    if (!this.getMouseMovePosition) {
+      return;
+    }
+    const lonlat = this.getMouseMovePosition();
+    const tempPoints = [...tempPoints_, lonlat]
+    const positions = tempPoints.map(point => Cesium.Cartesian3.fromDegrees(point[0], point[1], CESIUM_DEFAULT.HEIGHT_FLIGHT_RESTRICTION_ZONE))
+    const entity = this.viewer.entities.getById(ID_SPECIAL_MouseMovingGeometry);
+    if (entity && entity.polygon) {
+      entity.polygon.hierarchy = new Cesium.ConstantProperty(new Cesium.PolygonHierarchy(positions))
+    }
+  }
+
+  private setMovingPointPosition_drawPolyline = funcUtils.throttle(this.setMovingPointPosition_drawPolyline_.bind(this), 25)
+
+  private setMovingPointPosition_drawPolyline_() {
+    if (!this.ifEditing) {
+      return;
+    }
+    if (!this.viewer) {
+      return;
+    }
+    if (!this.asModule) {
+      return;
+    }
+    if (!EDIT_TYPES_SPECIAL_1_POLYLINE.includes(this.editType)) {
+      return;
+    }
+    const tempPoints_ = this.asModule.getTempPoints();
+    if (!this.getMouseMovePosition) {
+      return;
+    }
+    const lonlat = this.getMouseMovePosition();
+    const tempPoints = [...tempPoints_, lonlat].map(point => [...point, CESIUM_DEFAULT.HEIGHT_DEFAULT_FLIGHT_ROUTE])
+    const positions = Cesium.Cartesian3.fromDegreesArrayHeights([...tempPoints.flat()])
+    const entity = this.viewer.entities.getById(ID_SPECIAL_MouseMovingPolyline);
+    if (entity && entity.polyline) {
+      entity.polyline.positions = new Cesium.ConstantProperty(positions)
     }
   }
 
@@ -148,13 +199,26 @@ export class MapInteractionModule {
     if (!this.viewer) {
       return
     }
-    const entity = this.viewer.entities.getById(ID_SPECIAL_MouseMovingPoint);
-    if (entity) {
-      entity.show = value
-    }
-    const entity2 = this.viewer.entities.getById(ID_SPECIAL_MouseMovingGeometry);
-    if (entity2) {
-      entity2.show = value
+    const ids = [
+      ID_SPECIAL_MouseMovingPoint,
+      ID_SPECIAL_MouseMovingGeometry,
+      ID_SPECIAL_MouseMovingPolyline,
+    ]
+    if (value) {
+      for (const id of ids) {
+        const entity = this.viewer.entities.getById(id);
+        if (entity) {
+          entity.show = value
+        }
+      }
+    } else {
+      for (const id of ids) {
+        const entity = this.viewer.entities.getById(id);
+        if (entity) {
+          this.viewer.entities.removeById(id)
+        }
+      }
+      this.init()
     }
   }
 
@@ -266,6 +330,32 @@ export class MapInteractionModule {
         const mouseMovePosition = this.getMouseMovePosition();
         this.asModule.addTempPoints(mouseMovePosition)
       }
+    },
+    {
+      id: EDIT_TYPE_ENUM.INS_FLIGHT_ROUTE,
+      func: () => {
+        if (!this.getMouseMovePosition) {
+          return
+        }
+        if (!this.asModule) {
+          return;
+        }
+        const mouseMovePosition = this.getMouseMovePosition();
+        this.asModule.addTempPoints(mouseMovePosition)
+      }
+    },
+    {
+      id: EDIT_TYPE_ENUM.UPD_FLIGHT_ROUTE,
+      func: () => {
+        if (!this.getMouseMovePosition) {
+          return
+        }
+        if (!this.asModule) {
+          return;
+        }
+        const mouseMovePosition = this.getMouseMovePosition();
+        this.asModule.addTempPoints(mouseMovePosition)
+      }
     }
   ]
 
@@ -280,7 +370,7 @@ export class MapInteractionModule {
   }
 
   public doEditHandles() {
-    if (this.editType && !NOT_END_EDIT_TYPE.includes(this.editType)) {
+    if (this.editType && !EDIT_TYPES_SPECIAL_1.includes(this.editType)) {
       this.ifEditing = false
     }
     const find = this.editHandles.find(item => item.id === this.editType);

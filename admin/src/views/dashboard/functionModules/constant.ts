@@ -9,6 +9,8 @@ export enum EDIT_TYPE_ENUM {
   UPD_SIGNAL_LIGHT = 'UPD_SIGNAL_LIGHT',
   INS_FLIGHT_RESTRICTION_ZONE = 'INS_FLIGHT_RESTRICTION_ZONE',
   UPD_FLIGHT_RESTRICTION_ZONE = 'UPD_FLIGHT_RESTRICTION_ZONE',
+  INS_FLIGHT_ROUTE = 'INS_FLIGHT_ROUTE',
+  UPD_FLIGHT_ROUTE = 'UPD_FLIGHT_ROUTE',
 }
 
 export const EDIT_TYPE_DICT = {
@@ -19,10 +21,25 @@ export const EDIT_TYPE_DICT = {
   [EDIT_TYPE_ENUM.UPD_SIGNAL_LIGHT]: '修改子信号灯',
   [EDIT_TYPE_ENUM.INS_FLIGHT_RESTRICTION_ZONE]: '新增限飞区',
   [EDIT_TYPE_ENUM.UPD_FLIGHT_RESTRICTION_ZONE]: '修改限飞区',
+  [EDIT_TYPE_ENUM.INS_FLIGHT_ROUTE]: '新增航线',
+  [EDIT_TYPE_ENUM.UPD_FLIGHT_ROUTE]: '修改航线',
 }
-export const NOT_END_EDIT_TYPE = [
+// 需要连续绘制
+export const EDIT_TYPES_SPECIAL_1 = [
   EDIT_TYPE_ENUM.INS_FLIGHT_RESTRICTION_ZONE,
-  EDIT_TYPE_ENUM.UPD_FLIGHT_RESTRICTION_ZONE
+  EDIT_TYPE_ENUM.UPD_FLIGHT_RESTRICTION_ZONE,
+  EDIT_TYPE_ENUM.INS_FLIGHT_ROUTE,
+  EDIT_TYPE_ENUM.UPD_FLIGHT_ROUTE,
+]
+// 连续绘制时展示多边形
+export const EDIT_TYPES_SPECIAL_1_GEOMETRY = [
+  EDIT_TYPE_ENUM.INS_FLIGHT_RESTRICTION_ZONE,
+  EDIT_TYPE_ENUM.UPD_FLIGHT_RESTRICTION_ZONE,
+]
+// 连续绘制时展示路径
+export const EDIT_TYPES_SPECIAL_1_POLYLINE = [
+  EDIT_TYPE_ENUM.INS_FLIGHT_ROUTE,
+  EDIT_TYPE_ENUM.UPD_FLIGHT_ROUTE,
 ]
 
 export const ID_PREFIX_POINT = 'ID_PREFIX_POINT::::::::::'
@@ -31,6 +48,8 @@ export const ID_PREFIX_LINE = 'ID_PREFIX_LINE::::::::::'
 const ID_PREFIX_SPECIAL = 'ID_PREFIX_SPECIAL::::::::::'
 export const ID_SPECIAL_MouseMovingPoint = `${ID_PREFIX_SPECIAL}MouseMovingPoint`
 export const ID_SPECIAL_MouseMovingGeometry = `${ID_PREFIX_SPECIAL}MouseMovingGeometry`
+export const ID_SPECIAL_MouseMovingPolyline = `${ID_PREFIX_SPECIAL}MouseMovingPolyline`
+export const ID_SPECIAL_preview_MouseMovingPolyline = `${ID_PREFIX_SPECIAL}preview_MouseMovingPolyline`
 
 // 信号灯组
 export const ID_PREFIX_SIGNAL_LIGHT_GROUP = 'ID_PREFIX_SIGNAL_LIGHT_GROUP::::::::::'
@@ -42,6 +61,8 @@ export const ID_PREFIX_VEHICLE_REAL_TIME = 'ID_PREFIX_VEHICLE_REAL_TIME:::::::::
 
 // 限飞区
 export const ID_PREFIX_FLIGHT_RESTRICTION_ZONE = 'ID_PREFIX_FLIGHT_RESTRICTION_ZONE::::::::::'
+// 航线
+export const ID_PREFIX_FLIGHT_ROUTE = 'ID_PREFIX_FLIGHT_ROUTE::::::::::'
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 默认值 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 export const CESIUM_DEFAULT = {
@@ -79,15 +100,20 @@ export const CESIUM_DEFAULT = {
   // 限飞区高度
   HEIGHT_FLIGHT_RESTRICTION_ZONE: 0.02,
   // 限飞区默认颜色
-  COLOR_DEFAULT_FLIGHT_RESTRICTION_ZONE: Cesium.Color.BLUE.withAlpha(0.2),
-  COLOR_OUTLINE_DEFAULT_FLIGHT_RESTRICTION_ZONE: Cesium.Color.BLUE.withAlpha(0.35),
+  COLOR_DEFAULT_FLIGHT_RESTRICTION_ZONE: Cesium.Color.BLUE.withAlpha(0.5),
+  COLOR_OUTLINE_DEFAULT_FLIGHT_RESTRICTION_ZONE: Cesium.Color.BLUE.withAlpha(0.5),
   WIDTH_OUTLINE_DEFAULT_FLIGHT_RESTRICTION_ZONE: 10,
   // 禁飞区
-  COLOR_JFQ_FLIGHT_RESTRICTION_ZONE: Cesium.Color.RED.withAlpha(0.2),
-  COLOR_OUTLINE_JFQ_FLIGHT_RESTRICTION_ZONE: Cesium.Color.RED.withAlpha(0.35),
+  COLOR_JFQ_FLIGHT_RESTRICTION_ZONE: Cesium.Color.RED.withAlpha(0.5),
+  COLOR_OUTLINE_JFQ_FLIGHT_RESTRICTION_ZONE: Cesium.Color.RED.withAlpha(0.5),
   // 限高区
-  COLOR_XGQ_FLIGHT_RESTRICTION_ZONE: Cesium.Color.GREY.withAlpha(0.2),
-  COLOR_OUTLINE_XGQ_FLIGHT_RESTRICTION_ZONE: Cesium.Color.GREY.withAlpha(0.35),
+  COLOR_XGQ_FLIGHT_RESTRICTION_ZONE: Cesium.Color.GREY.withAlpha(0.5),
+  COLOR_OUTLINE_XGQ_FLIGHT_RESTRICTION_ZONE: Cesium.Color.GREY.withAlpha(0.5),
+
+  // 航线颜色
+  COLOR_DEFAULT_FLIGHT_ROUTE: Cesium.Color.BLUE.withAlpha(0.5),
+  // 默认航线高度
+  HEIGHT_DEFAULT_FLIGHT_ROUTE: 100,
 }
 
 export type ContextMenuOptionType = Array<DropdownOption | DropdownGroupOption | DropdownDividerOption | DropdownRenderOption>;

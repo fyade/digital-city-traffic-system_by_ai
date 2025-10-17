@@ -5,7 +5,7 @@ import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts
 import {
   EDIT_TYPE_DICT,
   EDIT_TYPE_ENUM,
-  ID_PREFIX_VEHICLE_REAL_TIME
+  ID_PREFIX_VEHICLE_REAL_TIME, EDIT_TYPES_SPECIAL_1
 } from "@/views/dashboard/functionModules/constant.ts";
 import { vehicleInfoApi } from "@/api/module/dcts/vehicle/vehicleInfo.ts";
 import { VehicleInfoDto } from "@/type/module/dcts/vehicle/vehicleInfo.ts";
@@ -74,8 +74,8 @@ const update1 = (index: number) => {
 }
 
 // 限飞区
-const endInsFlightRestrictionZone = () => {
-  cesiumClass.endInsFlightRestrictionZone()
+const endEditAirspace = () => {
+  cesiumClass.endEditAirspace()
 }
 </script>
 
@@ -97,9 +97,9 @@ const endInsFlightRestrictionZone = () => {
           </n-divider>
         </n-gi>
         <n-gi
-            v-if="[EDIT_TYPE_ENUM.INS_FLIGHT_RESTRICTION_ZONE, EDIT_TYPE_ENUM.UPD_FLIGHT_RESTRICTION_ZONE].includes(editType)"
+            v-if="EDIT_TYPES_SPECIAL_1.includes(editType)"
         >
-          <n-button @click="endInsFlightRestrictionZone">点击完成限飞区绘制</n-button>
+          <n-button @click="endEditAirspace">点击完成空域绘制</n-button>
         </n-gi>
       </template>
 

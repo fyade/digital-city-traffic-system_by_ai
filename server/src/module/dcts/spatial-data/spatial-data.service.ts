@@ -18,7 +18,7 @@ import {
 } from "./sqls";
 import { SignalLightGroupInfoDto } from "../signal-light/signal-light-group-info/dto";
 import { SignalLightInfoDto } from "../signal-light/signal-light-info/dto";
-import { NodesWithWaysInPolygonVo, SignalLightGroupsInPolygonVo } from "./vo";
+import { GetAirspaceInPolygonVo, NodesWithWaysInPolygonVo, SignalLightGroupsInPolygonVo } from "./vo";
 import { SignalLightGroupChildMappingDto } from "../signal-light/signal-light-group-child-mapping/dto";
 import { DctsCoreService } from "../core/dcts-core.service";
 import { BaseContextService } from "../../../infra/base-context/base-context.service";
@@ -151,8 +151,12 @@ export class SpatialDataService {
   }
 
   async getAirspaceInPolygon(dto: GetAirspaceInPolygonDto): Promise<R> {
-    const sql = getAirspaceInPolygon(dto);
-    const s = await this.pgsqlPrismao.$queryRawUnsafe(sql);
-    return R.ok(s)
+    const sqls = getAirspaceInPolygon(dto);
+    const s1 = await this.pgsqlPrismao.$queryRawUnsafe<GetAirspaceInPolygonVo['flightRestrictionZones']>(sqls.sql1);
+    const s2 = await this.pgsqlPrismao.$queryRawUnsafe<GetAirspaceInPolygonVo['flightRoutes']>(sqls.sql2);
+    const ret = new GetAirspaceInPolygonVo()
+    ret.flightRestrictionZones = s1
+    ret.flightRoutes = s2
+    return R.ok(ret)
   }
 }

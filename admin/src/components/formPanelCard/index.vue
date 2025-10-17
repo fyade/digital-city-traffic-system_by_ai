@@ -1,37 +1,21 @@
 <script setup lang="ts">
-import { nextTick, ref } from "vue";
+import { nextTick, ref, watchEffect } from "vue";
 import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
 import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
 import { CONFIG } from "@/utils/base.ts";
 
-const props = defineProps({
-  title: {
-    type: String,
-    required: false,
-  },
-  ifIns: {
-    type: Boolean,
-    required: true,
-  },
-  ifUpd: {
-    type: Boolean,
-    required: true,
-  },
-  ifDel: {
-    type: Boolean,
-    required: true,
-  },
-  loading: {
-    type: Boolean,
-    required: true,
-  },
-  wider: {
-    type: Boolean,
-    default: false,
-  },
-  runInit: {
-    type: Function
-  }
+const props = withDefaults(defineProps<{
+  title?: string
+  ifIns: boolean
+  ifUpd: boolean
+  ifDel: boolean
+  loading: boolean
+  wider?: boolean
+  runInit?: () => void
+  preset?: 'modal' | 'drawer'
+}>(), {
+  wider: false,
+  preset: 'modal',
 });
 const emits = defineEmits(['submitCallback']);
 
@@ -47,6 +31,14 @@ nextTick(() => {
   }
 })
 
+const drawerShow = ref(true)
+watchEffect(() => {
+  if (drawerShow.value) {
+    return
+  }
+  gotoDashboardHome()
+})
+
 const submitCallback = () => {
   emits('submitCallback')
 }
@@ -54,22 +46,37 @@ const submitCallback = () => {
 
 <template>
   <template v-if="props.ifIns || props.ifUpd || (!props.ifIns && !props.ifUpd && !props.ifDel)">
-    <n-modal
-        show
-        preset="dialog"
-        :show-icon="false"
-        :on-close="gotoDashboardHome"
-        :style="{
-          width: props.wider ? CONFIG.dialog_width_wider : ''
-        }"
-    >
-      <!--:on-esc="onClose"-->
-      <!--:on-mask-click="onClose"-->
-      <template #header>
-        <div>{{ modalTitle }}</div>
-      </template>
-      <slot/>
-    </n-modal>
+    <template v-if="props.preset === 'modal'">
+      <n-modal
+          show
+          preset="dialog"
+          :show-icon="false"
+          :on-close="gotoDashboardHome"
+          :style="{
+            width: props.wider ? CONFIG.dialog_width_wider : ''
+          }"
+      >
+        <template #header>
+          <div>{{ modalTitle }}</div>
+        </template>
+        <slot/>
+      </n-modal>
+    </template>
+    <template v-if="props.preset === 'drawer'">
+      <n-drawer
+          v-model:show="drawerShow"
+          :show-mask="false"
+          :width="props.wider ? CONFIG.dialog_width_wider : ''"
+          placement="left"
+      >
+        <n-drawer-content
+            :title="modalTitle"
+            closable
+        >
+          <slot/>
+        </n-drawer-content>
+      </n-drawer>
+    </template>
   </template>
   <template v-if="props.ifDel">
     <n-modal

@@ -342,7 +342,11 @@ watchEffect(() => {
           {{ airspaceTypes.find(item => item.value === row.type)?.label }}
         </template>
       </el-table-column>
-      <el-table-column prop="geometry" :label="flightRestrictionZoneDict.geometry" width="480"/>
+      <el-table-column prop="geometry" :label="flightRestrictionZoneDict.geometry" width="480">
+        <template #default="{row}">
+          <div style="max-height: 100px;overflow: auto;">{{ row.geometry }}</div>
+        </template>
+      </el-table-column>
       <el-table-column prop="descr" :label="flightRestrictionZoneDict.descr" width="120"/>
       <!--在此上方添加表格列-->
       <!--<el-table-column prop="createRole" :label="flightRestrictionZoneDict.createRole" width="120"/>-->

@@ -131,7 +131,8 @@ class UseDashboardCesium extends UseCesium {
   }
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 外部访问 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-  public readonly endInsFlightRestrictionZone = this.asModule.endInsFlightRestrictionZone.bind(this.asModule)
+  public readonly endEditAirspace = this.asModule.endEditAirspace.bind(this.asModule)
+  public readonly previewFlightRoute = this.asModule.previewFlightRoute.bind(this.asModule)
 
   public readonly refreshContextMenuOption = this.cmModule.refreshContextMenuOption.bind(this.cmModule)
   public readonly contextMenuSelect = this.cmModule.contextMenuSelect.bind(this.cmModule)

@@ -56,6 +56,7 @@ const updateLastActiveInterval = (val: number) => {
 <template>
   <n-modal
       style="width: 60%;height: 60vh;"
+      :auto-focus="false"
       content-style="overflow: auto;"
       show
       preset="card"

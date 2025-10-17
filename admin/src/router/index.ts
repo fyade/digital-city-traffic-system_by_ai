@@ -239,6 +239,28 @@ export const routes: RouteRecordRaw[] = [
                     component: () => import('@/views/dashboard/formPanel/airspace/flightRestrictionZone/form.vue')
                   }
                 ]
+              },
+              {
+                path: 'flight-route',
+                name: '~fp~:airspace:flightRoute',
+                component: () => import('@/views/dashboard/formPanel/airspace/flightRoute/index.vue'),
+                children: [
+                  {
+                    path: 'ins',
+                    name: '~fp~:airspace:flightRoute:ins',
+                    component: () => import('@/views/dashboard/formPanel/airspace/flightRoute/form.vue')
+                  },
+                  {
+                    path: 'upd',
+                    name: '~fp~:airspace:flightRoute:upd',
+                    component: () => import('@/views/dashboard/formPanel/airspace/flightRoute/form.vue')
+                  },
+                  {
+                    path: 'del',
+                    name: '~fp~:airspace:flightRoute:del',
+                    component: () => import('@/views/dashboard/formPanel/airspace/flightRoute/form.vue')
+                  }
+                ]
               }
             ]
           },

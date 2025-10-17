@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { R } from '../../../../common/R';
 import { FlightRestrictionZoneDto, FlightRestrictionZoneSelListDto, FlightRestrictionZoneSelAllDto, FlightRestrictionZoneInsOneDto, FlightRestrictionZoneUpdOneDto } from './dto';
 import { BaseContextService } from '../../../../infra/base-context/base-context.service';
-import { PrismaoService } from "../../../../infra/prisma/prismao.service";
 import { CommonPostgresqlPrismaoService } from "../../../../infra/prisma/common.postgresql.prismao.service";
 import { PostgresqlPrismaoService } from "../../../../infra/prisma/postgresql.prismao.service";
 import { CountSqlReturnDto } from "../../../../util/base";
@@ -11,7 +10,6 @@ import { PageVo } from "../../../../common/vo/PageVo";
 @Injectable()
 export class FlightRestrictionZoneService {
   constructor(
-      private readonly prismao: PrismaoService,
       private readonly cPgsqlPrismao: CommonPostgresqlPrismaoService,
       private readonly pgsqlPrismao: PostgresqlPrismaoService,
       private readonly bcs: BaseContextService,

@@ -76,7 +76,7 @@ export function queryVehicleTrajectoryApi(data: QueryVehicleTrajectoryDto) {
  * @param data
  */
 export function getAirspaceInPolygonApi(data: GetAirspaceInPolygonDto) {
-  return request<GetAirspaceInPolygonVo[]>({
+  return request<GetAirspaceInPolygonVo>({
     url: '/dcts/spatial-data/get-airspace-in-polygon',
     method: 'POST',
     data: data,
