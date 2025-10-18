@@ -18,7 +18,7 @@ export class TableRowPermissionService {
   }
 
   async selTableRowPermission(dto: TableRowPermissionSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<TableRowPermissionDto, TableRowPermissionSelListDto>('sys_table_row_permission', {
+    const res = await this.mysqlPrisma.findPage<TableRowPermissionDto>('sys_table_row_permission', {
       data: dto,
       orderBy: false,
     });
@@ -34,7 +34,7 @@ export class TableRowPermissionService {
   }
 
   async selOnesTableRowPermission(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<TableRowPermissionDto>('sys_table_row_permission', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<TableRowPermissionDto>('sys_table_row_permission', ids);
     return R.ok(res);
   }
 

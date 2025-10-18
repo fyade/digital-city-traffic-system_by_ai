@@ -17,7 +17,7 @@ export class UserGroupService {
   }
 
   async selUserGroup(dto: UserGroupSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<UserGroupDto, UserGroupSelListDto>('sys_user_group', {
+    const res = await this.mysqlPrisma.findPage<UserGroupDto>('sys_user_group', {
       data: dto,
       orderBy: true,
     });
@@ -33,7 +33,7 @@ export class UserGroupService {
   }
 
   async selOnesUserGroup(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<UserGroupDto>('sys_user_group', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<UserGroupDto>('sys_user_group', ids);
     return R.ok(res);
   }
 

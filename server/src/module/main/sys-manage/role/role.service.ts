@@ -19,7 +19,7 @@ export class RoleService {
   }
 
   async selRole(dto: RoleSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<RoleDto, RoleSelListDto>('sys_role', {
+    const res = await this.mysqlPrisma.findPage<RoleDto>('sys_role', {
       data: dto,
       orderBy: true,
     });
@@ -35,7 +35,7 @@ export class RoleService {
   }
 
   async selOnesRole(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<RoleDto>('sys_role', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<RoleDto>('sys_role', ids);
     return R.ok(res);
   }
 

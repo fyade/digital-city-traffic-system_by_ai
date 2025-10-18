@@ -22,7 +22,7 @@ export class LogOperationWsService {
   }
 
   async selLogOperationWs(dto: LogOperationWsSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<LogOperationWsDto, LogOperationWsSelListDto>('log_operation_ws', {
+    const res = await this.mysqlPrisma.findPage<LogOperationWsDto>('log_operation_ws', {
       data: dto,
       orderBy: false,
     });
@@ -38,7 +38,7 @@ export class LogOperationWsService {
   }
 
   async selOnesLogOperationWs(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<LogOperationWsDto>('log_operation_ws', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<LogOperationWsDto>('log_operation_ws', ids);
     return R.ok(res);
   }
 

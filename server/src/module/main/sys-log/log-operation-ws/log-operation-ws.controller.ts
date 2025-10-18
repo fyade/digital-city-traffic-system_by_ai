@@ -51,8 +51,8 @@ export class LogOperationWsController {
     permission: 'main:sysLog:logOperationWs:selOnes',
     label: '查询多个系统WS操作日志（根据id）',
   })
-  async selOnesLogOperationWs(@Query() ids: number[]): Promise<R> {
-    return this.logOperationWsService.selOnesLogOperationWs(ids);
+  async selOnesLogOperationWs(@Query() ids: Record<string, string>): Promise<R> {
+    return this.logOperationWsService.selOnesLogOperationWs(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

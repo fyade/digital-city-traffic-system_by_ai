@@ -51,8 +51,8 @@ export class LogAlgorithmCallController {
     permission: 'algorithm:logAlgorithmCall:selOnes',
     label: '查询多个算法调用日志（根据id）',
   })
-  async selOnesLogAlgorithmCall(@Query() ids: number[]): Promise<R> {
-    return this.logAlgorithmCallService.selOnesLogAlgorithmCall(ids);
+  async selOnesLogAlgorithmCall(@Query() ids: Record<string, string>): Promise<R> {
+    return this.logAlgorithmCallService.selOnesLogAlgorithmCall(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

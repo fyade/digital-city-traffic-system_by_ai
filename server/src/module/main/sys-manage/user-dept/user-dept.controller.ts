@@ -51,8 +51,8 @@ export class UserDeptController {
     permission: 'main:sysManage:userDept:selOnes',
     label: '查询多个用户部门（根据id）',
   })
-  async selOnesUserDept(@Query() ids: number[]): Promise<R> {
-    return this.userDeptService.selOnesUserDept(ids);
+  async selOnesUserDept(@Query() ids: Record<string, string>): Promise<R> {
+    return this.userDeptService.selOnesUserDept(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

@@ -51,8 +51,8 @@ export class UserGroupPermissionController {
     permission: 'algorithm:userGroupPermission:selOnes',
     label: '查询多个用户组接口组（根据id）',
   })
-  async selOnesUserGroupPermission(@Query() ids: number[]): Promise<R> {
-    return this.userGroupPermissionService.selOnesUserGroupPermission(ids);
+  async selOnesUserGroupPermission(@Query() ids: Record<string, string>): Promise<R> {
+    return this.userGroupPermissionService.selOnesUserGroupPermission(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

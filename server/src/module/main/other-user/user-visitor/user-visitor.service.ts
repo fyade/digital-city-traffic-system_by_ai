@@ -27,7 +27,7 @@ export class UserVisitorService {
   async selUserVisitor(dto: UserVisitorSelListDto): Promise<R> {
     const ifWithRole = dto.ifWithRole;
     delete dto.ifWithRole;
-    const res = await this.mysqlPrisma.findPage<UserVisitorDto, UserVisitorSelListDto>('sys_user_visitor', {
+    const res = await this.mysqlPrisma.findPage<UserVisitorDto>('sys_user_visitor', {
       data: dto,
       orderBy: false,
     });
@@ -46,7 +46,7 @@ export class UserVisitorService {
             value: userIds
           },
         },
-        login_role: base.LoginRoleEnum.visitor,
+        loginRole: base.LoginRoleEnum.visitor,
       },
     });
     const allRoleIdsOfThoseUsers = allUserRolesOfThoseUsers.map(item => item.roleId);
@@ -66,7 +66,7 @@ export class UserVisitorService {
             value: userIds
           },
         },
-        login_role: base.LoginRoleEnum.visitor,
+        loginRole: base.LoginRoleEnum.visitor,
       },
     });
     const allUserDeptIdsOfThoseUsers = allUserDeptsOfThoseUsers.map(item => item.deptId);
@@ -86,7 +86,7 @@ export class UserVisitorService {
             value: userIds
           },
         },
-        login_role: base.LoginRoleEnum.visitor,
+        loginRole: base.LoginRoleEnum.visitor,
       },
     });
     const allUserUserGroupIdsOfThoseUsers = allUserUserGroupsOfThoseUsers.map(item => item.userGroupId);

@@ -51,8 +51,8 @@ export class SysConfigController {
     permission: 'main:sysManage:sysConfig:selOnes',
     label: '查询多个系统配置（根据id）',
   })
-  async selOnesSysConfig(@Query() ids: number[]): Promise<R> {
-    return this.sysConfigService.selOnesSysConfig(ids);
+  async selOnesSysConfig(@Query() ids: Record<string, string>): Promise<R> {
+    return this.sysConfigService.selOnesSysConfig(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

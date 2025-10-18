@@ -51,8 +51,8 @@ export class ScheduledTaskController {
     permission: 'main:sysMonitor:scheduledTask:selOnes',
     label: '查询多个定时任务（根据id）',
   })
-  async selOnesScheduledTask(@Query() ids: number[]): Promise<R> {
-    return this.scheduledTaskService.selOnesScheduledTask(ids);
+  async selOnesScheduledTask(@Query() ids: Record<string, string>): Promise<R> {
+    return this.scheduledTaskService.selOnesScheduledTask(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

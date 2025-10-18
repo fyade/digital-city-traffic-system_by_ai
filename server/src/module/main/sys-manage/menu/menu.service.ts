@@ -21,7 +21,7 @@ export class MenuService {
   }
 
   async selMenu(dto: MenuSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<MenuDto, MenuSelListDto>('sys_menu', {
+    const res = await this.mysqlPrisma.findPage<MenuDto>('sys_menu', {
       data: dto,
       orderBy: true,
     });
@@ -37,7 +37,7 @@ export class MenuService {
   }
 
   async selOnesMenu(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<MenuDto>('sys_menu', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<MenuDto>('sys_menu', ids);
     return R.ok(res);
   }
 

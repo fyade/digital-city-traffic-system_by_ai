@@ -51,8 +51,8 @@ export class DicTypeController {
     permission: 'main:sysManage:dicType:selOnes',
     label: '查询多个字典类型（根据id）',
   })
-  async selOnesDicType(@Query() ids: number[]): Promise<R> {
-    return this.dicTypeService.selOnesDicType(ids);
+  async selOnesDicType(@Query() ids: Record<string, string>): Promise<R> {
+    return this.dicTypeService.selOnesDicType(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

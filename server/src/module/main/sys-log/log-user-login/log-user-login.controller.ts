@@ -51,8 +51,8 @@ export class LogUserLoginController {
     permission: 'main:sysLog:logUserLogin:selOnes',
     label: '查询多个登录日志（根据id）',
   })
-  async selOnesLogUserLogin(@Query() ids: number[]): Promise<R> {
-    return this.logUserLoginService.selOnesLogUserLogin(ids);
+  async selOnesLogUserLogin(@Query() ids: Record<string, string>): Promise<R> {
+    return this.logUserLoginService.selOnesLogUserLogin(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

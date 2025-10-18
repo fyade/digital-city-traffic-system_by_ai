@@ -16,7 +16,7 @@ export class SysConfigService {
   }
 
   async selSysConfig(dto: SysConfigSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<SysConfigDto, SysConfigSelListDto>('sys_config', {
+    const res = await this.mysqlPrisma.findPage<SysConfigDto>('sys_config', {
       data: dto,
       orderBy: false,
     });
@@ -32,7 +32,7 @@ export class SysConfigService {
   }
 
   async selOnesSysConfig(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<SysConfigDto>('sys_config', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<SysConfigDto>('sys_config', ids);
     return R.ok(res);
   }
 

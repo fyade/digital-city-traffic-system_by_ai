@@ -19,7 +19,7 @@ export class DeptPermissionService {
   }
 
   async selDeptPermission(dto: DeptPermissionSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<DeptPermissionDto, DeptPermissionSelListDto>('sys_dept_permission', {
+    const res = await this.mysqlPrisma.findPage<DeptPermissionDto>('sys_dept_permission', {
       data: dto,
       orderBy: false,
     });
@@ -35,7 +35,7 @@ export class DeptPermissionService {
   }
 
   async selOnesDeptPermission(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<DeptPermissionDto>('sys_dept_permission', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<DeptPermissionDto>('sys_dept_permission', ids);
     return R.ok(res);
   }
 

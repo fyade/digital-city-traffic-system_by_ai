@@ -445,7 +445,7 @@ ${`    this.bcs.setFieldSelectParam('${table.tableName}'${hd2_prismaConfig._});`
 ${`  }`}
 ${``}
 ${`  async sel${moduleName2}(dto: ${moduleName2}SelListDto): Promise<R> {`}
-${`    const res = await this.mysqlPrisma.findPage<${moduleName2}Dto, ${moduleName2}SelListDto>('${table.tableName}'${hd2_prismaConfig.selListParam});`}
+${`    const res = await this.mysqlPrisma.findPage<${moduleName2}Dto>('${table.tableName}'${hd2_prismaConfig.selListParam});`}
 ${`    return R.ok(res);`}
 ${`  }`}
 ${``}
@@ -455,7 +455,7 @@ ${`    return R.ok(res);`}
 ${`  }`}
 ${``}
 ${`  async selOnes${moduleName2}(ids: number[]): Promise<R> {`}
-${`    const res = await this.mysqlPrisma.findByIds<${moduleName2}Dto>('${table.tableName}', Object.values(ids).map(n => Number(n))${hd2_prismaConfig.selOnesParam});`}
+${`    const res = await this.mysqlPrisma.findByIds<${moduleName2}Dto>('${table.tableName}', ids${hd2_prismaConfig.selOnesParam});`}
 ${`    return R.ok(res);`}
 ${`  }`}
 ${``}
@@ -544,8 +544,8 @@ ${`  @Authorize({`}
 ${`    permission: '${sysPath}${isBusiness?`:${businessName1}`:''}:${moduleName1}:selOnes',`}
 ${`    label: '查询多个${table.moduleNameCn}（根据id）',`}
 ${`  })`}
-${`  async selOnes${moduleName2}(@Query() ids: number[]): Promise<R> {`}
-${`    return this.${moduleName1}Service.selOnes${moduleName2}(ids);`}
+${`  async selOnes${moduleName2}(@Query() ids: Record<string, string>): Promise<R> {`}
+${`    return this.${moduleName1}Service.selOnes${moduleName2}(Object.values(ids).map(Number));`}
 ${`  }`}
 ${``}
 ${`  @Get('/:id')`}

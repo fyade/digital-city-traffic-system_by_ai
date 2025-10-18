@@ -17,7 +17,7 @@ export class SysService {
   }
 
   async selSys(dto: SysSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<SysDto, SysSelListDto>('sys_sys', {
+    const res = await this.mysqlPrisma.findPage<SysDto>('sys_sys', {
       data: dto,
       orderBy: true,
     });
@@ -33,7 +33,7 @@ export class SysService {
   }
 
   async selOnesSys(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<SysDto>('sys_sys', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<SysDto>('sys_sys', ids);
     return R.ok(res);
   }
 

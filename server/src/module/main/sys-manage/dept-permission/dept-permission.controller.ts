@@ -51,8 +51,8 @@ export class DeptPermissionController {
     permission: 'main:sysManage:deptPermission:selOnes',
     label: '查询多个部门权限（根据id）',
   })
-  async selOnesDeptPermission(@Query() ids: number[]): Promise<R> {
-    return this.deptPermissionService.selOnesDeptPermission(ids);
+  async selOnesDeptPermission(@Query() ids: Record<string, string>): Promise<R> {
+    return this.deptPermissionService.selOnesDeptPermission(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

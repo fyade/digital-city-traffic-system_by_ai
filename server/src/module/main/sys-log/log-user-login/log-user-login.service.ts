@@ -23,7 +23,7 @@ export class LogUserLoginService {
   }
 
   async selLogUserLogin(dto: LogUserLoginSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<LogUserLoginDto, LogUserLoginSelListDto>('log_user_login', {
+    const res = await this.mysqlPrisma.findPage<LogUserLoginDto>('log_user_login', {
       data: dto,
       orderBy: false,
     });
@@ -47,7 +47,7 @@ export class LogUserLoginService {
   }
 
   async selOnesLogUserLogin(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<LogUserLoginDto>('log_user_login', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<LogUserLoginDto>('log_user_login', ids);
     return R.ok(res);
   }
 

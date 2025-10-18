@@ -22,7 +22,7 @@ export class LogScheduledTaskService {
   }
 
   async selLogScheduledTask(dto: LogScheduledTaskSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<LogScheduledTaskDto, LogScheduledTaskSelListDto>('log_scheduled_task', {
+    const res = await this.mysqlPrisma.findPage<LogScheduledTaskDto>('log_scheduled_task', {
       data: dto,
       orderBy: false,
     });
@@ -38,7 +38,7 @@ export class LogScheduledTaskService {
   }
 
   async selOnesLogScheduledTask(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<LogScheduledTaskDto>('log_scheduled_task', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<LogScheduledTaskDto>('log_scheduled_task', ids);
     return R.ok(res);
   }
 

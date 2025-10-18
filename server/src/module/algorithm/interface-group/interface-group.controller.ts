@@ -51,8 +51,8 @@ export class InterfaceGroupController {
     permission: 'algorithm:interfaceGroup:selOnes',
     label: '查询多个接口组（根据id）',
   })
-  async selOnesInterfaceGroup(@Query() ids: number[]): Promise<R> {
-    return this.interfaceGroupService.selOnesInterfaceGroup(ids);
+  async selOnesInterfaceGroup(@Query() ids: Record<string, string>): Promise<R> {
+    return this.interfaceGroupService.selOnesInterfaceGroup(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

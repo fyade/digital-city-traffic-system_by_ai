@@ -51,8 +51,8 @@ export class TableRowPermissionController {
     permission: 'main:sysManage:tableRowPermission:selOnes',
     label: '查询多个数据表行权限（根据id）',
   })
-  async selOnesTableRowPermission(@Query() ids: number[]): Promise<R> {
-    return this.tableRowPermissionService.selOnesTableRowPermission(ids);
+  async selOnesTableRowPermission(@Query() ids: Record<string, string>): Promise<R> {
+    return this.tableRowPermissionService.selOnesTableRowPermission(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

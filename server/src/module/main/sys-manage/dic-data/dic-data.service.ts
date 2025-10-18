@@ -26,7 +26,7 @@ export class DicDataService {
   }
 
   async selDicData(dto: DicDataSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<DicDataDto, DicDataSelListDto>('sys_dic_data', {
+    const res = await this.mysqlPrisma.findPage<DicDataDto>('sys_dic_data', {
       data: dto,
       orderBy: true,
     });
@@ -42,7 +42,7 @@ export class DicDataService {
   }
 
   async selOnesDicData(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<DicDataDto>('sys_dic_data', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<DicDataDto>('sys_dic_data', ids);
     return R.ok(res);
   }
 

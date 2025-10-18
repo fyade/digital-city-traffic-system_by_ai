@@ -51,8 +51,8 @@ export class MenuThrottleController {
     permission: 'main:sysManage:menuThrottle:selOnes',
     label: '查询多个请求限速（根据id）',
   })
-  async selOnesMenuThrottle(@Query() ids: number[]): Promise<R> {
-    return this.menuThrottleService.selOnesMenuThrottle(ids);
+  async selOnesMenuThrottle(@Query() ids: Record<string, string>): Promise<R> {
+    return this.menuThrottleService.selOnesMenuThrottle(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

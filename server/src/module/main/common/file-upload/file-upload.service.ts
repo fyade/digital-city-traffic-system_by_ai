@@ -47,7 +47,7 @@ export class FileUploadService {
   }
 
   async selList(dto: FileSelListDto): Promise<R> {
-    const data = await this.mysqlPrisma.findPage<FileDto, FileSelListDto>('tbl_file', {
+    const data = await this.mysqlPrisma.findPage<FileDto>('tbl_file', {
       data: dto,
       orderBy: {
         createTime: 'desc',

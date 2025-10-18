@@ -51,8 +51,8 @@ export class CodeGenTableController {
     permission: 'main:sysUtil:codeGenTable:selOnes',
     label: '查询多个代码生成-表信息（根据id）',
   })
-  async selOnesCodeGenTable(@Query() ids: number[]): Promise<R> {
-    return this.codeGenTableService.selOnesCodeGenTable(ids);
+  async selOnesCodeGenTable(@Query() ids: Record<string, string>): Promise<R> {
+    return this.codeGenTableService.selOnesCodeGenTable(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

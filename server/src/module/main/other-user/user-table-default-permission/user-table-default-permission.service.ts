@@ -18,7 +18,7 @@ export class UserTableDefaultPermissionService {
   }
 
   async selUserTableDefaultPermission(dto: UserTableDefaultPermissionSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<UserTableDefaultPermissionDto, UserTableDefaultPermissionSelListDto>('sys_user_table_default_permission', {
+    const res = await this.mysqlPrisma.findPage<UserTableDefaultPermissionDto>('sys_user_table_default_permission', {
       data: dto,
       orderBy: false,
     });
@@ -34,7 +34,7 @@ export class UserTableDefaultPermissionService {
   }
 
   async selOnesUserTableDefaultPermission(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<UserTableDefaultPermissionDto>('sys_user_table_default_permission', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<UserTableDefaultPermissionDto>('sys_user_table_default_permission', ids);
     return R.ok(res);
   }
 

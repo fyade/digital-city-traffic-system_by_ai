@@ -17,7 +17,7 @@ export class DeptSysService {
   }
 
   async selDeptSys(dto: DeptSysSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<DeptSysDto, DeptSysSelListDto>('sys_dept_sys', {
+    const res = await this.mysqlPrisma.findPage<DeptSysDto>('sys_dept_sys', {
       data: dto,
       orderBy: false,
     });
@@ -33,7 +33,7 @@ export class DeptSysService {
   }
 
   async selOnesDeptSys(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<DeptSysDto>('sys_dept_sys', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<DeptSysDto>('sys_dept_sys', ids);
     return R.ok(res);
   }
 

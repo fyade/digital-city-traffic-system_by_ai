@@ -51,8 +51,8 @@ export class SysController {
     permission: 'main:sysManage:sys:selOnes',
     label: '查询多个系统（根据id）',
   })
-  async selOnesSys(@Query() ids: number[]): Promise<R> {
-    return this.sysService.selOnesSys(ids);
+  async selOnesSys(@Query() ids: Record<string, string>): Promise<R> {
+    return this.sysService.selOnesSys(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

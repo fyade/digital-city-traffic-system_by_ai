@@ -51,8 +51,8 @@ export class UserGroupController {
     permission: 'algorithm:userGroup:selOnes',
     label: '查询多个用户组（根据id）',
   })
-  async selOnesUserGroup(@Query() ids: number[]): Promise<R> {
-    return this.userGroupService.selOnesUserGroup(ids);
+  async selOnesUserGroup(@Query() ids: Record<string, string>): Promise<R> {
+    return this.userGroupService.selOnesUserGroup(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

@@ -51,8 +51,8 @@ export class UserApiKeyController {
     permission: 'main:sysManage:userApiKey:selOnes',
     label: '查询多个用户apiKey（根据id）',
   })
-  async selOnesUserApiKey(@Query() ids: number[]): Promise<R> {
-    return this.userApiKeyService.selOnesUserApiKey(ids);
+  async selOnesUserApiKey(@Query() ids: Record<string, string>): Promise<R> {
+    return this.userApiKeyService.selOnesUserApiKey(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

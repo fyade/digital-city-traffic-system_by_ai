@@ -56,7 +56,7 @@ export class UserService {
   async selUser(dto: UserSelListDto): Promise<R> {
     const ifWithRole = dto.ifWithRole;
     delete dto.ifWithRole;
-    const res = await this.mysqlPrisma.findPage<UserDto, UserSelListDto>('sys_user', {
+    const res = await this.mysqlPrisma.findPage<UserDto>('sys_user', {
       data: dto,
       orderBy: false,
     });
@@ -84,7 +84,7 @@ export class UserService {
             value: userIds,
           },
         },
-        login_role: base.LoginRoleEnum.admin,
+        loginRole: base.LoginRoleEnum.admin,
       },
     });
     const allRoleIdsOfThoseUsers = allUserRolesOfThoseUsers.map(item => item.roleId);
@@ -104,7 +104,7 @@ export class UserService {
             value: userIds,
           },
         },
-        login_role: base.LoginRoleEnum.admin,
+        loginRole: base.LoginRoleEnum.admin,
       },
     });
     const allUserDeptIdsOfThoseUsers = allUserDeptsOfThoseUsers.map(item => item.deptId);
@@ -124,7 +124,7 @@ export class UserService {
             value: userIds,
           },
         },
-        login_role: base.LoginRoleEnum.admin,
+        loginRole: base.LoginRoleEnum.admin,
       },
     });
     const allUserUserGroupIdsOfThoseUsers = allUserUserGroupsOfThoseUsers.map(item => item.userGroupId);
@@ -178,7 +178,7 @@ export class UserService {
   }
 
   async selOnesUser(ids: string[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<UserDto>('sys_user', Object.values(ids));
+    const res = await this.mysqlPrisma.findByIds<UserDto>('sys_user', ids);
     res.forEach(item => {
       delete item.password;
     });

@@ -51,8 +51,8 @@ export class InterfaceController {
     permission: 'algorithm:interface:selOnes',
     label: '查询多个接口（根据id）',
   })
-  async selOnesInterface(@Query() ids: number[]): Promise<R> {
-    return this.interfaceService.selOnesInterface(ids);
+  async selOnesInterface(@Query() ids: Record<string, string>): Promise<R> {
+    return this.interfaceService.selOnesInterface(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

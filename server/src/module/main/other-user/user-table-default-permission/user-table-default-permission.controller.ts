@@ -51,8 +51,8 @@ export class UserTableDefaultPermissionController {
     permission: 'main:otherUser:userTableDefaultPermission:selOnes',
     label: '查询多个用户表默认权限（根据id）',
   })
-  async selOnesUserTableDefaultPermission(@Query() ids: number[]): Promise<R> {
-    return this.userTableDefaultPermissionService.selOnesUserTableDefaultPermission(ids);
+  async selOnesUserTableDefaultPermission(@Query() ids: Record<string, string>): Promise<R> {
+    return this.userTableDefaultPermissionService.selOnesUserTableDefaultPermission(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

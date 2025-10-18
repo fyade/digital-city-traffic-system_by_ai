@@ -51,8 +51,8 @@ export class MenuController {
     permission: 'main:sysManage:menu:selOnes',
     label: '查询多个菜单（根据id）',
   })
-  async selOnesMenu(@Query() ids: number[]): Promise<R> {
-    return this.menuService.selOnesMenu(ids);
+  async selOnesMenu(@Query() ids: Record<string, string>): Promise<R> {
+    return this.menuService.selOnesMenu(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

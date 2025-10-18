@@ -19,7 +19,7 @@ export class RolePermissionService {
   }
 
   async selRolePermission(dto: RolePermissionSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<RolePermissionDto, RolePermissionSelListDto>('sys_role_permission', { data: dto });
+    const res = await this.mysqlPrisma.findPage<RolePermissionDto>('sys_role_permission', { data: dto });
     return R.ok(res);
   }
 

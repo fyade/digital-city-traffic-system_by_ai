@@ -17,7 +17,7 @@ export class UserApiKeyService {
   }
 
   async selUserApiKey(dto: UserApiKeySelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<UserApiKeyDto, UserApiKeySelListDto>('sys_user_api_key', {
+    const res = await this.mysqlPrisma.findPage<UserApiKeyDto>('sys_user_api_key', {
       data: dto,
       orderBy: false,
     });
@@ -33,7 +33,7 @@ export class UserApiKeyService {
   }
 
   async selOnesUserApiKey(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<UserApiKeyDto>('sys_user_api_key', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<UserApiKeyDto>('sys_user_api_key', ids);
     return R.ok(res);
   }
 

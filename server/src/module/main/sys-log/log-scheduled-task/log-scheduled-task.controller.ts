@@ -51,8 +51,8 @@ export class LogScheduledTaskController {
     permission: 'main:sysLog:logScheduledTask:selOnes',
     label: '查询多个定时任务运行日志（根据id）',
   })
-  async selOnesLogScheduledTask(@Query() ids: number[]): Promise<R> {
-    return this.logScheduledTaskService.selOnesLogScheduledTask(ids);
+  async selOnesLogScheduledTask(@Query() ids: Record<string, string>): Promise<R> {
+    return this.logScheduledTaskService.selOnesLogScheduledTask(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

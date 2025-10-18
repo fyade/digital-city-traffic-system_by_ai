@@ -17,7 +17,7 @@ export class CodeGenTableService {
   }
 
   async selCodeGenTable(dto: CodeGenTableSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<CodeGenTableDto, CodeGenTableSelListDto>('sys_code_gen_table', {
+    const res = await this.mysqlPrisma.findPage<CodeGenTableDto>('sys_code_gen_table', {
       data: dto,
       orderBy: true,
     });
@@ -33,7 +33,7 @@ export class CodeGenTableService {
   }
 
   async selOnesCodeGenTable(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<CodeGenTableDto>('sys_code_gen_table', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<CodeGenTableDto>('sys_code_gen_table', ids);
     return R.ok(res);
   }
 

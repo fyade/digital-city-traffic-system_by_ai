@@ -51,8 +51,8 @@ export class MenuIpWhiteListController {
     permission: 'main:sysManage:menuIpWhiteList:selOnes',
     label: '查询多个菜单ip白名单（根据id）',
   })
-  async selOnesMenuIpWhiteList(@Query() ids: number[]): Promise<R> {
-    return this.menuIpWhiteListService.selOnesMenuIpWhiteList(ids);
+  async selOnesMenuIpWhiteList(@Query() ids: Record<string, string>): Promise<R> {
+    return this.menuIpWhiteListService.selOnesMenuIpWhiteList(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

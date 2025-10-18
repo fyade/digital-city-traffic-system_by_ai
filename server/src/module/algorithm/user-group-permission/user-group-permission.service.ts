@@ -19,7 +19,7 @@ export class UserGroupPermissionService {
   }
 
   async selUserGroupPermission(dto: UserGroupPermissionSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<UserGroupPermissionDto, UserGroupPermissionSelListDto>('sys_user_group_permission', {
+    const res = await this.mysqlPrisma.findPage<UserGroupPermissionDto>('sys_user_group_permission', {
       data: dto,
       orderBy: true,
     });
@@ -35,7 +35,7 @@ export class UserGroupPermissionService {
   }
 
   async selOnesUserGroupPermission(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<UserGroupPermissionDto>('sys_user_group_permission', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<UserGroupPermissionDto>('sys_user_group_permission', ids);
     return R.ok(res);
   }
 

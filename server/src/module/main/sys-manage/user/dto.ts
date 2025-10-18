@@ -1,9 +1,10 @@
+import { BaseDto } from '../../../../common/dto/BaseDto';
 import { PageDto } from '../../../../common/dto/PageDto';
 import { IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserVisitorDto } from '../../other-user/user-visitor/dto';
 
-export class UserDto {
+export class UserDto extends BaseDto {
   @ApiProperty({ description: '用户id', required: true })
   @IsNotEmpty({ message: '用户id不能为空' })
   id: string;

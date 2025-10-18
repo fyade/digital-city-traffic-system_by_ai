@@ -51,8 +51,8 @@ export class CodeGenColumnController {
     permission: 'main:sysUtil:codeGenColumn:selOnes',
     label: '查询多个代码生成-列信息（根据id）',
   })
-  async selOnesCodeGenColumn(@Query() ids: number[]): Promise<R> {
-    return this.codeGenColumnService.selOnesCodeGenColumn(ids);
+  async selOnesCodeGenColumn(@Query() ids: Record<string, string>): Promise<R> {
+    return this.codeGenColumnService.selOnesCodeGenColumn(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

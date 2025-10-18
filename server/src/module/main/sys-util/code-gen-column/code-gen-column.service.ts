@@ -17,7 +17,7 @@ export class CodeGenColumnService {
   }
 
   async selCodeGenColumn(dto: CodeGenColumnSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<CodeGenColumnDto, CodeGenColumnSelListDto>('sys_code_gen_column', {
+    const res = await this.mysqlPrisma.findPage<CodeGenColumnDto>('sys_code_gen_column', {
       data: dto,
       orderBy: true,
     });
@@ -33,7 +33,7 @@ export class CodeGenColumnService {
   }
 
   async selOnesCodeGenColumn(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<CodeGenColumnDto>('sys_code_gen_column', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<CodeGenColumnDto>('sys_code_gen_column', ids);
     return R.ok(res);
   }
 

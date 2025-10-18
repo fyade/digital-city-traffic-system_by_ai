@@ -51,8 +51,8 @@ export class RoleSysController {
     permission: 'main:sysManage:roleSys:selOnes',
     label: '查询多个角色系统（根据id）',
   })
-  async selOnesRoleSys(@Query() ids: number[]): Promise<R> {
-    return this.roleSysService.selOnesRoleSys(ids);
+  async selOnesRoleSys(@Query() ids: Record<string, string>): Promise<R> {
+    return this.roleSysService.selOnesRoleSys(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

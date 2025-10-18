@@ -24,7 +24,7 @@ export class LogAlgorithmCallService {
   }
 
   async selLogAlgorithmCall(dto: LogAlgorithmCallSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<LogAlgorithmCallDto, LogAlgorithmCallSelListDto>('log_algorithm_call', {
+    const res = await this.mysqlPrisma.findPage<LogAlgorithmCallDto>('log_algorithm_call', {
       data: dto,
       orderBy: false,
     });
@@ -40,7 +40,7 @@ export class LogAlgorithmCallService {
   }
 
   async selOnesLogAlgorithmCall(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<LogAlgorithmCallDto>('log_algorithm_call', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<LogAlgorithmCallDto>('log_algorithm_call', ids);
     return R.ok(res);
   }
 

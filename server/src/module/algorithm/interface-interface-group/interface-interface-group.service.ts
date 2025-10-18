@@ -17,7 +17,7 @@ export class InterfaceInterfaceGroupService {
   }
 
   async selInterfaceInterfaceGroup(dto: InterfaceInterfaceGroupSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<InterfaceInterfaceGroupDto, InterfaceInterfaceGroupSelListDto>('sys_interface_interface_group', {
+    const res = await this.mysqlPrisma.findPage<InterfaceInterfaceGroupDto>('sys_interface_interface_group', {
       data: dto,
       orderBy: false,
     });
@@ -33,7 +33,7 @@ export class InterfaceInterfaceGroupService {
   }
 
   async selOnesInterfaceInterfaceGroup(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<InterfaceInterfaceGroupDto>('sys_interface_interface_group', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<InterfaceInterfaceGroupDto>('sys_interface_interface_group', ids);
     return R.ok(res);
   }
 

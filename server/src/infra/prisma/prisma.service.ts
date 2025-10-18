@@ -24,6 +24,8 @@ class RowPermissionRet {
   }
 }
 
+type _BaseClass = { id: string | number };
+
 @Injectable()
 export class PrismaService {
   constructor(
@@ -113,7 +115,7 @@ export class PrismaService {
     return null;
   }
 
-  private genSelParams<T, P = object>({
+  private genSelParams<T>({
                                         data,
                                         orderBy,
                                         range = {},
@@ -124,7 +126,7 @@ export class PrismaService {
                                         ifDeleted = true,
                                         ifUseSelfData = false,
                                       }: {
-                                        data?: P,
+                                        data?: {[P in keyof T]?: T[P] | string | Partial<SelectParamObj>},
                                         orderBy?: boolean | object,
                                         range?: object,
                                         selKeys?: string[],
@@ -273,7 +275,7 @@ export class PrismaService {
     return ret;
   }
 
-  public genSelParamSql<T, P = object>(
+  public genSelParamSql<T>(
       param1: {
         tblName?: string,
         type?: 'selList' | 'selCount' | 'selAll',
@@ -283,11 +285,11 @@ export class PrismaService {
         pageNum?: number
         pageSize?: number
       },
-      ...params: Parameters<typeof this.genSelParams<T, P>>
+      ...params: Parameters<typeof this.genSelParams<T>>
   ) {
     let sql = ''
     const arg: Partial<PrismaParam> = {
-      where: this.genSelParams<T, P>(...params)
+      where: this.genSelParams<T>(...params)
     }
     if (param1.type === 'selList' || param1.type === 'selAll') {
       const publicData = this.prismao.defaultSelArg({
@@ -393,14 +395,14 @@ export class PrismaService {
    * @param selKeys
    * @param ifUseSelfData
    */
-  public async findPage<T, P extends PageDto>(model: string, {
+  public async findPage<T>(model: string, {
                                                 data,
                                                 orderBy,
                                                 range = {},
                                                 selKeys = [],
                                                 ifUseSelfData = false,
                                               }: {
-                                                data?: P,
+                                                data?: {[P in keyof T]?: T[P] | string | Partial<SelectParamObj>} & PageDto,
                                                 orderBy?: boolean | object,
                                                 range?: object,
                                                 selKeys?: string[],
@@ -421,7 +423,7 @@ export class PrismaService {
     });
     const skipAndTakeFromPNS = this._(pageNum, pageSize);
     const arg: PrismaParam = {
-      where: this.genSelParams<T, P>({
+      where: this.genSelParams<T>({
         data: data2,
         orderBy,
         range,
@@ -465,14 +467,14 @@ export class PrismaService {
    * @param selKeys
    * @param ifUseSelfData
    */
-  public async findAll<T, P = object>(model: string, {
+  public async findAll<T>(model: string, {
                                         data,
                                         orderBy,
                                         range = {},
                                         selKeys = [],
                                         ifUseSelfData = false,
                                       }: {
-                                        data?: P,
+                                        data?: {[P in keyof T]?: T[P] | string | Partial<SelectParamObj>},
                                         orderBy?: boolean | object,
                                         range?: object,
                                         selKeys?: string[],
@@ -487,7 +489,7 @@ export class PrismaService {
       ifUseSelfData
     });
     const arg: PrismaParamAll = {
-      where: this.genSelParams<T, P>({
+      where: this.genSelParams<T>({
         data,
         orderBy,
         range,
@@ -513,7 +515,7 @@ export class PrismaService {
    * @param selKeys
    * @param ifUseSelfData
    */
-  public async findFirst<T, P = any>(model: string, args?: Partial<P>, {
+  public async findFirst<T>(model: string, args?: Partial<T> & Partial<_BaseClass>, {
                                        selKeys = [],
                                        ifUseSelfData = false,
                                      }: {
@@ -555,7 +557,7 @@ export class PrismaService {
                              ifUseSelfData?: boolean,
                            } = {},
   ): Promise<T> {
-    return this.findFirst<T>(model, {id: id}, {selKeys, ifUseSelfData});
+    return this.findFirst<T>(model, {id: id} as Partial<T> & Partial<_BaseClass>, {selKeys, ifUseSelfData});
   }
 
   /**
@@ -565,7 +567,7 @@ export class PrismaService {
    * @param selKeys
    * @param ifUseSelfData
    */
-  public async findByIds<T>(model: string, ids: number[] | string[], {
+  public async findByIds<T>(model: string, ids: string[] | number[], {
                               selKeys = [],
                               ifUseSelfData = false,
                             }: {
@@ -601,19 +603,19 @@ export class PrismaService {
    * @param range
    * @param ifUseSelfData
    */
-  public async count<T, P = object>(model: string, {
+  public async count<T>(model: string, {
                                       data,
                                       range = {},
                                       ifUseSelfData = false,
                                     }: {
-                                      data?: P,
+                                      data?: Partial<T>,
                                       range?: object,
                                       ifUseSelfData?: boolean,
                                     } = {},
   ): Promise<number> {
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
     const arg: PrismaParamAll = {
-      where: this.genSelParams<T, P>({
+      where: this.genSelParams<T>({
         data,
         range,
         notNullKeys: fieldSelectParam.notNullKeys,
@@ -633,7 +635,7 @@ export class PrismaService {
    * @param data
    * @param ifCustomizeId
    */
-  public async create<T>(model: string, data, {
+  public async create<T>(model: string, data: Partial<T> & Partial<_BaseClass>, {
                            ifCustomizeId = false,
                          }: {
                            ifCustomizeId?: boolean,
@@ -669,7 +671,7 @@ export class PrismaService {
    * @param data
    * @param ifCustomizeId
    */
-  public async createMany<T>(model: string, data, {
+  public async createMany<T>(model: string, data: Partial<T>[], {
                                ifCustomizeId = false,
                              }: {
                                ifCustomizeId?: boolean,
@@ -691,7 +693,7 @@ export class PrismaService {
    * @param data
    * @param ifUseSelfData
    */
-  public async updateById<T>(model: string, data?, {
+  public async updateById<T>(model: string, data: Partial<T> & Partial<_BaseClass>, {
                                ifUseSelfData = false,
                              }: {
                                ifUseSelfData?: boolean
@@ -728,7 +730,7 @@ export class PrismaService {
    * @param data
    * @param ifUseSelfData
    */
-  public async updateMany<T>(model: string, data?, {
+  public async updateMany<T>(model: string, data: Partial<T>[], {
                                ifUseSelfData = false,
                              }: {
                                ifUseSelfData?: boolean
@@ -750,7 +752,7 @@ export class PrismaService {
    * @param ids
    * @param ifUseSelfData
    */
-  public async deleteById<T>(model: string, ids: number[] | string[], {
+  public async deleteById<T>(model: string, ids: string[] | number[], {
                                ifUseSelfData = false,
                              }: {
                                ifUseSelfData?: boolean
@@ -779,7 +781,7 @@ export class PrismaService {
    * @param values
    * @param ifUseSelfData
    */
-  public async delete<T>(model: string, key: string, values, {
+  public async delete<T>(model: string, key: string, values: string[] | number[], {
                            ifUseSelfData = false,
                          }: {
                            ifUseSelfData?: boolean

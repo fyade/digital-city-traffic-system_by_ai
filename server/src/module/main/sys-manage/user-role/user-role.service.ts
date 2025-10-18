@@ -23,7 +23,7 @@ export class UserRoleService {
   }
 
   async selUserRole(dto: UserRoleSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<UserRoleDto, UserRoleSelListDto>('sys_user_role', {
+    const res = await this.mysqlPrisma.findPage<UserRoleDto>('sys_user_role', {
       data: dto,
       orderBy: false,
     });

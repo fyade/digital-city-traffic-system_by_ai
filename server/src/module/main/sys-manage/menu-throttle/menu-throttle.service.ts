@@ -19,7 +19,7 @@ export class MenuThrottleService {
   }
 
   async selMenuThrottle(dto: MenuThrottleSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<MenuThrottleDto, MenuThrottleSelListDto>('sys_menu_throttle', {
+    const res = await this.mysqlPrisma.findPage<MenuThrottleDto>('sys_menu_throttle', {
       data: dto,
       orderBy: false,
     });
@@ -35,7 +35,7 @@ export class MenuThrottleService {
   }
 
   async selOnesMenuThrottle(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<MenuThrottleDto>('sys_menu_throttle', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<MenuThrottleDto>('sys_menu_throttle', ids);
     return R.ok(res);
   }
 

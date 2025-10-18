@@ -53,8 +53,8 @@ export class UserController {
     permission: 'main:sysManage:user:selOnes',
     label: '查询多个用户（根据id）',
   })
-  async selOnesUser(@Query() ids: string[]): Promise<R> {
-    return this.userService.selOnesUser(ids);
+  async selOnesUser(@Query() ids: Record<string, string>): Promise<R> {
+    return this.userService.selOnesUser(Object.values(ids));
   }
 
   @Post('/admin-new')

@@ -51,8 +51,8 @@ export class LogOperationController {
     permission: 'main:sysLog:logOperation:selOnes',
     label: '查询多个系统操作日志（根据id）',
   })
-  async selOnesLogOperation(@Query() ids: number[]): Promise<R> {
-    return this.logOperationService.selOnesLogOperation(ids);
+  async selOnesLogOperation(@Query() ids: Record<string, string>): Promise<R> {
+    return this.logOperationService.selOnesLogOperation(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

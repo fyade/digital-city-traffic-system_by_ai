@@ -63,8 +63,8 @@ export class DicDataController {
     permission: 'main:sysManage:dicData:selOnes',
     label: '查询多个字典数据（根据id）',
   })
-  async selOnesDicData(@Query() ids: number[]): Promise<R> {
-    return this.dicDataService.selOnesDicData(ids);
+  async selOnesDicData(@Query() ids: Record<string, string>): Promise<R> {
+    return this.dicDataService.selOnesDicData(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

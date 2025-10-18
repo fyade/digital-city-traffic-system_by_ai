@@ -19,7 +19,7 @@ export class MenuIpWhiteListService {
   }
 
   async selMenuIpWhiteList(dto: MenuIpWhiteListSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<MenuIpWhiteListDto, MenuIpWhiteListSelListDto>('sys_menu_ip_white_list', {
+    const res = await this.mysqlPrisma.findPage<MenuIpWhiteListDto>('sys_menu_ip_white_list', {
       data: dto,
       orderBy: false,
     });
@@ -35,7 +35,7 @@ export class MenuIpWhiteListService {
   }
 
   async selOnesMenuIpWhiteList(ids: number[]): Promise<R> {
-    const res = await this.mysqlPrisma.findByIds<MenuIpWhiteListDto>('sys_menu_ip_white_list', Object.values(ids).map(n => Number(n)));
+    const res = await this.mysqlPrisma.findByIds<MenuIpWhiteListDto>('sys_menu_ip_white_list', ids);
     return R.ok(res);
   }
 
