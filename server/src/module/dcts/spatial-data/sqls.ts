@@ -135,7 +135,7 @@ export function getVehiclesInPolygon(dto: GetVehiclesInPolygonDto) {
              vtp.heading                          as "heading"
       FROM public.vehicle_track_point vtp
       WHERE ST_Within(vtp.point, ST_GeomFromText('POLYGON((${dto.points.map(p => `${p.lon} ${p.lat}`).join(`,`)}))', 4326))
-        AND vtp.create_time BETWEEN '${start.toISOString()}' AND '${end.toISOString()}'
+        AND vtp.create_time BETWEEN '${start.toISOString()}'::timestamp AND '${end.toISOString()}'::timestamp
         AND vtp.deleted = '${final.N}'
       order by vehicle_id asc, create_time desc;
   `
@@ -156,7 +156,7 @@ export function queryVehicleTrajectory(dto: QueryVehicleTrajectoryDto, vehicleId
              vtp.heading                          as "heading"
       FROM public.vehicle_track_point vtp
       WHERE vtp.vehicle_id = ${vehicleId}
-        AND vtp.create_time BETWEEN '${new Date(dto.startTime).toISOString()}' AND '${new Date(dto.endTime).toISOString()}'
+        AND vtp.create_time BETWEEN '${new Date(dto.startTime).toISOString()}'::timestamp AND '${new Date(dto.endTime).toISOString()}'::timestamp
         AND vtp.deleted = '${final.N}'
       order by vehicle_id asc, create_time desc;
   `

@@ -66,7 +66,7 @@ const refreshServerTime = () => {
   />
   <div id="cesiumContainer"></div>
 
-  <n-drawer v-model:show="debugDrawerActive" width="35rem">
+  <n-drawer v-model:show="debugDrawerActive" :auto-focus="false" width="35rem">
     <n-drawer-content title="调试面板">
       <DebugPanel/>
     </n-drawer-content>
