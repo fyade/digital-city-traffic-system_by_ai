@@ -51,8 +51,8 @@ export class FlightRestrictionZoneController {
     permission: 'dcts:airspace:flightRestrictionZone:selOnes',
     label: '查询多个限飞区（根据id）',
   })
-  async selOnesFlightRestrictionZone(@Query() ids: number[]): Promise<R> {
-    return this.flightRestrictionZoneService.selOnesFlightRestrictionZone(ids);
+  async selOnesFlightRestrictionZone(@Query() ids: Record<string, string>): Promise<R> {
+    return this.flightRestrictionZoneService.selOnesFlightRestrictionZone(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

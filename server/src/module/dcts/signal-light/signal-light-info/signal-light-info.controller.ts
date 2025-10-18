@@ -52,8 +52,8 @@ export class SignalLightInfoController {
     permission: 'dcts:signalLight:signalLightInfo:selOnes',
     label: '查询多个子信号灯信息（根据id）',
   })
-  async selOnesSignalLightInfo(@Query() ids: number[]): Promise<R> {
-    return this.signalLightInfoService.selOnesSignalLightInfo(ids);
+  async selOnesSignalLightInfo(@Query() ids: Record<string, string>): Promise<R> {
+    return this.signalLightInfoService.selOnesSignalLightInfo(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

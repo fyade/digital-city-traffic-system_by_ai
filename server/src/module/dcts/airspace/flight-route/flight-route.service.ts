@@ -61,7 +61,6 @@ export class FlightRouteService {
   }
 
   async selOnesFlightRoute(ids: number[]): Promise<R> {
-    ids = Object.values(ids).map(Number);
     const sqls = this.cPgsqlPrismao.genSql<FlightRouteDto>({
       type: 'selByIds',
       tblName: 'flight_route',

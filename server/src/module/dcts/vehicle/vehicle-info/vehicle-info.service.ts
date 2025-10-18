@@ -16,7 +16,7 @@ export class VehicleInfoService {
   }
 
   async selVehicleInfo(dto: VehicleInfoSelListDto): Promise<R> {
-    const res = await this.pgsqlPrisma.findPage<VehicleInfoDto, VehicleInfoSelListDto>('vehicle_info', {
+    const res = await this.pgsqlPrisma.findPage<VehicleInfoDto>('vehicle_info', {
       data: dto,
       orderBy: false,
     });
@@ -32,7 +32,7 @@ export class VehicleInfoService {
   }
 
   async selOnesVehicleInfo(ids: number[]): Promise<R> {
-    const res = await this.pgsqlPrisma.findByIds<VehicleInfoDto>('vehicle_info', Object.values(ids).map(n => Number(n)));
+    const res = await this.pgsqlPrisma.findByIds<VehicleInfoDto>('vehicle_info', ids);
     return R.ok(res);
   }
 

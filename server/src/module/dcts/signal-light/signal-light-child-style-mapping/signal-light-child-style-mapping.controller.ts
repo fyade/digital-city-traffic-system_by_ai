@@ -52,8 +52,8 @@ export class SignalLightChildStyleMappingController {
     permission: 'dcts:signalLight:signalLightChildStyleMapping:selOnes',
     label: '查询多个子信号灯-信号灯样式关联（根据id）',
   })
-  async selOnesSignalLightChildStyleMapping(@Query() ids: number[]): Promise<R> {
-    return this.signalLightChildStyleMappingService.selOnesSignalLightChildStyleMapping(ids);
+  async selOnesSignalLightChildStyleMapping(@Query() ids: Record<string, string>): Promise<R> {
+    return this.signalLightChildStyleMappingService.selOnesSignalLightChildStyleMapping(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

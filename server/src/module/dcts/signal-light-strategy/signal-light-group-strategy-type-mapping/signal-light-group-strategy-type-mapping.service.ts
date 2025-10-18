@@ -23,7 +23,7 @@ export class SignalLightGroupStrategyTypeMappingService {
   }
 
   async selSignalLightGroupStrategyTypeMapping(dto: SignalLightGroupStrategyTypeMappingSelListDto): Promise<R> {
-    const res = await this.pgsqlPrisma.findPage<SignalLightGroupStrategyTypeMappingDto, SignalLightGroupStrategyTypeMappingSelListDto>('signal_light_group_strategy_type_mapping', {
+    const res = await this.pgsqlPrisma.findPage<SignalLightGroupStrategyTypeMappingDto>('signal_light_group_strategy_type_mapping', {
       data: dto,
       orderBy: false,
     });
@@ -39,7 +39,7 @@ export class SignalLightGroupStrategyTypeMappingService {
   }
 
   async selOnesSignalLightGroupStrategyTypeMapping(ids: number[]): Promise<R> {
-    const res = await this.pgsqlPrisma.findByIds<SignalLightGroupStrategyTypeMappingDto>('signal_light_group_strategy_type_mapping', Object.values(ids).map(n => Number(n)));
+    const res = await this.pgsqlPrisma.findByIds<SignalLightGroupStrategyTypeMappingDto>('signal_light_group_strategy_type_mapping', ids);
     return R.ok(res);
   }
 

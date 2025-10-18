@@ -68,7 +68,6 @@ export class VehicleTrackPointService {
   }
 
   async selOnesVehicleTrackPoint(ids: number[]): Promise<R> {
-    ids = Object.values(ids).map(Number)
     const sqls = this.cPgsqlPrismao.genSql<VehicleTrackPointDto>({
       type: 'selByIds',
       tblName: 'vehicle_track_point',

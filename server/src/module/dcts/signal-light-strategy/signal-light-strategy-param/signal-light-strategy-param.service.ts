@@ -19,7 +19,7 @@ export class SignalLightStrategyParamService {
   }
 
   async selSignalLightStrategyParam(dto: SignalLightStrategyParamSelListDto): Promise<R> {
-    const res = await this.pgsqlPrisma.findPage<SignalLightStrategyParamDto, SignalLightStrategyParamSelListDto>('signal_light_strategy_param', {
+    const res = await this.pgsqlPrisma.findPage<SignalLightStrategyParamDto>('signal_light_strategy_param', {
       data: dto,
       orderBy: true,
     });
@@ -35,7 +35,7 @@ export class SignalLightStrategyParamService {
   }
 
   async selOnesSignalLightStrategyParam(ids: number[]): Promise<R> {
-    const res = await this.pgsqlPrisma.findByIds<SignalLightStrategyParamDto>('signal_light_strategy_param', Object.values(ids).map(n => Number(n)));
+    const res = await this.pgsqlPrisma.findByIds<SignalLightStrategyParamDto>('signal_light_strategy_param', ids);
     return R.ok(res);
   }
 

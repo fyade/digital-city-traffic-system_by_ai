@@ -52,8 +52,8 @@ export class SignalLightStrategyTypeController {
     permission: 'dcts:signalLightStrategy:signalLightStrategyType:selOnes',
     label: '查询多个信号灯策略类型（根据id）',
   })
-  async selOnesSignalLightStrategyType(@Query() ids: number[]): Promise<R> {
-    return this.signalLightStrategyTypeService.selOnesSignalLightStrategyType(ids);
+  async selOnesSignalLightStrategyType(@Query() ids: Record<string, string>): Promise<R> {
+    return this.signalLightStrategyTypeService.selOnesSignalLightStrategyType(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

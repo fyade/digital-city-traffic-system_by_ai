@@ -19,7 +19,7 @@ export class SignalLightStrategyScheduleStrategyParamMappingService {
   }
 
   async selSignalLightStrategyScheduleStrategyParamMapping(dto: SignalLightStrategyScheduleStrategyParamMappingSelListDto): Promise<R> {
-    const res = await this.pgsqlPrisma.findPage<SignalLightStrategyScheduleStrategyParamMappingDto, SignalLightStrategyScheduleStrategyParamMappingSelListDto>('signal_light_strategy_schedule_strategy_param_mapping', {
+    const res = await this.pgsqlPrisma.findPage<SignalLightStrategyScheduleStrategyParamMappingDto>('signal_light_strategy_schedule_strategy_param_mapping', {
       data: dto,
       orderBy: false,
     });
@@ -35,7 +35,7 @@ export class SignalLightStrategyScheduleStrategyParamMappingService {
   }
 
   async selOnesSignalLightStrategyScheduleStrategyParamMapping(ids: number[]): Promise<R> {
-    const res = await this.pgsqlPrisma.findByIds<SignalLightStrategyScheduleStrategyParamMappingDto>('signal_light_strategy_schedule_strategy_param_mapping', Object.values(ids).map(n => Number(n)));
+    const res = await this.pgsqlPrisma.findByIds<SignalLightStrategyScheduleStrategyParamMappingDto>('signal_light_strategy_schedule_strategy_param_mapping', ids);
     return R.ok(res);
   }
 

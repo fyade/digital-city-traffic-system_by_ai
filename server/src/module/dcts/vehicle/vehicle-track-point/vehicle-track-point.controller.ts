@@ -52,8 +52,8 @@ export class VehicleTrackPointController {
     permission: 'dcts:vehicle:vehicleTrackPoint:selOnes',
     label: '查询多个车辆轨迹点（根据id）',
   })
-  async selOnesVehicleTrackPoint(@Query() ids: number[]): Promise<R> {
-    return this.vehicleTrackPointService.selOnesVehicleTrackPoint(ids);
+  async selOnesVehicleTrackPoint(@Query() ids: Record<string, string>): Promise<R> {
+    return this.vehicleTrackPointService.selOnesVehicleTrackPoint(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

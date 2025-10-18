@@ -21,7 +21,7 @@ export class SignalLightChildStyleMappingService {
   }
 
   async selSignalLightChildStyleMapping(dto: SignalLightChildStyleMappingSelListDto): Promise<R> {
-    const res = await this.pgsqlPrisma.findPage<SignalLightChildStyleMappingDto, SignalLightChildStyleMappingSelListDto>('signal_light_child_style_mapping', {
+    const res = await this.pgsqlPrisma.findPage<SignalLightChildStyleMappingDto>('signal_light_child_style_mapping', {
       data: dto,
       orderBy: false,
     });
@@ -37,7 +37,7 @@ export class SignalLightChildStyleMappingService {
   }
 
   async selOnesSignalLightChildStyleMapping(ids: number[]): Promise<R> {
-    const res = await this.pgsqlPrisma.findByIds<SignalLightChildStyleMappingDto>('signal_light_child_style_mapping', Object.values(ids).map(n => Number(n)));
+    const res = await this.pgsqlPrisma.findByIds<SignalLightChildStyleMappingDto>('signal_light_child_style_mapping', ids);
     return R.ok(res);
   }
 

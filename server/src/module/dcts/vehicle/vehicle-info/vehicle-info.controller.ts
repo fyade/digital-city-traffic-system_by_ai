@@ -52,8 +52,8 @@ export class VehicleInfoController {
     permission: 'dcts:vehicle:vehicleInfo:selOnes',
     label: '查询多个车辆信息（根据id）',
   })
-  async selOnesVehicleInfo(@Query() ids: number[]): Promise<R> {
-    return this.vehicleInfoService.selOnesVehicleInfo(ids);
+  async selOnesVehicleInfo(@Query() ids: Record<string, string>): Promise<R> {
+    return this.vehicleInfoService.selOnesVehicleInfo(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

@@ -51,8 +51,8 @@ export class ThreeDFileGroupController {
     permission: 'dcts:asset:threeDFileGroup:selOnes',
     label: '查询多个三维文件组（根据id）',
   })
-  async selOnesThreeDFileGroup(@Query() ids: number[]): Promise<R> {
-    return this.threeDFileGroupService.selOnesThreeDFileGroup(ids);
+  async selOnesThreeDFileGroup(@Query() ids: Record<string, string>): Promise<R> {
+    return this.threeDFileGroupService.selOnesThreeDFileGroup(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

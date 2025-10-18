@@ -51,8 +51,8 @@ export class FlightRouteController {
     permission: 'dcts:airspace:flightRoute:selOnes',
     label: '查询多个航线（根据id）',
   })
-  async selOnesFlightRoute(@Query() ids: number[]): Promise<R> {
-    return this.flightRouteService.selOnesFlightRoute(ids);
+  async selOnesFlightRoute(@Query() ids: Record<string, string>): Promise<R> {
+    return this.flightRouteService.selOnesFlightRoute(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

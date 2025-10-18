@@ -63,7 +63,6 @@ export class SignalLightInfoService {
   }
 
   async selOnesSignalLightInfo(ids: number[]): Promise<R> {
-    ids = Object.values(ids).map(Number);
     const sqls = this.cPgsqlPrismao.genSql<SignalLightInfoDto>({
       type: 'selByIds',
       tblName: 'signal_light_info',

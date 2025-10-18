@@ -52,8 +52,8 @@ export class SignalLightGroupChildMappingController {
     permission: 'dcts:signalLight:signalLightGroupChildMapping:selOnes',
     label: '查询多个信号灯组-子信号灯对应（根据id）',
   })
-  async selOnesSignalLightGroupChildMapping(@Query() ids: number[]): Promise<R> {
-    return this.signalLightGroupChildMappingService.selOnesSignalLightGroupChildMapping(ids);
+  async selOnesSignalLightGroupChildMapping(@Query() ids: Record<string, string>): Promise<R> {
+    return this.signalLightGroupChildMappingService.selOnesSignalLightGroupChildMapping(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

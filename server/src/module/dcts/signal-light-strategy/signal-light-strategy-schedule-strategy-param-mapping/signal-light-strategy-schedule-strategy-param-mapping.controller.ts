@@ -52,8 +52,8 @@ export class SignalLightStrategyScheduleStrategyParamMappingController {
     permission: 'dcts:signalLightStrategy:signalLightStrategyScheduleStrategyParamMapping:selOnes',
     label: '查询多个信号灯策略调度-信号灯策略参数关联（根据id）',
   })
-  async selOnesSignalLightStrategyScheduleStrategyParamMapping(@Query() ids: number[]): Promise<R> {
-    return this.signalLightStrategyScheduleStrategyParamMappingService.selOnesSignalLightStrategyScheduleStrategyParamMapping(ids);
+  async selOnesSignalLightStrategyScheduleStrategyParamMapping(@Query() ids: Record<string, string>): Promise<R> {
+    return this.signalLightStrategyScheduleStrategyParamMappingService.selOnesSignalLightStrategyScheduleStrategyParamMapping(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

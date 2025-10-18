@@ -51,8 +51,8 @@ export class ThreeDFileUnitController {
     permission: 'dcts:asset:threeDFileUnit:selOnes',
     label: '查询多个三维文件单元（根据id）',
   })
-  async selOnesThreeDFileUnit(@Query() ids: number[]): Promise<R> {
-    return this.threeDFileUnitService.selOnesThreeDFileUnit(ids);
+  async selOnesThreeDFileUnit(@Query() ids: Record<string, string>): Promise<R> {
+    return this.threeDFileUnitService.selOnesThreeDFileUnit(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

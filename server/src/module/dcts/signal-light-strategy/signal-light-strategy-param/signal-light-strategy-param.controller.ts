@@ -52,8 +52,8 @@ export class SignalLightStrategyParamController {
     permission: 'dcts:signalLightStrategy:signalLightStrategyParam:selOnes',
     label: '查询多个信号灯策略参数（根据id）',
   })
-  async selOnesSignalLightStrategyParam(@Query() ids: number[]): Promise<R> {
-    return this.signalLightStrategyParamService.selOnesSignalLightStrategyParam(ids);
+  async selOnesSignalLightStrategyParam(@Query() ids: Record<string, string>): Promise<R> {
+    return this.signalLightStrategyParamService.selOnesSignalLightStrategyParam(Object.values(ids).map(Number));
   }
 
   @Get('/:id')

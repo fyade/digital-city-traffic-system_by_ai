@@ -61,7 +61,6 @@ export class FlightRestrictionZoneService {
   }
 
   async selOnesFlightRestrictionZone(ids: number[]): Promise<R> {
-    ids = Object.values(ids).map(Number);
     const sqls = this.cPgsqlPrismao.genSql<FlightRestrictionZoneDto>({
       type: 'selByIds',
       tblName: 'flight_restriction_zone',

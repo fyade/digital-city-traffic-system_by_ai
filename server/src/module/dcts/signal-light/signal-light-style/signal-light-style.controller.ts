@@ -52,8 +52,8 @@ export class SignalLightStyleController {
     permission: 'dcts:signalLight:signalLightStyle:selOnes',
     label: '查询多个信号灯样式（根据id）',
   })
-  async selOnesSignalLightStyle(@Query() ids: number[]): Promise<R> {
-    return this.signalLightStyleService.selOnesSignalLightStyle(ids);
+  async selOnesSignalLightStyle(@Query() ids: Record<string, string>): Promise<R> {
+    return this.signalLightStyleService.selOnesSignalLightStyle(Object.values(ids).map(Number));
   }
 
   @Get('/:id')
