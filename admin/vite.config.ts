@@ -29,6 +29,9 @@ export default defineConfig(({mode}) => {
     define: {
       'import.meta.env.MODE': JSON.stringify(mode),
     },
+    assetsInclude: [
+      '**/*.obj', '**/*.mtl'
+    ],
     plugins: [
       Inspect(),
       visualizer(),
