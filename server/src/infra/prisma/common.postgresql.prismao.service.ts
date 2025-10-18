@@ -286,7 +286,7 @@ export class CommonPostgresqlPrismaoService {
       sqls.push(sql);
     }
     if (dto.type === 'selList' || dto.type === 'selCount' || dto.type === 'selAll') {
-      const _genSelParams = this.pgsqlPrisma.genSelParamSql({
+      let _genSelParams = this.pgsqlPrisma.genSelParamSql({
         tblName: dto.tblName,
         type: dto.type,
         clas: dto.clas,
@@ -305,6 +305,7 @@ export class CommonPostgresqlPrismaoService {
         ifDeleted: fieldSelectParam.ifDeleted,
         ifUseSelfData: false
       })
+      _genSelParams = _genSelParams.replace(/between[ ]*('.*')[ ]*and[ ]*('.*')[ ]*/, 'between $1::timestamp and $2::timestamp')
       const genSelParams = dto.type === 'selCount' ? _genSelParams : _genSelParams.replace(/select.*from/, `select ${sql_select_keys} from`);
       sqls.splice(0, sqls.length)
       sqls.push(genSelParams)
@@ -317,22 +318,6 @@ export class CommonPostgresqlPrismaoService {
             .replace(/ ;/g, ';')
         );
     return ret;
-  }
-
-  /**
-   * 生成查询参数sql
-   * @param dto
-   */
-  genSelParam(dto: object) {
-    let param = '';
-    for (const key of Object.keys(dto)) {
-      const ifUndefined = objectUtils.ifUndefined(dto[key]);
-      if (ifUndefined) {
-        continue;
-      }
-      param += ` and ${baseUtils.toSnakeCase(key)} like '%${dto[key]}%' `
-    }
-    return param;
   }
 
   private _ifSel(type: GenSqlDto<any>['type']) {
