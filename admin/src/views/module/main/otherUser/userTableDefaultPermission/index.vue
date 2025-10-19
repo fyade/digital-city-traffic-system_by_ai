@@ -47,6 +47,37 @@ const config = new TablePageConfig<UserTableDefaultPermissionDto>({
   bulkOperation: false,
   selectListCallback: () => {
     selectAllPs()
+  },
+  dialogVisibleCallback: () => {
+    if (!(dialogVisible.value && dialogType.value === final.ins)) {
+      return
+    }
+    selectRole.value = null
+    selectDept.value = null
+    selectUserGroup.value = null
+  },
+  dialogFormLoadingFinishCallback: () => {
+    selectRole.value = null
+    selectDept.value = null
+    selectUserGroup.value = null
+    if (state.dialogForm.permType === base.UTDPTypeEnum.T_ROLE) {
+      const find = allRolesOfThisPage.value.find(item => item.id === state.dialogForm.permId);
+      if (find) {
+        selectRole.value = find
+      }
+    }
+    if (state.dialogForm.permType === base.UTDPTypeEnum.T_DEPT) {
+      const find = allDeptsOfThisPage.value.find(item => item.id === state.dialogForm.permId);
+      if (find) {
+        selectDept.value = find
+      }
+    }
+    if (state.dialogForm.permType === base.UTDPTypeEnum.T_UG) {
+      const find = allUserGroupsOfThisPage.value.find(item => item.id === state.dialogForm.permId);
+      if (find) {
+        selectUserGroup.value = find
+      }
+    }
   }
 })
 
@@ -99,15 +130,24 @@ const allRolesOfThisPage = ref<RoleDto[]>([])
 const allDeptsOfThisPage = ref<DeptDto[]>([])
 const allUserGroupsOfThisPage = ref<UserGroupDto[]>([])
 const selectAllPs = () => {
-  roleApi.selectByIds(tableData.value.filter(item => item.permType === base.UTDPTypeEnum.T_ROLE).map(item => item.permId)).then(res => {
-    allRolesOfThisPage.value = res
-  })
-  deptApi.selectByIds(tableData.value.filter(item => item.permType === base.UTDPTypeEnum.T_DEPT).map(item => item.permId)).then(res => {
-    allDeptsOfThisPage.value = res
-  })
-  userGroupApi.selectByIds(tableData.value.filter(item => item.permType === base.UTDPTypeEnum.T_UG).map(item => item.permId)).then(res => {
-    allUserGroupsOfThisPage.value = res
-  })
+  const roleIds = tableData.value.filter(item => item.permType === base.UTDPTypeEnum.T_ROLE).map(item => item.permId);
+  if (roleIds.length > 0) {
+    roleApi.selectByIds(roleIds).then(res => {
+      allRolesOfThisPage.value = res
+    })
+  }
+  const deptIds = tableData.value.filter(item => item.permType === base.UTDPTypeEnum.T_DEPT).map(item => item.permId);
+  if (deptIds.length > 0) {
+    deptApi.selectByIds(deptIds).then(res => {
+      allDeptsOfThisPage.value = res
+    })
+  }
+  const userGroupIds = tableData.value.filter(item => item.permType === base.UTDPTypeEnum.T_UG).map(item => item.permId);
+  if (userGroupIds.length > 0) {
+    userGroupApi.selectByIds(userGroupIds).then(res => {
+      allUserGroupsOfThisPage.value = res
+    })
+  }
 }
 
 const drawer1 = ref(false)
@@ -240,9 +280,7 @@ const chooseUserGroup = (row: UserGroupDto) => {
             <el-form-item :label="userTableDefaultPermissionDict.permType" prop="permType">
               <!--<el-input v-model="state.dialogForm.permType" :placeholder="userTableDefaultPermissionDict.permType"/>-->
               <el-radio-group v-model="state.dialogForm.permType">
-                <el-radio :value="base.UTDPTypeEnum.T_ROLE">{{ base.uTDPTypeDict[base.UTDPTypeEnum.T_ROLE] }}</el-radio>
-                <el-radio :value="base.UTDPTypeEnum.T_DEPT">{{ base.uTDPTypeDict[base.UTDPTypeEnum.T_DEPT] }}</el-radio>
-                <el-radio :value="base.UTDPTypeEnum.T_UG">{{ base.uTDPTypeDict[base.UTDPTypeEnum.T_UG] }}</el-radio>
+                <el-radio v-for="key in base.UTDPTypeEnum" :key="key" :value="key">{{ base.uTDPTypeDict[key] }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -293,70 +331,6 @@ const chooseUserGroup = (row: UserGroupDto) => {
         <!--  <el-switch v-model="state.dialogForm.ifDisabled" :active-value="final.N" :inactive-value="final.Y"/>-->
         <!--</el-form-item>-->
         <!--上方几个酌情使用-->
-      </el-form>
-    </template>
-    <template v-if="activeTabName===final.more">
-      <el-form
-          ref="dialogFormsRef"
-          v-loading="dialogLoadingRef"
-          :model="state.dialogForms"
-          :rules="dFormRules"
-      >
-        <el-table
-            class="tp-table-operate-more-row"
-            :data="state.dialogForms"
-        >
-          <el-table-column type="index" width="50">
-            <template #header>
-              #
-            </template>
-          </el-table-column>
-          <!--在此下方添加表格列-->
-          <el-table-column prop="tableName" :label="userTableDefaultPermissionDict.tableName" width="300">
-            <template #header>
-              <span :class="ifRequired('tableName')?'tp-table-header-required':''">{{ userTableDefaultPermissionDict.tableName }}</span>
-            </template>
-            <template #default="{$index}">
-              <el-form-item :prop="`${$index}.tableName`" :rules="dFormRules.tableName">
-                <el-input v-model="state.dialogForms[$index].tableName" :placeholder="userTableDefaultPermissionDict.tableName"/>
-              </el-form-item>
-            </template>
-          </el-table-column>
-          <el-table-column prop="permType" :label="userTableDefaultPermissionDict.permType" width="300">
-            <template #header>
-              <span :class="ifRequired('permType')?'tp-table-header-required':''">{{ userTableDefaultPermissionDict.permType }}</span>
-            </template>
-            <template #default="{$index}">
-              <el-form-item :prop="`${$index}.permType`" :rules="dFormRules.permType">
-                <!--<el-input v-model="state.dialogForms[$index].permType" :placeholder="userTableDefaultPermissionDict.permType"/>-->
-                <el-radio-group v-model="state.dialogForms[$index].permType">
-                  <el-radio :value="base.UTDPTypeEnum.T_ROLE">{{ base.uTDPTypeDict[base.UTDPTypeEnum.T_ROLE] }}</el-radio>
-                  <el-radio :value="base.UTDPTypeEnum.T_DEPT">{{ base.uTDPTypeDict[base.UTDPTypeEnum.T_DEPT] }}</el-radio>
-                  <el-radio :value="base.UTDPTypeEnum.T_UG">{{ base.uTDPTypeDict[base.UTDPTypeEnum.T_UG] }}</el-radio>
-                </el-radio-group>
-              </el-form-item>
-            </template>
-          </el-table-column>
-          <el-table-column prop="permId" :label="userTableDefaultPermissionDict.permId" width="300">
-            <template #header>
-              <span :class="ifRequired('permId')?'tp-table-header-required':''">{{ userTableDefaultPermissionDict.permId }}</span>
-            </template>
-            <template #default="{$index}">
-              <el-form-item :prop="`${$index}.permId`" :rules="dFormRules.permId">
-                <el-input-number v-model="state.dialogForms[$index].permId" controls-position="right"/>
-              </el-form-item>
-            </template>
-          </el-table-column>
-          <!--在此上方添加表格列-->
-          <el-table-column fixed="right" label="操作" min-width="120">
-            <template v-if="dialogType.value===final.ins" #default="{$index}">
-              <el-button link type="danger" size="small" :icon="Delete" @click="dfDel($index)">删除</el-button>
-            </template>
-          </el-table-column>
-          <template v-if="dialogType.value===final.ins" #append>
-            <el-button text type="primary" plain :icon="Plus" @click="dfIns">新增</el-button>
-          </template>
-        </el-table>
       </el-form>
     </template>
     <template #footer>

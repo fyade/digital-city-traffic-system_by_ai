@@ -168,8 +168,7 @@ const fCan2 = () => {
       <el-form-item :label="logUserLoginDict.loginRole" prop="loginRole">
         <!--<el-input v-model="state.filterForm.loginRole" :placeholder="logUserLoginDict.loginRole"/>-->
         <el-select v-model="state.filterForm.loginRole" :placeholder="logUserLoginDict.loginRole" clearable filterable>
-          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.admin]" :value="base.LoginRoleEnum.admin"/>
-          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.visitor]" :value="base.LoginRoleEnum.visitor"/>
+          <el-option v-for="key in base.LoginRoleEnum" :key="key" :label="base.loginRoleDict[key]" :value="key"/>
         </el-select>
       </el-form-item>
       <el-form-item :label="logUserLoginDict.loginIp" prop="loginIp">
@@ -237,7 +236,7 @@ const fCan2 = () => {
       <el-table-column prop="userId" :label="logUserLoginDict.userId" width="120"/>
       <el-table-column prop="loginRole" :label="logUserLoginDict.loginRole" width="120">
         <template #default="{row}">
-          {{ base.LoginRoleDict[row.loginRole as base.LoginRoleEnum] }}
+          {{ base.loginRoleDict[row.loginRole as base.LoginRoleEnum] }}
         </template>
       </el-table-column>
       <el-table-column prop="loginIp" :label="logUserLoginDict.loginIp" width="200"/>

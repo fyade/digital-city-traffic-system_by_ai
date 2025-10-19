@@ -46,11 +46,13 @@ export class DeptService {
 
   async insDept(dto: DeptInsOneDto): Promise<R> {
     const res = await this.mysqlPrisma.create<DeptDto>('sys_dept', dto);
+    await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(res);
   }
 
   async insDepts(dtos: DeptInsOneDto[]): Promise<R> {
     const res = await this.mysqlPrisma.createMany<DeptDto>('sys_dept', dtos);
+    await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(res);
   }
 

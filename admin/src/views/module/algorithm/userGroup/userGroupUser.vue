@@ -35,6 +35,8 @@ const state = reactive({
   total1: -1,
   pageParam1: {
     userId: '',
+    username: '',
+    nickname: '',
     pageNum: PAGINATION.pageNum,
     pageSize: PAGINATION.pageSize
   },
@@ -59,11 +61,28 @@ const getInfo = () => {
   usersOfThisUserGroup.value = []
   userUserGroupsOfThisUserGroup.value = []
   table1LoadingRef.value = true
-  userUserGroupApi.selectList({userGroupId: props.selectUserGroup.id, loginRole: base.LoginRoleEnum.admin, ...state.pageParam1}).then(res => {
-    state.total1 = res.total
-    userUserGroupsOfThisUserGroup.value = res.list
-    userApi.selectByIds(userUserGroupsOfThisUserGroup.value.map(item => item.userId)).then(res => {
-      usersOfThisUserGroup.value = res
+  userUserGroupApi.selectAll({
+    userGroupId: props.selectUserGroup.id,
+    loginRole: base.LoginRoleEnum.admin,
+    userId: state.pageParam1.userId,
+  }).then(res0 => {
+    // state.total1 = res.total
+    // userUserGroupsOfThisUserGroup.value = res.list
+    userApi.selectList({
+      pageNum: state.pageParam1.pageNum,
+      pageSize: state.pageParam1.pageSize,
+      id: {
+        in: {
+          value: res0.map(item => item.userId)
+        }
+      },
+      username: state.pageParam1.username,
+      nickname: state.pageParam1.nickname,
+    }).then(res => {
+      state.total1 = res.total
+      const ids = res.list.map(item => item.id);
+      userUserGroupsOfThisUserGroup.value = res0.filter(item => ids.includes(item.userId))
+      usersOfThisUserGroup.value = res.list
       table1LoadingRef.value = false
     })
   })
@@ -302,6 +321,12 @@ const deleteUserUserGroup = (userId: string) => {
   >
     <el-form-item :label="userUserGroupDict.userId" prop="userId">
       <el-input v-model="state.pageParam1.userId" :placeholder="userUserGroupDict.userId"/>
+    </el-form-item>
+    <el-form-item :label="userDict.username" prop="username">
+      <el-input v-model="state.pageParam1.username" :placeholder="userDict.username"/>
+    </el-form-item>
+    <el-form-item :label="userDict.nickname" prop="nickname">
+      <el-input v-model="state.pageParam1.nickname" :placeholder="userDict.nickname"/>
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="getInfo">筛选</el-button>

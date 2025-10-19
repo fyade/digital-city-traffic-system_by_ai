@@ -176,12 +176,14 @@ const fCan2 = () => {
       <el-form-item :label="logAlgorithmCallDict.loginRole" prop="loginRole">
         <!--<el-input v-model="state.filterForm.loginRole" :placeholder="logAlgorithmCallDict.loginRole"/>-->
         <el-select v-model="state.filterForm.loginRole" :placeholder="logAlgorithmCallDict.loginRole" clearable filterable>
-          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.admin]" :value="base.LoginRoleEnum.admin"/>
-          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.visitor]" :value="base.LoginRoleEnum.visitor"/>
+          <el-option v-for="key in base.LoginRoleEnum" :key="key" :label="base.loginRoleDict[key]" :value="key"/>
         </el-select>
       </el-form-item>
       <el-form-item :label="logAlgorithmCallDict.authType" prop="authType">
-        <el-input v-model="state.filterForm.authType" :placeholder="logAlgorithmCallDict.authType"/>
+        <!--<el-input v-model="state.filterForm.authType" :placeholder="logAlgorithmCallDict.authType"/>-->
+        <el-select v-model="state.filterForm.authType" :placeholder="logAlgorithmCallDict.authType" clearable filterable>
+          <el-option v-for="key in base.AuthTypeEnum" :key="key" :label="base.authTypeDict[key]" :value="key"/>
+        </el-select>
       </el-form-item>
       <el-form-item :label="logAlgorithmCallDict.callIp" prop="callIp">
         <el-input v-model="state.filterForm.callIp" :placeholder="logAlgorithmCallDict.callIp"/>
@@ -239,10 +241,14 @@ const fCan2 = () => {
       <el-table-column prop="userId" :label="logAlgorithmCallDict.userId" width="120"/>
       <el-table-column prop="loginRole" :label="logAlgorithmCallDict.loginRole" width="120">
         <template #default="{row}">
-          {{ base.LoginRoleDict[row.loginRole as base.LoginRoleEnum] || row.loginRole }}
+          {{ base.loginRoleDict[row.loginRole as base.LoginRoleEnum] }}
         </template>
       </el-table-column>
-      <el-table-column prop="authType" :label="logAlgorithmCallDict.authType" width="120"/>
+      <el-table-column prop="authType" :label="logAlgorithmCallDict.authType" width="120">
+        <template #default="{row}">
+          {{ base.authTypeDict[row.authType as base.AuthTypeEnum] }}
+        </template>
+      </el-table-column>
       <el-table-column prop="callIp" :label="logAlgorithmCallDict.callIp" width="120"/>
       <el-table-column prop="ifSuccess" :label="logAlgorithmCallDict.ifSuccess" width="120"/>
       <el-table-column prop="remark" :label="logAlgorithmCallDict.remark" width="120"/>

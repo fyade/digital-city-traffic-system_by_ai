@@ -38,7 +38,7 @@ const userInfo = computed(() => {
     ret.avatar = userinfo.visitor!.avatar;
     ret.nickname = userinfo.visitor!.nickname;
   }
-  const v = base.LoginRoleDict[userStore.loginRole as base.LoginRoleEnum];
+  const v = base.loginRoleDict[userStore.loginRole as base.LoginRoleEnum];
   if (v) {
     ret._loginRole = v;
   }

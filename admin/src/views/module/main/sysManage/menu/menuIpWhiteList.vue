@@ -133,8 +133,7 @@ const {
             <el-form-item :label="menuIpWhiteListDict.fromType" prop="fromType">
               <!--<el-input v-model="state.dialogForm.fromType" :placeholder="menuIpWhiteListDict.fromType"/>-->
               <el-radio-group v-model="state.dialogForm.fromType">
-                <el-radio :value="base.TMWLTypeEnum.T_IP">{{ base.mIWLTypeDict[base.TMWLTypeEnum.T_IP] }}</el-radio>
-                <el-radio :value="base.TMWLTypeEnum.T_HOST">{{ base.mIWLTypeDict[base.TMWLTypeEnum.T_HOST] }}</el-radio>
+                <el-radio v-for="key in base.TMWLTypeEnum" :key="key" :value="key">{{ base.mIWLTypeDict[key] }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -200,8 +199,7 @@ const {
               <el-form-item :prop="`${$index}.fromType`" :rules="dFormRules.fromType">
                 <!--<el-input v-model="state.dialogForms[$index].fromType" :placeholder="menuIpWhiteListDict.fromType"/>-->
                 <el-radio-group v-model="state.dialogForms[$index].fromType">
-                  <el-radio :value="base.TMWLTypeEnum.T_IP">{{ base.mIWLTypeDict[base.TMWLTypeEnum.T_IP] }}</el-radio>
-                  <el-radio :value="base.TMWLTypeEnum.T_HOST">{{ base.mIWLTypeDict[base.TMWLTypeEnum.T_HOST] }}</el-radio>
+                  <el-radio v-for="key in base.TMWLTypeEnum" :key="key" :value="key">{{ base.mIWLTypeDict[key] }}</el-radio>
                 </el-radio-group>
               </el-form-item>
             </template>
@@ -273,8 +271,7 @@ const {
       </el-form-item>
       <el-form-item :label="menuIpWhiteListDict.fromType" prop="fromType">
         <el-select v-model="state.filterForm.fromType" :placeholder="menuIpWhiteListDict.fromType" clearable filterable>
-          <el-option :label="base.mIWLTypeDict[base.TMWLTypeEnum.T_IP]" :value="base.TMWLTypeEnum.T_IP"/>
-          <el-option :label="base.mIWLTypeDict[base.TMWLTypeEnum.T_HOST]" :value="base.TMWLTypeEnum.T_HOST"/>
+          <el-option v-for="key in base.TMWLTypeEnum" :key="key" :label="base.mIWLTypeDict[key]" :value="key"/>
         </el-select>
       </el-form-item>
       <!--在此上方添加表单项-->

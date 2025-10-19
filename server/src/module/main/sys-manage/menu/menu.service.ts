@@ -48,11 +48,13 @@ export class MenuService {
 
   async insMenu(dto: MenuInsOneDto): Promise<R> {
     const res = await this.mysqlPrisma.create<MenuDto>('sys_menu', dto);
+    await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(res);
   }
 
   async insMenus(dtos: MenuInsOneDto[]): Promise<R> {
     const res = await this.mysqlPrisma.createMany<MenuDto>('sys_menu', dtos);
+    await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(res);
   }
 

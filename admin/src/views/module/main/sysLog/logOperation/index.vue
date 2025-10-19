@@ -203,12 +203,14 @@ const showReqParam = (rowId: number) => {
       <el-form-item :label="logOperationDict.loginRole" prop="loginRole">
         <!--<el-input v-model="state.filterForm.loginRole" :placeholder="logOperationDict.loginRole"/>-->
         <el-select v-model="state.filterForm.loginRole" :placeholder="logOperationDict.loginRole" clearable filterable>
-          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.admin]" :value="base.LoginRoleEnum.admin"/>
-          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.visitor]" :value="base.LoginRoleEnum.visitor"/>
+          <el-option v-for="key in base.LoginRoleEnum" :key="key" :label="base.loginRoleDict[key]" :value="key"/>
         </el-select>
       </el-form-item>
       <el-form-item :label="logOperationDict.authType" prop="authType">
-        <el-input v-model="state.filterForm.authType" :placeholder="logOperationDict.authType"/>
+        <!--<el-input v-model="state.filterForm.authType" :placeholder="logOperationDict.authType"/>-->
+        <el-select v-model="state.filterForm.authType" :placeholder="logOperationDict.authType" clearable filterable>
+          <el-option v-for="key in base.AuthTypeEnum" :key="key" :label="base.authTypeDict[key]" :value="key"/>
+        </el-select>
       </el-form-item>
       <el-form-item :label="logOperationDict.ifSuccess" prop="ifSuccess">
         <!--<el-input v-model="state.filterForm.ifSuccess" :placeholder="logOperationDict.ifSuccess"/>-->
@@ -272,10 +274,14 @@ const showReqParam = (rowId: number) => {
       <el-table-column prop="userId" :label="logOperationDict.userId" width="120"/>
       <el-table-column prop="loginRole" :label="logOperationDict.loginRole" width="120">
         <template #default="{row}">
-          {{ base.LoginRoleDict[row.loginRole as base.LoginRoleEnum] || row.loginRole }}
+          {{ base.loginRoleDict[row.loginRole as base.LoginRoleEnum] }}
         </template>
       </el-table-column>
-      <el-table-column prop="authType" :label="logOperationDict.authType" width="120"/>
+      <el-table-column prop="authType" :label="logOperationDict.authType" width="120">
+        <template #default="{row}">
+          {{ base.authTypeDict[row.authType as base.AuthTypeEnum] }}
+        </template>
+      </el-table-column>
       <el-table-column prop="reqParam" :label="logOperationDict.reqParam" width="360">
         <template #default="{row}">
           <template v-if="row.reqParam">

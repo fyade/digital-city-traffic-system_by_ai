@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue"
-import { CONFIG, final } from "@/utils/base.ts";
+import { CONFIG, final, PAGINATION } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
@@ -36,17 +36,49 @@ const interfaceInterfaceGroupDFormRules: FormRules<InterfaceInterfaceGroupDto> =
   interfaceGroupId: [{required: true, trigger: 'change'}],
 }
 const interfaceInterfaceGroupConfig = new TablePageConfig<InterfaceInterfaceGroupDto>({
+  ifShowSelectForm: true,
+  pageQuery: false,
   bulkOperation: true,
   selectParam: {
     interfaceGroupId: props.selectInterfaceGroupInfo.id
   },
   selectListCallback: () => {
-    const interfaceIds = interfaceInterfaceGroupTableData.value.map(item => item.interfaceId);
-    interfaceApi.selectByIds(interfaceIds).then(res => {
-      interfacesOfSelectInterfaceGroup.value = res
-    })
+    state0GetData()
   },
 })
+
+const state0GetData = () => {
+  const interfaceIds = interfaceInterfaceGroupTableData.value.map(item => item.interfaceId);
+  interfaceApi.selectList({
+    id: {
+      in: {
+        value: interfaceIds
+      }
+    },
+    pageNum: state0PageParam.value.pageNum,
+    pageSize: state0PageParam.value.pageSize,
+    ...state0FilterForm.value
+  }).then(res => {
+    state0Total.value = res.total
+    interfacesOfSelectInterfaceGroup.value = res.list
+  })
+}
+const state0FilterForm = ref<Partial<InterfaceDto>>({
+  label: '',
+  ifDisabled: '',
+  ifPublic: '',
+  perms: '',
+})
+const state0PageParam = ref({
+  pageNum: PAGINATION.pageNum,
+  pageSize: PAGINATION.pageSize,
+})
+const state0Total = ref(0)
+const state0PageParamChange = (newVal: { pageNum: number, pageSize: number }) => {
+  state0PageParam.value.pageNum = newVal.pageNum
+  state0PageParam.value.pageSize = newVal.pageSize
+  state0GetData()
+}
 
 const {
   dialogFormRef: interfaceInterfaceGroupDialogFormRef,
@@ -257,14 +289,29 @@ const confirmAddInterfaceInterfaceGroup = () => {
     <el-form
         class="demo-form-inline"
         ref="interfaceInterfaceGroupFilterFormRef"
-        :model="interfaceInterfaceGroupState.filterForm"
+        :model="state0FilterForm"
         :inline="true"
         @keyup.enter="interfaceInterfaceGroupFEnter"
     >
       <!--在此下方添加表单项-->
-      <!--<el-form-item :label="interfaceInterfaceGroupDict." prop="">-->
-      <!--  <el-input v-model="interfaceInterfaceGroupDict.filterForm." :placeholder="interfaceInterfaceGroupDict."/>-->
-      <!--</el-form-item>-->
+      <el-form-item :label="interfaceDict.label" prop="label">
+        <el-input v-model="state0FilterForm.label" :placeholder="interfaceDict.label"/>
+      </el-form-item>
+      <el-form-item :label="interfaceDict.ifDisabled" prop="ifDisabled">
+        <el-select v-model="state0FilterForm.ifDisabled" :placeholder="interfaceDict.ifDisabled" clearable filterable>
+          <el-option label="是" :value="final.Y"/>
+          <el-option label="否" :value="final.N"/>
+        </el-select>
+      </el-form-item>
+      <el-form-item :label="interfaceDict.ifPublic" prop="ifPublic">
+        <el-select v-model="state0FilterForm.ifPublic" :placeholder="interfaceDict.ifPublic" clearable filterable>
+          <el-option label="是" :value="final.Y"/>
+          <el-option label="否" :value="final.N"/>
+        </el-select>
+      </el-form-item>
+      <el-form-item :label="interfaceDict.perms" prop="perms">
+        <el-input v-model="state0FilterForm.perms" :placeholder="interfaceDict.perms"/>
+      </el-form-item>
       <!--在此上方添加表单项-->
       <el-form-item>
         <el-button type="primary" @click="interfaceInterfaceGroupFCon">筛选</el-button>
@@ -335,6 +382,12 @@ const confirmAddInterfaceInterfaceGroup = () => {
         :page-num="interfaceInterfaceGroupPageParam.pageNum"
         :page-size="interfaceInterfaceGroupPageParam.pageSize"
         @page-change="interfaceInterfaceGroupPageChange"
+    />
+    <Pagination
+        :total="state0Total"
+        :page-num="state0PageParam.pageNum"
+        :page-size="state0PageParam.pageSize"
+        @page-change="state0PageParamChange"
     />
   </div>
 

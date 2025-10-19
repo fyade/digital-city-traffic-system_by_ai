@@ -323,7 +323,7 @@ const setSystem = (dept: DeptDto) => {
               </el-form-item>
             </template>
           </el-table-column>
-          <el-table-column prop="ifAdmin" :label="deptDict.ifAdmin" width="100">
+          <el-table-column prop="ifAdmin" :label="deptDict.ifAdmin" width="70">
             <template #header>
               <span :class="ifRequired('ifAdmin')?'tp-table-header-required':''">{{ deptDict.ifAdmin }}</span>
             </template>
@@ -453,7 +453,7 @@ const setSystem = (dept: DeptDto) => {
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
       <el-table-column prop="label" :label="deptDict.label" width="240"/>
-      <el-table-column prop="ifAdmin" :label="deptDict.ifAdmin" width="150"/>
+      <el-table-column prop="ifAdmin" :label="deptDict.ifAdmin" width="120"/>
       <el-table-column prop="ifDisabled" :label="deptDict.ifDisabled" width="120"/>
       <!--<el-table-column prop="parentId" :label="deptDict.parentId" width="120"/>-->
       <el-table-column prop="orderNum" :label="deptDict.orderNum" width="120"/>

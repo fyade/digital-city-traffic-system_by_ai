@@ -3,12 +3,14 @@ import { MysqlPrismaService } from '../../../../infra/prisma/mysql.prisma.servic
 import { R } from '../../../../common/R';
 import { UserTableDefaultPermissionDto, UserTableDefaultPermissionSelListDto, UserTableDefaultPermissionSelAllDto, UserTableDefaultPermissionInsOneDto, UserTableDefaultPermissionUpdOneDto } from './dto';
 import { BaseContextService } from '../../../../infra/base-context/base-context.service';
+import { CachePermissionService } from '../../../../infra/cache/cache.permission.service';
 
 @Injectable()
 export class UserTableDefaultPermissionService {
   constructor(
     private readonly mysqlPrisma: MysqlPrismaService,
     private readonly bcs: BaseContextService,
+    private readonly cachePermissionService: CachePermissionService,
   ) {
     this.bcs.setFieldSelectParam('sys_user_table_default_permission', {
       notNullKeys: ['tableName', 'permType', 'permId'],
@@ -45,26 +47,31 @@ export class UserTableDefaultPermissionService {
 
   async insUserTableDefaultPermission(dto: UserTableDefaultPermissionInsOneDto): Promise<R> {
     const res = await this.mysqlPrisma.create<UserTableDefaultPermissionDto>('sys_user_table_default_permission', dto);
+    await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(res);
   }
 
   async insUserTableDefaultPermissions(dtos: UserTableDefaultPermissionInsOneDto[]): Promise<R> {
     const res = await this.mysqlPrisma.createMany<UserTableDefaultPermissionDto>('sys_user_table_default_permission', dtos);
+    await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(res);
   }
 
   async updUserTableDefaultPermission(dto: UserTableDefaultPermissionUpdOneDto): Promise<R> {
     const res = await this.mysqlPrisma.updateById<UserTableDefaultPermissionDto>('sys_user_table_default_permission', dto);
+    await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(res);
   }
 
   async updUserTableDefaultPermissions(dtos: UserTableDefaultPermissionUpdOneDto[]): Promise<R> {
     const res = await this.mysqlPrisma.updateMany<UserTableDefaultPermissionDto>('sys_user_table_default_permission', dtos);
+    await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(res);
   }
 
   async delUserTableDefaultPermission(ids: number[]): Promise<R> {
     const res = await this.mysqlPrisma.deleteById<UserTableDefaultPermissionDto>('sys_user_table_default_permission', ids);
+    await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(res);
   }
 }

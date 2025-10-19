@@ -46,11 +46,13 @@ export class RoleService {
 
   async insRole(dto: RoleInsOneDto): Promise<R> {
     const res = await this.mysqlPrisma.create<RoleDto>('sys_role', dto);
+    await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(res);
   }
 
   async insRoles(dtos: RoleInsOneDto[]): Promise<R> {
     const res = await this.mysqlPrisma.createMany<RoleDto>('sys_role', dtos);
+    await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(res);
   }
 

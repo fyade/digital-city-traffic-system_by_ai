@@ -4,16 +4,23 @@ export enum LoginRoleEnum {
   visitor = "visitor",
 }
 
-export const LoginRoleDict = {
+export const loginRoleDict = {
   [LoginRoleEnum.admin]: "系统管理员",
   [LoginRoleEnum.visitor]: "访客",
 };
 
+// 用户认证类型
 export enum AuthTypeEnum {
   token = "token",
   apiKey = "apiKey",
   unknown = "???",
 }
+
+export const authTypeDict = {
+  [AuthTypeEnum.token]: "token认证",
+  [AuthTypeEnum.apiKey]: "apiKey认证",
+  [AuthTypeEnum.unknown]: "未知",
+};
 
 // 颜色主题
 export enum ColorStyleEnum {
@@ -80,7 +87,7 @@ export enum LSTOTTypeEnum {
   T_USERTRIGGER = "user:trigger",
 }
 
-export const LSTOTTypeDict = {
+export const lSTOTTypeDict = {
   [LSTOTTypeEnum.T_BYSELF]: "系统自动触发",
   [LSTOTTypeEnum.T_USERTRIGGER]: "用户手动触发",
 };

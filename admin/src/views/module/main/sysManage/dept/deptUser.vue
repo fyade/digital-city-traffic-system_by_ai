@@ -35,6 +35,8 @@ const state = reactive({
   total1: -1,
   pageParam1: {
     userId: '',
+    username: '',
+    nickname: '',
     pageNum: PAGINATION.pageNum,
     pageSize: PAGINATION.pageSize
   },
@@ -59,11 +61,28 @@ const getInfo = () => {
   usersOfThisDept.value = []
   userDeptsOfThisDept.value = []
   table1LoadingRef.value = true
-  userDeptApi.selectList({deptId: props.selectDept.id, loginRole: base.LoginRoleEnum.admin, ...state.pageParam1}).then(res => {
-    state.total1 = res.total
-    userDeptsOfThisDept.value = res.list
-    userApi.selectByIds(userDeptsOfThisDept.value.map(item => item.userId)).then(res => {
-      usersOfThisDept.value = res
+  userDeptApi.selectAll({
+    deptId: props.selectDept.id,
+    loginRole: base.LoginRoleEnum.admin,
+    userId: state.pageParam1.userId,
+  }).then(res0 => {
+    // state.total1 = res0.total
+    // userDeptsOfThisDept.value = res0.list
+    userApi.selectList({
+      pageNum: state.pageParam1.pageNum,
+      pageSize: state.pageParam1.pageSize,
+      id: {
+        in: {
+          value: res0.map(item => item.userId)
+        }
+      },
+      username: state.pageParam1.username,
+      nickname: state.pageParam1.nickname,
+    }).then(res => {
+      state.total1 = res.total
+      const ids = res.list.map(item => item.id);
+      userDeptsOfThisDept.value = res0.filter(item => ids.includes(item.userId))
+      usersOfThisDept.value = res.list
       table1LoadingRef.value = false
     })
   })
@@ -307,6 +326,12 @@ const deleteUserDept = (userId: string) => {
   >
     <el-form-item :label="userDeptDict.userId" prop="userId">
       <el-input v-model="state.pageParam1.userId" :placeholder="userDeptDict.userId"/>
+    </el-form-item>
+    <el-form-item :label="userDict.username" prop="username">
+      <el-input v-model="state.pageParam1.username" :placeholder="userDict.username"/>
+    </el-form-item>
+    <el-form-item :label="userDict.nickname" prop="nickname">
+      <el-input v-model="state.pageParam1.nickname" :placeholder="userDict.nickname"/>
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="getInfo">筛选</el-button>

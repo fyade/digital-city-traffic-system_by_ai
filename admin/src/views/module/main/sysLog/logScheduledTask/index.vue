@@ -155,8 +155,7 @@ const fCan2 = () => {
       <el-form-item :label="logScheduledTaskDict.operateType" prop="operateType">
         <!--<el-input v-model="state.filterForm.operateType" :placeholder="logScheduledTaskDict.operateType"/>-->
         <el-select v-model="state.filterForm.operateType" :placeholder="logScheduledTaskDict.operateType" clearable filterable>
-          <el-option :label="base.LSTOTTypeDict[base.LSTOTTypeEnum.T_BYSELF]" :value="base.LSTOTTypeEnum.T_BYSELF"/>
-          <el-option :label="base.LSTOTTypeDict[base.LSTOTTypeEnum.T_USERTRIGGER]" :value="base.LSTOTTypeEnum.T_USERTRIGGER"/>
+          <el-option v-for="key in base.LSTOTTypeEnum" :key="key" :label="base.lSTOTTypeDict[key]" :value="key"/>
         </el-select>
       </el-form-item>
       <el-form-item :label="logScheduledTaskDict.ifSuccess" prop="ifSuccess">
@@ -217,8 +216,8 @@ const fCan2 = () => {
       <el-table-column prop="taskTarget" :label="logScheduledTaskDict.taskTarget" width="300"/>
       <el-table-column prop="operateType" :label="logScheduledTaskDict.operateType" width="180">
         <template #default="{row}">
-          <el-tag v-if="row.operateType === base.LSTOTTypeEnum.T_BYSELF" type="success">{{ base.LSTOTTypeDict[base.LSTOTTypeEnum.T_BYSELF] }}</el-tag>
-          <el-tag v-else-if="row.operateType === base.LSTOTTypeEnum.T_USERTRIGGER" type="primary">{{ base.LSTOTTypeDict[base.LSTOTTypeEnum.T_USERTRIGGER] }}</el-tag>
+          <el-tag v-if="row.operateType === base.LSTOTTypeEnum.T_BYSELF" type="success">{{ base.lSTOTTypeDict[base.LSTOTTypeEnum.T_BYSELF] }}</el-tag>
+          <el-tag v-else-if="row.operateType === base.LSTOTTypeEnum.T_USERTRIGGER" type="primary">{{ base.lSTOTTypeDict[base.LSTOTTypeEnum.T_USERTRIGGER] }}</el-tag>
           <el-tag v-else type="info">{{ row.operateType }}</el-tag>
         </template>
       </el-table-column>

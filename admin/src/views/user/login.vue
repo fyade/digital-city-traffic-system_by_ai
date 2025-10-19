@@ -55,8 +55,7 @@ refreshVerificationCode()
       </el-form-item>
       <el-form-item label="登录身份">
         <el-select v-model="form.loginRole">
-          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.admin]" :value="base.LoginRoleEnum.admin"/>
-          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.visitor]" :value="base.LoginRoleEnum.visitor"/>
+          <el-option v-for="key in base.LoginRoleEnum" :key="key" :label="base.loginRoleDict[key]" :value="key"/>
         </el-select>
       </el-form-item>
       <el-form-item label="验证码">

@@ -211,7 +211,7 @@ watch(selects, () => {
       <!--<el-table-column fixed prop="id" :label="roleDict.id" width="180"/>-->
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
-      <el-table-column prop="label" :label="roleDict.label" width="120"/>
+      <el-table-column prop="label" :label="roleDict.label" width="240"/>
       <el-table-column prop="ifAdmin" :label="roleDict.ifAdmin" width="120"/>
       <el-table-column prop="ifDisabled" :label="roleDict.ifDisabled" width="120"/>
       <el-table-column prop="orderNum" :label="roleDict.orderNum" width="120"/>

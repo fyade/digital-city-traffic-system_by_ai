@@ -28,12 +28,12 @@ export class PageDto {
 
 export interface ApiConfig<T, T2 = T> {
   selectList: (
-    obj: { [P in keyof Omit<T2, "id">]?: T2[P] | SelectParamObj } & {
+    obj: { [P in keyof T2]?: T2[P] | SelectParamObj } & {
       [P in keyof PageDto]: PageDto[P];
     },
   ) => Promise<PageVo<T>>;
   selectAll: (obj: {
-    [P in keyof Omit<T2, "id">]?: T2[P] | SelectParamObj;
+    [P in keyof T2]?: T2[P] | SelectParamObj;
   }) => Promise<T[]>;
   selectById: (id: string | number) => Promise<T | null>;
   selectByIds: (ids: (string | number)[]) => Promise<T[]>;

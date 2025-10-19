@@ -96,8 +96,7 @@ const {
       <el-form-item :label="onlineUserDict.loginRole" prop="loginRole">
         <!--<el-input v-model="state.filterForm.loginRole" :placeholder="onlineUserDict.loginRole"/>-->
         <el-select v-model="state.filterForm.loginRole" :placeholder="onlineUserDict.loginRole" clearable filterable>
-          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.admin]" :value="base.LoginRoleEnum.admin"/>
-          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.visitor]" :value="base.LoginRoleEnum.visitor"/>
+          <el-option v-for="key in base.LoginRoleEnum" :key="key" :label="base.loginRoleDict[key]" :value="key"/>
         </el-select>
       </el-form-item>
       <!--在此上方添加表单项-->
@@ -138,7 +137,7 @@ const {
       <el-table-column prop="username" :label="onlineUserDict.username" width="120"/>
       <el-table-column prop="loginRole" :label="onlineUserDict.loginRole" width="120">
         <template #default="{row}">
-          {{ base.LoginRoleDict[row.loginRole as base.LoginRoleEnum] }}
+          {{ base.loginRoleDict[row.loginRole as base.LoginRoleEnum] }}
         </template>
       </el-table-column>
       <el-table-column prop="loginTime" :label="onlineUserDict.loginTime" width="240">

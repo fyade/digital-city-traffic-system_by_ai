@@ -179,8 +179,7 @@ const fCan2 = () => {
       <el-form-item :label="logOperationWsDict.loginRole" prop="loginRole">
         <!--<el-input v-model="state.filterForm.loginRole" :placeholder="logOperationWsDict.loginRole"/>-->
         <el-select v-model="state.filterForm.loginRole" :placeholder="logOperationWsDict.loginRole" clearable filterable>
-          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.admin]" :value="base.LoginRoleEnum.admin"/>
-          <el-option :label="base.LoginRoleDict[base.LoginRoleEnum.visitor]" :value="base.LoginRoleEnum.visitor"/>
+          <el-option v-for="key in base.LoginRoleEnum" :key="key" :label="base.loginRoleDict[key]" :value="key"/>
         </el-select>
       </el-form-item>
       <el-form-item :label="logOperationWsDict.ifSuccess" prop="ifSuccess">
@@ -245,7 +244,7 @@ const fCan2 = () => {
       <el-table-column prop="userId" :label="logOperationWsDict.userId" width="120"/>
       <el-table-column prop="loginRole" :label="logOperationWsDict.loginRole" width="120">
         <template #default="{row}">
-          {{ base.LoginRoleDict[row.loginRole as base.LoginRoleEnum] || row.loginRole }}
+          {{ base.loginRoleDict[row.loginRole as base.LoginRoleEnum] }}
         </template>
       </el-table-column>
       <el-table-column prop="ifSuccess" :label="logOperationWsDict.ifSuccess" width="120">
