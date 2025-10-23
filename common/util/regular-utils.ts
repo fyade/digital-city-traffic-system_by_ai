@@ -201,7 +201,7 @@ export function ifRouterEndsWithParam(str: string) {
  * @param str
  */
 export function packageMonitorMatchStorage(str: string) {
-  return str.match(/(\d+G)\s+(\d+G)\s+(\d+G)\s+(\d+)%/);
+  return str.match(/(\d+(?:\.\d+)?G)\s+(\d+(?:\.\d+)?G)\s+(\d+(?:\.\d+)?G)\s+(\d+(?:\.\d+)?)%/);
 }
 
 
