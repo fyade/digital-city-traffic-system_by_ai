@@ -48,6 +48,10 @@ export class UserLoginController {
     if (dto.psdType === 'b') {
       dto.password = encryptUtils.aes.decrypt(dto.password);
     }
+    if (dto.psdType === 'c') {
+      const key = await this.cacheTokenService.getPasswordKey(dto.passwordKeyUuid);
+      dto.password = await encryptUtils.rsa.decrypt(key.privateKey, dto.password);
+    }
     delete dto.psdType;
     return this.userService.regist(dto);
   }
@@ -65,6 +69,10 @@ export class UserLoginController {
   async login(@Body() dto: LoginDto, @Req() request: Request): Promise<R> {
     if (dto.psdType === 'b') {
       dto.password = encryptUtils.aes.decrypt(dto.password);
+    }
+    if (dto.psdType === 'c') {
+      const key = await this.cacheTokenService.getPasswordKey(dto.passwordKeyUuid);
+      dto.password = await encryptUtils.rsa.decrypt(key.privateKey, dto.password);
     }
     delete dto.psdType;
     const { ip: loginIp, browser: loginBrowser, os: loginOs } = getIpInfoFromRequest(request);

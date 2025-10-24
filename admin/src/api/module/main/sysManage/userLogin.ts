@@ -1,5 +1,5 @@
 import request from "@/api/request.ts";
-import { LoginDto, MultiAuthUserDto } from "@/type/module/main/sysManage/user.ts";
+import { LoginDto, MultiAuthUserDto, RegistDto } from "@/type/module/main/sysManage/user.ts";
 import { encryptUtils } from "@dcts/common";
 
 /**
@@ -13,17 +13,48 @@ export function generateLoginKey() {
 }
 
 /**
- * 管理员登录
+ * 注册
  * @param data
  */
-export async function loginApi(data: LoginDto) {
+export async function registApi(data: RegistDto) {
+  if (!window.isSecureContext) {
+    return request({
+      url: '/sys/user/regist',
+      method: 'POST',
+      data: {
+        ...data,
+        password: encryptUtils.aes.encrypt(data.password),
+        psdType: 'b'
+      }
+    })
+  }
+  const key = await generateLoginKey();
+  const newPassword = await encryptUtils.rsa.encrypt(key.publicKey, data.password);
+  return request({
+    url: '/sys/user/regist',
+    method: 'POST',
+    data: {
+      ...data,
+      password: newPassword,
+      psdType: 'c',
+      passwordKeyUuid: key.uuid
+    }
+  })
+}
+
+/**
+ * 管理员登录
+ * @param data
+ * @param ifAdminLogin
+ */
+export async function loginApi(data: LoginDto, ifAdminLogin = false) {
   if (!window.isSecureContext) {
     return request<{
       token: string,
       loginRole: string,
       multiAuthUser: MultiAuthUserDto,
     }>({
-      url: '/sys/user/adminlogin',
+      url: ifAdminLogin ? '/sys/user/adminlogin' : '/sys/user/login',
       method: 'POST',
       data: {
         ...data,
@@ -39,7 +70,7 @@ export async function loginApi(data: LoginDto) {
     loginRole: string,
     multiAuthUser: MultiAuthUserDto,
   }>({
-    url: '/sys/user/adminlogin',
+    url: ifAdminLogin ? '/sys/user/adminlogin' : '/sys/user/login',
     method: 'POST',
     data: {
       ...data,

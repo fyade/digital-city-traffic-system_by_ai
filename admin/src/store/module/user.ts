@@ -9,6 +9,8 @@ import { UserVisitorDto } from "@/type/module/main/otherUser/userVisitor.ts";
 import { base, objectUtils } from "@dcts/common";
 import { BCService } from "@/services/broadcastChannel.ts";
 import { loginApi, logOutApi } from "@/api/module/main/sysManage/userLogin.ts";
+import { DctsUserDto } from "@/type/module/dcts/user/dctsUser.ts";
+import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
 
 export const useUserStore = defineStore('userStore', () => {
   const router = useRouter()
@@ -16,10 +18,32 @@ export const useUserStore = defineStore('userStore', () => {
   const loginRole = ref('')
   const userinfo = reactive(new MultiAuthUserDto())
   const ifLogin = ref(false)
+  // 普通用户登录还是管理员登录
+  const loginType = ref('')
+  const setLoginType = (val: string) => {
+    loginType.value = val
+    refreshLoginRoleCB()
+  }
+  const getLoginType = () => {
+    return loginType.value
+  }
+  const refreshLoginRoleCB = () => {
+    const routes = router.getRoutes();
+    const find = routes.find(item => item.name === '~');
+    if (find) {
+      if (loginType.value === 'user') {
+        find.redirect = '/dashboard'
+      }
+      if (loginType.value === 'admin') {
+        find.redirect = '/home'
+      }
+    }
+  }
+  refreshLoginRoleCB()
   const route = useRoute()
-  const login = async (user: LoginDto) => {
+  const login = async (user: LoginDto, ifAdminLogin = false) => {
     return new Promise((resolve, reject) => {
-      loginApi(user).then(async res => {
+      loginApi(user, ifAdminLogin).then(async res => {
         // 其他标签页如果有不同用户，则将其登出
         BCService.emit('login', { username: user.username, loginRole: user.loginRole })
         if (res) {
@@ -42,12 +66,20 @@ export const useUserStore = defineStore('userStore', () => {
               userinfo.visitor = new UserVisitorDto();
               objectUtils.copyObject(userinfo.visitor, res.multiAuthUser.visitor);
             }
+            if (loginRole.value === base.LoginRoleEnum.dcts) {
+              userinfo.dctsUser = new DctsUserDto()
+              objectUtils.copyObject(userinfo.dctsUser, res.multiAuthUser.dctsUser);
+            }
             if (route.query?.redirect && !ifWebsiteLink(route.query?.redirect.toString(), '/')) {
               notification.close()
               await router.push(route.query.redirect as string)
             } else {
               notification.close()
-              await router.push('/')
+              if (ifAdminLogin) {
+                await router.push('/')
+              } else {
+                gotoDashboardHome()
+              }
             }
           } catch (e) {
             console.error(e);
@@ -94,6 +126,9 @@ export const useUserStore = defineStore('userStore', () => {
     loginRole,
     userinfo,
     ifLogin,
+    loginType,
+    setLoginType,
+    getLoginType,
     login,
     removeToken,
     logOut,

@@ -6,6 +6,7 @@ import { goToLogin } from "@/utils/baseUtils.ts";
 import { ifDashboardPage, ifThreePage } from "@/utils/DashboardUtils.ts";
 import { final } from "@/utils/base.ts";
 import { useSysStore } from "@/store/module/sys.ts";
+import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -328,6 +329,15 @@ router.beforeEach((to, from, next) => {
     document.title = publicConfig.APP_NAME + ` | ${ifOtherPage}`;
   }
   const userStore = useUserStore();
+  if (
+      userStore.getLoginType() === 'user'
+      && (
+          ['/home'].includes(to.path)
+          || ['/main/', '/algorithm/', '/dcts/'].some(path => to.path.startsWith(path))
+      )
+  ) {
+    gotoDashboardHome()
+  }
   if (!userStore.ifLogin && whitelist.indexOf(to.path) === -1) {
     if (ifOtherPage) {
       next()

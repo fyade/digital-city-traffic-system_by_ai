@@ -8,6 +8,7 @@ import { VehicleTrackPointDto } from "@/type/module/dcts/vehicle/vehicleTrackPoi
 import { CesiumLine, CesiumPoint } from "@/views/dashboard/utils/dto.ts";
 import { DrawedVehicleTrajectoryClass } from "@/views/dashboard/utils/class.ts";
 import { idUtils } from "@dcts/common";
+import { useUserStore } from "@/store/module/user.ts";
 
 /**
  * 车辆模块
@@ -58,6 +59,7 @@ export class VehicleModule {
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
+  private userStore = new useUserStore()
   private datas: GetVehiclesInPolygonVo['data'] = []
 
   public addTask(results: GetVehiclesInPolygonVo) {
@@ -144,6 +146,9 @@ export class VehicleModule {
   private ifFinished = true
 
   public refreshVehicleRealTime() {
+    if (this.userStore.getLoginType() !== 'admin') {
+      return
+    }
     if (!this.viewer) {
       return;
     }

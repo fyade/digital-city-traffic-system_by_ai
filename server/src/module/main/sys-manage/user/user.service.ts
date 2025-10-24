@@ -33,6 +33,8 @@ import { serverConfig } from "@dcts/config";
 import { MysqlPrismaService } from '../../../../infra/prisma/mysql.prisma.service';
 import { MysqlPrismaoService } from "../../../../infra/prisma/mysql.prismao.service";
 import { PrismaoService } from "../../../../infra/prisma/prismao.service";
+import { PostgresqlPrismaService } from "../../../../infra/prisma/postgresql.prisma.service";
+import { DctsUserDto } from "../../../dcts/user/dcts-user/dto";
 
 @Injectable()
 export class UserService {
@@ -42,6 +44,7 @@ export class UserService {
     private readonly prismao: PrismaoService,
     private readonly mysqlPrisma: MysqlPrismaService,
     private readonly mysqlPrismao: MysqlPrismaoService,
+    private readonly pgsqlPrisma: PostgresqlPrismaService,
     private readonly authService: AuthService,
     private readonly logUserLoginService: LogUserLoginService,
     private readonly cacheTokenService: CacheTokenService,
@@ -310,6 +313,25 @@ export class UserService {
       }, { ifCustomizeId: true });
       return R.ok('注册成功。');
     }
+    if (dto.loginRole === base.LoginRoleEnum.dcts) {
+      const user = await this.pgsqlPrisma.findFirst<DctsUserDto>('dcts_user', {
+        username: dto.username
+      })
+      if (user) {
+        throw new Exception('用户名已被使用。');
+      }
+      const userid = idUtils.genId(10, false);
+      await this.pgsqlPrisma.create<DctsUserDto>('dcts_user', {
+        id: userid,
+        username: dto.username,
+        password: await encryptUtils.bcrypt.hashPassword(dto.password),
+        createRole: dto.loginRole,
+        updateRole: dto.loginRole,
+        createBy: userid,
+        updateBy: userid,
+      }, { ifCustomizeId: true })
+      return R.ok('注册成功。');
+    }
   }
 
   async login(dto: LoginDto, { loginIp, loginBrowser, loginOs }, ifAdminLogin = false): Promise<R<{
@@ -383,6 +405,36 @@ export class UserService {
       delete user.password;
       const token = await this.cacheTokenService.genToken(user.id, user.username, dto.loginRole, loginIp, loginOs, loginBrowser);
       multiAuthUser.visitor = user;
+      return R.ok({
+        token: token,
+        loginRole: dto.loginRole,
+        multiAuthUser: multiAuthUser,
+      });
+    }
+    if (dto.loginRole === base.LoginRoleEnum.dcts) {
+      const user = await this.pgsqlPrisma.findFirst<DctsUserDto>('dcts_user', {
+        username: dto.username
+      })
+      if (!user) {
+        throw new UserUnknownException();
+      }
+      const loginlogs = await this.getLoginLogsOfPasswordError(user.id, loginIp, dto.loginRole)
+      if (loginlogs.length >= this.maxLoginFailCount) {
+        const sort = loginlogs.sort((a, b) => timeUtils.timestamp(a.createTime) - timeUtils.timestamp(b.createTime))
+        const number = Math.ceil(24 - (timeUtils.timestamp() - timeUtils.timestamp(sort[0].createTime)) / (1000 * 60 * 60));
+        throw new Exception(`您的账号在当前IP密码错误次数过多，请${number}小时后重试或更换网络环境重试。`);
+      }
+      const b1 = await encryptUtils.bcrypt.comparePassword(dto.password, user.password)
+      if (!b1) {
+        await this.insLoginLog(loginIp, loginBrowser, '', loginOs, user.id, dto.loginRole, b1, PASSWORD_ERROR);
+        throw new Exception(`密码错误，还剩${this.maxLoginFailCount - loginlogs.length - 1}次机会。`);
+      }
+      if (!ifAdminLogin) {
+        await this.insLoginLog(loginIp, loginBrowser, '', loginOs, user.id, dto.loginRole, b1);
+      }
+      delete user.password;
+      const token = await this.cacheTokenService.genToken(user.id, user.username, dto.loginRole, loginIp, loginOs, loginBrowser);
+      multiAuthUser.dctsUser = user
       return R.ok({
         token: token,
         loginRole: dto.loginRole,

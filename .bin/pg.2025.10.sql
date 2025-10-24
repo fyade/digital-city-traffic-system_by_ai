@@ -89,4 +89,25 @@ alter table public.flight_route
 alter table public.flight_route
     alter column color set not null;
 
+-- ===== ===== ===== ===== ===== ===== 2025.10.23 ===== ===== ===== ===== ===== =====
+
+create table public.dcts_user
+(
+    id          varchar(10)                               not null primary key,
+    username    varchar(50)                               not null,
+    nickname    varchar(50)                               null,
+    password    varchar(100)                              not null,
+    avatar      varchar(200)                              null,
+    sex         varchar(10)                               null,
+    email       varchar(50)                               null,
+    tel         varchar(15)                               null,
+    create_role varchar(30)                               not null,
+    update_role varchar(30)                               not null,
+    create_by   varchar(10)                               not null,
+    update_by   varchar(10)                               not null,
+    create_time timestamp(3) default CURRENT_TIMESTAMP(3) not null,
+    update_time timestamp(3)                              not null,
+    deleted     char         default 'N'                  not null
+);
+
 -- ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== =====

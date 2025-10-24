@@ -24,6 +24,7 @@ import { ThreeDFileUnitModule } from './asset/three-d-file-unit/three-d-file-uni
 import { ThreeDFileModule } from './asset/three-d-file/three-d-file.module';
 import { FlightRestrictionZoneModule } from './airspace/flight-restriction-zone/flight-restriction-zone.module';
 import { FlightRouteModule } from './airspace/flight-route/flight-route.module';
+import { DctsUserModule } from './user/dcts-user/dcts-user.module';
 
 @Module({
   imports: [
@@ -51,7 +52,8 @@ import { FlightRouteModule } from './airspace/flight-route/flight-route.module';
     ThreeDFileUnitModule,
     ThreeDFileModule,
     FlightRestrictionZoneModule,
-    FlightRouteModule
+    FlightRouteModule,
+    DctsUserModule
   ]
 })
 export class DctsModule {

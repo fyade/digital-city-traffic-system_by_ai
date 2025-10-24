@@ -13,6 +13,7 @@ import {
 } from "@/views/dashboard/functionModules/constant.ts";
 import signalLight1Svg from "@/assets/images2/signal-light-1.png";
 import { getLightCanvas } from "@/views/dashboard/utils/funcs.ts";
+import { useUserStore } from "@/store/module/user.ts";
 
 /**
  * 信号灯模块
@@ -56,6 +57,7 @@ export class SignalLightModule {
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
+  private userStore = new useUserStore()
   private datas: CalculateLightsInPolygonVo[] = []
   private calculatedLightTimes: { childLightId: number, times: [number, number][] }[] = []
 
@@ -197,6 +199,9 @@ export class SignalLightModule {
                                        ifReplay?: boolean
                                      } = {}
   ) {
+    if (this.userStore.getLoginType() !== 'admin') {
+      return
+    }
     if (!this.viewer) {
       return
     }

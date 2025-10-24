@@ -798,6 +798,37 @@ export class AuthService {
       allRoleIds.push(...allRoleIds2.map((item) => item.id));
       allDeptIds.push(...allDeptIds2.map((item) => item.id));
     }
+    if (loginRole === base.LoginRoleEnum.dcts) {
+      const sutdps_ = await this.mysqlPrismao.sys_user_table_default_permission.findMany({
+        where: {
+          table_name: 'dcts_user',
+          ...this.prismao.defaultSelArg().where,
+        },
+      });
+      const sutdps = baseUtils.objToCamelCase<UserTableDefaultPermissionDto[]>(sutdps_);
+      const allRoleIds2 = await this.mysqlPrismao.sys_role.findMany({
+        where: {
+          ...(ifAdmin ? { if_admin: final.Y } : {}),
+          if_disabled: final.N,
+          id: {
+            in: sutdps.filter((item) => item.permType === base.UTDPTypeEnum.T_ROLE).map((item) => item.permId),
+          },
+          ...this.prismao.defaultSelArg().where,
+        },
+      });
+      const allDeptIds2 = await this.mysqlPrismao.sys_dept.findMany({
+        where: {
+          ...(ifAdmin ? { if_admin: final.Y } : {}),
+          if_disabled: final.N,
+          id: {
+            in: sutdps.filter((item) => item.permType === base.UTDPTypeEnum.T_DEPT).map((item) => item.permId),
+          },
+          ...this.prismao.defaultSelArg().where,
+        },
+      });
+      allRoleIds.push(...allRoleIds2.map((item) => item.id));
+      allDeptIds.push(...allDeptIds2.map((item) => item.id));
+    }
     return {
       allRoleIds,
       allDeptIds,

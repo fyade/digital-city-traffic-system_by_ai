@@ -673,3 +673,22 @@ model flight_route {
   deleted     String                  @default("N") @dbPostgresql.Char(1)
   color       String                  @dbPostgresql.VarChar(20)
 }
+
+// dcts用户
+model dcts_user {
+  id          String   @id @dbPostgresql.VarChar(10)
+  username    String   @dbPostgresql.VarChar(50)
+  nickname    String?  @dbPostgresql.VarChar(50)
+  password    String   @dbPostgresql.VarChar(100)
+  avatar      String?  @dbPostgresql.VarChar(200)
+  sex         String?  @dbPostgresql.VarChar(10)
+  email       String?  @dbPostgresql.VarChar(50)
+  tel         String?  @dbPostgresql.VarChar(15)
+  create_role String   @dbPostgresql.VarChar(30)
+  update_role String   @dbPostgresql.VarChar(30)
+  create_by   String   @dbPostgresql.VarChar(10)
+  update_by   String   @dbPostgresql.VarChar(10)
+  create_time DateTime @default(dbgenerated("CURRENT_TIMESTAMP(3)"))
+  update_time DateTime
+  deleted     String   @default("N") @dbPostgresql.Char(1)
+}

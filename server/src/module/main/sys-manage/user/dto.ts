@@ -3,6 +3,7 @@ import { PageDto } from '../../../../common/dto/PageDto';
 import { IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserVisitorDto } from '../../other-user/user-visitor/dto';
+import { DctsUserDto } from "../../../dcts/user/dcts-user/dto";
 
 export class UserDto extends BaseDto {
   @ApiProperty({ description: '用户id', required: true })
@@ -134,4 +135,5 @@ export class ResetUserPsdDto {
 export class MultiAuthUserDto {
   admin: UserDto | null;
   visitor: UserVisitorDto | null;
+  dctsUser: DctsUserDto | null;
 }

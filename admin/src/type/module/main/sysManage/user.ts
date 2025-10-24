@@ -3,6 +3,7 @@ import { RoleDto } from "@/type/module/main/sysManage/role.ts";
 import { DeptDto } from "@/type/module/main/sysManage/dept.ts";
 import { UserGroupDto } from "@/type/module/algorithm/userGroup.ts";
 import { UserVisitorDto } from "@/type/module/main/otherUser/userVisitor.ts";
+import { DctsUserDto } from "@/type/module/dcts/user/dctsUser.ts";
 
 export class UserDto extends BaseClass {
   id!: string;
@@ -77,4 +78,5 @@ export class UserDto_ extends UserDto {
 export class MultiAuthUserDto {
   admin!: UserDto | null;
   visitor!: UserVisitorDto | null;
+  dctsUser!: DctsUserDto | null;
 }

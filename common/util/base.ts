@@ -2,11 +2,13 @@
 export enum LoginRoleEnum {
   admin = "admin",
   visitor = "visitor",
+  dcts = "dcts",
 }
 
 export const loginRoleDict = {
   [LoginRoleEnum.admin]: "系统管理员",
   [LoginRoleEnum.visitor]: "访客",
+  [LoginRoleEnum.dcts]: "数智交通全域调度系统用户",
 };
 
 // 用户认证类型

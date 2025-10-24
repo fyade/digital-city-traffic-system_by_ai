@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, watchEffect } from 'vue'
 import { useUserStore } from "@/store/module/user.ts";
 import { useSysStore } from "@/store/module/sys.ts";
-import { getVerificationCode } from "@/api/module/main/sysManage/userLogin.ts";
+import { getVerificationCode, registApi } from "@/api/module/main/sysManage/userLogin.ts";
 import { publicConfig } from "@dcts/config";
 import { base } from "@dcts/common";
 
@@ -21,11 +21,28 @@ const onSubmit = async () => {
   if (logining.value) {
     return;
   }
-  logining.value = true
-  userStore.login(form).then().catch((e) => {
-    logining.value = false
-    refreshVerificationCode()
-  })
+  if (radio1.value === 'user') {
+    userStore.setLoginType('user')
+  }
+  if (radio1.value === 'admin') {
+    userStore.setLoginType('admin')
+  }
+  if (radio1.value === 'user' || radio1.value === 'admin') {
+    logining.value = true
+    userStore.login(form, radio1.value === 'admin').then().catch((e) => {
+      logining.value = false
+      refreshVerificationCode()
+    })
+  }
+  if (radio1.value === 'regist') {
+    logining.value = true
+    registApi(form).then((res) => {
+      ElMessage.success('注册成功，请前往"用户登录" tab 页登录。')
+    }).finally(() => {
+      logining.value = false
+      refreshVerificationCode()
+    })
+  }
 }
 
 const vcode = ref('')
@@ -36,11 +53,29 @@ const refreshVerificationCode = () => {
   })
 }
 refreshVerificationCode()
+
+const radio1 = ref('user')
+watchEffect(() => {
+  if (radio1.value === 'admin') {
+    form.loginRole = base.LoginRoleEnum.admin
+  } else if (radio1.value === 'user' || radio1.value === 'regist') {
+    form.loginRole = base.LoginRoleEnum.dcts
+  }
+})
 </script>
 
 <template>
   <div class="el">
     <p class="title">{{ publicConfig.APP_NAME }}</p>
+
+    <el-tabs v-model="radio1">
+      <el-tab-pane label="用户登录" name="user"/>
+      <el-tab-pane label="用户注册" name="regist"/>
+      <el-tab-pane label="管理员登录" name="admin"/>
+    </el-tabs>
+
+    <br/>
+
     <el-form
         :model="form"
         label-width="80px"
@@ -53,7 +88,7 @@ refreshVerificationCode()
       <el-form-item label="密码">
         <el-input type="password" v-model="form.password"/>
       </el-form-item>
-      <el-form-item label="登录身份">
+      <el-form-item label="登录身份" v-show="radio1 === 'admin'">
         <el-select v-model="form.loginRole">
           <el-option v-for="key in base.LoginRoleEnum" :key="key" :label="base.loginRoleDict[key]" :value="key"/>
         </el-select>

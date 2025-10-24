@@ -10,6 +10,7 @@ import {
 } from "@/views/dashboard/functionModules/constant.ts";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
+import { useUserStore } from "@/store/module/user.ts";
 
 /**
  * 空域模块
@@ -48,6 +49,7 @@ export class AirspaceModule {
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
+  private userStore = new useUserStore()
   // 新增限飞区时的临时点
   private tempPoints: [number, number][] = []
 

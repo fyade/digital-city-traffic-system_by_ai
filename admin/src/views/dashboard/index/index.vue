@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import DataLayer from "@/views/dashboard/index/dataLayer.vue";
 import DebugPanel from '@/views/dashboard/debugPanel/index.vue';
 import { useSysStore } from "@/store/module/sys.ts";
 import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
 import EntityHub from "@/views/dashboard/index/entityHub.vue";
 import { ContextMenuOptionType } from "@/views/dashboard/functionModules/constant.ts";
+import { useUserStore } from "@/store/module/user.ts";
 
 const sysStore = useSysStore();
+const userStore = useUserStore();
 
 onMounted(async () => {
   await init()
@@ -56,6 +58,8 @@ const openDebugLayerChange = () => {
 const refreshServerTime = () => {
   cesiumClass.refreshServerTime()
 }
+
+const ifAdminLogin = computed(() => userStore.loginType === 'admin')
 </script>
 
 <template>
@@ -84,7 +88,7 @@ const refreshServerTime = () => {
 
   <EntityHub/>
 
-  <div class="button1">
+  <div class="button1" v-if="ifAdminLogin">
     <el-button @click="refreshServerTime">点此同步服务器时间</el-button>
   </div>
 

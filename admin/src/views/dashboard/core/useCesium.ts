@@ -3,6 +3,7 @@ import { CesiumLine, CesiumPoint } from "@/views/dashboard/utils/dto.ts";
 import { adminConfig } from "@dcts/config";
 import { timeUtils } from "@dcts/common";
 import { final } from "@/utils/base.ts";
+import { useUserStore } from "@/store/module/user.ts";
 
 const currentConfig = adminConfig.currentConfig();
 
@@ -16,6 +17,8 @@ export class UseCesium {
   private pointMap: Map<string, Cesium.PointPrimitive> | null = null
   private polylineCollection: Cesium.PrimitiveCollection | null = null
   private polylineMap: Map<string, Cesium.Primitive> | null = null
+
+  private userStore = new useUserStore()
 
   constructor() {
     if (!UseCesium.instance) {
@@ -367,6 +370,7 @@ export class UseCesium {
    * @param container
    */
   public setContainer(container: string) {
+    const ifAdminLogin = this.userStore.getLoginType() === 'admin';
     this.viewer = new Cesium.Viewer(container, {
       infoBox: false, // 属性面板
       selectionIndicator: false, // 选择指示器
@@ -381,6 +385,9 @@ export class UseCesium {
       fullscreenButton: false, // 全屏按钮
     });
     (this.viewer.cesiumWidget.creditContainer as HTMLElement).style.display = "none";
+    if (!ifAdminLogin) {
+      (this.viewer.timeline.container as HTMLElement).style.display = "none";
+    }
     // this.viewer.animation.viewModel.dateFormatter = time => timeUtils.formatDate(Cesium.JulianDate.toDate(time), 'YYYY-MM-DD');
     // this.viewer.animation.viewModel.timeFormatter = time => timeUtils.formatDate(Cesium.JulianDate.toDate(time), 'HH:mm:ss');
     this.viewer.timeline.makeLabel = time => timeUtils.formatDate(Cesium.JulianDate.toDate(time));

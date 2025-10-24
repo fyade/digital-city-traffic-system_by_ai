@@ -12,6 +12,7 @@ import { useDashboardStore } from "@/store/module/dashboard.ts";
 import { CronJob } from "cron";
 import { SignalLightModule } from "@/views/dashboard/functionModules/signalLightModule.ts";
 import { VehicleModule } from "@/views/dashboard/functionModules/vehicleModule.ts";
+import { useUserStore } from "@/store/module/user.ts";
 
 const dashboardStore = useDashboardStore();
 
@@ -63,6 +64,7 @@ export class MapEntityModule {
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
+  private userStore = new useUserStore()
   private cronJob: CronJob | null = null
 
   public init() {
