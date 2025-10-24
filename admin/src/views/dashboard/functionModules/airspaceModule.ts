@@ -49,7 +49,7 @@ export class AirspaceModule {
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
-  private userStore = new useUserStore()
+  private userStore = useUserStore()
   // 新增限飞区时的临时点
   private tempPoints: [number, number][] = []
 

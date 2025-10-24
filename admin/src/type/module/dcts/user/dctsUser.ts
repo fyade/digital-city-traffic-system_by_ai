@@ -22,13 +22,13 @@ export class DctsUserSelAllDto {
 }
 
 export class DctsUserInsDto {
-  username!: string;
-  nickname!: string;
-  password!: string;
-  avatar!: string;
-  sex!: string;
-  email!: string;
-  tel!: string;
+  username?: string;
+  nickname?: string;
+  password?: string;
+  avatar?: string;
+  sex?: string;
+  email?: string;
+  tel?: string;
 }
 
 export class DctsUserUpdDto extends DctsUserInsDto {

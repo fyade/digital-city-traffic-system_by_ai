@@ -57,7 +57,7 @@ export class SignalLightModule {
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
-  private userStore = new useUserStore()
+  private userStore = useUserStore()
   private datas: CalculateLightsInPolygonVo[] = []
   private calculatedLightTimes: { childLightId: number, times: [number, number][] }[] = []
 

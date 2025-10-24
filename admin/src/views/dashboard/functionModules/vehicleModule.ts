@@ -59,7 +59,7 @@ export class VehicleModule {
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
-  private userStore = new useUserStore()
+  private userStore = useUserStore()
   private datas: GetVehiclesInPolygonVo['data'] = []
 
   public addTask(results: GetVehiclesInPolygonVo) {

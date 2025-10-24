@@ -1,7 +1,7 @@
 import { publicDict } from "@/utils/base.ts";
-import { DctsUserDto } from "@/type/module/dcts/user/dctsUser.ts";
+import { DctsUserDto_ } from "@/type/module/dcts/user/dctsUser.ts";
 
-export const dctsUserDict: { [P in keyof DctsUserDto]: string } = {
+export const dctsUserDict: { [P in keyof DctsUserDto_]: string } = {
   ...publicDict,
   username: '用户名',
   nickname: '昵称',

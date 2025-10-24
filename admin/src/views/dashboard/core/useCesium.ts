@@ -18,7 +18,7 @@ export class UseCesium {
   private polylineCollection: Cesium.PrimitiveCollection | null = null
   private polylineMap: Map<string, Cesium.Primitive> | null = null
 
-  private userStore = new useUserStore()
+  private userStore = useUserStore()
 
   constructor() {
     if (!UseCesium.instance) {

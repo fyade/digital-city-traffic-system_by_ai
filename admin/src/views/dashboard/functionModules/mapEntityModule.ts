@@ -64,7 +64,7 @@ export class MapEntityModule {
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
-  private userStore = new useUserStore()
+  private userStore = useUserStore()
   private cronJob: CronJob | null = null
 
   public init() {
