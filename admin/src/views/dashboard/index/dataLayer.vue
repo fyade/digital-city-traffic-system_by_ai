@@ -32,6 +32,9 @@ const goOperateGuidePanel = () => {
 const goAdminPanel = () => {
   router.push('/dashboard/admin-panel');
 }
+const goUserPanel = () => {
+  router.push('/dashboard/user-panel');
+}
 const goHome = () => {
   router.push('/');
 }
@@ -59,6 +62,7 @@ const ifAdminLogin = computed(() => userStore.loginType === 'admin')
       <p v-if="!ifLogin" @click="goToLogin"><span class="no-underline">登录</span></p>
       <p v-if="ifLogin" @click="userStore.logOut(false)"><span class="no-underline">退出登录</span></p>
       <p v-if="ifLogin&&ifAdminLogin" @click="goAdminPanel"><span class="no-underline">管理端面板</span></p>
+      <p v-if="ifLogin" @click="goUserPanel"><span class="no-underline">用户端面板</span></p>
       <p v-if="ifLogin&&ifAdminLogin" @click="goHome"><span class="no-underline">→前往管理端→</span></p>
       <p v-if="ifLogin" @click="goThree"><span class="no-underline">→前往三维端→</span></p>
       <p v-show="ifLogin&&currentConfig.VITE_MODE===final.DEV" @click="emits('openDebugPanel')"><span class="no-underline">调试面板</span></p>

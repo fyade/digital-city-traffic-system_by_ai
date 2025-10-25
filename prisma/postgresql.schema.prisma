@@ -692,3 +692,18 @@ model dcts_user {
   update_time DateTime
   deleted     String   @default("N") @dbPostgresql.Char(1)
 }
+
+// 低空航空器表
+model low_altitude_aircraft {
+  id                  Int      @id @default(autoincrement())
+  aircraft_name       String   @dbPostgresql.VarChar(300)
+  serial_number       String   @dbPostgresql.VarChar(300)
+  registration_number String   @dbPostgresql.VarChar(300)
+  create_role         String   @dbPostgresql.VarChar(30)
+  update_role         String   @dbPostgresql.VarChar(30)
+  create_by           String   @dbPostgresql.VarChar(10)
+  update_by           String   @dbPostgresql.VarChar(10)
+  create_time         DateTime @default(dbgenerated("CURRENT_TIMESTAMP(3)"))
+  update_time         DateTime
+  deleted             String   @default("N") @dbPostgresql.Char(1)
+}

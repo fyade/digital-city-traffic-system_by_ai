@@ -125,6 +125,17 @@ const ifAdminLogin = computed(() => userStore.loginType === 'admin')
           </template>
         </n-gi>
       </template>
+      <n-gi>
+        <n-grid>
+          <n-gi :span="6">空域显示</n-gi>
+          <n-gi :span="18">
+            <n-switch>
+              <template #checked>显示</template>
+              <template #unchecked>隐藏</template>
+            </n-switch>
+          </n-gi>
+        </n-grid>
+      </n-gi>
     </n-grid>
   </n-modal>
 </template>

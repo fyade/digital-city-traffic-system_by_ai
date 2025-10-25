@@ -110,4 +110,21 @@ create table public.dcts_user
     deleted     char         default 'N'                  not null
 );
 
+-- ===== ===== ===== ===== ===== ===== 2025.10.25 ===== ===== ===== ===== ===== =====
+
+create table public.low_altitude_aircraft
+(
+    id                  serial PRIMARY KEY,
+    aircraft_name       varchar(300)                              not null,
+    serial_number       varchar(300)                              not null,
+    registration_number varchar(300)                              not null,
+    create_role         varchar(30)                               not null,
+    update_role         varchar(30)                               not null,
+    create_by           varchar(10)                               not null,
+    update_by           varchar(10)                               not null,
+    create_time         timestamp(3) default CURRENT_TIMESTAMP(3) not null,
+    update_time         timestamp(3)                              not null,
+    deleted             char         default 'N'                  not null
+);
+
 -- ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== =====

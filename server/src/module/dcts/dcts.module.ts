@@ -25,6 +25,8 @@ import { ThreeDFileModule } from './asset/three-d-file/three-d-file.module';
 import { FlightRestrictionZoneModule } from './airspace/flight-restriction-zone/flight-restriction-zone.module';
 import { FlightRouteModule } from './airspace/flight-route/flight-route.module';
 import { DctsUserModule } from './user/dcts-user/dcts-user.module';
+import { LowAltitudeAircraftModule } from './aircraft-manage/low-altitude-aircraft/low-altitude-aircraft.module';
+import { UserLowAltitudeAircraftModule } from './aircraft-manage/user-low-altitude-aircraft/user-low-altitude-aircraft.module';
 
 @Module({
   imports: [
@@ -53,7 +55,9 @@ import { DctsUserModule } from './user/dcts-user/dcts-user.module';
     ThreeDFileModule,
     FlightRestrictionZoneModule,
     FlightRouteModule,
-    DctsUserModule
+    DctsUserModule,
+    LowAltitudeAircraftModule,
+    UserLowAltitudeAircraftModule
   ]
 })
 export class DctsModule {

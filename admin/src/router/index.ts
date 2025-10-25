@@ -89,6 +89,36 @@ export const routes: RouteRecordRaw[] = [
         ]
       },
       {
+        path: 'user-panel',
+        name: '~dashboard/userPanel',
+        component: () => import('@/views/dashboard/userPanel/index.vue'),
+        children: [
+          {
+            path: 'aircraft-manage',
+            name: '~dashboard/userPanel/aircraftManage',
+            meta: {
+              label: '航空器管理',
+              icon: 'road',
+            },
+            children: [
+              {
+                path: 'user-low-altitude-aircraft',
+                name: '~dashboard/userPanel/aircraftManage/userLowAltitudeAircraft',
+                meta: {
+                  label: '我的低空航空器管理',
+                  icon: 'road',
+                },
+                component: () => import('@/views/module/dcts/aircraftManage/userLowAltitudeAircraft/index.vue')
+              }
+            ]
+          },
+          {
+            path: ':pathMatch(.*)*',
+            component: () => import('@/views/dashboard/redirect/index.vue')
+          }
+        ]
+      },
+      {
         path: 'setting-panel',
         name: '~dashboard/settingPanel',
         component: () => import('@/views/dashboard/settingPanel/index.vue')
