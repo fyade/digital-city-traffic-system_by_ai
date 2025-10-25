@@ -17,7 +17,7 @@ export function arr2ToDiguiObj2<T = any>(list: T[], {
                                            ifDeepClone = true
                                          }: {
                                            key?: string,
-                                           defaultParent?: number,
+                                           defaultParent?: number | string,
                                            ifDeepClone?: boolean
                                          } = {}
 ): Arr2ToDiguiObjI2<T> {
@@ -40,7 +40,7 @@ export function arr2ToDiguiObj<T>(list: T[], {
                                   }: {
                                     key?: string,
                                     childrenKey?: string,
-                                    defaultParent?: number,
+                                    defaultParent?: number | string,
                                     ifDeepClone?: boolean
                                   } = {}
 ): Arr2ToDiguiObjI<T, typeof key, number>[] {

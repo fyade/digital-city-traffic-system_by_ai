@@ -14,14 +14,14 @@ const getRoutes = () => {
   const parentKVs = new Map<string, string>()
   for (const route of routes) {
     for (const child of route.children) {
-      parentKVs.set(child.name, route.name)
+      parentKVs.set(child.name as string, route.name as string)
     }
   }
   const _menuOptions: MenuOption[] = routes
       .map((route) => {
         return {
           id: route.name,
-          parentId: parentKVs.get(route.name),
+          parentId: parentKVs.get(route.name as string),
           label: () => h(
               RouterLink,
               {
@@ -33,7 +33,7 @@ const getRoutes = () => {
                 default: () => route.meta.label
               }),
           key: route.path,
-          icon: () => h(SvgIcon, {name: route.meta.icon, color: 'var(--menu-icon-color)'})
+          icon: () => h(SvgIcon, {name: route.meta.icon as string, color: 'var(--menu-icon-color)'})
         }
       })
   const arr2ToDiguiObj1 = arr2ToDiguiObj2<MenuOption>(_menuOptions, {defaultParent: '~dashboard/userPanel'});
