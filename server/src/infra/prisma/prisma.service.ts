@@ -124,7 +124,6 @@ export class PrismaService {
                                         numberKeys = [],
                                         completeMatchingKeys = [],
                                         ifDeleted = true,
-                                        ifUseSelfData = false,
                                       }: {
                                         data?: {[P in keyof T]?: T[P] | string | Partial<SelectParamObj>},
                                         orderBy?: boolean | object,
@@ -134,11 +133,10 @@ export class PrismaService {
                                         numberKeys?: string[],
                                         completeMatchingKeys?: string[],
                                         ifDeleted?: boolean,
-                                        ifUseSelfData?: boolean,
                                       } = {},
   ) {
     const data_ = baseUtils.objToSnakeCase(data as object);
-    const publicData = this.prismao.defaultSelArg({selKeys, ifDeleted, ifUseSelfData}).where;
+    const publicData = this.prismao.defaultSelArg({selKeys, ifDeleted}).where;
     const ret = {
       AND: [
         ...Object.keys(publicData).reduce((obj, item) => [
@@ -296,7 +294,6 @@ export class PrismaService {
         model: param1.tblName,
         selKeys: params[0].selKeys,
         ifDeleted: params[0].ifDeleted,
-        ifUseSelfData: params[0].ifUseSelfData
       });
       if (publicData.select) {
         arg['select'] = publicData.select
@@ -393,20 +390,17 @@ export class PrismaService {
    * @param orderBy
    * @param range
    * @param selKeys
-   * @param ifUseSelfData
    */
   public async findPage<T>(model: string, {
                                                 data,
                                                 orderBy,
                                                 range = {},
                                                 selKeys = [],
-                                                ifUseSelfData = false,
                                               }: {
                                                 data?: {[P in keyof T]?: T[P] | string | Partial<SelectParamObj>} & PageDto,
                                                 orderBy?: boolean | object,
                                                 range?: object,
                                                 selKeys?: string[],
-                                                ifUseSelfData?: boolean,
                                               } = {},
   ): Promise<PageVo<T>> {
     const pageNum = Number(data.pageNum);
@@ -419,7 +413,6 @@ export class PrismaService {
       model,
       selKeys,
       ifDeleted: fieldSelectParam.ifDeleted,
-      ifUseSelfData
     });
     const skipAndTakeFromPNS = this._(pageNum, pageSize);
     const arg: PrismaParam = {
@@ -432,7 +425,6 @@ export class PrismaService {
         numberKeys: fieldSelectParam.numberKeys,
         completeMatchingKeys: fieldSelectParam.completeMatchingKeys,
         ifDeleted: fieldSelectParam.ifDeleted,
-        ifUseSelfData,
       }),
       ...(publicData.select ? {select: publicData.select} : {}),
       skip: skipAndTakeFromPNS.skip,
@@ -465,20 +457,17 @@ export class PrismaService {
    * @param orderBy
    * @param range
    * @param selKeys
-   * @param ifUseSelfData
    */
   public async findAll<T>(model: string, {
                                         data,
                                         orderBy,
                                         range = {},
                                         selKeys = [],
-                                        ifUseSelfData = false,
                                       }: {
                                         data?: {[P in keyof T]?: T[P] | string | Partial<SelectParamObj>},
                                         orderBy?: boolean | object,
                                         range?: object,
                                         selKeys?: string[],
-                                        ifUseSelfData?: boolean,
                                       } = {},
   ): Promise<T[]> {
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
@@ -486,7 +475,6 @@ export class PrismaService {
       model,
       selKeys,
       ifDeleted: fieldSelectParam.ifDeleted,
-      ifUseSelfData
     });
     const arg: PrismaParamAll = {
       where: this.genSelParams<T>({
@@ -498,7 +486,6 @@ export class PrismaService {
         numberKeys: fieldSelectParam.numberKeys,
         completeMatchingKeys: fieldSelectParam.completeMatchingKeys,
         ifDeleted: fieldSelectParam.ifDeleted,
-        ifUseSelfData,
       }),
       ...(publicData.select ? {select: publicData.select} : {}),
     };
@@ -513,14 +500,11 @@ export class PrismaService {
    * @param model
    * @param args
    * @param selKeys
-   * @param ifUseSelfData
    */
   public async findFirst<T>(model: string, args?: Partial<T> & Partial<_BaseClass>, {
                                        selKeys = [],
-                                       ifUseSelfData = false,
                                      }: {
                                        selKeys?: string[],
-                                       ifUseSelfData?: boolean,
                                      } = {},
   ): Promise<T> {
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
@@ -528,7 +512,6 @@ export class PrismaService {
       model,
       selKeys,
       ifDeleted: fieldSelectParam.ifDeleted,
-      ifUseSelfData
     });
     const arg = {
       where: {
@@ -547,17 +530,14 @@ export class PrismaService {
    * @param model
    * @param id
    * @param selKeys
-   * @param ifUseSelfData
    */
   public async findById<T>(model: string, id: string | number, {
                              selKeys = [],
-                             ifUseSelfData = false,
                            }: {
                              selKeys?: string[],
-                             ifUseSelfData?: boolean,
                            } = {},
   ): Promise<T> {
-    return this.findFirst<T>(model, {id: id} as Partial<T> & Partial<_BaseClass>, {selKeys, ifUseSelfData});
+    return this.findFirst<T>(model, {id: id} as Partial<T> & Partial<_BaseClass>, {selKeys});
   }
 
   /**
@@ -565,14 +545,11 @@ export class PrismaService {
    * @param model
    * @param ids
    * @param selKeys
-   * @param ifUseSelfData
    */
   public async findByIds<T>(model: string, ids: string[] | number[], {
                               selKeys = [],
-                              ifUseSelfData = false,
                             }: {
                               selKeys?: string[],
-                              ifUseSelfData?: boolean,
                             } = {},
   ): Promise<T[]> {
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
@@ -580,7 +557,6 @@ export class PrismaService {
       model,
       selKeys,
       ifDeleted: fieldSelectParam.ifDeleted,
-      ifUseSelfData
     });
     const arg = {
       where: {
@@ -601,16 +577,13 @@ export class PrismaService {
    * @param model
    * @param data
    * @param range
-   * @param ifUseSelfData
    */
   public async count<T>(model: string, {
                                       data,
                                       range = {},
-                                      ifUseSelfData = false,
                                     }: {
                                       data?: Partial<T>,
                                       range?: object,
-                                      ifUseSelfData?: boolean,
                                     } = {},
   ): Promise<number> {
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
@@ -622,7 +595,6 @@ export class PrismaService {
         numberKeys: fieldSelectParam.numberKeys,
         completeMatchingKeys: fieldSelectParam.completeMatchingKeys,
         ifDeleted: fieldSelectParam.ifDeleted,
-        ifUseSelfData,
       }),
     };
     const count = await this.getModel(model).count(arg);
@@ -691,14 +663,8 @@ export class PrismaService {
    * 修改
    * @param model
    * @param data
-   * @param ifUseSelfData
    */
-  public async updateById<T>(model: string, data: Partial<T> & Partial<_BaseClass>, {
-                               ifUseSelfData = false,
-                             }: {
-                               ifUseSelfData?: boolean
-                             } = {},
-  ): Promise<T> {
+  public async updateById<T>(model: string, data: Partial<T> & Partial<_BaseClass>): Promise<T> {
     const id = data.id;
     const data2 = deepClone(data);
     delete data2.id;
@@ -708,7 +674,6 @@ export class PrismaService {
       ifUpdateBy: fieldSelectParam.ifUpdateBy,
       ifUpdateTime: fieldSelectParam.ifUpdateTime,
       ifDeleted: fieldSelectParam.ifDeleted,
-      ifUseSelfData,
     });
     const arg = {
       where: {
@@ -728,19 +693,11 @@ export class PrismaService {
    * 批量修改
    * @param model
    * @param data
-   * @param ifUseSelfData
    */
-  public async updateMany<T>(model: string, data: Partial<T>[], {
-                               ifUseSelfData = false,
-                             }: {
-                               ifUseSelfData?: boolean
-                             } = {},
-  ): Promise<T[]> {
+  public async updateMany<T>(model: string, data: Partial<T>[]): Promise<T[]> {
     const retArr: T[] = [];
     for (let i = 0; i < data.length; i++) {
-      const ret = await this.updateById<T>(model, data[i], {
-        ifUseSelfData,
-      });
+      const ret = await this.updateById<T>(model, data[i]);
       retArr.push(ret);
     }
     return new Promise(resolve => resolve(retArr));
@@ -750,15 +707,9 @@ export class PrismaService {
    * 批量删除
    * @param model
    * @param ids
-   * @param ifUseSelfData
    */
-  public async deleteById<T>(model: string, ids: string[] | number[], {
-                               ifUseSelfData = false,
-                             }: {
-                               ifUseSelfData?: boolean
-                             } = {},
-  ): Promise<boolean> {
-    const publicData = this.prismao.defaultDelArg({ifUseSelfData});
+  public async deleteById<T>(model: string, ids: string[] | number[]): Promise<boolean> {
+    const publicData = this.prismao.defaultDelArg();
     const arg = {
       where: {
         ...publicData.where,
@@ -779,15 +730,9 @@ export class PrismaService {
    * @param model
    * @param key
    * @param values
-   * @param ifUseSelfData
    */
-  public async delete<T>(model: string, key: string, values: string[] | number[], {
-                           ifUseSelfData = false,
-                         }: {
-                           ifUseSelfData?: boolean
-                         } = {},
-  ): Promise<boolean> {
-    const publicData = this.prismao.defaultDelArg({ifUseSelfData});
+  public async delete<T>(model: string, key: string, values: string[] | number[]): Promise<boolean> {
+    const publicData = this.prismao.defaultDelArg();
     const arg = {
       where: {
         ...publicData.where,

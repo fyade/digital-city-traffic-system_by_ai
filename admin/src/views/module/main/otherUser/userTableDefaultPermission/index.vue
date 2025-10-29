@@ -271,12 +271,17 @@ const chooseUserGroup = (row: UserGroupDto) => {
         </el-form-item>
         <!--在此下方添加表单项-->
         <el-row>
-          <el-col :span="12">
+          <el-col :span="24">
             <el-form-item :label="userTableDefaultPermissionDict.tableName" prop="tableName">
-              <el-input v-model="state.dialogForm.tableName" :placeholder="userTableDefaultPermissionDict.tableName"/>
+              <!--<el-input v-model="state.dialogForm.tableName" :placeholder="userTableDefaultPermissionDict.tableName"/>-->
+              <el-select v-model="state.dialogForm.tableName" :placeholder="userTableDefaultPermissionDict.tableName" clearable filterable>
+                <el-option v-for="key in base.LoginRoleEnum" :key="key" :label="base.loginRoleDict[key]" :value="key"/>
+              </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+        </el-row>
+        <el-row>
+          <el-col :span="24">
             <el-form-item :label="userTableDefaultPermissionDict.permType" prop="permType">
               <!--<el-input v-model="state.dialogForm.permType" :placeholder="userTableDefaultPermissionDict.permType"/>-->
               <el-radio-group v-model="state.dialogForm.permType">
@@ -352,7 +357,10 @@ const chooseUserGroup = (row: UserGroupDto) => {
     >
       <!--在此下方添加表单项-->
       <el-form-item :label="userTableDefaultPermissionDict.tableName" prop="tableName">
-        <el-input v-model="state.filterForm.tableName" :placeholder="userTableDefaultPermissionDict.tableName"/>
+        <!--<el-input v-model="state.filterForm.tableName" :placeholder="userTableDefaultPermissionDict.tableName"/>-->
+        <el-select v-model="state.filterForm.tableName" :placeholder="userTableDefaultPermissionDict.tableName" clearable filterable>
+          <el-option v-for="key in base.LoginRoleEnum" :key="key" :label="base.loginRoleDict[key]" :value="key"/>
+        </el-select>
       </el-form-item>
       <!--在此上方添加表单项-->
       <el-form-item>
@@ -388,7 +396,11 @@ const chooseUserGroup = (row: UserGroupDto) => {
       <!--<el-table-column fixed prop="id" :label="userTableDefaultPermissionDict.id" width="180"/>-->
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
-      <el-table-column prop="tableName" :label="userTableDefaultPermissionDict.tableName" width="180"/>
+      <el-table-column prop="tableName" :label="userTableDefaultPermissionDict.tableName" width="180">
+        <template #default="{row}">
+          {{ base.loginRoleDict[row.tableName as base.LoginRoleEnum] }}
+        </template>
+      </el-table-column>
       <el-table-column prop="permType" :label="userTableDefaultPermissionDict.permType" width="120">
         <template #default="{row}">
           {{ base.uTDPTypeDict[row.permType as base.UTDPTypeEnum] }}

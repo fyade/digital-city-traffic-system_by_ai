@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
 import { QueueoService } from '../queue/queueo.service';
@@ -9,20 +9,15 @@ import { PrismaoService } from "../prisma/prismao.service";
 import { base } from '@dcts/common';
 
 @Injectable()
-export class ScheduleService implements OnModuleInit {
+export class ScheduleService {
   constructor(
     private readonly schedulerRegistry: SchedulerRegistry,
     private readonly prismao: PrismaoService,
     private readonly mysqlPrismao: MysqlPrismaoService,
     private readonly queueo: QueueoService,
     private readonly winston: WinstonService,
-  ) {}
-
-  /**
-   * 仅供框架调用，禁止外部调用
-   */
-  async onModuleInit() {
-    await this.init();
+  ) {
+    this.init()
   }
 
   private async init() {

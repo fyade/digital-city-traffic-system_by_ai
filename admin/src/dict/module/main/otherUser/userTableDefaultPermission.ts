@@ -3,7 +3,7 @@ import { UserTableDefaultPermissionDto } from "@/type/module/main/otherUser/user
 
 export const userTableDefaultPermissionDict: { [P in keyof UserTableDefaultPermissionDto]: string } = {
   ...publicDict,
-  tableName: '表名',
+  tableName: '登录身份(原表名)',
   permType: '权限身份类型',
   permId: '权限身份id',
 }

@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Server, Socket } from "socket.io";
 import * as http from "node:http";
 import { serverConfig } from "@dcts/config";
@@ -40,7 +40,7 @@ class WsEventDataFuncParamType extends EventDataType {
 }
 
 @Injectable()
-export class WsService implements OnModuleInit {
+export class WsService {
   private sidTokenMap = new Map<string, TokenDto>();
   private userroleidSocketMap = new Map<string, Socket>();
   private userPageContextMap: { user: string, pcs: string[] }[] = [];
@@ -50,13 +50,7 @@ export class WsService implements OnModuleInit {
       private readonly cacheTokenService: CacheTokenService,
       private readonly queueo: QueueoService,
   ) {
-  }
-
-  /**
-   * 仅供框架调用，禁止外部调用
-   */
-  async onModuleInit() {
-    await this.init();
+    this.init()
   }
 
   /**

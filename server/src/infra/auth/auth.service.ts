@@ -736,99 +736,35 @@ export class AuthService {
     `;
     const allRoleIds = [...allRoleIds1.map((item) => item.role_id)];
     const allDeptIds = [...allDeptIds1.map((item) => item.dept_id)];
-    if (loginRole === base.LoginRoleEnum.admin) {
-      const sutdps_ = await this.mysqlPrismao.sys_user_table_default_permission.findMany({
-        where: {
-          table_name: 'sys_user',
-          ...this.prismao.defaultSelArg().where,
+    const sutdps_ = await this.mysqlPrismao.sys_user_table_default_permission.findMany({
+      where: {
+        table_name: loginRole,
+        ...this.prismao.defaultSelArg().where,
+      },
+    });
+    const sutdps = baseUtils.objToCamelCase<UserTableDefaultPermissionDto[]>(sutdps_);
+    const allRoleIds2 = await this.mysqlPrismao.sys_role.findMany({
+      where: {
+        ...(ifAdmin ? { if_admin: final.Y } : {}),
+        if_disabled: final.N,
+        id: {
+          in: sutdps.filter((item) => item.permType === base.UTDPTypeEnum.T_ROLE).map((item) => item.permId),
         },
-      });
-      const sutdps = baseUtils.objToCamelCase<UserTableDefaultPermissionDto[]>(sutdps_);
-      const allRoleIds2 = await this.mysqlPrismao.sys_role.findMany({
-        where: {
-          ...(ifAdmin ? { if_admin: final.Y } : {}),
-          if_disabled: final.N,
-          id: {
-            in: sutdps.filter((item) => item.permType === base.UTDPTypeEnum.T_ROLE).map((item) => item.permId),
-          },
-          ...this.prismao.defaultSelArg().where,
+        ...this.prismao.defaultSelArg().where,
+      },
+    });
+    const allDeptIds2 = await this.mysqlPrismao.sys_dept.findMany({
+      where: {
+        ...(ifAdmin ? { if_admin: final.Y } : {}),
+        if_disabled: final.N,
+        id: {
+          in: sutdps.filter((item) => item.permType === base.UTDPTypeEnum.T_DEPT).map((item) => item.permId),
         },
-      });
-      const allDeptIds2 = await this.mysqlPrismao.sys_dept.findMany({
-        where: {
-          ...(ifAdmin ? { if_admin: final.Y } : {}),
-          if_disabled: final.N,
-          id: {
-            in: sutdps.filter((item) => item.permType === base.UTDPTypeEnum.T_DEPT).map((item) => item.permId),
-          },
-          ...this.prismao.defaultSelArg().where,
-        },
-      });
-      allRoleIds.push(...allRoleIds2.map((item) => item.id));
-      allDeptIds.push(...allDeptIds2.map((item) => item.id));
-    }
-    if (loginRole === base.LoginRoleEnum.visitor) {
-      const sutdps_ = await this.mysqlPrismao.sys_user_table_default_permission.findMany({
-        where: {
-          table_name: 'sys_user_visitor',
-          ...this.prismao.defaultSelArg().where,
-        },
-      });
-      const sutdps = baseUtils.objToCamelCase<UserTableDefaultPermissionDto[]>(sutdps_);
-      const allRoleIds2 = await this.mysqlPrismao.sys_role.findMany({
-        where: {
-          ...(ifAdmin ? { if_admin: final.Y } : {}),
-          if_disabled: final.N,
-          id: {
-            in: sutdps.filter((item) => item.permType === base.UTDPTypeEnum.T_ROLE).map((item) => item.permId),
-          },
-          ...this.prismao.defaultSelArg().where,
-        },
-      });
-      const allDeptIds2 = await this.mysqlPrismao.sys_dept.findMany({
-        where: {
-          ...(ifAdmin ? { if_admin: final.Y } : {}),
-          if_disabled: final.N,
-          id: {
-            in: sutdps.filter((item) => item.permType === base.UTDPTypeEnum.T_DEPT).map((item) => item.permId),
-          },
-          ...this.prismao.defaultSelArg().where,
-        },
-      });
-      allRoleIds.push(...allRoleIds2.map((item) => item.id));
-      allDeptIds.push(...allDeptIds2.map((item) => item.id));
-    }
-    if (loginRole === base.LoginRoleEnum.dcts) {
-      const sutdps_ = await this.mysqlPrismao.sys_user_table_default_permission.findMany({
-        where: {
-          table_name: 'dcts_user',
-          ...this.prismao.defaultSelArg().where,
-        },
-      });
-      const sutdps = baseUtils.objToCamelCase<UserTableDefaultPermissionDto[]>(sutdps_);
-      const allRoleIds2 = await this.mysqlPrismao.sys_role.findMany({
-        where: {
-          ...(ifAdmin ? { if_admin: final.Y } : {}),
-          if_disabled: final.N,
-          id: {
-            in: sutdps.filter((item) => item.permType === base.UTDPTypeEnum.T_ROLE).map((item) => item.permId),
-          },
-          ...this.prismao.defaultSelArg().where,
-        },
-      });
-      const allDeptIds2 = await this.mysqlPrismao.sys_dept.findMany({
-        where: {
-          ...(ifAdmin ? { if_admin: final.Y } : {}),
-          if_disabled: final.N,
-          id: {
-            in: sutdps.filter((item) => item.permType === base.UTDPTypeEnum.T_DEPT).map((item) => item.permId),
-          },
-          ...this.prismao.defaultSelArg().where,
-        },
-      });
-      allRoleIds.push(...allRoleIds2.map((item) => item.id));
-      allDeptIds.push(...allDeptIds2.map((item) => item.id));
-    }
+        ...this.prismao.defaultSelArg().where,
+      },
+    });
+    allRoleIds.push(...allRoleIds2.map((item) => item.id));
+    allDeptIds.push(...allDeptIds2.map((item) => item.id));
     return {
       allRoleIds,
       allDeptIds,

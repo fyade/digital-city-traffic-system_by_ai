@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { reactive } from "vue";
 import { CONFIG, final } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
@@ -9,7 +9,6 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { DicDataDto, DicDataUpdDto } from "@/type/module/main/sysManage/dicData.ts";
 import { dicDataApi } from "@/api/module/main/sysManage/dicData.ts";
 import { dicDataDict } from "@/dict/module/main/sysManage/dicData.ts";
-import { dicTypeApi } from "@/api/module/main/sysManage/dicType.ts";
 import { DicTypeDto } from "@/type/module/main/sysManage/dicType.ts";
 import { dicTypeDict } from "@/dict/module/main/sysManage/dicType.ts";
 
@@ -97,11 +96,6 @@ const {
   config,
   api: dicDataApi,
   dict: dicDataDict,
-})
-
-const allDicTypes = ref<DicTypeDto[]>([])
-dicTypeApi.selectAll({}).then(res => {
-  allDicTypes.value = res
 })
 </script>
 

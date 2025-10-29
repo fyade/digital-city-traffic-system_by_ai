@@ -16,6 +16,7 @@
     "generate:prisma": "pnpm generate:prisma:mysql && pnpm generate:prisma:postgresql",
     "generate:prisma:mysql": "npx prisma generate --schema=./prisma/mysql.schema.prisma",
     "generate:prisma:postgresql": "npx prisma generate --schema=./prisma/postgresql.schema.prisma",
+    "[preview] [admin ] dev": "cross-env NODE_ENV=dev pnpm --filter @dcts/admin preview",
     "[script] build-schema": "pnpm --filter @dcts/script build-schema"
   },
   "keywords": [],

@@ -23,12 +23,10 @@ export class PrismaoService {
                             model = '',
                             selKeys = [],
                             ifDeleted = true,
-                            ifUseSelfData = false,
                           }: {
                             model?: string,
                             selKeys?: string[],
                             ifDeleted?: boolean,
-                            ifUseSelfData?: boolean,
                           } = {},
   ) => {
     const retObj = {
@@ -51,10 +49,6 @@ export class PrismaoService {
         if (!fieldSelectParam.ifUpdateTime) delete retObj.select['update_time']
         if (!fieldSelectParam.ifDeleted) delete retObj.select['deleted']
       }
-    }
-    if (ifUseSelfData) {
-      retObj.where['create_role'] = this.getLoginRole();
-      retObj.where['create_by'] = this.getUserId();
     }
     if (ifDeleted) retObj.where['deleted'] = final.N;
     return retObj;
@@ -106,19 +100,15 @@ export class PrismaoService {
                             ifUpdateBy = true,
                             ifUpdateTime = true,
                             ifDeleted = true,
-                            ifUseSelfData = false,
                           }: {
                             ifUpdateRole?: boolean,
                             ifUpdateBy?: boolean,
                             ifUpdateTime?: boolean,
                             ifDeleted?: boolean,
-                            ifUseSelfData?: boolean,
                           } = {},
   ) => {
     const retObj = {
       where: {
-        create_role: this.getLoginRole(),
-        create_by: this.getUserId(),
         deleted: final.N,
       },
       data: {
@@ -131,23 +121,23 @@ export class PrismaoService {
     if (!ifUpdateBy) delete retObj.data.update_by;
     if (!ifUpdateTime) delete retObj.data.update_time;
     if (!ifDeleted) delete retObj.where.deleted;
-    if (!ifUseSelfData) {
-      delete retObj.where.create_role;
-      delete retObj.where.create_by;
-    }
     return retObj;
   };
 
   public defaultDelArg = ({
-                            ifUseSelfData = false,
+                            ifUpdateRole = true,
+                            ifUpdateBy = true,
+                            ifUpdateTime = true,
+                            ifDeleted = true,
                           }: {
-                            ifUseSelfData?: boolean
+                            ifUpdateRole?: boolean,
+                            ifUpdateBy?: boolean,
+                            ifUpdateTime?: boolean,
+                            ifDeleted?: boolean,
                           } = {},
   ) => {
     const retObj = {
       where: {
-        create_role: this.getLoginRole(),
-        create_by: this.getUserId(),
         deleted: final.N,
       },
       data: {
@@ -157,10 +147,10 @@ export class PrismaoService {
         deleted: final.Y,
       },
     };
-    if (!ifUseSelfData) {
-      delete retObj.where.create_role;
-      delete retObj.where.create_by;
-    }
+    if (!ifUpdateRole) delete retObj.data.update_role;
+    if (!ifUpdateBy) delete retObj.data.update_by;
+    if (!ifUpdateTime) delete retObj.data.update_time;
+    if (!ifDeleted) delete retObj.where.deleted;
     return retObj;
   };
 }

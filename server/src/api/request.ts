@@ -18,6 +18,7 @@ export async function serverRequest<T>(config: AxiosRequestConfig) {
         timeout: config.timeout || 1000 * 60 * 10,
         headers: {
           'Content-Type': 'application/json',
+          ...config.headers,
         },
       });
       resolve(ret.data);

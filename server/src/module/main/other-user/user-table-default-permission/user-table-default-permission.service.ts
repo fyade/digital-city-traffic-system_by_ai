@@ -16,7 +16,7 @@ export class UserTableDefaultPermissionService {
       notNullKeys: ['tableName', 'permType', 'permId'],
       numberKeys: ['permId'],
       completeMatchingKeys: ['tableName', 'permType', 'permId'],
-    })
+    });
   }
 
   async selUserTableDefaultPermission(dto: UserTableDefaultPermissionSelListDto): Promise<R> {

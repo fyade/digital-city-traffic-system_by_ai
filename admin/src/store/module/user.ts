@@ -13,6 +13,7 @@ import { DctsUserDto } from "@/type/module/dcts/user/dctsUser.ts";
 import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
 
 export const useUserStore = defineStore('userStore', () => {
+  const route = useRoute()
   const router = useRouter()
   const token = ref('')
   const loginRole = ref('')
@@ -40,7 +41,6 @@ export const useUserStore = defineStore('userStore', () => {
     }
   }
   refreshLoginRoleCB()
-  const route = useRoute()
   const login = async (user: LoginDto, ifAdminLogin = false) => {
     return new Promise((resolve, reject) => {
       loginApi(user, ifAdminLogin).then(async res => {

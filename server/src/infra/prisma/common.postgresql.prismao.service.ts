@@ -303,7 +303,6 @@ export class CommonPostgresqlPrismaoService {
         numberKeys: fieldSelectParam.numberKeys,
         completeMatchingKeys: fieldSelectParam.completeMatchingKeys,
         ifDeleted: fieldSelectParam.ifDeleted,
-        ifUseSelfData: false
       })
       _genSelParams = _genSelParams.replace(/between[ ]*('.*')[ ]*and[ ]*('.*')[ ]*/, 'between $1::timestamp and $2::timestamp')
       const genSelParams = dto.type === 'selCount' ? _genSelParams : _genSelParams.replace(/select.*from/, `select ${sql_select_keys} from`);

@@ -15,7 +15,7 @@ export class UserTableDefaultPermissionDto extends BaseDto {
 }
 
 export class UserTableDefaultPermissionSelListDto extends PageDto {
-  @ApiProperty({ description: '表名', required: false })
+  @ApiProperty({ description: '登录身份(原表名)', required: false })
   tableName: string;
 
   @ApiProperty({ description: '权限身份类型', required: false })
@@ -26,7 +26,7 @@ export class UserTableDefaultPermissionSelListDto extends PageDto {
 }
 
 export class UserTableDefaultPermissionSelAllDto {
-  @ApiProperty({ description: '表名', required: false })
+  @ApiProperty({ description: '登录身份(原表名)', required: false })
   tableName: string;
 
   @ApiProperty({ description: '权限身份类型', required: false })
@@ -37,9 +37,9 @@ export class UserTableDefaultPermissionSelAllDto {
 }
 
 export class UserTableDefaultPermissionInsOneDto {
-  @ApiProperty({ description: '表名', required: true })
-  @IsNotEmpty({ message: '表名不能为空' })
-  @MaxLength(50, { message: '表名不能超过50个字符' })
+  @ApiProperty({ description: '登录身份(原表名)', required: true })
+  @IsNotEmpty({ message: '登录身份(原表名)不能为空' })
+  @MaxLength(50, { message: '登录身份(原表名)不能超过50个字符' })
   tableName: string;
 
   @ApiProperty({ description: '权限身份类型', required: true })

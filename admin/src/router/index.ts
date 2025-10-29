@@ -8,7 +8,7 @@ import { final } from "@/utils/base.ts";
 import { useSysStore } from "@/store/module/sys.ts";
 import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
 
-export const routes: RouteRecordRaw[] = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/home',
     name: '~workbench-home',
