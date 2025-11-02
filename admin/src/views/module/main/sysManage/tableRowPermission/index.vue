@@ -30,7 +30,7 @@ const state = reactive<State2<MenuDto, MenuUpdDto>>({
   filterForm: {},
 })
 const dFormRules: FormRules<MenuDto> = reactive({})
-const config = new TablePageConfig<MenuDto<String>>({
+const config = new TablePageConfig<MenuDto>({
   pageQuery: false,
   getDataOnMounted: false,
   bulkOperation: true,

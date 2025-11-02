@@ -218,3 +218,5 @@ export const REGEX_DCTS_GEOMETRY = /^-?\d+(\.\d+)? -?\d+(\.\d+)?(, -?\d+(\.\d+)?
 export const REGEX_DCTS_GEOMETRY_DESCR = '数值可包含一个小数点 数值可包含一个小数点(, 数值可包含一个小数点 数值可包含一个小数点){至少3个}'
 export const REGEX_DCTS_PATH_Z = /^-?\d+(\.\d+)? -?\d+(\.\d+)? -?\d+(\.\d+)?(, -?\d+(\.\d+)? -?\d+(\.\d+)? -?\d+(\.\d+)?){1,}$/
 export const REGEX_DCTS_PATH_Z_DESCR = '数值可包含一个小数点 数值可包含一个小数点 数值可包含一个小数点(, 数值可包含一个小数点 数值可包含一个小数点 数值可包含一个小数点){至少1个}'
+export const REGEX_DCTS_ID_ARRAY = /^\d+(,\d+)*$/
+export const REGEX_DCTS_ID_ARRAY_DESCR = '正整数(,正整数){至少0个}'

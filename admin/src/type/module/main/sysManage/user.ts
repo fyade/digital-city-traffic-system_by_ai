@@ -5,7 +5,7 @@ import { UserGroupDto } from "@/type/module/algorithm/userGroup.ts";
 import { UserVisitorDto } from "@/type/module/main/otherUser/userVisitor.ts";
 import { DctsUserDto } from "@/type/module/dcts/user/dctsUser.ts";
 
-export class UserDto extends BaseClass {
+export class _UserDto extends BaseClass {
   id!: string;
   username!: string;
   nickname!: string;
@@ -16,7 +16,7 @@ export class UserDto extends BaseClass {
   tel!: string;
 }
 
-export class UserSelDto extends PageDto {
+export class UserDto extends _UserDto {
   ifWithRole!: string
 }
 

@@ -59,6 +59,9 @@ const config = new TablePageConfig<LogUserLoginDto>({
         value: [null, null]
       }
     }
+  },
+  fCanCallback: () => {
+    fCan2()
   }
 })
 
@@ -127,7 +130,6 @@ const fCan2 = () => {
     config.selectParam.createTime.between.value[0] = null
     config.selectParam.createTime.between.value[1] = null
   }
-  fCan()
 }
 </script>
 
@@ -202,7 +204,7 @@ const fCan2 = () => {
       <!--在此上方添加表单项-->
       <el-form-item>
         <el-button type="primary" @click="fCon">筛选</el-button>
-        <el-button @click="fCan2">重置</el-button>
+        <el-button @click="fCan">重置</el-button>
       </el-form-item>
     </el-form>
   </div>

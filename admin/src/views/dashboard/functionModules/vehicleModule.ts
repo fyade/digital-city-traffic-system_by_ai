@@ -7,8 +7,10 @@ import busTopImage from '@/assets/images2/公交车-车顶.png'
 import { VehicleTrackPointDto } from "@/type/module/dcts/vehicle/vehicleTrackPoint.ts";
 import { CesiumLine, CesiumPoint } from "@/views/dashboard/utils/dto.ts";
 import { DrawedVehicleTrajectoryClass } from "@/views/dashboard/utils/class.ts";
-import { idUtils } from "@dcts/common";
+import { base, idUtils } from "@dcts/common";
 import { useUserStore } from "@/store/module/user.ts";
+
+const userStore = useUserStore()
 
 /**
  * 车辆模块
@@ -59,7 +61,6 @@ export class VehicleModule {
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
-  private userStore = useUserStore()
   private datas: GetVehiclesInPolygonVo['data'] = []
 
   public addTask(results: GetVehiclesInPolygonVo) {
@@ -146,7 +147,7 @@ export class VehicleModule {
   private ifFinished = true
 
   public refreshVehicleRealTime() {
-    if (this.userStore.getLoginType() !== 'admin') {
+    if (userStore.getLoginType() !== base.LoginRoleEnum.admin) {
       return
     }
     if (!this.viewer) {

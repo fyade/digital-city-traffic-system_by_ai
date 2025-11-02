@@ -4,7 +4,8 @@
  * @param clas 类型
  * @param datas 新增或修改的数据
  * @param selfDefineSelKey 自定义查询的as前的字符串
- * @param selfDefineInsUpdKey 自定义新增和修改的数据
+ * @param selfDefineSelValue 自定义查询的条件
+ * @param selfDefineInsUpdValue 自定义新增和修改的数据
  * @param selIds 根据id查询
  * @param delIds 根据id删除
  * @param selParam 查询参数
@@ -18,7 +19,8 @@ export class GenSqlDto<T> {
   clas?: T
   datas?: Partial<T>[]
   selfDefineSelKey?: { [P in keyof T]?: string }
-  selfDefineInsUpdKey?: { [P in keyof T]?: (str: string) => string }
+  selfDefineSelValue?: { [P in keyof T]?: (str: string) => string }
+  selfDefineInsUpdValue?: { [P in keyof T]?: (str: string) => string }
   selIds?: (string | number)[]
   delIds?: (string | number)[]
   selParam?: { [P in keyof T]?: T[P] }

@@ -358,14 +358,14 @@ export class AuthService {
    * @param permission
    */
   async permissionIfDisabled(permission: string) {
-    const newVar = await this.mysqlPrismao.sys_menu.findMany({
+    const re = await this.mysqlPrismao.sys_menu.findMany({
       where: {
         perms: permission,
         if_disabled: final.Y,
         ...this.prismao.defaultSelArg().where,
       },
     });
-    return newVar.length > 0;
+    return re.length > 0;
   }
 
   /**

@@ -110,10 +110,10 @@ export class FileUploadService {
         await this.mysqlPrisma.create<FileDto>('tbl_file', fillObj);
       } else {
         // 如果无相同文件，先存下库，ifFinished字段设为false，然后存文件，最后更新库
-        const newVar = await this.mysqlPrisma.create<FileDto>('tbl_file', fillObj);
+        const re = await this.mysqlPrisma.create<FileDto>('tbl_file', fillObj);
         saveFile(this.env.file.uploadPath, fileNewName1, file.buffer, { a: s });
         await this.mysqlPrisma.updateById<FileDto>('tbl_file', {
-          id: newVar.id,
+          id: re.id,
           ifFinished: final.Y,
         });
       }

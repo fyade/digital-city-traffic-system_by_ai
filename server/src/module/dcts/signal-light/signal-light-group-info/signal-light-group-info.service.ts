@@ -37,13 +37,13 @@ export class SignalLightGroupInfoService {
       pageNum: pageNum,
       pageSize: pageSize,
     });
-    const datas: SignalLightGroupInfoDto[] = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const datas = await this.pgsqlPrismao.$queryRawUnsafe<SignalLightGroupInfoDto[]>(sqls[0]);
     const sqls2 = this.cPgsqlPrismao.genSql<SignalLightGroupInfoDto>({
       type: 'selCount',
       tblName: 'signal_light_group_info',
       selParam: dto,
     });
-    const total: CountSqlReturnDto = await this.pgsqlPrismao.$queryRawUnsafe(sqls2[0]);
+    const total = await this.pgsqlPrismao.$queryRawUnsafe<CountSqlReturnDto>(sqls2[0]);
     const pageVo = new PageVo<SignalLightGroupInfoDto>(pageNum, pageSize, total[0].count, datas);
     return R.ok(pageVo);
   }
@@ -58,7 +58,7 @@ export class SignalLightGroupInfoService {
       },
       selParam: dto,
     });
-    const datas = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const datas = await this.pgsqlPrismao.$queryRawUnsafe<SignalLightGroupInfoDto[]>(sqls[0]);
     return R.ok(datas);
   }
 
@@ -72,7 +72,7 @@ export class SignalLightGroupInfoService {
       },
       selIds: ids,
     });
-    const res = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const res = await this.pgsqlPrismao.$queryRawUnsafe<SignalLightGroupInfoDto[]>(sqls[0]);
     return R.ok(res);
   }
 
@@ -86,7 +86,7 @@ export class SignalLightGroupInfoService {
       },
       selIds: [id],
     });
-    const ress = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const ress = await this.pgsqlPrismao.$queryRawUnsafe<SignalLightGroupInfoDto[]>(sqls[0]);
     const res = ress[0];
     return R.ok(res);
   }
@@ -100,11 +100,11 @@ export class SignalLightGroupInfoService {
       selfDefineSelKey: {
         location: 'concat(st_x(location)::text, \',\', st_y(location)::text)'
       },
-      selfDefineInsUpdKey: {
+      selfDefineInsUpdValue: {
         location: value => `st_setsrid(st_makepoint(${value.split(',')[0]}, ${value.split(',')[1]}), 4326)`
       }
     });
-    const ress = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const ress = await this.pgsqlPrismao.$queryRawUnsafe<SignalLightGroupInfoDto[]>(sqls[0]);
     const res = ress[0];
     return R.ok(res);
   }
@@ -118,14 +118,14 @@ export class SignalLightGroupInfoService {
       selfDefineSelKey: {
         location: 'concat(st_x(location)::text, \',\', st_y(location)::text)'
       },
-      selfDefineInsUpdKey: {
+      selfDefineInsUpdValue: {
         location: value => `st_setsrid(st_makepoint(${value.split(',')[0]}, ${value.split(',')[1]}), 4326)`
       }
     });
     const res = [];
     for (const sql of sqls) {
-      const newVar = await this.pgsqlPrismao.$queryRawUnsafe(sql);
-      res.push(newVar[0]);
+      const re = await this.pgsqlPrismao.$queryRawUnsafe<SignalLightGroupInfoDto[]>(sql);
+      res.push(re[0]);
     }
     return R.ok(res);
   }
@@ -139,11 +139,11 @@ export class SignalLightGroupInfoService {
       selfDefineSelKey: {
         location: 'concat(st_x(location)::text, \',\', st_y(location)::text)'
       },
-      selfDefineInsUpdKey: {
+      selfDefineInsUpdValue: {
         location: value => `st_setsrid(st_makepoint(${value.split(',')[0]}, ${value.split(',')[1]}), 4326)`
       }
     });
-    const ress = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const ress = await this.pgsqlPrismao.$queryRawUnsafe<SignalLightGroupInfoDto[]>(sqls[0]);
     const res = ress[0];
     return R.ok(res);
   }
@@ -157,14 +157,14 @@ export class SignalLightGroupInfoService {
       selfDefineSelKey: {
         location: 'concat(st_x(location)::text, \',\', st_y(location)::text)'
       },
-      selfDefineInsUpdKey: {
+      selfDefineInsUpdValue: {
         location: value => `st_setsrid(st_makepoint(${value.split(',')[0]}, ${value.split(',')[1]}), 4326)`
       }
     });
     const res = [];
     for (const sql of sqls) {
-      const newVar = await this.pgsqlPrismao.$queryRawUnsafe(sql);
-      res.push(newVar[0]);
+      const re = await this.pgsqlPrismao.$queryRawUnsafe<SignalLightGroupInfoDto[]>(sql);
+      res.push(re[0]);
     }
     return R.ok(res);
   }
@@ -175,7 +175,7 @@ export class SignalLightGroupInfoService {
       tblName: 'signal_light_group_info',
       delIds: ids,
     });
-    await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    await this.pgsqlPrismao.$queryRawUnsafe<null[]>(sqls[0]);
     return R.ok(true);
   }
 
@@ -186,7 +186,7 @@ export class SignalLightGroupInfoService {
       tblName: 'signal_light_group_info',
       delIds: ids,
     });
-    await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    await this.pgsqlPrismao.$queryRawUnsafe<null[]>(sqls[0]);
     // 删除子信号灯、信号灯组-子信号灯对应关联
     const defaultSelArg = this.prismao.defaultSelArg();
     const defaultDelArg = this.prismao.defaultDelArg();

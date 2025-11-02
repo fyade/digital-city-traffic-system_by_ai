@@ -39,8 +39,8 @@ export const useSysStore = defineStore('sysStore', () => {
     return visibleButtons.value
   }
   const getVisibleButton = (sysPerm: string, buttonPerm: string) => {
-    const newVar = visibleButtons.value.get(sysPerm);
-    if (newVar && newVar.includes(buttonPerm)) {
+    const re = visibleButtons.value.get(sysPerm);
+    if (re && re.includes(buttonPerm)) {
       return true
     }
     return false

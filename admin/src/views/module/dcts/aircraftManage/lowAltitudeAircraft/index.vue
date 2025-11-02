@@ -5,7 +5,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, ref, watchEffect } from "vue";
 import { CONFIG, final } from "@/utils/base.ts";
 import Pagination from "@/components/pagination/pagination.vue";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
@@ -15,6 +15,10 @@ import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-
 import { LowAltitudeAircraftDto, LowAltitudeAircraftUpdDto } from "@/type/module/dcts/aircraftManage/lowAltitudeAircraft.ts";
 import { lowAltitudeAircraftApi } from "@/api/module/dcts/aircraftManage/lowAltitudeAircraft.ts";
 import { lowAltitudeAircraftDict } from "@/dict/module/dcts/aircraftManage/lowAltitudeAircraft.ts";
+import { useDictStore } from "@/store/module/dict.ts";
+import { DicDataDto } from "@/type/module/main/sysManage/dicData.ts";
+
+const dictStore = useDictStore()
 
 const state = reactive<State2<LowAltitudeAircraftDto, LowAltitudeAircraftUpdDto>>({
   dialogForm: {
@@ -22,14 +26,21 @@ const state = reactive<State2<LowAltitudeAircraftDto, LowAltitudeAircraftUpdDto>
     aircraftName: '',
     serialNumber: '',
     registrationNumber: '',
+    type: '',
   },
   dialogForms: [],
-  filterForm: {},
+  filterForm: {
+    aircraftName: '',
+    serialNumber: '',
+    registrationNumber: '',
+    type: '',
+  },
 })
 const dFormRules: FormRules<LowAltitudeAircraftDto> = {
   aircraftName: [{required: true, trigger: 'change'}],
   serialNumber: [{required: true, trigger: 'change'}],
   registrationNumber: [{required: true, trigger: 'change'}],
+  type: [{required: true, trigger: 'change'}],
 }
 const config = new TablePageConfig<LowAltitudeAircraftDto>({
   bulkOperation: true,
@@ -79,6 +90,16 @@ const {
   api: lowAltitudeAircraftApi,
   dict: lowAltitudeAircraftDict,
 })
+
+const allAircraftTypes = ref<DicDataDto[]>([])
+const dict = dictStore.getDict('dcts:aircraft:type');
+watchEffect(() => {
+  if (dict.isLoading.value) {
+  } else if (dict.error.value) {
+  } else {
+    allAircraftTypes.value = dict.data.value
+  }
+})
 </script>
 
 <template>
@@ -126,6 +147,14 @@ const {
           <el-col :span="12">
             <el-form-item :label="lowAltitudeAircraftDict.registrationNumber" prop="registrationNumber">
               <el-input v-model="state.dialogForm.registrationNumber" :placeholder="lowAltitudeAircraftDict.registrationNumber"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="lowAltitudeAircraftDict.type" prop="type">
+              <!--<el-input v-model="state.dialogForm.type" :placeholder="lowAltitudeAircraftDict.type"/>-->
+              <el-select v-model="state.dialogForm.type" :placeholder="lowAltitudeAircraftDict.type" clearable filterable>
+                <el-option v-for="item in allAircraftTypes" :key="item.id" :label="item.label" :value="item.value"/>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -195,6 +224,19 @@ const {
               </el-form-item>
             </template>
           </el-table-column>
+          <el-table-column prop="type" :label="lowAltitudeAircraftDict.type" width="300">
+            <template #header>
+              <span :class="ifRequired('type')?'tp-table-header-required':''">{{ lowAltitudeAircraftDict.type }}</span>
+            </template>
+            <template #default="{$index}">
+              <el-form-item :prop="`${$index}.type`" :rules="dFormRules.type">
+                <!--<el-input v-model="state.dialogForms[$index].type" :placeholder="lowAltitudeAircraftDict.type"/>-->
+                <el-select v-model="state.dialogForms[$index].type" :placeholder="lowAltitudeAircraftDict.type" clearable filterable>
+                  <el-option v-for="item in allAircraftTypes" :key="item.id" :label="item.label" :value="item.value"/>
+                </el-select>
+              </el-form-item>
+            </template>
+          </el-table-column>
           <!--在此上方添加表格列-->
           <el-table-column fixed="right" label="操作" min-width="120">
             <template v-if="dialogType.value===final.ins" #default="{$index}">
@@ -225,9 +267,21 @@ const {
         @keyup.enter="fEnter"
     >
       <!--在此下方添加表单项-->
-      <!--<el-form-item :label="lowAltitudeAircraftDict." prop="">-->
-      <!--  <el-input v-model="state.filterForm." :placeholder="lowAltitudeAircraftDict."/>-->
-      <!--</el-form-item>-->
+      <el-form-item :label="lowAltitudeAircraftDict.aircraftName" prop="aircraftName">
+        <el-input v-model="state.filterForm.aircraftName" :placeholder="lowAltitudeAircraftDict.aircraftName"/>
+      </el-form-item>
+      <el-form-item :label="lowAltitudeAircraftDict.serialNumber" prop="serialNumber">
+        <el-input v-model="state.filterForm.serialNumber" :placeholder="lowAltitudeAircraftDict.serialNumber"/>
+      </el-form-item>
+      <el-form-item :label="lowAltitudeAircraftDict.registrationNumber" prop="registrationNumber">
+        <el-input v-model="state.filterForm.registrationNumber" :placeholder="lowAltitudeAircraftDict.registrationNumber"/>
+      </el-form-item>
+      <el-form-item :label="lowAltitudeAircraftDict.type" prop="type">
+        <!--<el-input v-model="state.filterForm.type" :placeholder="lowAltitudeAircraftDict.type"/>-->
+        <el-select v-model="state.filterForm.type" :placeholder="lowAltitudeAircraftDict.type" clearable filterable>
+          <el-option v-for="item in allAircraftTypes" :key="item.id" :label="item.label" :value="item.value"/>
+        </el-select>
+      </el-form-item>
       <!--在此上方添加表单项-->
       <el-form-item>
         <el-button type="primary" @click="fCon">筛选</el-button>
@@ -265,6 +319,11 @@ const {
       <el-table-column prop="aircraftName" :label="lowAltitudeAircraftDict.aircraftName" width="180"/>
       <el-table-column prop="serialNumber" :label="lowAltitudeAircraftDict.serialNumber" width="180"/>
       <el-table-column prop="registrationNumber" :label="lowAltitudeAircraftDict.registrationNumber" width="180"/>
+      <el-table-column prop="type" :label="lowAltitudeAircraftDict.type" width="180">
+        <template #default="{row}">
+          {{ allAircraftTypes.find(item => item.value === row.type)?.label }}
+        </template>
+      </el-table-column>
       <!--在此上方添加表格列-->
       <!--<el-table-column prop="createRole" :label="lowAltitudeAircraftDict.createRole" width="120"/>-->
       <!--<el-table-column prop="updateRole" :label="lowAltitudeAircraftDict.updateRole" width="120"/>-->

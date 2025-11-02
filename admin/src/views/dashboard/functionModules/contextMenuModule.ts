@@ -12,6 +12,10 @@ import { DropdownOption } from "naive-ui";
 import { PermissionModule } from "@/views/dashboard/functionModules/permissionModule.ts";
 import { routerPushByName } from "@/utils/RouterUtils.ts";
 import { SignalLightModule } from "@/views/dashboard/functionModules/signalLightModule.ts";
+import { objectUtils } from "@dcts/common";
+import { useDashboardStore } from "@/store/module/dashboard.ts";
+
+const dashboardStore = useDashboardStore();
 
 /**
  * 右键菜单模块
@@ -105,7 +109,7 @@ export class ContextMenuModule {
   }
 
   // 右键菜单对应的操作
-  public contextMenus: ContextMenuItem[] = [
+  private contextMenus: ContextMenuItem[] = [
     // 信号灯组
     {
       id: '~dctsDashboard~:signalLight:signalLightGroupInfo:ins',
@@ -353,6 +357,20 @@ export class ContextMenuModule {
         routerPushByName('~fp~:airspace:flightRoute:del', {id: itemId})
       }
     },
+    // 申请空域
+    {
+      id: '~dctsDashboard~:applyAirspace',
+      func: () => {
+        routerPushByName('~fp~:applyAirspace')
+      }
+    },
+    // 申请航线
+    {
+      id: '~dctsDashboard~:applyFlightRoute',
+      func: () => {
+        routerPushByName('~fp~:applyFlightRoute')
+      }
+    },
     // 关闭
     {
       id: '~dctsDashboard~:closeMenuOption',
@@ -378,7 +396,7 @@ export class ContextMenuModule {
   }
 
   public refreshContextMenuOption() {
-    this.contextMenuOption = [
+    const contextMenuOption: ContextMenuOptionType = [
       {
         label: '信号灯管理',
         key: '~dctsDashboard~:signalLight',
@@ -491,20 +509,20 @@ export class ContextMenuModule {
       {
         label: '查看运行时刻图',
         key: '~dctsDashboard~:queryRuntimeDiagram',
-        show: !this.pModule || this.pModule.cmihp('', [ID_PREFIX_SIGNAL_LIGHT_GROUP])
+        show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:queryRuntimeDiagram', [ID_PREFIX_SIGNAL_LIGHT_GROUP])
       },
       {
         label: '刷新信号灯状态',
-        key: '~dctsDashboard~:refreshSignalLight'
+        key: '~dctsDashboard~:refreshSignalLight',
+        show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:refreshSignalLight'),
       },
       {
-        type: 'divider',
-        show: !this.pModule || this.pModule.cmihp('', [ID_PREFIX_VEHICLE_REAL_TIME])
+        type: 'divider'
       },
       {
         label: '聚焦并跟踪该实体',
         key: '~dctsDashboard~:jvjiaobinggenzonggaishiti',
-        show: !this.pModule || this.pModule.cmihp('', [ID_PREFIX_VEHICLE_REAL_TIME])
+        show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:jvjiaobinggenzonggaishiti', [ID_PREFIX_VEHICLE_REAL_TIME])
       },
       {
         type: 'divider'
@@ -561,6 +579,16 @@ export class ContextMenuModule {
         ]
       },
       {
+        label: '申请空域',
+        key: '~dctsDashboard~:applyAirspace',
+        show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:applyAirspace')
+      },
+      {
+        label: '申请航线',
+        key: '~dctsDashboard~:applyFlightRoute',
+        show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:applyFlightRoute')
+      },
+      {
         type: 'divider'
       },
       {
@@ -568,6 +596,23 @@ export class ContextMenuModule {
         key: '~dctsDashboard~:closeMenuOption'
       }
     ]
+    for (let i = contextMenuOption.length - 1; i >= 0; i--) {
+      if (objectUtils.ifValid(contextMenuOption[i].show) && contextMenuOption[i].show === false) {
+        contextMenuOption.splice(i, 1)
+      }
+    }
+    for (let i = contextMenuOption.length - 1; i >= 0; i--) {
+      if (i > 0 && contextMenuOption[i].type === 'divider' && contextMenuOption[i - 1].type === 'divider') {
+        contextMenuOption.splice(i, 1)
+      }
+      if (contextMenuOption[0].type === 'divider') {
+        contextMenuOption.splice(0, 1)
+      }
+      if (contextMenuOption[contextMenuOption.length - 1].type === 'divider') {
+        contextMenuOption.splice(contextMenuOption.length - 1, 1)
+      }
+    }
+    this.contextMenuOption = contextMenuOption;
   }
 
   private _formPanelTitle = ''
@@ -592,6 +637,7 @@ export class ContextMenuModule {
     if (obj) {
       this.formPanelTitle = obj.label as string
     }
+    dashboardStore.clearCurrentCacheData()
     const find = this.contextMenus.find(item => item.id === key);
     if (find) {
       find.func()

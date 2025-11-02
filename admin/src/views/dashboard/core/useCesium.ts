@@ -7,6 +7,8 @@ import { useUserStore } from "@/store/module/user.ts";
 
 const currentConfig = adminConfig.currentConfig();
 
+const userStore = useUserStore()
+
 /**
  * 通用 Cesium 类
  */
@@ -17,8 +19,6 @@ export class UseCesium {
   private pointMap: Map<string, Cesium.PointPrimitive> | null = null
   private polylineCollection: Cesium.PrimitiveCollection | null = null
   private polylineMap: Map<string, Cesium.Primitive> | null = null
-
-  private userStore = useUserStore()
 
   constructor() {
     if (!UseCesium.instance) {
@@ -370,7 +370,7 @@ export class UseCesium {
    * @param container
    */
   public setContainer(container: string) {
-    const ifAdminLogin = this.userStore.getLoginType() === 'admin';
+    const ifAdminLogin = userStore.getLoginType() === 'admin';
     this.viewer = new Cesium.Viewer(container, {
       infoBox: false, // 属性面板
       selectionIndicator: false, // 选择指示器

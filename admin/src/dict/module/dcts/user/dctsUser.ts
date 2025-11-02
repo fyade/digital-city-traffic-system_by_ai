@@ -13,4 +13,5 @@ export const dctsUserDict: { [P in keyof DctsUserDto_]: string } = {
   roles: '角色',
   depts: '部门',
   ugs: '用户组',
+  ifWithRole: '查询是否返回权限',
 }

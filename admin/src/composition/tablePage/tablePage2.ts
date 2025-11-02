@@ -23,7 +23,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
                                                                          }: {
                                                                            state: State2<T, T2>
                                                                            dFormRules: FormRules,
-                                                                           config: TablePageConfig
+                                                                           config: TablePageConfig<T>
                                                                            api: ApiConfig<T, T2>
                                                                            dict: { [P in keyof T]: string }
                                                                            dialogFormRefName?: string
@@ -265,6 +265,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
   // 重置
   const fCan = () => {
     filterFormRef.value?.resetFields()
+    config.fCanCallback && config.fCanCallback()
     getData()
   }
   // 刷新
@@ -272,8 +273,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
     config.refreshCallback && config.refreshCallback()
     getData()
   }
-  // 新增
-  const gIns = () => {
+  const _ins = (cb: () => void) => {
     dialogType.value = final.ins
     dialogType.label = '新增'
     if (activeTabName) {
@@ -281,10 +281,18 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
       state.dialogForms = []
       dfIns()
     }
+    cb()
     dialogVisible.value = true
+  }
+  // 新增
+  const gIns = () => {
+    _ins(() => {
+      config.gInsCallback && config.gInsCallback()
+    })
   }
   // 修改
   const gUpd = async () => {
+    config.gUpdCallback && config.gUpdCallback()
     await tUpd(multipleSelection.value[0].id, !!config.bulkOperation && multipleSelection.value.length > 1)
   }
   // 删除
@@ -446,6 +454,12 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
       )
     })
   }
+  // 新增
+  const tIns = (row: T) => {
+    _ins(() => {
+      config.tInsCallback && config.tInsCallback(row)
+    })
+  }
   // 修改
   const tUpd = async (id: string | number, ifMore?: boolean) => {
     dialogType.value = final.upd
@@ -576,6 +590,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
     gImport,
     gChangeFilterFormVisible,
     tView,
+    tIns,
     tUpd,
     tDel,
     handleSelectionChange,

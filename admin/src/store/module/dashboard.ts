@@ -3,6 +3,26 @@ import { deepClone } from "@/utils/ObjectUtils.ts";
 import { ref } from "vue";
 
 export const useDashboardStore = defineStore('dashboardStore', () => {
+  const currentCacheData = new Map<string, any>()
+  const setCurrentCacheData = <T>(index: number, data: T) => {
+    for (const key of currentCacheData.keys()) {
+      if (!key.startsWith(`${location.pathname} `)) {
+        currentCacheData.delete(key)
+      }
+    }
+    currentCacheData.set(`${location.pathname} ${index}`, deepClone(data))
+  }
+  const getCurrentCacheData = <T>(index: number): T | null => {
+    const data = currentCacheData.get(`${location.pathname} ${index}`);
+    if (data) {
+      return deepClone(data)
+    }
+    return null
+  }
+  const clearCurrentCacheData = () => {
+    currentCacheData.clear()
+  }
+
   const idsOfBaseMaps = ref<string[][]>([])
   const setIdsOfBaseMaps = (val: string[][]) => {
     const va = deepClone(val);
@@ -42,7 +62,19 @@ export const useDashboardStore = defineStore('dashboardStore', () => {
     return lastActiveInterval.value
   }
 
+  const ifShowAirspace = ref<boolean | null>(null)
+  const setIfShowAirspace = (value: boolean) => {
+    ifShowAirspace.value = value
+  }
+  const getIfShowAirspace = () => {
+    return ifShowAirspace.value
+  }
+
   return {
+    currentCacheData,
+    setCurrentCacheData,
+    getCurrentCacheData,
+    clearCurrentCacheData,
     idsOfBaseMaps,
     setIdsOfBaseMaps,
     getIdsOfBaseMaps,
@@ -55,6 +87,9 @@ export const useDashboardStore = defineStore('dashboardStore', () => {
     lastActiveInterval,
     setLastActiveInterval,
     getLastActiveInterval,
+    ifShowAirspace,
+    setIfShowAirspace,
+    getIfShowAirspace,
   }
 }, {
   persist: true

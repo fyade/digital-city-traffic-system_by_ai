@@ -49,6 +49,7 @@ const ID_PREFIX_SPECIAL = 'ID_PREFIX_SPECIAL::::::::::'
 export const ID_SPECIAL_MouseMovingPoint = `${ID_PREFIX_SPECIAL}MouseMovingPoint`
 export const ID_SPECIAL_MouseMovingGeometry = `${ID_PREFIX_SPECIAL}MouseMovingGeometry`
 export const ID_SPECIAL_MouseMovingPolyline = `${ID_PREFIX_SPECIAL}MouseMovingPolyline`
+export const ID_SPECIAL_preview_MouseMovingGeometry = `${ID_PREFIX_SPECIAL}preview_MouseMovingGeometry`
 export const ID_SPECIAL_preview_MouseMovingPolyline = `${ID_PREFIX_SPECIAL}preview_MouseMovingPolyline`
 
 // 信号灯组

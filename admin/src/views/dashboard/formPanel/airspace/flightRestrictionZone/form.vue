@@ -2,7 +2,7 @@
 import { useRoute } from "vue-router";
 import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
 import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
-import { ref, useTemplateRef, watchEffect } from "vue";
+import { ref, useTemplateRef, watchEffect, watch } from "vue";
 import { FormInst, FormRules } from "naive-ui";
 import { FlightRestrictionZoneDto } from "@/type/module/dcts/airspace/flightRestrictionZone.ts";
 import { flightRestrictionZoneApi } from "@/api/module/dcts/airspace/flightRestrictionZone.ts";
@@ -12,10 +12,13 @@ import { regularUtils } from "@dcts/common";
 import { DicDataDto } from "@/type/module/main/sysManage/dicData.ts";
 import { useDictStore } from "@/store/module/dict.ts";
 import { EDIT_TYPE_ENUM } from "@/views/dashboard/functionModules/constant.ts";
+import { useDashboardStore } from "@/store/module/dashboard.ts";
+import { objectUtils } from "@dcts/common";
 
 const route = useRoute();
 const useCesium = useDashboardCesium;
 const dictStore = useDictStore()
+const dashboardStore = useDashboardStore();
 
 const ifIns = route.path.endsWith('ins')
 const ifUpd = route.path.endsWith('upd')
@@ -31,6 +34,10 @@ if (ifDel && !itemId) {
 
 const init = () => {
   if (ifIns) {
+    const cacheData = dashboardStore.getCurrentCacheData<FlightRestrictionZoneDto>(0)
+    if (cacheData) {
+      objectUtils.copyObject(form.value, cacheData, ['geometry'])
+    }
     if (itemGeometry && regularUtils.RegTest(regularUtils.REGEX_DCTS_GEOMETRY, itemGeometry)) {
       form.value.geometry = itemGeometry
     }
@@ -39,7 +46,11 @@ const init = () => {
     formLoading.value = true
     flightRestrictionZoneApi.selectById(itemId!).then(res => {
       if (res) {
-        form.value = res
+        objectUtils.copyObject(form.value, res)
+      }
+      const cacheData = dashboardStore.getCurrentCacheData<FlightRestrictionZoneDto>(0)
+      if (cacheData) {
+        objectUtils.copyObject(form.value, cacheData, ['geometry'])
       }
       if (itemGeometry && regularUtils.RegTest(regularUtils.REGEX_DCTS_GEOMETRY, itemGeometry)) {
         form.value.geometry = itemGeometry
@@ -60,6 +71,9 @@ const formRules: FormRules = {
   geometry: [{required: true, trigger: 'change'}],
   descr: [{required: true, trigger: 'change'}],
 }
+watch(form.value, () => {
+  dashboardStore.setCurrentCacheData<FlightRestrictionZoneDto>(0, form.value)
+})
 const dCon = () => {
   dialogFormRef.value?.validate(errors => {
     if (errors) {

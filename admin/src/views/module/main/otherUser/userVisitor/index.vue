@@ -12,7 +12,7 @@ import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
 import { FormRules, ElMessage } from "element-plus";
 import { Delete, Download, Edit, Plus, Refresh, Upload, Search, DArrowRight } from "@element-plus/icons-vue";
-import { UserVisitorDto, UserVisitorDto2, UserVisitorDto_, UserVisitorSelDto, UserVisitorUpdDto } from "@/type/module/main/otherUser/userVisitor.ts";
+import { UserVisitorDto, UserVisitorDto2, UserVisitorDto_, UserVisitorUpdDto } from "@/type/module/main/otherUser/userVisitor.ts";
 import { newUserVisitor, resetUserVisitorPsd, userVisitorApi } from "@/api/module/main/otherUser/userVisitor.ts";
 import { userVisitorDict } from "@/dict/module/main/otherUser/userVisitor.ts";
 import { fileBaseUrl } from "@/api/request.ts";
@@ -47,7 +47,7 @@ const dFormRules: FormRules<UserVisitorDto> = {
   username: [{required: true, trigger: 'change'}],
   password: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig<UserVisitorSelDto>({
+const config = new TablePageConfig<UserVisitorDto>({
   selectParam: {
     ifWithRole: final.Y
   },

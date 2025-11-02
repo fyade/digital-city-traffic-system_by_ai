@@ -12,7 +12,7 @@ import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
 import { FormRules, ElMessage } from "element-plus";
 import { Delete, Download, Edit, Plus, Refresh, Upload, Search, DArrowRight } from "@element-plus/icons-vue";
-import { UserDto, UserDto2, UserDto_, UserSelDto, UserUpdDto } from "@/type/module/main/sysManage/user.ts";
+import { UserDto, UserDto2, UserDto_, UserUpdDto } from "@/type/module/main/sysManage/user.ts";
 import { newUser, resetUserPsd, userApi } from "@/api/module/main/sysManage/user.ts";
 import { userDict } from "@/dict/module/main/sysManage/user.ts";
 import { fileBaseUrl } from "@/api/request.ts";
@@ -46,7 +46,7 @@ const dFormRules: FormRules<UserDto> = {
   username: [{required: true, trigger: 'change'}],
   password: [{required: true, trigger: 'change'}]
 }
-const config = new TablePageConfig<UserSelDto>({
+const config = new TablePageConfig<UserDto>({
   selectParam: {
     ifWithRole: final.Y
   },

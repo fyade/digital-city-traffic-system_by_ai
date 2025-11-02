@@ -13,7 +13,7 @@ import { State2, TablePageConfig } from "@/type/tablePage.ts";
 import { FormRules } from "element-plus";
 import { Sort, Delete, Download, Edit, Plus, Refresh, Upload, Search, DArrowRight } from "@element-plus/icons-vue";
 import { MenuDto, MenuUpdDto } from "@/type/module/main/sysManage/menu.ts";
-import { menuApi } from "@/api/module/main/sysManage/menu.ts";
+import { menuApi, menuApi2 } from "@/api/module/main/sysManage/menu.ts";
 import { menuDict, menuDictI2, menuDictInter } from "@/dict/module/main/sysManage/menu.ts";
 import { useRouterStore } from "@/store/module/router.ts";
 import { arr2ToDiguiObj } from "@/utils/baseUtils.ts";
@@ -49,7 +49,7 @@ const state = reactive<State2<MenuDto, MenuUpdDto>>({
   },
 })
 const dFormRules: FormRules<MenuDto> = reactive({})
-const config = new TablePageConfig<MenuDto<String>>({
+const config = new TablePageConfig<MenuDto>({
   pageQuery: false,
   bulkOperation: true,
   selectParam: {
@@ -59,6 +59,9 @@ const config = new TablePageConfig<MenuDto<String>>({
   selectListCallback: () => {
     selAllSyss()
     clearExpandRowKeys()
+  },
+  tInsCallback: row => {
+    tIns2(row)
   }
 })
 
@@ -92,6 +95,7 @@ const {
   gExport,
   gImport,
   gChangeFilterFormVisible,
+  tIns,
   tUpd,
   tDel,
   handleSelectionChange,
@@ -139,7 +143,7 @@ const dFormRulesInter: FormRules<MenuDto> = {
   ifPublic: [{required: true, trigger: 'change'}],
   sysId: [{required: true, trigger: 'change'}],
 }
-const configInter = new TablePageConfig<MenuDto<string>>({
+const configInter = new TablePageConfig<MenuDto>({
   pageQuery: false,
   bulkOperation: true,
   selectParam: {
@@ -266,9 +270,8 @@ watch(() => [state.dialogForm.parentId, activeTabName.value], () => {
 })
 
 // 表格内的新增
-const tIns = (id: number) => {
-  state.dialogForm.parentId = id
-  gIns()
+const tIns2 = (row: MenuDto<string>) => {
+  state.dialogForm.parentId = row.id
 }
 
 // 检查是否需要显示
@@ -394,7 +397,7 @@ const dFormRulesI2: FormRules<MenuDto> = {
   perms: [{required: true, trigger: 'change'}],
   sysId: [{required: true, trigger: 'change'}],
 }
-const configI2 = new TablePageConfig<MenuDto<string>>({
+const configI2 = new TablePageConfig<MenuDto>({
   getDataOnMounted: false,
   bulkOperation: true,
   selectParam: {
@@ -1629,7 +1632,7 @@ const setThrottle = (row: MenuDto) => {
             <el-table-column fixed="right" label="操作" min-width="140">
               <template #default="{row}">
                 <div class="zs-table-data-operate-button-row">
-                  <el-button v-if="row.type!==base.MenuTypeEnum.T_Inter" link type="primary" size="small" :icon="Plus" @click="tIns(row.id)">新增</el-button>
+                  <el-button v-if="row.type!==base.MenuTypeEnum.T_Inter" link type="primary" size="small" :icon="Plus" @click="tIns(row)">新增</el-button>
                   <el-button link type="primary" size="small" :icon="Edit" @click="tUpd(row.id)">修改</el-button>
                   <el-button link type="danger" size="small" :icon="Delete" @click="tDel(row.id)">删除</el-button>
                 </div>

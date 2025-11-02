@@ -35,13 +35,13 @@ export class FlightRestrictionZoneService {
       pageNum: pageNum,
       pageSize: pageSize,
     });
-    const datas: FlightRestrictionZoneDto[] = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const datas = await this.pgsqlPrismao.$queryRawUnsafe<FlightRestrictionZoneDto[]>(sqls[0]);
     const sqls2 = this.cPgsqlPrismao.genSql<FlightRestrictionZoneDto>({
       type: 'selCount',
       tblName: 'flight_restriction_zone',
       selParam: dto,
     });
-    const total: CountSqlReturnDto = await this.pgsqlPrismao.$queryRawUnsafe(sqls2[0]);
+    const total = await this.pgsqlPrismao.$queryRawUnsafe<CountSqlReturnDto>(sqls2[0]);
     const pageVo = new PageVo<FlightRestrictionZoneDto>(pageNum, pageSize, total[0].count, datas);
     return R.ok(pageVo);
   }
@@ -56,7 +56,7 @@ export class FlightRestrictionZoneService {
       },
       selParam: dto,
     });
-    const datas = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const datas = await this.pgsqlPrismao.$queryRawUnsafe<FlightRestrictionZoneDto[]>(sqls[0]);
     return R.ok(datas);
   }
 
@@ -70,7 +70,7 @@ export class FlightRestrictionZoneService {
       },
       selIds: ids,
     });
-    const res = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const res = await this.pgsqlPrismao.$queryRawUnsafe<FlightRestrictionZoneDto[]>(sqls[0]);
     return R.ok(res);
   }
 
@@ -84,7 +84,7 @@ export class FlightRestrictionZoneService {
       },
       selIds: [id],
     });
-    const ress = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const ress = await this.pgsqlPrismao.$queryRawUnsafe<FlightRestrictionZoneDto[]>(sqls[0]);
     const res = ress[0];
     return R.ok(res);
   }
@@ -98,11 +98,11 @@ export class FlightRestrictionZoneService {
       selfDefineSelKey: {
         geometry: 'replace(replace(replace(st_astext(geometry), \'POLYGON((\', \'\'), \'))\', \'\'), \',\', \', \')'
       },
-      selfDefineInsUpdKey: {
+      selfDefineInsUpdValue: {
         geometry: value => `ST_GeomFromText('POLYGON((${value}))', 4326)`
       },
     });
-    const ress = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const ress = await this.pgsqlPrismao.$queryRawUnsafe<FlightRestrictionZoneDto[]>(sqls[0]);
     const res = ress[0];
     return R.ok(res);
   }
@@ -116,14 +116,14 @@ export class FlightRestrictionZoneService {
       selfDefineSelKey: {
         geometry: 'replace(replace(replace(st_astext(geometry), \'POLYGON((\', \'\'), \'))\', \'\'), \',\', \', \')'
       },
-      selfDefineInsUpdKey: {
+      selfDefineInsUpdValue: {
         geometry: value => `ST_GeomFromText('POLYGON((${value}))', 4326)`
       },
     });
     const res = [];
     for (const sql of sqls) {
-      const newVar = await this.pgsqlPrismao.$queryRawUnsafe(sql);
-      res.push(newVar[0]);
+      const re = await this.pgsqlPrismao.$queryRawUnsafe<FlightRestrictionZoneDto[]>(sql);
+      res.push(re[0]);
     }
     return R.ok(res);
   }
@@ -137,11 +137,11 @@ export class FlightRestrictionZoneService {
       selfDefineSelKey: {
         geometry: 'replace(replace(replace(st_astext(geometry), \'POLYGON((\', \'\'), \'))\', \'\'), \',\', \', \')'
       },
-      selfDefineInsUpdKey: {
+      selfDefineInsUpdValue: {
         geometry: value => `ST_GeomFromText('POLYGON((${value}))', 4326)`
       },
     });
-    const ress = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const ress = await this.pgsqlPrismao.$queryRawUnsafe<FlightRestrictionZoneDto[]>(sqls[0]);
     const res = ress[0];
     return R.ok(res);
   }
@@ -155,14 +155,14 @@ export class FlightRestrictionZoneService {
       selfDefineSelKey: {
         geometry: 'replace(replace(replace(st_astext(geometry), \'POLYGON((\', \'\'), \'))\', \'\'), \',\', \', \')'
       },
-      selfDefineInsUpdKey: {
+      selfDefineInsUpdValue: {
         geometry: value => `ST_GeomFromText('POLYGON((${value}))', 4326)`
       },
     });
     const res = [];
     for (const sql of sqls) {
-      const newVar = await this.pgsqlPrismao.$queryRawUnsafe(sql);
-      res.push(newVar[0]);
+      const re = await this.pgsqlPrismao.$queryRawUnsafe<FlightRestrictionZoneDto[]>(sql);
+      res.push(re[0]);
     }
     return R.ok(res);
   }
@@ -173,7 +173,7 @@ export class FlightRestrictionZoneService {
       tblName: 'flight_restriction_zone',
       delIds: ids,
     });
-    await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    await this.pgsqlPrismao.$queryRawUnsafe<null[]>(sqls[0]);
     return R.ok(true);
   }
 }

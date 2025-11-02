@@ -97,7 +97,7 @@ export class ExternalService {
       selfDefineSelKey: {
         point: 'concat(st_x(point)::text, \',\', st_y(point)::text)'
       },
-      selfDefineInsUpdKey: {
+      selfDefineInsUpdValue: {
         point: value => `st_setsrid(st_makepoint(${value.split(',')[0]}, ${value.split(',')[1]}), 4326)`,
         createTime: value => {
           const date = new Date(value);
@@ -111,8 +111,8 @@ export class ExternalService {
     });
     const res = [];
     for (const sql of sqls) {
-      const newVar = await this.pgsqlPrismao.$queryRawUnsafe(sql);
-      res.push(newVar[0]);
+      const re = await this.pgsqlPrismao.$queryRawUnsafe(sql);
+      res.push(re[0]);
     }
     return R.ok(true)
   }

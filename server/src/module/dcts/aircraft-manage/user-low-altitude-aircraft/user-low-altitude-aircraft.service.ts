@@ -11,9 +11,9 @@ export class UserLowAltitudeAircraftService {
       private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('low_altitude_aircraft', {
-      notNullKeys: ['aircraftName', 'serialNumber', 'registrationNumber'],
+      notNullKeys: ['aircraftName', 'serialNumber', 'registrationNumber', 'type'],
       numberKeys: ['id'],
-      completeMatchingKeys: ['id', 'createRole', 'createBy'],
+      completeMatchingKeys: ['id', 'type', 'createRole', 'createBy'],
     });
   }
 
@@ -44,19 +44,21 @@ export class UserLowAltitudeAircraftService {
   }
 
   async selOnesUserLowAltitudeAircraft(ids: number[]): Promise<R> {
-    const userData = this.bcs.getUserData();
-    const res = await this.pgsqlPrisma.findByIds<UserLowAltitudeAircraftDto>('low_altitude_aircraft', ids);
-    const res0 = res.filter(re => re.createBy === userData.userId && re.createRole === userData.loginRole);
-    return R.ok(res0);
+    const _ids = await this.pgsqlPrisma.getUserAccessibleData(ids, 'low_altitude_aircraft');
+    if (_ids.length === 0) {
+      return R.ok([]);
+    }
+    const res = await this.pgsqlPrisma.findByIds<UserLowAltitudeAircraftDto>('low_altitude_aircraft', _ids);
+    return R.ok(res);
   }
 
   async selOneUserLowAltitudeAircraft(id: number): Promise<R> {
-    const userData = this.bcs.getUserData();
-    const res = await this.pgsqlPrisma.findById<UserLowAltitudeAircraftDto>('low_altitude_aircraft', Number(id));
-    if (res.createBy === userData.userId && res.createRole === userData.loginRole) {
-      return R.ok(res);
+    const _ids = await this.pgsqlPrisma.getUserAccessibleData([id], 'low_altitude_aircraft');
+    if (_ids.length === 0) {
+      return R.ok(null);
     }
-    return R.ok(null);
+    const res = await this.pgsqlPrisma.findById<UserLowAltitudeAircraftDto>('low_altitude_aircraft', Number(id));
+    return R.ok(res);
   }
 
   async insUserLowAltitudeAircraft(dto: UserLowAltitudeAircraftInsOneDto): Promise<R> {
@@ -70,55 +72,26 @@ export class UserLowAltitudeAircraftService {
   }
 
   async updUserLowAltitudeAircraft(dto: UserLowAltitudeAircraftUpdOneDto): Promise<R> {
-    const userData = this.bcs.getUserData();
-    const _res = await this.pgsqlPrisma.findAll<UserLowAltitudeAircraftDto>('low_altitude_aircraft', {
-      data: {
-        id: dto.id,
-        createRole: userData.loginRole,
-        createBy: userData.userId,
-      },
-    });
-    if (_res[0]) {
-      const res = await this.pgsqlPrisma.updateById<UserLowAltitudeAircraftDto>('low_altitude_aircraft', dto);
-      return R.ok(res);
+    const _ids = await this.pgsqlPrisma.getUserAccessibleData([dto.id], 'low_altitude_aircraft');
+    if (_ids.length === 0) {
+      return R.ok(null);
     }
-    return R.ok(null);
+    const res = await this.pgsqlPrisma.updateById<UserLowAltitudeAircraftDto>('low_altitude_aircraft', dto);
+    return R.ok(res);
   }
 
   async updUserLowAltitudeAircrafts(dtos: UserLowAltitudeAircraftUpdOneDto[]): Promise<R> {
-    const userData = this.bcs.getUserData();
-    const _res = await this.pgsqlPrisma.findAll<UserLowAltitudeAircraftDto>('low_altitude_aircraft', {
-      data: {
-        id: {
-          in: {
-            value: dtos.map(d => d.id),
-          },
-        },
-        createRole: userData.loginRole,
-        createBy: userData.userId,
-      },
-    });
-    const _resIds = _res.map(re => re.id);
-    const _dtos = dtos.filter(d => _resIds.includes(d.id));
+    const _ids = await this.pgsqlPrisma.getUserAccessibleData(dtos.map(d => d.id), 'low_altitude_aircraft');
+    const _dtos = dtos.filter(d => _ids.includes(d.id));
     const res = await this.pgsqlPrisma.updateMany<UserLowAltitudeAircraftDto>('low_altitude_aircraft', _dtos);
     return R.ok(res);
   }
 
   async delUserLowAltitudeAircraft(ids: number[]): Promise<R> {
-    const userData = this.bcs.getUserData();
-    const _res = await this.pgsqlPrisma.findAll<UserLowAltitudeAircraftDto>('low_altitude_aircraft', {
-      data: {
-        id: {
-          in: {
-            value: ids,
-          },
-        },
-        createRole: userData.loginRole,
-        createBy: userData.userId,
-      },
-    });
-    const _resIds = _res.map(re => re.id);
-    const _ids = ids.filter(d => _resIds.includes(d));
+    const _ids = await this.pgsqlPrisma.getUserAccessibleData(ids, 'low_altitude_aircraft');
+    if (_ids.length === 0) {
+      return R.ok(true);
+    }
     const res = await this.pgsqlPrisma.deleteById<UserLowAltitudeAircraftDto>('low_altitude_aircraft', _ids);
     return R.ok(res);
   }

@@ -6,4 +6,5 @@ export const userLowAltitudeAircraftDict: { [P in keyof UserLowAltitudeAircraftD
   aircraftName: '航空器名',
   serialNumber: '序列号',
   registrationNumber: '实名登记号',
+  type: '航空器类型',
 }

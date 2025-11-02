@@ -50,7 +50,7 @@ const ifAdminLogin = computed(() => userStore.loginType === 'admin')
   <div class="data-layer">
     <div class="footer" :class="!ifAdminLogin ? 'footer3' : ''">
       <p>因瓦片调用额度限制，若地图加载异常，请切换图层或次日重试。</p>
-      <a href="https://beian.miit.gov.cn" target="_blank"><span>苏ICP备2023025698号-1</span></a>
+      <a v-if="currentConfig.VITE_MODE!==final.DEV" href="https://beian.miit.gov.cn" target="_blank"><span>苏ICP备2023025698号-1</span></a>
       <p v-for="(item, index) in props.labels" :key="index">
         {{ item[1] }}来自<a :href="item[3]" target="_blank">{{ item[2] }}</a>
       </p>
@@ -87,12 +87,12 @@ const ifAdminLogin = computed(() => userStore.loginType === 'admin')
     position: absolute;
     bottom: 32px;
     left: 8px;
-    width: calc(100% - 12px * 2);
-    height: 0;
-    transform: translateY(-12px);
     display: flex;
     gap: 4px;
     font-size: 12px;
+    background-color: var(--table-page-box-bg);
+    padding: 2px 4px;
+    border-radius: 2px;
 
     > * {
       padding: 0 4px;
@@ -124,6 +124,7 @@ const ifAdminLogin = computed(() => userStore.loginType === 'admin')
 .footer3 {
   bottom: 12px !important;
 }
+
 .footer4 {
   bottom: 32px !important;
 }

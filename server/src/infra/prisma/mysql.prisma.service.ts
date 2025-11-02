@@ -26,4 +26,19 @@ export class MysqlPrismaService extends PrismaService {
     }
     return modelInstance;
   }
+
+  public async getUserAccessibleData<T = number | string>(ids: T[], tblName: string,
+                                                          {
+                                                            idKey = 'id'
+                                                          }: {
+                                                            idKey?: string
+                                                          } = {}
+  ): Promise<T[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+    const sql = super.getUserAccessibleDataSql<T>(ids, tblName, {idKey});
+    const rows = await this.mysqlPrismao.$queryRawUnsafe<{ id: T }[]>(sql);
+    return rows.map((row) => row.id);
+  }
 }

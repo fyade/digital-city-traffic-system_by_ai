@@ -28,12 +28,12 @@ export class PageDto {
 
 export interface ApiConfig<T, T2 = T> {
   selectList: (
-    obj: { [P in keyof T2]?: T2[P] | SelectParamObj } & {
+    obj: { [P in keyof T]?: T[P] | SelectParamObj | null | undefined } & {
       [P in keyof PageDto]: PageDto[P];
     },
   ) => Promise<PageVo<T>>;
   selectAll: (obj: {
-    [P in keyof T2]?: T2[P] | SelectParamObj;
+    [P in keyof T]?: T[P] | SelectParamObj | null | undefined;
   }) => Promise<T[]>;
   selectById: (id: string | number) => Promise<T | null>;
   selectByIds: (ids: (string | number)[]) => Promise<T[]>;
@@ -70,6 +70,10 @@ export class TablePageConfig<T = {}> {
   refreshCallback;
   beforeSelectListCallback;
   selectListCallback;
+  fCanCallback;
+  gInsCallback;
+  gUpdCallback;
+  tInsCallback;
   beforeInsertCallback;
   insertCallback;
   beforeUpdateCallback;
@@ -94,6 +98,10 @@ export class TablePageConfig<T = {}> {
    * @param refreshCallback 刷新时的回调
    * @param beforeSelectListCallback selectList前的回调
    * @param selectListCallback selectList回调
+   * @param fCanCallback 筛选表单重置回调
+   * @param gInsCallback 新增按钮点击回调
+   * @param gUpdCallback 修改按钮点击回调
+   * @param tInsCallback 数据表格内新增按钮点击回调
    * @param beforeInsertCallback 新增前的回调
    * @param insertCallback 新增的回调
    * @param beforeUpdateCallback 修改前的回调
@@ -118,6 +126,10 @@ export class TablePageConfig<T = {}> {
     refreshCallback = null,
     beforeSelectListCallback = null,
     selectListCallback = null,
+    fCanCallback = null,
+    gInsCallback = null,
+    gUpdCallback = null,
+    tInsCallback = null,
     beforeInsertCallback = null,
     insertCallback = null,
     beforeUpdateCallback = null,
@@ -141,6 +153,10 @@ export class TablePageConfig<T = {}> {
     refreshCallback?: null | Function;
     beforeSelectListCallback?: null | Function;
     selectListCallback?: null | Function;
+    fCanCallback?: null | Function;
+    gInsCallback?: null | Function;
+    gUpdCallback?: null | Function;
+    tInsCallback?: null | ((row: T) => void);
     beforeInsertCallback?: null | ((dialogType: TypeIU) => void);
     insertCallback?: null | ((dialogType: TypeIU) => void);
     beforeUpdateCallback?: null | ((dialogType: TypeIU) => void);
@@ -164,6 +180,10 @@ export class TablePageConfig<T = {}> {
     this.refreshCallback = refreshCallback;
     this.beforeSelectListCallback = beforeSelectListCallback;
     this.selectListCallback = selectListCallback;
+    this.fCanCallback = fCanCallback;
+    this.gInsCallback = gInsCallback;
+    this.gUpdCallback = gUpdCallback;
+    this.tInsCallback = tInsCallback;
     this.beforeInsertCallback = beforeInsertCallback;
     this.insertCallback = insertCallback;
     this.beforeUpdateCallback = beforeUpdateCallback;

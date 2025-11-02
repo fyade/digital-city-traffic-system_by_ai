@@ -5,6 +5,7 @@ export class UserLowAltitudeAircraftDto extends BaseClass {
   aircraftName!: string;
   serialNumber!: string;
   registrationNumber!: string;
+  type!: string;
 }
 
 export class UserLowAltitudeAircraftSelDto extends PageDto {
@@ -17,6 +18,7 @@ export class UserLowAltitudeAircraftInsDto {
   aircraftName!: string;
   serialNumber!: string;
   registrationNumber!: string;
+  type!: string;
 }
 
 export class UserLowAltitudeAircraftUpdDto extends UserLowAltitudeAircraftInsDto {

@@ -8,6 +8,7 @@ import { AuthService } from '../auth/auth.service';
 import { BaseContextService } from '../base-context/base-context.service';
 import { WinstonService } from "../winston/winston.service";
 import { baseUtils, objectUtils } from "@dcts/common";
+import { SQL_TRUE } from "./base";
 
 enum RowPermissionEnum {
   all = 'all',
@@ -116,24 +117,24 @@ export class PrismaService {
   }
 
   private genSelParams<T>({
-                                        data,
-                                        orderBy,
-                                        range = {},
-                                        selKeys = [],
-                                        notNullKeys = [],
-                                        numberKeys = [],
-                                        completeMatchingKeys = [],
-                                        ifDeleted = true,
-                                      }: {
-                                        data?: {[P in keyof T]?: T[P] | string | Partial<SelectParamObj>},
-                                        orderBy?: boolean | object,
-                                        range?: object,
-                                        selKeys?: string[],
-                                        notNullKeys?: string[],
-                                        numberKeys?: string[],
-                                        completeMatchingKeys?: string[],
-                                        ifDeleted?: boolean,
-                                      } = {},
+                            data,
+                            orderBy,
+                            range = {},
+                            selKeys = [],
+                            notNullKeys = [],
+                            numberKeys = [],
+                            completeMatchingKeys = [],
+                            ifDeleted = true,
+                          }: {
+                            data?: { [P in keyof T]?: T[P] | string | Partial<SelectParamObj> },
+                            orderBy?: boolean | object,
+                            range?: object,
+                            selKeys?: string[],
+                            notNullKeys?: string[],
+                            numberKeys?: string[],
+                            completeMatchingKeys?: string[],
+                            ifDeleted?: boolean,
+                          } = {},
   ) {
     const data_ = baseUtils.objToSnakeCase(data as object);
     const publicData = this.prismao.defaultSelArg({selKeys, ifDeleted}).where;
@@ -279,6 +280,7 @@ export class PrismaService {
         type?: 'selList' | 'selCount' | 'selAll',
         clas?: T
         selfDefineSelKey?: { [P in keyof T]?: string }
+        selfDefineSelValue?: { [P in keyof T]?: (str: string) => string }
         orderBy?: boolean | object,
         pageNum?: number
         pageSize?: number
@@ -308,16 +310,26 @@ export class PrismaService {
     sql += ` select `
     if (param1.type === 'selList' || param1.type === 'selAll') {
       sql += Object.keys(param1.clas)
-          .map(key => ` ${baseUtils.toSnakeCase(key)} as ${key} `)
-          .join(', ')
+          .map(key => {
+            const as1 = param1.selfDefineSelKey[key] || baseUtils.toSnakeCase(key)
+            return ` ${as1} as "${key}" `
+          })
+          .join(',')
     } else if (param1.type === 'selCount') {
       sql += ` count(*) as "count" `
     }
     sql += ` from ${param1.tblName} `
-    sql += ` where 1=1 `
+    sql += ` where ${SQL_TRUE} `
     sql += arg.where.AND
         .map(obj => {
           if (obj.OR) {
+            const k0 = baseUtils.toCamelCase(Object.keys(obj.OR[0])[0]);
+            if (param1.selfDefineSelValue) {
+              const selfDefineSelValueElement = param1.selfDefineSelValue[k0];
+              if (selfDefineSelValueElement) {
+                return ` ( ${selfDefineSelValueElement(params[0].data[k0])} ) `
+              }
+            }
             let ret = ' ('
             if (typeof obj.OR !== 'string' && typeof obj.OR !== 'number') {
               ret += obj.OR
@@ -392,16 +404,16 @@ export class PrismaService {
    * @param selKeys
    */
   public async findPage<T>(model: string, {
-                                                data,
-                                                orderBy,
-                                                range = {},
-                                                selKeys = [],
-                                              }: {
-                                                data?: {[P in keyof T]?: T[P] | string | Partial<SelectParamObj>} & PageDto,
-                                                orderBy?: boolean | object,
-                                                range?: object,
-                                                selKeys?: string[],
-                                              } = {},
+                             data,
+                             orderBy,
+                             range = {},
+                             selKeys = [],
+                           }: {
+                             data?: { [P in keyof T]?: T[P] | string | Partial<SelectParamObj> } & PageDto,
+                             orderBy?: boolean | object,
+                             range?: object,
+                             selKeys?: string[],
+                           } = {},
   ): Promise<PageVo<T>> {
     const pageNum = Number(data.pageNum);
     const pageSize = Number(data.pageSize);
@@ -459,16 +471,16 @@ export class PrismaService {
    * @param selKeys
    */
   public async findAll<T>(model: string, {
-                                        data,
-                                        orderBy,
-                                        range = {},
-                                        selKeys = [],
-                                      }: {
-                                        data?: {[P in keyof T]?: T[P] | string | Partial<SelectParamObj>},
-                                        orderBy?: boolean | object,
-                                        range?: object,
-                                        selKeys?: string[],
-                                      } = {},
+                            data,
+                            orderBy,
+                            range = {},
+                            selKeys = [],
+                          }: {
+                            data?: { [P in keyof T]?: T[P] | string | Partial<SelectParamObj> },
+                            orderBy?: boolean | object,
+                            range?: object,
+                            selKeys?: string[],
+                          } = {},
   ): Promise<T[]> {
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
     const publicData = this.prismao.defaultSelArg({
@@ -502,10 +514,10 @@ export class PrismaService {
    * @param selKeys
    */
   public async findFirst<T>(model: string, args?: Partial<T> & Partial<_BaseClass>, {
-                                       selKeys = [],
-                                     }: {
-                                       selKeys?: string[],
-                                     } = {},
+                              selKeys = [],
+                            }: {
+                              selKeys?: string[],
+                            } = {},
   ): Promise<T> {
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
     const publicData = this.prismao.defaultSelArg({
@@ -568,7 +580,9 @@ export class PrismaService {
       ...(publicData.select ? {select: publicData.select} : {}),
     };
     const list = await this.getModel(model).findMany(arg);
-    const list2 = ids.map((id) => baseUtils.objToCamelCase<T>(list.find(item => item.id === id)));
+    const list2 = ids
+        .map((id) => baseUtils.objToCamelCase<T>(list.find(item => item.id === id)))
+        .filter(_ => _);
     return new Promise(resolve => resolve(list2));
   }
 
@@ -579,12 +593,12 @@ export class PrismaService {
    * @param range
    */
   public async count<T>(model: string, {
-                                      data,
-                                      range = {},
-                                    }: {
-                                      data?: Partial<T>,
-                                      range?: object,
-                                    } = {},
+                          data,
+                          range = {},
+                        }: {
+                          data?: Partial<T>,
+                          range?: object,
+                        } = {},
   ): Promise<number> {
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
     const arg: PrismaParamAll = {
@@ -746,6 +760,17 @@ export class PrismaService {
     };
     await this.getModel(model).updateMany(arg);
     return new Promise(resolve => resolve(true));
+  }
+
+  protected getUserAccessibleDataSql<T = number | string>(ids: T[], tblName: string,
+                                                                {
+                                                                  idKey = 'id'
+                                                                }: {
+                                                                  idKey?: string
+                                                                } = {}
+  ) {
+    const userData = this.bcs.getUserData();
+    return `select ${idKey} from ${tblName} where ${idKey} in (${ids.join(', ')}) and create_role = '${userData.loginRole}' and create_by = '${userData.userId}';`
   }
 
   private _(pageNum: number, pageSize: number) {

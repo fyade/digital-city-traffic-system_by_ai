@@ -407,7 +407,7 @@ const manageSonData = (row: SignalLightStrategyTypeDto) => {
       </el-form-item>
       <el-form-item :label="signalLightStrategyTypeDict.scheduleType" prop="scheduleType">
         <!--<el-input v-model="state.filterForm.scheduleType" :placeholder="signalLightStrategyTypeDict.scheduleType"/>-->
-        <el-select  v-model="state.filterForm.scheduleType" :placeholder="signalLightStrategyTypeDict.scheduleType" clearable filterable>
+        <el-select v-model="state.filterForm.scheduleType" :placeholder="signalLightStrategyTypeDict.scheduleType" clearable filterable>
           <el-option :label="base.sLSSTTypeDict[base.SLSSTTypeEnum.T_DAY]" :value="base.SLSSTTypeEnum.T_DAY"/>
           <el-option :label="base.sLSSTTypeDict[base.SLSSTTypeEnum.T_WEEK]" :value="base.SLSSTTypeEnum.T_WEEK"/>
           <el-option :label="base.sLSSTTypeDict[base.SLSSTTypeEnum.T_MONTH]" :value="base.SLSSTTypeEnum.T_MONTH"/>

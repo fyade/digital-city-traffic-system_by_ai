@@ -3,7 +3,7 @@ import { RoleDto } from "@/type/module/main/sysManage/role.ts";
 import { DeptDto } from "@/type/module/main/sysManage/dept.ts";
 import { UserGroupDto } from "@/type/module/algorithm/userGroup.ts";
 
-export class DctsUserDto extends BaseClass {
+export class _DctsUserDto extends BaseClass {
   id!: string;
   username!: string;
   nickname!: string;
@@ -14,7 +14,7 @@ export class DctsUserDto extends BaseClass {
   tel!: string;
 }
 
-export class DctsUserSelDto extends PageDto {
+export class DctsUserDto extends _DctsUserDto {
   ifWithRole!: string
 }
 

@@ -6,6 +6,7 @@ import { GenSqlDto, publicSqlSelectKey } from "./custom.dto";
 import { Injectable } from "@nestjs/common";
 import { PrismaoService } from "./prismao.service";
 import { PostgresqlPrismaService } from "./postgresql.prisma.service";
+import { SQL_TRUE } from "./base";
 
 @Injectable()
 export class CommonPostgresqlPrismaoService {
@@ -131,7 +132,7 @@ export class CommonPostgresqlPrismaoService {
       for (let i = 0; i < dto.datas.length; i++) {
         const data = dto.datas[i];
         for (const col of baseInterfaceColumns2) {
-          if (dto.selfDefineInsUpdKey[col]) {
+          if (dto.selfDefineInsUpdValue[col]) {
             continue
           }
           delete data[col];
@@ -140,7 +141,7 @@ export class CommonPostgresqlPrismaoService {
         const values: (string | number)[] = []
         for (const key of Object.keys(data)) {
           keys.push(baseUtils.toSnakeCase(key))
-          const _ = dto.selfDefineInsUpdKey[key];
+          const _ = dto.selfDefineInsUpdValue[key];
           if (_) {
             values.push(_(data[key]))
           } else {
@@ -166,7 +167,7 @@ export class CommonPostgresqlPrismaoService {
                 .map((val, index) => {
                   if (
                       !numberKeys.includes(baseUtils.toCamelCase(keys[index]))
-                      && !Object.keys(dto.selfDefineInsUpdKey).includes(baseUtils.toCamelCase(keys[index]))
+                      && !Object.keys(dto.selfDefineInsUpdValue).includes(baseUtils.toCamelCase(keys[index]))
                   ) {
                     return `'${val}'`;
                   }
@@ -222,7 +223,7 @@ export class CommonPostgresqlPrismaoService {
               continue
             }
             _allCols.push(baseUtils.toSnakeCase(key))
-            const _ = dto.selfDefineInsUpdKey[key]
+            const _ = dto.selfDefineInsUpdValue[key]
             if (_) {
               _allVals.push(_(data[key]))
             } else {
@@ -237,7 +238,7 @@ export class CommonPostgresqlPrismaoService {
             let val = _allVals[index]
             if (
                 !numberKeys.includes(baseUtils.toCamelCase(key))
-                && !Object.keys(dto.selfDefineInsUpdKey).includes(baseUtils.toCamelCase(key))
+                && !Object.keys(dto.selfDefineInsUpdValue).includes(baseUtils.toCamelCase(key))
             ) {
               val = `'${val}'`
             }
@@ -249,7 +250,7 @@ export class CommonPostgresqlPrismaoService {
       }
 
       // 拼接 where
-      _sql += ' where 1=1 '
+      _sql += ` where ${SQL_TRUE} `
       for (const key of Object.keys(defaultUpdArg1.where)) {
         _sql += ` and ${key} = '${defaultUpdArg1.where[key]}' `
       }
@@ -291,6 +292,7 @@ export class CommonPostgresqlPrismaoService {
         type: dto.type,
         clas: dto.clas,
         selfDefineSelKey: dto.selfDefineSelKey,
+        selfDefineSelValue: dto.selfDefineSelValue,
         orderBy: dto.orderBy,
         pageNum: dto.pageNum,
         pageSize: dto.pageSize,

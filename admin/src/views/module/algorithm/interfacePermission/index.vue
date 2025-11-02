@@ -210,6 +210,9 @@ const userGroupPermissionConfig = new TablePageConfig<UserGroupPermissionDto>({
       interfaceGroupHandleCurrentChange2()
     }
   },
+  gInsCallback: () => {
+    beforeAddUserGroupPermission()
+  }
 })
 
 const {
@@ -439,7 +442,6 @@ const beforeAddUserGroupPermission = () => {
   const interfaceGroup = interfaceGroupMultipleSelection.value[0]
   userGroupPermissionState.dialogForm.userGroupId = userGroup.id
   userGroupPermissionState.dialogForm.permissionId = interfaceGroup.id
-  userGroupPermissionGIns()
 }
 
 watch(() => userGroupPermissionState.dialogForm, () => {
@@ -923,7 +925,7 @@ const userGroupPermissionDCon2 = () => {
 
       <el-col :span="12">
         <el-button
-            @click="beforeAddUserGroupPermission"
+            @click="userGroupPermissionGIns"
             :disabled="!(userGroupMultipleSelection.length===1&&interfaceGroupMultipleSelection.length===1)"
         >
           新增权限

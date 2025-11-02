@@ -13,4 +13,5 @@ export const userDict: { [P in keyof UserDto_]: string } & { roles: string, dept
   roles: '角色',
   depts: '部门',
   ugs: '用户组',
+  ifWithRole: '查询是否返回权限',
 }

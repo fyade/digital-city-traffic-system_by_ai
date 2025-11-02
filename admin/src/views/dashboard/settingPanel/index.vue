@@ -54,6 +54,12 @@ const updateLastActiveInterval = (val: number) => {
   lastActiveInterval.value = useCesium.getLastActiveInterval()
   NMessage.success('修改成功。')
 }
+const ifShowAirspace = ref(useCesium.getIfShowAirspace())
+const updateIfShowAirspace = (val: boolean) => {
+  useCesium.setIfShowAirspace(val)
+  ifShowAirspace.value = useCesium.getIfShowAirspace()
+  NMessage.success('修改成功。')
+}
 
 const ifAdminLogin = computed(() => userStore.loginType === 'admin')
 </script>
@@ -129,7 +135,7 @@ const ifAdminLogin = computed(() => userStore.loginType === 'admin')
         <n-grid>
           <n-gi :span="6">空域显示</n-gi>
           <n-gi :span="18">
-            <n-switch>
+            <n-switch :value="ifShowAirspace" @update:value="updateIfShowAirspace">
               <template #checked>显示</template>
               <template #unchecked>隐藏</template>
             </n-switch>

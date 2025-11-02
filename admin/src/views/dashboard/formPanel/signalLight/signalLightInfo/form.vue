@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, ref, useTemplateRef } from "vue";
+import { nextTick, ref, useTemplateRef, watch } from "vue";
 import { FormInst, FormRules } from "naive-ui";
 import { useRoute } from "vue-router";
 import FormPanelCard from '@/components/formPanelCard/index.vue'
@@ -11,9 +11,12 @@ import { signalLightInfoDict } from "@/dict/module/dcts/signalLight/signalLightI
 import { signalLightGroupChildMappingApi } from "@/api/module/dcts/signalLight/signalLightGroupChildMapping.ts";
 import { SignalLightGroupChildMappingInsDto } from "@/type/module/dcts/signalLight/signalLightGroupChildMapping.ts";
 import { EDIT_TYPE_ENUM } from "@/views/dashboard/functionModules/constant.ts";
+import { useDashboardStore } from "@/store/module/dashboard.ts";
+import { objectUtils } from "@dcts/common";
 
 const route = useRoute();
 const useCesium = useDashboardCesium;
+const dashboardStore = useDashboardStore();
 
 const ifIns = route.path.endsWith('ins')
 const ifUpd = route.path.endsWith('upd')
@@ -33,15 +36,23 @@ if (ifDel && !itemId) {
 
 const init = () => {
   if (ifIns) {
+    const cacheData = dashboardStore.getCurrentCacheData<SignalLightInfoDto>(0)
+    if (cacheData) {
+      objectUtils.copyObject(form.value, cacheData, ['location'])
+    }
     form.value.location = `${useCesium.mouseClickPosition[0]},${useCesium.mouseClickPosition[1]}`
   }
   if (ifUpd) {
     formLoading.value = true
     signalLightInfoApi.selectById(itemId!).then(res => {
       if (res) {
-        form.value = res
+        objectUtils.copyObject(form.value, res)
       }
       if (itemXy) {
+        const cacheData = dashboardStore.getCurrentCacheData<SignalLightInfoDto>(0)
+        if (cacheData) {
+          objectUtils.copyObject(form.value, cacheData, ['location'])
+        }
         form.value.location = `${useCesium.mouseClickPosition[0]},${useCesium.mouseClickPosition[1]}`
       }
     }).finally(() => {
@@ -58,6 +69,9 @@ const formRules: FormRules = {
   location: [{required: true, trigger: 'change'}],
   description: [{required: true, trigger: 'change'}],
 }
+watch(form.value, () => {
+  dashboardStore.setCurrentCacheData<SignalLightInfoDto>(0, form.value)
+})
 const dCon = () => {
   dialogFormRef.value?.validate(errors => {
     if (errors) {

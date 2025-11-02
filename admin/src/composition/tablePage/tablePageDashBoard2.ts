@@ -16,7 +16,7 @@ export const funcTablePageDashBoard = <T extends { id: string | number }, T2 = T
                                                                                   }: {
                                                                                     state: State2<T, T2>
                                                                                     dFormRules: FormRules,
-                                                                                    config: TablePageConfig
+                                                                                    config: TablePageConfig<T>
                                                                                     api: ApiConfig<T, T2>
                                                                                     dict: { [P in keyof T]: string }
                                                                                     dialogFormRefName?: string

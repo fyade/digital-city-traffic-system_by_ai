@@ -42,13 +42,13 @@ export class VehicleTrackPointService {
       pageNum: pageNum,
       pageSize: pageSize,
     });
-    const datas: VehicleTrackPointDto[] = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const datas = await this.pgsqlPrismao.$queryRawUnsafe<VehicleTrackPointDto[]>(sqls[0]);
     const sqls2 = this.cPgsqlPrismao.genSql<VehicleTrackPointDto>({
       type: 'selCount',
       tblName: 'vehicle_track_point',
       selParam: dto,
     });
-    const total: CountSqlReturnDto = await this.pgsqlPrismao.$queryRawUnsafe(sqls2[0]);
+    const total = await this.pgsqlPrismao.$queryRawUnsafe<CountSqlReturnDto>(sqls2[0]);
     const pageVo = new PageVo<VehicleTrackPointDto>(pageNum, pageSize, total[0].count, datas)
     return R.ok(pageVo);
   }
@@ -63,7 +63,7 @@ export class VehicleTrackPointService {
       },
       selParam: dto,
     });
-    const datas = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const datas = await this.pgsqlPrismao.$queryRawUnsafe<VehicleTrackPointDto[]>(sqls[0]);
     return R.ok(datas);
   }
 
@@ -77,7 +77,7 @@ export class VehicleTrackPointService {
       },
       selIds: ids,
     });
-    const res = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const res = await this.pgsqlPrismao.$queryRawUnsafe<VehicleTrackPointDto[]>(sqls[0]);
     return R.ok(res);
   }
 
@@ -91,7 +91,7 @@ export class VehicleTrackPointService {
       },
       selIds: [id],
     });
-    const ress = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const ress = await this.pgsqlPrismao.$queryRawUnsafe<VehicleTrackPointDto[]>(sqls[0]);
     const res = ress[0];
     return R.ok(res);
   }
@@ -105,11 +105,11 @@ export class VehicleTrackPointService {
       selfDefineSelKey: {
         point: 'concat(st_x(point)::text, \',\', st_y(point)::text)'
       },
-      selfDefineInsUpdKey: {
+      selfDefineInsUpdValue: {
         point: value => `st_setsrid(st_makepoint(${value.split(',')[0]}, ${value.split(',')[1]}), 4326)`
       }
     });
-    const ress = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const ress = await this.pgsqlPrismao.$queryRawUnsafe<VehicleTrackPointDto[]>(sqls[0]);
     const res = ress[0];
     return R.ok(res);
   }
@@ -123,14 +123,14 @@ export class VehicleTrackPointService {
       selfDefineSelKey: {
         point: 'concat(st_x(point)::text, \',\', st_y(point)::text)'
       },
-      selfDefineInsUpdKey: {
+      selfDefineInsUpdValue: {
         point: value => `st_setsrid(st_makepoint(${value.split(',')[0]}, ${value.split(',')[1]}), 4326)`
       }
     });
     const res = [];
     for (const sql of sqls) {
-      const newVar = await this.pgsqlPrismao.$queryRawUnsafe(sql);
-      res.push(newVar[0]);
+      const re = await this.pgsqlPrismao.$queryRawUnsafe<VehicleTrackPointDto[]>(sql);
+      res.push(re[0]);
     }
     return R.ok(res);
   }
@@ -144,11 +144,11 @@ export class VehicleTrackPointService {
       selfDefineSelKey: {
         point: 'concat(st_x(point)::text, \',\', st_y(point)::text)'
       },
-      selfDefineInsUpdKey: {
+      selfDefineInsUpdValue: {
         point: value => `st_setsrid(st_makepoint(${value.split(',')[0]}, ${value.split(',')[1]}), 4326)`
       }
     });
-    const ress = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const ress = await this.pgsqlPrismao.$queryRawUnsafe<VehicleTrackPointDto[]>(sqls[0]);
     const res = ress[0];
     return R.ok(res);
   }
@@ -162,14 +162,14 @@ export class VehicleTrackPointService {
       selfDefineSelKey: {
         point: 'concat(st_x(point)::text, \',\', st_y(point)::text)'
       },
-      selfDefineInsUpdKey: {
+      selfDefineInsUpdValue: {
         point: value => `st_setsrid(st_makepoint(${value.split(',')[0]}, ${value.split(',')[1]}), 4326)`
       }
     });
     const res = [];
     for (const sql of sqls) {
-      const newVar = await this.pgsqlPrismao.$queryRawUnsafe(sql);
-      res.push(newVar[0]);
+      const re = await this.pgsqlPrismao.$queryRawUnsafe<VehicleTrackPointDto[]>(sql);
+      res.push(re[0]);
     }
     return R.ok(res);
   }
@@ -180,7 +180,7 @@ export class VehicleTrackPointService {
       tblName: 'vehicle_track_point',
       delIds: ids,
     });
-    await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    await this.pgsqlPrismao.$queryRawUnsafe<null[]>(sqls[0]);
     return R.ok(true);
   }
 }

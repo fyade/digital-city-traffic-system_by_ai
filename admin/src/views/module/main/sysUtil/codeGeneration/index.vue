@@ -70,6 +70,9 @@ const config = new TablePageConfig<CodeGenTableDto>({
   },
   selectListCallback: () => {
     getAllSyss()
+  },
+  gUpdCallback: () => {
+    gUpd2()
   }
 })
 
@@ -229,7 +232,6 @@ const gUpd2 = () => {
   for (let i = 0; i < multipleSelection.value.length; i++) {
     dialogFormTableNameTypes.value.push(A)
   }
-  gUpd()
 }
 </script>
 
@@ -649,7 +651,7 @@ const gUpd2 = () => {
     <div>
       <el-button type="primary" plain :icon="Refresh" @click="gRefresh2">刷新表</el-button>
       <el-button type="primary" plain :icon="Plus" @click="gIns">新增表</el-button>
-      <el-button type="success" plain :icon="Edit" :disabled="config.bulkOperation?multipleSelection.length===0:multipleSelection.length!==1" @click="gUpd2">修改表</el-button>
+      <el-button type="success" plain :icon="Edit" :disabled="config.bulkOperation?multipleSelection.length===0:multipleSelection.length!==1" @click="gUpd">修改表</el-button>
       <el-button type="danger" plain :icon="Delete" :disabled="multipleSelection.length===0" @click="gDel()">删除表</el-button>
       <el-button type="warning" plain :icon="Download" :disabled="multipleSelection.length===0" @click="gExport()">导出</el-button>
       <el-button type="warning" plain :icon="Upload" @click="gImport">上传</el-button>

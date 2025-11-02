@@ -11,7 +11,8 @@ export class LowAltitudeAircraftService {
       private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('low_altitude_aircraft', {
-      notNullKeys: ['aircraftName', 'serialNumber', 'registrationNumber'],
+      notNullKeys: ['aircraftName', 'serialNumber', 'registrationNumber', 'type'],
+      completeMatchingKeys: ['type'],
     });
   }
 

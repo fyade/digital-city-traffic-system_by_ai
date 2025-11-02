@@ -35,13 +35,13 @@ export class FlightRouteService {
       pageNum: pageNum,
       pageSize: pageSize,
     });
-    const datas: FlightRouteDto[] = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const datas = await this.pgsqlPrismao.$queryRawUnsafe<FlightRouteDto[]>(sqls[0]);
     const sqls2 = this.cPgsqlPrismao.genSql<FlightRouteDto>({
       type: 'selCount',
       tblName: 'flight_route',
       selParam: dto,
     });
-    const total: CountSqlReturnDto = await this.pgsqlPrismao.$queryRawUnsafe(sqls2[0]);
+    const total = await this.pgsqlPrismao.$queryRawUnsafe<CountSqlReturnDto>(sqls2[0]);
     const pageVo = new PageVo<FlightRouteDto>(pageNum, pageSize, total[0].count, datas);
     return R.ok(pageVo);
   }
@@ -56,7 +56,7 @@ export class FlightRouteService {
       },
       selParam: dto,
     });
-    const datas = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const datas = await this.pgsqlPrismao.$queryRawUnsafe<FlightRouteDto[]>(sqls[0]);
     return R.ok(datas);
   }
 
@@ -70,7 +70,7 @@ export class FlightRouteService {
       },
       selIds: ids,
     });
-    const res = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const res = await this.pgsqlPrismao.$queryRawUnsafe<FlightRouteDto[]>(sqls[0]);
     return R.ok(res);
   }
 
@@ -84,7 +84,7 @@ export class FlightRouteService {
       },
       selIds: [id],
     });
-    const ress = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const ress = await this.pgsqlPrismao.$queryRawUnsafe<FlightRouteDto[]>(sqls[0]);
     const res = ress[0];
     return R.ok(res);
   }
@@ -98,11 +98,11 @@ export class FlightRouteService {
       selfDefineSelKey: {
         path: 'replace(replace(replace(st_astext(path), \'LINESTRING Z (\', \'\'), \')\', \'\'), \',\', \', \')'
       },
-      selfDefineInsUpdKey: {
+      selfDefineInsUpdValue: {
         path: value => `ST_GeomFromText('LINESTRING(${value})', 4326)`
       },
     });
-    const ress = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const ress = await this.pgsqlPrismao.$queryRawUnsafe<FlightRouteDto[]>(sqls[0]);
     const res = ress[0];
     return R.ok(res);
   }
@@ -116,14 +116,14 @@ export class FlightRouteService {
       selfDefineSelKey: {
         path: 'replace(replace(replace(st_astext(path), \'LINESTRING Z (\', \'\'), \')\', \'\'), \',\', \', \')'
       },
-      selfDefineInsUpdKey: {
+      selfDefineInsUpdValue: {
         path: value => `ST_GeomFromText('LINESTRING(${value})', 4326)`
       },
     });
     const res = [];
     for (const sql of sqls) {
-      const newVar = await this.pgsqlPrismao.$queryRawUnsafe(sql);
-      res.push(newVar[0]);
+      const re = await this.pgsqlPrismao.$queryRawUnsafe<FlightRouteDto[]>(sql);
+      res.push(re[0]);
     }
     return R.ok(res);
   }
@@ -137,11 +137,11 @@ export class FlightRouteService {
       selfDefineSelKey: {
         path: 'replace(replace(replace(st_astext(path), \'LINESTRING Z (\', \'\'), \')\', \'\'), \',\', \', \')'
       },
-      selfDefineInsUpdKey: {
+      selfDefineInsUpdValue: {
         path: value => `ST_GeomFromText('LINESTRING(${value})', 4326)`
       },
     });
-    const ress = await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    const ress = await this.pgsqlPrismao.$queryRawUnsafe<FlightRouteDto[]>(sqls[0]);
     const res = ress[0];
     return R.ok(res);
   }
@@ -155,14 +155,14 @@ export class FlightRouteService {
       selfDefineSelKey: {
         path: 'replace(replace(replace(st_astext(path), \'LINESTRING Z (\', \'\'), \')\', \'\'), \',\', \', \')'
       },
-      selfDefineInsUpdKey: {
+      selfDefineInsUpdValue: {
         path: value => `ST_GeomFromText('LINESTRING(${value})', 4326)`
       },
     });
     const res = [];
     for (const sql of sqls) {
-      const newVar = await this.pgsqlPrismao.$queryRawUnsafe(sql);
-      res.push(newVar[0]);
+      const re = await this.pgsqlPrismao.$queryRawUnsafe<FlightRouteDto[]>(sql);
+      res.push(re[0]);
     }
     return R.ok(res);
   }
@@ -173,7 +173,7 @@ export class FlightRouteService {
       tblName: 'flight_route',
       delIds: ids,
     });
-    await this.pgsqlPrismao.$queryRawUnsafe(sqls[0]);
+    await this.pgsqlPrismao.$queryRawUnsafe<null[]>(sqls[0]);
     return R.ok(true);
   }
 }

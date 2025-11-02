@@ -94,6 +94,25 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/dashboard/userPanel/index.vue'),
         children: [
           {
+            path: 'airspace',
+            name: '~dashboard/userPanel/airspace',
+            meta: {
+              label: '空域管理',
+              icon: 'road',
+            },
+            children: [
+              {
+                path: 'user-flight-restriction-zone-user-apply',
+                name: '~dashboard/userPanel/airspace/userFlightRestrictionZoneUserApply',
+                meta: {
+                  label: '我的空域申请',
+                  icon: 'road',
+                },
+                component: () => import('@/views/module/dcts/airspace/userFlightRestrictionZoneUserApply/index.vue')
+              }
+            ]
+          },
+          {
             path: 'aircraft-manage',
             name: '~dashboard/userPanel/aircraftManage',
             meta: {
@@ -228,11 +247,6 @@ const routes: RouteRecordRaw[] = [
             ]
           },
           {
-            path: 'runtime-diagram',
-            name: '~fp~:runtimeDiagram',
-            component: () => import('@/views/dashboard/formPanel/runtimeDiagram/index.vue')
-          },
-          {
             path: 'vehicle',
             name: '~fp~:vehicle',
             component: () => import('@/views/dashboard/formPanel/vehicle/index.vue'),
@@ -243,6 +257,11 @@ const routes: RouteRecordRaw[] = [
                 component: () => import('@/views/dashboard/formPanel/vehicle/trajectory/index.vue')
               }
             ]
+          },
+          {
+            path: 'runtime-diagram',
+            name: '~fp~:runtimeDiagram',
+            component: () => import('@/views/dashboard/formPanel/runtimeDiagram/index.vue')
           },
           {
             path: 'airspace',
@@ -294,6 +313,16 @@ const routes: RouteRecordRaw[] = [
                 ]
               }
             ]
+          },
+          {
+            path: 'apply-airspace',
+            name: '~fp~:applyAirspace',
+            component: () => import('@/views/dashboard/formPanel/applyAirspace/index.vue')
+          },
+          {
+            path: 'apply-flight-route',
+            name: '~fp~:applyFlightRoute',
+            component: () => import('@/views/dashboard/formPanel/applyFlightRoute/index.vue')
           },
           {
             path: ':pathMatch(.*)*',

@@ -8,7 +8,7 @@ export default {
 import { useSysStore } from "@/store/module/sys.ts";
 import { provide, reactive, ref } from "vue";
 import { State2, TablePageConfig } from "@/type/tablePage.ts";
-import { DctsUserDto, DctsUserDto2, DctsUserDto_, DctsUserSelDto, DctsUserUpdDto } from "@/type/module/dcts/user/dctsUser.ts";
+import { DctsUserDto, DctsUserDto2, DctsUserDto_, DctsUserUpdDto } from "@/type/module/dcts/user/dctsUser.ts";
 import { ElMessage, FormRules } from "element-plus";
 import { CONFIG, final, Operate } from "@/utils/base.ts";
 import { funcTablePage } from "@/composition/tablePage/tablePage2.ts";
@@ -47,7 +47,7 @@ const dFormRules: FormRules<DctsUserDto> = {
   username: [{required: true, trigger: 'change'}],
   password: [{required: true, trigger: 'change'}],
 }
-const config = new TablePageConfig<DctsUserSelDto>({
+const config = new TablePageConfig<DctsUserDto>({
   selectParam: {
     ifWithRole: final.Y
   },

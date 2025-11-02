@@ -6,11 +6,16 @@ import {
   CESIUM_DEFAULT,
   EDIT_TYPE_ENUM,
   ID_PREFIX_FLIGHT_RESTRICTION_ZONE, ID_PREFIX_FLIGHT_ROUTE, ID_SPECIAL_MouseMovingPolyline,
+  ID_SPECIAL_preview_MouseMovingGeometry,
   ID_SPECIAL_preview_MouseMovingPolyline
 } from "@/views/dashboard/functionModules/constant.ts";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
-import { useUserStore } from "@/store/module/user.ts";
+import { useDashboardStore } from "@/store/module/dashboard.ts";
+import { objectUtils } from "@dcts/common";
+import { computePolygonCenter } from "@/views/dashboard/utils/funcsOfCesium.ts";
+
+const dashboardStore = useDashboardStore();
 
 /**
  * 空域模块
@@ -49,7 +54,13 @@ export class AirspaceModule {
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
-  private userStore = useUserStore()
+  public init() {
+    const v = dashboardStore.getIfShowAirspace();
+    if (objectUtils.ifValid(v)) {
+      this._ifShowAirspace = v
+    }
+  }
+
   // 新增限飞区时的临时点
   private tempPoints: [number, number][] = []
 
@@ -96,6 +107,22 @@ export class AirspaceModule {
     }
   }
 
+  // todo
+  // 限飞区预览（新增/修改时的预览）
+  public previewFlightRestrictionZone(points: [number, number, number][], ifDelete = false) {
+    if (!this.viewer) {
+      return
+    }
+    const entity = this.viewer.entities.getById(ID_SPECIAL_preview_MouseMovingGeometry)
+    if (ifDelete) {
+      if (entity) {
+        this.viewer.entities.removeById(ID_SPECIAL_preview_MouseMovingGeometry)
+      }
+    } else {
+
+    }
+  }
+
   // 航线预览（新增/修改时的预览）
   public previewFlightRoute(points: [number, number, number][], ifDelete = false) {
     if (!this.viewer) {
@@ -135,6 +162,9 @@ export class AirspaceModule {
                                  ifRefresh?: boolean
                                } = {}
   ) {
+    if (!this.getIfShowAirspace()) {
+      return;
+    }
     if (!this.getViewCornerCoordinates) {
       return
     }
@@ -198,12 +228,23 @@ export class AirspaceModule {
           outlineColor = CESIUM_DEFAULT.COLOR_OUTLINE_XGQ_FLIGHT_RESTRICTION_ZONE
         }
         this.viewer.entities.add({
+          position: computePolygonCenter(positions),
           polygon: {
             hierarchy: new Cesium.PolygonHierarchy(positions),
             material: material,
             outline: true,
             outlineColor: outlineColor,
             outlineWidth: CESIUM_DEFAULT.WIDTH_OUTLINE_DEFAULT_FLIGHT_RESTRICTION_ZONE,
+          },
+          label: {
+            text: re.name,
+            font: '14px sans-serif',
+            fillColor: Cesium.Color.WHITE,
+            outlineColor: Cesium.Color.BLACK,
+            outlineWidth: 2,
+            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+            pixelOffset: new Cesium.Cartesian2(0, 0),
+            heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
           },
           id: d
         })
@@ -238,15 +279,49 @@ export class AirspaceModule {
         this.renderedItemIds.push(d)
         const ps = re.path.split(', ').map(str => str.split(' ')).flat().map(Number);
         this.viewer.entities.add({
+          position: Cesium.Cartesian3.fromDegrees(ps[0], ps[1], ps[2]),
           polyline: {
             positions: Cesium.Cartesian3.fromDegreesArrayHeights(ps),
             width: 3,
             material: Cesium.Color.fromCssColorString(re.color),
             arcType: Cesium.ArcType.NONE
           },
+          label: {
+            text: re.name,
+            font: '14px sans-serif',
+            fillColor: Cesium.Color.WHITE,
+            outlineColor: Cesium.Color.BLACK,
+            outlineWidth: 2,
+            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+            pixelOffset: new Cesium.Cartesian2(0, 0),
+            heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+          },
           id: d
         })
       }
     })
+  }
+
+  // 空域显示
+  private _ifShowAirspace = false
+
+  public setIfShowAirspace(value: boolean) {
+    this._ifShowAirspace = value
+    dashboardStore.setIfShowAirspace(this._ifShowAirspace)
+    if (this._ifShowAirspace) {
+      this.refreshScreenAirspace()
+    } else {
+      if (!this.viewer) {
+        return
+      }
+      for (const id of this.renderedItemIds) {
+        this.viewer.entities.removeById(id)
+      }
+      this.renderedItemIds.splice(0, this.renderedItemIds.length)
+    }
+  }
+
+  public getIfShowAirspace() {
+    return this._ifShowAirspace
   }
 }

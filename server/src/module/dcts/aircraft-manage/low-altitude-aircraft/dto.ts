@@ -12,6 +12,8 @@ export class LowAltitudeAircraftDto extends BaseDto {
   serialNumber: string;
 
   registrationNumber: string;
+
+  type: string;
 }
 
 export class LowAltitudeAircraftSelListDto extends PageDto {
@@ -23,6 +25,9 @@ export class LowAltitudeAircraftSelListDto extends PageDto {
 
   @ApiProperty({ description: '实名登记号', required: false })
   registrationNumber: string;
+
+  @ApiProperty({ description: '航空器类型', required: false })
+  type: string;
 }
 
 export class LowAltitudeAircraftSelAllDto {
@@ -34,6 +39,9 @@ export class LowAltitudeAircraftSelAllDto {
 
   @ApiProperty({ description: '实名登记号', required: false })
   registrationNumber: string;
+
+  @ApiProperty({ description: '航空器类型', required: false })
+  type: string;
 }
 
 export class LowAltitudeAircraftInsOneDto {
@@ -51,6 +59,11 @@ export class LowAltitudeAircraftInsOneDto {
   @IsNotEmpty({ message: '实名登记号不能为空' })
   @MaxLength(300, { message: '实名登记号不能超过300个字符' })
   registrationNumber: string;
+
+  @ApiProperty({ description: '航空器类型', required: true })
+  @IsNotEmpty({ message: '航空器类型不能为空' })
+  @MaxLength(50, { message: '航空器类型不能超过50个字符' })
+  type: string;
 }
 
 export class LowAltitudeAircraftUpdOneDto extends LowAltitudeAircraftInsOneDto {

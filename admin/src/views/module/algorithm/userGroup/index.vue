@@ -39,6 +39,12 @@ const dFormRules: FormRules<UserGroupDto> = {
 const config = new TablePageConfig<UserGroupDto>({
   bulkOperation: true,
   pageQuery: false,
+  gInsCallback: () => {
+    gIns2()
+  },
+  tInsCallback: row => {
+    tIns2(row)
+  }
 })
 
 const {
@@ -71,6 +77,7 @@ const {
   gExport,
   gImport,
   gChangeFilterFormVisible,
+  tIns,
   tUpd,
   tDel,
   handleSelectionChange,
@@ -92,11 +99,9 @@ const tableData2 = computed(() => {
 })
 const gIns2 = () => {
   state.dialogForm.parentId = final.DEFAULT_PARENT_ID
-  gIns()
 }
-const tIns = (id: number) => {
-  state.dialogForm.parentId = id
-  gIns()
+const tIns2 = (row: UserGroupDto) => {
+  state.dialogForm.parentId = row.id
 }
 const selectUserGroupInfo = ref<UserGroupDto>(new UserGroupDto())
 const drawer2 = ref(false)
@@ -295,7 +300,7 @@ const manageUser = (row: UserGroupDto) => {
   <div class="zs-button-row">
     <div>
       <el-button type="primary" plain :icon="Refresh" @click="gRefresh">刷新</el-button>
-      <el-button type="primary" plain :icon="Plus" @click="gIns2">新增</el-button>
+      <el-button type="primary" plain :icon="Plus" @click="gIns">新增</el-button>
       <el-button type="success" plain :icon="Edit" :disabled="config.bulkOperation?multipleSelection.length===0:multipleSelection.length!==1" @click="gUpd">修改</el-button>
       <el-button type="danger" plain :icon="Delete" :disabled="multipleSelection.length===0" @click="gDel()">删除</el-button>
       <el-button type="warning" plain :icon="Download" :disabled="multipleSelection.length===0" @click="gExport()">导出</el-button>
@@ -334,7 +339,7 @@ const manageUser = (row: UserGroupDto) => {
       <el-table-column fixed="right" label="操作" min-width="140">
         <template #default="{row}">
           <div class="zs-table-data-operate-button-row">
-            <el-button link type="primary" size="small" :icon="Plus" @click="tIns(row.id)">新增</el-button>
+            <el-button link type="primary" size="small" :icon="Plus" @click="tIns(row)">新增</el-button>
             <el-button link type="primary" size="small" :icon="Edit" @click="tUpd(row.id)">修改</el-button>
             <el-button link type="primary" size="small" :icon="Edit" @click="manageUser(row)">管理用户</el-button>
             <!--<el-button link type="primary" size="small">分配权限</el-button>-->
