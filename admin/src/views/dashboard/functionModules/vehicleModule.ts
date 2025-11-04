@@ -7,10 +7,8 @@ import busTopImage from '@/assets/images2/公交车-车顶.png'
 import { VehicleTrackPointDto } from "@/type/module/dcts/vehicle/vehicleTrackPoint.ts";
 import { CesiumLine, CesiumPoint } from "@/views/dashboard/utils/dto.ts";
 import { DrawedVehicleTrajectoryClass } from "@/views/dashboard/utils/class.ts";
-import { base, idUtils } from "@dcts/common";
-import { useUserStore } from "@/store/module/user.ts";
-
-const userStore = useUserStore()
+import { idUtils } from "@dcts/common";
+import { identityIfAdmin } from "@/identity/utils/identityUtils.ts";
 
 /**
  * 车辆模块
@@ -147,7 +145,7 @@ export class VehicleModule {
   private ifFinished = true
 
   public refreshVehicleRealTime() {
-    if (userStore.getLoginType() !== base.LoginRoleEnum.admin) {
+    if (!identityIfAdmin()) {
       return
     }
     if (!this.viewer) {

@@ -9,6 +9,7 @@ import { ref, watch } from "vue";
 import { reCreateDiscrete } from "@/utils/naiveBase.ts";
 import { useDark, useToggle } from "@vueuse/core";
 import { base } from "@dcts/common";
+import { getCurrentUserInfo } from "@/identity/utils/identityUtils.ts";
 
 const userStore = useUserStore();
 const sysConfigStore = useSysConfigStore();
@@ -28,41 +29,57 @@ const themeOverrides: GlobalThemeOverrides = {
 }
 const nTheme = ref<typeof lightTheme | typeof darkTheme | null>(null)
 
+const setToLight = () => {
+  nTheme.value = lightTheme;
+  toggleDark(false);
+  reCreateDiscrete(nTheme.value);
+}
+const setToDark = () => {
+  nTheme.value = darkTheme;
+  toggleDark(true);
+  reCreateDiscrete(nTheme.value);
+}
+
+const matchMedia = window.matchMedia("(prefers-color-scheme: light)");
+const eventListener = (e: MediaQueryListEventMap["change"]) => {
+  if (e.matches) {
+    setToLight()
+  } else {
+    setToDark()
+  }
+}
+
 watch(
-  () => sysConfigStore.getColorStyle(),
-  () => {
-    const colorStyle = sysConfigStore.getColorStyle();
-    switch (colorStyle) {
-      case base.ColorStyleEnum.T_LIGHT:
-        nTheme.value = lightTheme
-        toggleDark(false);
-        break;
-      case base.ColorStyleEnum.T_DARK:
-        nTheme.value = darkTheme
-        toggleDark(true);
-        break;
-    }
-    reCreateDiscrete(nTheme.value)
-  },
-  {
-    immediate: true,
-  },
+    () => sysConfigStore.getColorStyle(),
+    () => {
+      const colorStyle = sysConfigStore.getColorStyle();
+      matchMedia.removeEventListener('change', eventListener)
+      switch (colorStyle) {
+        case base.ColorStyleEnum.T_LIGHT:
+          setToLight()
+          break;
+        case base.ColorStyleEnum.T_DARK:
+          setToDark()
+          break;
+        case base.ColorStyleEnum.T_INHERIT:
+          matchMedia.addEventListener('change', eventListener)
+          if (matchMedia.matches) {
+            setToLight()
+          } else {
+            setToDark()
+          }
+          break;
+      }
+    },
+    {
+      immediate: true,
+    },
 );
 
 BCService.on("login", (data) => {
-  let username_ = "";
-  if (userStore.loginRole === base.LoginRoleEnum.admin)
-    username_ = userStore.userinfo.admin!.username;
-  if (userStore.loginRole === base.LoginRoleEnum.visitor)
-    username_ = userStore.userinfo.visitor!.username;
-  if (
-    userStore.ifLogin &&
-    (data.username !== username_ || data.loginRole !== userStore.loginRole)
-  ) {
-    ElMessageBox.alert(
-      "在其他标签页有其他用户登录，当前标签页用户即将退出。",
-      "警告",
-    ).finally(() => {
+  let username_ = getCurrentUserInfo().username;
+  if (userStore.ifLogin && (data.username !== username_ || data.loginRole !== userStore.loginRole)) {
+    ElMessageBox.alert("在其他标签页有其他用户登录，当前标签页用户即将退出。", "警告").finally(() => {
       userStore.logOut();
     });
   }

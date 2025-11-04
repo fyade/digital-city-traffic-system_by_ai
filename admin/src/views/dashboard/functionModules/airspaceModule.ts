@@ -61,7 +61,7 @@ export class AirspaceModule {
     }
   }
 
-  // 新增限飞区时的临时点
+  // 新增限飞区及航线时的临时点
   private tempPoints: [number, number][] = []
 
   public getTempPoints() {
@@ -88,16 +88,19 @@ export class AirspaceModule {
     this.tempPoints = []
     if (editType === EDIT_TYPE_ENUM.INS_FLIGHT_RESTRICTION_ZONE) {
       routerPushByName('~fp~:airspace:flightRestrictionZone:ins', {geometry: pointStr})
-    } else if (editType === EDIT_TYPE_ENUM.UPD_FLIGHT_RESTRICTION_ZONE) {
+    }
+    if (editType === EDIT_TYPE_ENUM.UPD_FLIGHT_RESTRICTION_ZONE) {
       let id = ''
       const hseids = this.vdModule.getHistorySelectedEntityIds(0);
       if (hseids) {
         id = hseids.data[0].replace(ID_PREFIX_FLIGHT_RESTRICTION_ZONE, '')
       }
       routerPushByName('~fp~:airspace:flightRestrictionZone:upd', {id: id, geometry: pointStr})
-    } else if (editType === EDIT_TYPE_ENUM.INS_FLIGHT_ROUTE) {
+    }
+    if (editType === EDIT_TYPE_ENUM.INS_FLIGHT_ROUTE) {
       routerPushByName('~fp~:airspace:flightRoute:ins', {path: pointStr2})
-    } else if (editType === EDIT_TYPE_ENUM.UPD_FLIGHT_ROUTE) {
+    }
+    if (editType === EDIT_TYPE_ENUM.UPD_FLIGHT_ROUTE) {
       let id = ''
       const hseids = this.vdModule.getHistorySelectedEntityIds(0);
       if (hseids) {
@@ -105,11 +108,16 @@ export class AirspaceModule {
       }
       routerPushByName('~fp~:airspace:flightRoute:upd', {id: id, path: pointStr2})
     }
+    if (editType === EDIT_TYPE_ENUM.INS_APPLY_AIRSPACE) {
+      routerPushByName('~fp~:applyAirspace', {geometry: pointStr})
+    }
+    if (editType === EDIT_TYPE_ENUM.INS_APPLY_FLIGHT_ROUTE) {
+      routerPushByName('~fp~:applyFlightRoute', {path: pointStr2})
+    }
   }
 
-  // todo
   // 限飞区预览（新增/修改时的预览）
-  public previewFlightRestrictionZone(points: [number, number, number][], ifDelete = false) {
+  public previewFlightRestrictionZone(points: [number, number][], ifDelete = false) {
     if (!this.viewer) {
       return
     }
@@ -119,7 +127,23 @@ export class AirspaceModule {
         this.viewer.entities.removeById(ID_SPECIAL_preview_MouseMovingGeometry)
       }
     } else {
-
+      const positions = points.map(poArr => Cesium.Cartesian3.fromDegrees(poArr[0], poArr[1], CESIUM_DEFAULT.HEIGHT_FLIGHT_RESTRICTION_ZONE))
+      if (entity) {
+        if (entity.polygon) {
+          entity.polygon.hierarchy = new Cesium.ConstantProperty(new Cesium.PolygonHierarchy(positions))
+        }
+      } else {
+        this.viewer.entities.add({
+          polygon: {
+            hierarchy: new Cesium.PolygonHierarchy(positions),
+            material: CESIUM_DEFAULT.COLOR_DEFAULT_FLIGHT_RESTRICTION_ZONE,
+            outline: true,
+            outlineColor: CESIUM_DEFAULT.COLOR_OUTLINE_DEFAULT_FLIGHT_RESTRICTION_ZONE,
+            outlineWidth: CESIUM_DEFAULT.WIDTH_OUTLINE_DEFAULT_FLIGHT_RESTRICTION_ZONE,
+          },
+          id: ID_SPECIAL_preview_MouseMovingGeometry
+        })
+      }
     }
   }
 

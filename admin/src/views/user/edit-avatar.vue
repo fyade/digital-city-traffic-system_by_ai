@@ -4,10 +4,11 @@ import { updUser } from "@/api/module/main/sysManage/user.ts";
 import { useUserStore } from "@/store/module/user.ts";
 import { ElMessage } from "element-plus";
 import { MultiAuthUserDto } from "@/type/module/main/sysManage/user.ts";
-import { base, numberUtils } from "@dcts/common";
+import { numberUtils } from "@dcts/common";
 import { selectFiles } from "@/utils/FileUtils.ts";
 import { fileUploadAvatar } from "@/api/common/fileUpload.ts";
 import { adminConfig } from "@dcts/config";
+import { buildUserAvatarDto } from "@/identity/utils/identityUtils.ts";
 
 const userStore = useUserStore();
 
@@ -17,18 +18,7 @@ const uploadSuccess = (fileName: string) => {
   const multiAuthUser: {
     [P in keyof MultiAuthUserDto]: Partial<MultiAuthUserDto[P]>;
   } = new MultiAuthUserDto();
-  if (userStore.loginRole === base.LoginRoleEnum.admin) {
-    multiAuthUser.admin = {
-      id: userStore.userinfo.admin!.id,
-      avatar: fileName,
-    };
-  }
-  if (userStore.loginRole === base.LoginRoleEnum.visitor) {
-    multiAuthUser.visitor = {
-      id: userStore.userinfo.visitor!.id,
-      avatar: fileName,
-    };
-  }
+  buildUserAvatarDto(multiAuthUser, fileName);
   updUser(multiAuthUser).then((res) => {
     if (res) {
       ElMessage.success("头像上传成功。");

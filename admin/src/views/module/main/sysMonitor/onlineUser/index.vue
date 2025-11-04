@@ -135,7 +135,7 @@ const {
       <!--在此下方添加表格列-->
       <el-table-column prop="userid" :label="onlineUserDict.userid" width="120"/>
       <el-table-column prop="username" :label="onlineUserDict.username" width="120"/>
-      <el-table-column prop="loginRole" :label="onlineUserDict.loginRole" width="120">
+      <el-table-column prop="loginRole" :label="onlineUserDict.loginRole" width="240">
         <template #default="{row}">
           {{ base.loginRoleDict[row.loginRole as base.LoginRoleEnum] }}
         </template>

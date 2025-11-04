@@ -244,7 +244,7 @@ const fCan2 = () => {
       <el-table-column prop="hostName" :label="logOperationWsDict.hostName" width="180"/>
       <el-table-column prop="wsPerms" :label="logOperationWsDict.wsPerms" width="240"/>
       <el-table-column prop="userId" :label="logOperationWsDict.userId" width="120"/>
-      <el-table-column prop="loginRole" :label="logOperationWsDict.loginRole" width="120">
+      <el-table-column prop="loginRole" :label="logOperationWsDict.loginRole" width="240">
         <template #default="{row}">
           {{ base.loginRoleDict[row.loginRole as base.LoginRoleEnum] }}
         </template>

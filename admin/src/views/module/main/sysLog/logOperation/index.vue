@@ -13,7 +13,7 @@ import { State2, TablePageConfig } from "@/type/tablePage.ts";
 import { FormRules } from "element-plus";
 import { Delete, Download, Edit, Plus, Refresh, Upload, Search } from "@element-plus/icons-vue";
 import { LogOperationDto, LogOperationUpdDto } from "@/type/module/main/sysLog/logOperation.ts";
-import { logOperationApi } from "@/api/module/main/sysLog/logOperation.ts";
+import { getPermissionLabels, logOperationApi } from "@/api/module/main/sysLog/logOperation.ts";
 import { logOperationDict } from "@/dict/module/main/sysLog/logOperation.ts";
 import { base, timeUtils } from "@dcts/common";
 
@@ -67,6 +67,9 @@ const config = new TablePageConfig<LogOperationDto>({
         value: [null, null]
       }
     }
+  },
+  selectListCallback: () => {
+    refreshPermissionLabels()
   },
   fCanCallback: () => {
     fCan2()
@@ -152,6 +155,13 @@ const showReqParam = (rowId: number) => {
     }
   }).finally(() => {
     reqParamLoading.value = false
+  })
+}
+
+const allPermissionLabels = ref<{label: string, permission: string}[]>([])
+const refreshPermissionLabels = () => {
+  getPermissionLabels(tableData.value.map(item => item.perms)).then(res => {
+    allPermissionLabels.value = res
   })
 }
 </script>
@@ -273,8 +283,13 @@ const showReqParam = (rowId: number) => {
       <el-table-column prop="callIp" :label="logOperationDict.callIp" width="180"/>
       <el-table-column prop="hostName" :label="logOperationDict.hostName" width="180"/>
       <el-table-column prop="perms" :label="logOperationDict.perms" width="240"/>
+      <el-table-column label="操作名" width="240">
+        <template #default="{row}">
+          {{ allPermissionLabels.find(p => p.permission === row.perms)?.label }}
+        </template>
+      </el-table-column>
       <el-table-column prop="userId" :label="logOperationDict.userId" width="120"/>
-      <el-table-column prop="loginRole" :label="logOperationDict.loginRole" width="120">
+      <el-table-column prop="loginRole" :label="logOperationDict.loginRole" width="240">
         <template #default="{row}">
           {{ base.loginRoleDict[row.loginRole as base.LoginRoleEnum] }}
         </template>

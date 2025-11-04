@@ -103,12 +103,12 @@ const submitCallback = () => {
 
 const mapPoint = () => {
   if (ifIns) {
-    gotoDashboardHome()
     useCesium.setEditType(EDIT_TYPE_ENUM.INS_SIGNAL_LIGHT_GROUP)
+    gotoDashboardHome()
   }
   if (ifUpd) {
-    gotoDashboardHome()
     useCesium.setEditType(EDIT_TYPE_ENUM.UPD_SIGNAL_LIGHT_GROUP)
+    gotoDashboardHome()
   }
 }
 </script>
@@ -134,7 +134,7 @@ const mapPoint = () => {
           <n-form-item path="name" :label="signalLightGroupInfoDict.name">
             <n-input v-model:value="form.name" :placeholder="signalLightGroupInfoDict.name"/>
           </n-form-item>
-          <n-form-item path="location" :label="signalLightGroupInfoDict.location">
+          <n-form-item class="no-padding-right" path="location" :label="signalLightGroupInfoDict.location">
             <n-input v-model:value="form.location" :placeholder="signalLightGroupInfoDict.location" disabled>
               <template #suffix>
                 <n-button @click="mapPoint">地图选点</n-button>
@@ -154,7 +154,4 @@ const mapPoint = () => {
 </template>
 
 <style scoped>
-:deep(.n-input .n-input-wrapper) {
-  padding-right: 0;
-}
 </style>

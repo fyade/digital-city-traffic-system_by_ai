@@ -138,4 +138,20 @@ export class LogOperationController {
   async delLogOperation(@Body() ids: number[]): Promise<R> {
     return this.logOperationService.delLogOperation(ids);
   }
+
+  @Post('/get-permission-labels')
+  @ApiOperation({
+    summary: '获取权限字符描述',
+  })
+  @ApiBody({
+    isArray: true,
+    type: String,
+  })
+  @Authorize({
+    permission: 'main:sysLog:logOperation:getPermissionLabels',
+    label: '获取权限字符描述',
+  })
+  async getPermissionLabels(@Body() permissions: string[]): Promise<R> {
+    return this.logOperationService.getPermissionLabels(permissions);
+  }
 }

@@ -25,7 +25,6 @@ import { DeptDto } from '../dept/dto';
 import { CacheTokenService } from '../../../../infra/cache/cache.token.service';
 import { BaseContextService } from '../../../../infra/base-context/base-context.service';
 import { NOT_ADMIN, PASSWORD_ERROR } from '../../sys-log/log-user-login/dto';
-import { UserVisitorDto } from '../../other-user/user-visitor/dto';
 import * as svgCaptcha from 'svg-captcha';
 import { Exception } from "../../../../exception/exception";
 import { base, encryptUtils, idUtils, timeUtils } from '@dcts/common'
@@ -33,27 +32,30 @@ import { serverConfig } from "@dcts/config";
 import { MysqlPrismaService } from '../../../../infra/prisma/mysql.prisma.service';
 import { MysqlPrismaoService } from "../../../../infra/prisma/mysql.prismao.service";
 import { PrismaoService } from "../../../../infra/prisma/prismao.service";
-import { PostgresqlPrismaService } from "../../../../infra/prisma/postgresql.prisma.service";
-import { DctsUserDto } from "../../../dcts/user/dcts-user/dto";
+import { IdentityService } from "../../../../identity/identity.service";
 
 @Injectable()
 export class UserService {
   private maxLoginFailCount: number;
 
   constructor(
-    private readonly prismao: PrismaoService,
-    private readonly mysqlPrisma: MysqlPrismaService,
-    private readonly mysqlPrismao: MysqlPrismaoService,
-    private readonly pgsqlPrisma: PostgresqlPrismaService,
-    private readonly authService: AuthService,
-    private readonly logUserLoginService: LogUserLoginService,
-    private readonly cacheTokenService: CacheTokenService,
-    private readonly bcs: BaseContextService,
+      private readonly prismao: PrismaoService,
+      private readonly mysqlPrisma: MysqlPrismaService,
+      private readonly mysqlPrismao: MysqlPrismaoService,
+      private readonly authService: AuthService,
+      private readonly logUserLoginService: LogUserLoginService,
+      private readonly cacheTokenService: CacheTokenService,
+      private readonly bcs: BaseContextService,
+      private readonly identityService: IdentityService,
   ) {
     this.maxLoginFailCount = 10;
     this.bcs.setFieldSelectParam('sys_user', {
       notNullKeys: ['id', 'username'],
     });
+
+    this.identityService.setMaxLoginFailCount(this.maxLoginFailCount);
+    this.identityService.setGetLoginLogsOfPasswordError(this.getLoginLogsOfPasswordError.bind(this));
+    this.identityService.setInsLoginLog(this.insLoginLog.bind(this));
   }
 
   async selUser(dto: UserSelListDto): Promise<R> {
@@ -162,22 +164,11 @@ export class UserService {
   }
 
   async getSelfInfo(): Promise<R> {
-    const loginRole = this.bcs.getUserData().loginRole;
-    const userId = this.bcs.getUserData().userId;
-    const multiAuthUser = new MultiAuthUserDto();
-    if (loginRole === base.LoginRoleEnum.admin) {
-      const user = await this.mysqlPrisma.findById<UserDto>('sys_user', userId);
-      delete user.password;
-      multiAuthUser.admin = user;
-      return R.ok(multiAuthUser);
+    const userinfo = await this.identityService.getUserInfo();
+    if (userinfo.ifOk) {
+      return R.ok(userinfo.multiAuthUser);
     }
-    if (loginRole === base.LoginRoleEnum.visitor) {
-      const user = await this.mysqlPrisma.findById<UserVisitorDto>('sys_user_visitor', userId);
-      delete user.password;
-      multiAuthUser.visitor = user;
-      return R.ok(multiAuthUser);
-    }
-    throw new Exception('');
+    throw new UserUnknownException();
   }
 
   async selOnesUser(ids: string[]): Promise<R> {
@@ -189,7 +180,7 @@ export class UserService {
   }
 
   async insUser(dto: AdminNewUserDto): Promise<R> {
-    const user = await this.mysqlPrisma.findFirst('sys_user', { username: dto.username });
+    const user = await this.mysqlPrisma.findFirst('sys_user', {username: dto.username});
     if (user) {
       throw new Exception('用户名已存在。');
     }
@@ -197,59 +188,34 @@ export class UserService {
       ...dto,
       password: await encryptUtils.bcrypt.hashPassword(dto.password),
       id: idUtils.genId(5, false),
-    }, { ifCustomizeId: true });
+    }, {ifCustomizeId: true});
     return R.ok(true);
   }
 
   async updUser(dto: MultiAuthUserDto): Promise<R> {
-    const loginRole = this.bcs.getUserData().loginRole;
-    const userId = this.bcs.getUserData().userId;
-    if (loginRole === base.LoginRoleEnum.admin) {
-      await this.mysqlPrisma.updateById<UserDto>('sys_user', dto.admin);
+    const b = await this.identityService.updUserInfo(dto);
+    if (b) {
       return R.ok(true);
     }
-    if (loginRole === base.LoginRoleEnum.visitor) {
-      await this.mysqlPrisma.updateById<UserVisitorDto>('sys_user_visitor', dto.visitor);
-      return R.ok(true);
-    }
-    throw new Exception('');
+    throw new UserUnknownException();
   }
 
   async updPsd(dto: UpdPsdDto): Promise<R> {
-    const loginRole = this.bcs.getUserData().loginRole;
-    const userId = this.bcs.getUserData().userId;
-    if (loginRole === base.LoginRoleEnum.admin) {
-      const user_ = await this.mysqlPrisma.findById<UserDto>('sys_user', userId);
-      const ifUserYes = await encryptUtils.bcrypt.comparePassword(dto.oldp, user_.password);
-      if (!ifUserYes) {
-        throw new Exception('旧密码错误。');
-      }
-      await this.mysqlPrisma.updateById('sys_user', {
-        id: user_.id,
-        password: await encryptUtils.bcrypt.hashPassword(dto.newp1),
-      });
+    const b = await this.identityService.updUserPsd(dto);
+    if (b) {
       return R.ok(true);
     }
-    if (loginRole === base.LoginRoleEnum.visitor) {
-      const user_ = await this.mysqlPrisma.findById<UserVisitorDto>('sys_user_visitor', userId);
-      const ifUserYes = await encryptUtils.bcrypt.comparePassword(dto.oldp, user_.password);
-      if (!ifUserYes) {
-        throw new Exception('旧密码错误。');
-      }
-      await this.mysqlPrisma.updateById('sys_user_visitor', {
-        id: user_.id,
-        password: await encryptUtils.bcrypt.hashPassword(dto.newp1),
-      });
-      return R.ok(true);
-    }
-    throw new Exception('');
+    throw new UserUnknownException();
   }
 
   async adminResetUserPsd(dto: ResetUserPsdDto): Promise<R> {
     if (!await this.authService.ifAdminUserUpdNotAdminUser(this.bcs.getUserData().userId, dto.id)) {
       throw new UserPermissionDeniedException();
     }
-    await this.mysqlPrisma.updateById('sys_user', { ...dto, password: await encryptUtils.bcrypt.hashPassword(dto.password) });
+    await this.mysqlPrisma.updateById('sys_user', {
+      ...dto,
+      password: await encryptUtils.bcrypt.hashPassword(dto.password)
+    });
     return R.ok(true);
   }
 
@@ -275,70 +241,29 @@ export class UserService {
         throw new Exception('当前不允许新用户注册。')
       }
     }
-    if (dto.loginRole === base.LoginRoleEnum.admin) {
-      const user = await this.mysqlPrisma.findFirst<UserDto>('sys_user', {
-        username: dto.username,
-      });
-      if (user) {
-        throw new Exception('用户名已被使用。');
-      }
-      const userid = idUtils.genId(5, false);
-      await this.mysqlPrisma.create<UserDto>('sys_user', {
-        id: userid,
-        username: dto.username,
-        password: await encryptUtils.bcrypt.hashPassword(dto.password),
-        createRole: dto.loginRole,
-        updateRole: dto.loginRole,
-        createBy: userid,
-        updateBy: userid,
-      }, { ifCustomizeId: true });
+    const b = await this.identityService.regist(dto);
+    if (b) {
       return R.ok('注册成功。');
     }
-    if (dto.loginRole === base.LoginRoleEnum.visitor) {
-      const user = await this.mysqlPrisma.findFirst<UserVisitorDto>('sys_user_visitor', {
-        username: dto.username,
-      });
-      if (user) {
-        throw new Exception('用户名已被使用。');
-      }
-      const userid = idUtils.genId(10, false);
-      await this.mysqlPrisma.create<UserVisitorDto>('sys_user_visitor', {
-        id: userid,
-        username: dto.username,
-        password: await encryptUtils.bcrypt.hashPassword(dto.password),
-        createRole: dto.loginRole,
-        updateRole: dto.loginRole,
-        createBy: userid,
-        updateBy: userid,
-      }, { ifCustomizeId: true });
-      return R.ok('注册成功。');
-    }
-    if (dto.loginRole === base.LoginRoleEnum.dcts) {
-      const user = await this.pgsqlPrisma.findFirst<DctsUserDto>('dcts_user', {
-        username: dto.username
-      })
-      if (user) {
-        throw new Exception('用户名已被使用。');
-      }
-      const userid = idUtils.genId(10, false);
-      await this.pgsqlPrisma.create<DctsUserDto>('dcts_user', {
-        id: userid,
-        username: dto.username,
-        password: await encryptUtils.bcrypt.hashPassword(dto.password),
-        createRole: dto.loginRole,
-        updateRole: dto.loginRole,
-        createBy: userid,
-        updateBy: userid,
-      }, { ifCustomizeId: true })
-      return R.ok('注册成功。');
-    }
+    throw new UserUnknownException();
   }
 
-  async login(dto: LoginDto, { loginIp, loginBrowser, loginOs }, ifAdminLogin = false): Promise<R<{
-    token: string,
-    loginRole: string,
-    multiAuthUser: MultiAuthUserDto,
-  }>> {
+  async login(dto: LoginDto,
+              {
+                loginIp,
+                loginBrowser,
+                loginOs
+              }: {
+                loginIp: string,
+                loginBrowser: string,
+                loginOs: string
+              },
+              ifAdminLogin = false): Promise<R<
+      {
+        token: string,
+        loginRole: string,
+        multiAuthUser: MultiAuthUserDto,
+      }>> {
     if (!serverConfig.currentConfig().ifIgnoreVerificationCode) {
       const vcode = await this.cacheTokenService.getVerificationCode(dto.verificationCodeUuid);
       if (!vcode) {
@@ -350,101 +275,15 @@ export class UserService {
       }
     }
     await this.cacheTokenService.deletePasswordKey(dto.passwordKeyUuid);
-    const multiAuthUser = new MultiAuthUserDto();
-    if (dto.loginRole === base.LoginRoleEnum.admin) {
-      const user = await this.mysqlPrisma.findFirst<UserDto>('sys_user', {
-        username: dto.username,
-      });
-      if (!user) {
-        throw new UserUnknownException();
-      }
-      const loginlogs = await this.getLoginLogsOfPasswordError(user.id, loginIp, dto.loginRole);
-      if (loginlogs.length >= this.maxLoginFailCount) {
-        const sort = loginlogs.sort((a, b) => timeUtils.timestamp(a.createTime) - timeUtils.timestamp(b.createTime));
-        const number = Math.ceil(24 - (timeUtils.timestamp() - timeUtils.timestamp(sort[0].createTime)) / (1000 * 60 * 60));
-        throw new Exception(`您的账号在当前IP密码错误次数过多，请${number}小时后重试或更换网络环境重试。`);
-      }
-      const b1 = await encryptUtils.bcrypt.comparePassword(dto.password, user.password);
-      if (!b1) {
-        await this.insLoginLog(loginIp, loginBrowser, '', loginOs, user.id, dto.loginRole, b1, PASSWORD_ERROR);
-        throw new Exception(`密码错误，还剩${this.maxLoginFailCount - loginlogs.length - 1}次机会。`);
-      }
-      if (!ifAdminLogin) {
-        await this.insLoginLog(loginIp, loginBrowser, '', loginOs, user.id, dto.loginRole, b1);
-      }
-      delete user.password;
-      const token = await this.cacheTokenService.genToken(user.id, user.username, dto.loginRole, loginIp, loginOs, loginBrowser);
-      multiAuthUser.admin = user;
-      return R.ok({
-        token: token,
-        loginRole: dto.loginRole,
-        multiAuthUser: multiAuthUser,
-      });
+    const b = await this.identityService.login(dto, {loginIp, loginBrowser, loginOs}, ifAdminLogin);
+    if (b) {
+      return R.ok(b);
     }
-    if (dto.loginRole === base.LoginRoleEnum.visitor) {
-      const user = await this.mysqlPrisma.findFirst<UserVisitorDto>('sys_user_visitor', {
-        username: dto.username,
-      });
-      if (!user) {
-        throw new UserUnknownException();
-      }
-      const loginlogs = await this.getLoginLogsOfPasswordError(user.id, loginIp, dto.loginRole);
-      if (loginlogs.length >= this.maxLoginFailCount) {
-        const sort = loginlogs.sort((a, b) => timeUtils.timestamp(a.createTime) - timeUtils.timestamp(b.createTime));
-        const number = Math.ceil(24 - (timeUtils.timestamp() - timeUtils.timestamp(sort[0].createTime)) / (1000 * 60 * 60));
-        throw new Exception(`您的账号在当前IP密码错误次数过多，请${number}小时后重试或更换网络环境重试。`);
-      }
-      const b1 = await encryptUtils.bcrypt.comparePassword(dto.password, user.password);
-      if (!b1) {
-        await this.insLoginLog(loginIp, loginBrowser, '', loginOs, user.id, dto.loginRole, b1, PASSWORD_ERROR);
-        throw new Exception(`密码错误，还剩${this.maxLoginFailCount - loginlogs.length - 1}次机会。`);
-      }
-      if (!ifAdminLogin) {
-        await this.insLoginLog(loginIp, loginBrowser, '', loginOs, user.id, dto.loginRole, b1);
-      }
-      delete user.password;
-      const token = await this.cacheTokenService.genToken(user.id, user.username, dto.loginRole, loginIp, loginOs, loginBrowser);
-      multiAuthUser.visitor = user;
-      return R.ok({
-        token: token,
-        loginRole: dto.loginRole,
-        multiAuthUser: multiAuthUser,
-      });
-    }
-    if (dto.loginRole === base.LoginRoleEnum.dcts) {
-      const user = await this.pgsqlPrisma.findFirst<DctsUserDto>('dcts_user', {
-        username: dto.username
-      })
-      if (!user) {
-        throw new UserUnknownException();
-      }
-      const loginlogs = await this.getLoginLogsOfPasswordError(user.id, loginIp, dto.loginRole)
-      if (loginlogs.length >= this.maxLoginFailCount) {
-        const sort = loginlogs.sort((a, b) => timeUtils.timestamp(a.createTime) - timeUtils.timestamp(b.createTime))
-        const number = Math.ceil(24 - (timeUtils.timestamp() - timeUtils.timestamp(sort[0].createTime)) / (1000 * 60 * 60));
-        throw new Exception(`您的账号在当前IP密码错误次数过多，请${number}小时后重试或更换网络环境重试。`);
-      }
-      const b1 = await encryptUtils.bcrypt.comparePassword(dto.password, user.password)
-      if (!b1) {
-        await this.insLoginLog(loginIp, loginBrowser, '', loginOs, user.id, dto.loginRole, b1, PASSWORD_ERROR);
-        throw new Exception(`密码错误，还剩${this.maxLoginFailCount - loginlogs.length - 1}次机会。`);
-      }
-      if (!ifAdminLogin) {
-        await this.insLoginLog(loginIp, loginBrowser, '', loginOs, user.id, dto.loginRole, b1);
-      }
-      delete user.password;
-      const token = await this.cacheTokenService.genToken(user.id, user.username, dto.loginRole, loginIp, loginOs, loginBrowser);
-      multiAuthUser.dctsUser = user
-      return R.ok({
-        token: token,
-        loginRole: dto.loginRole,
-        multiAuthUser: multiAuthUser,
-      });
-    }
+    throw new UserUnknownException();
   }
 
-  async adminlogin(dto: LoginDto, { loginIp, loginBrowser, loginOs }): Promise<R> {
-    const userinfo = await this.login(dto, { loginIp, loginBrowser, loginOs }, true);
+  async adminlogin(dto: LoginDto, {loginIp, loginBrowser, loginOs}): Promise<R> {
+    const userinfo = await this.login(dto, {loginIp, loginBrowser, loginOs}, true);
     if (userinfo.code !== HTTP.SUCCESS().code) {
       throw new Exception(userinfo.msg);
     }
@@ -459,6 +298,7 @@ export class UserService {
       await this.insLoginLog(loginIp, loginBrowser, '', loginOs, userId, dto.loginRole, false, NOT_ADMIN, '不是管理员用户');
       throw new Exception('你不是管理员用户。');
     }
+    throw new UserUnknownException();
   }
 
   async logOut(): Promise<R> {
@@ -477,7 +317,7 @@ export class UserService {
     const text = captcha.text;
     const uuid = idUtils.randomUUID()
     await this.cacheTokenService.saveVerificationCode(uuid, text);
-    return R.ok({ uuid, svg: captcha.data });
+    return R.ok({uuid, svg: captcha.data});
   }
 
   private async getLoginLogsOfPasswordError(userId: string, loginIp: string, loginRole: string) {
@@ -488,7 +328,7 @@ export class UserService {
       loginIp: loginIp,
       loginRole: loginRole,
     }, {
-      orderBy: { createTime: 'desc' },
+      orderBy: {createTime: 'desc'},
       range: {
         createTime: {
           gte: new Date(timeUtils.timestamp() - 1000 * 60 * 60 * 24),

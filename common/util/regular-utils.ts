@@ -87,25 +87,6 @@ export const REGEX_GLOBAL_EXCEPTION_1_match = (str: string) => {
   return str.match(REGEX_GLOBAL_EXCEPTION_1);
 };
 
-// ===== ===== ===== ===== ===== ===== 获取数据库信息 ===== ===== ===== ===== ===== =====
-const REGEX_MAIN_APP_1 = /@Authorize\('([^']*)'\)/g;
-
-const REGEX_MAIN_APP_2 = /@Authorize\(\s*{[^}]*}\s*\)/g;
-
-const REGEX_MAIN_APP_3 = /'([^']*)'/;
-
-export const REGEX_MAIN_APP_1_match = (str: string) => {
-  return str.match(REGEX_MAIN_APP_1);
-};
-
-export const REGEX_MAIN_APP_2_match = (str: string) => {
-  return str.match(REGEX_MAIN_APP_2);
-};
-
-export const REGEX_MAIN_APP_3_match = (str: string) => {
-  return str.match(REGEX_MAIN_APP_3);
-};
-
 // ===== ===== ===== ===== ===== ===== 代码生成 ===== ===== ===== ===== ===== =====
 const REGEX_MAIN_CODEGEN_regex1 = /\/\/(|\/) .+/;
 

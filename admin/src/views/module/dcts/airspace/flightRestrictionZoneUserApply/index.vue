@@ -243,7 +243,6 @@ const refreshLowAltitudeAircrafts = () => {
                   multiple
                   filterable
                   remote
-                  reserve-keyword
                   :remote-method="selectMethod"
                   :loading="selectLoading"
                   @change="selectChange"
@@ -323,7 +322,6 @@ const refreshLowAltitudeAircrafts = () => {
             multiple
             filterable
             remote
-            reserve-keyword
             :remote-method="remoteMethod"
             :loading="remoteLoading"
             @change="remoteSelectChange"

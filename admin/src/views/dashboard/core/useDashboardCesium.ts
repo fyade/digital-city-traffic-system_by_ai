@@ -132,6 +132,7 @@ class UseDashboardCesium extends UseCesium {
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 外部访问 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   public readonly endEditAirspace = this.asModule.endEditAirspace.bind(this.asModule)
+  public readonly previewFlightRestrictionZone = this.asModule.previewFlightRestrictionZone.bind(this.asModule)
   public readonly previewFlightRoute = this.asModule.previewFlightRoute.bind(this.asModule)
   public readonly getIfShowAirspace = this.asModule.getIfShowAirspace.bind(this.asModule)
   public readonly setIfShowAirspace = this.asModule.setIfShowAirspace.bind(this.asModule)

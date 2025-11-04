@@ -99,7 +99,7 @@ const endEditAirspace = () => {
         <n-gi
             v-if="EDIT_TYPES_SPECIAL_1.includes(editType)"
         >
-          <n-button @click="endEditAirspace">点击完成空域绘制</n-button>
+          <n-button @click="endEditAirspace">点击完成绘制</n-button>
         </n-gi>
       </template>
 

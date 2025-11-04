@@ -2,7 +2,7 @@ import { getCurrentConfig } from "../index.js";
 import { configProd } from "./server-prod.config.js";
 import { currentVersion as cv, publicConfigDev } from './public.config.js'
 
-export const currentVersion = `${cv}.1`;
+export const currentVersion = `${cv}.server`;
 
 export const currentConfig = () => {
   return getCurrentConfig(config) as unknown as typeof config.dev

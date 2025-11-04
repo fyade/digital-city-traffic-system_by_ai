@@ -3,12 +3,14 @@ import { MysqlPrismaService } from '../../../../infra/prisma/mysql.prisma.servic
 import { R } from '../../../../common/R';
 import { LogOperationDto, LogOperationSelListDto, LogOperationSelAllDto, LogOperationInsOneDto, LogOperationUpdOneDto } from './dto';
 import { BaseContextService } from '../../../../infra/base-context/base-context.service';
+import { CommonService } from "../../../../infra/common/common.service";
 
 @Injectable()
 export class LogOperationService {
   constructor(
     private readonly mysqlPrisma: MysqlPrismaService,
     private readonly bcs: BaseContextService,
+    private readonly commonService: CommonService,
   ) {
     this.bcs.setFieldSelectParam('log_operation', {
       notNullKeys: ['reqId', 'callIp', 'hostName', 'perms', 'userId', 'loginRole', 'authType', 'reqParam', 'oldValue', 'operateType', 'ifSuccess'],
@@ -75,5 +77,11 @@ export class LogOperationService {
   async delLogOperation(ids: number[]): Promise<R> {
     const res = await this.mysqlPrisma.deleteById<LogOperationDto>('log_operation', ids);
     return R.ok(res);
+  }
+
+  async getPermissionLabels(permissions: string[]): Promise<R> {
+    const allPermissions_ = this.commonService.getAllPermissions();
+    const allPermissions = allPermissions_.filter(p => permissions.includes(p.permission));
+    return R.ok(allPermissions);
   }
 }

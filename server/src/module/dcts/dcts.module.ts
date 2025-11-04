@@ -29,6 +29,8 @@ import { LowAltitudeAircraftModule } from './aircraft-manage/low-altitude-aircra
 import { UserLowAltitudeAircraftModule } from './aircraft-manage/user-low-altitude-aircraft/user-low-altitude-aircraft.module';
 import { FlightRestrictionZoneUserApplyModule } from './airspace/flight-restriction-zone-user-apply/flight-restriction-zone-user-apply.module';
 import { UserFlightRestrictionZoneUserApplyModule } from './airspace/user-flight-restriction-zone-user-apply/user-flight-restriction-zone-user-apply.module';
+import { FlightRouteUserApplyModule } from './airspace/flight-route-user-apply/flight-route-user-apply.module';
+import { UserFlightRouteUserApplyModule } from './airspace/user-flight-route-user-apply/user-flight-route-user-apply.module';
 
 @Module({
   imports: [
@@ -61,7 +63,9 @@ import { UserFlightRestrictionZoneUserApplyModule } from './airspace/user-flight
     LowAltitudeAircraftModule,
     UserLowAltitudeAircraftModule,
     FlightRestrictionZoneUserApplyModule,
-    UserFlightRestrictionZoneUserApplyModule
+    UserFlightRestrictionZoneUserApplyModule,
+    FlightRouteUserApplyModule,
+    UserFlightRouteUserApplyModule
   ]
 })
 export class DctsModule {

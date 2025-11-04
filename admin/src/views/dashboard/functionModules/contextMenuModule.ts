@@ -361,14 +361,20 @@ export class ContextMenuModule {
     {
       id: '~dctsDashboard~:applyAirspace',
       func: () => {
-        routerPushByName('~fp~:applyAirspace')
+        if (!this.miModule) {
+          return
+        }
+        this.miModule.setEditType(EDIT_TYPE_ENUM.INS_APPLY_AIRSPACE)
       }
     },
     // 申请航线
     {
       id: '~dctsDashboard~:applyFlightRoute',
       func: () => {
-        routerPushByName('~fp~:applyFlightRoute')
+        if (!this.miModule) {
+          return
+        }
+        this.miModule.setEditType(EDIT_TYPE_ENUM.INS_APPLY_FLIGHT_ROUTE)
       }
     },
     // 关闭

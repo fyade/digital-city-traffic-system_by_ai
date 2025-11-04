@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { R } from './common/R';
-import { NonSupportException } from './exception/non-support.exception';
 import { AuthService } from './infra/auth/auth.service';
 import { BaseContextService } from './infra/base-context/base-context.service';
 import { serverConfig } from "@dcts/config";
-import * as fs from 'node:fs';
-import * as path from 'node:path';
 import { WinstonService } from "./infra/winston/winston.service";
 import { MysqlPrismaoService } from "./infra/prisma/mysql.prismao.service";
 import { PrismaoService } from './infra/prisma/prismao.service';
-import { base, fileUtils, regularUtils } from '@dcts/common';
+import { base } from '@dcts/common';
+import { CommonService } from "./infra/common/common.service";
+import { PreAuthorizeParams } from "./decorator/authorize.decorator";
 
 const si = require("systeminformation");
 
@@ -23,6 +22,7 @@ export class AppService {
       private readonly prismao: PrismaoService,
       private readonly mysqlPrismao: MysqlPrismaoService,
       private readonly winston: WinstonService,
+      private readonly commonService: CommonService,
   ) {
     this.cpuUsageMSDefault = 100; // CPU 利用率默认时间段
   }
@@ -52,51 +52,9 @@ export class AppService {
     })
   }
 
-  async getAllAuthApis(): Promise<R<Record<string, {
-    authApiStrs: string[],
-    authApiObjs: { permission: string, label: string }[]
-  }>>> {
-    const allAuthApis = {};
-    try {
-      const directoryPath = path.join(__dirname, '../../src/module');
-      const files = fileUtils.getAllFiles(directoryPath);
-      files.unshift(path.join(__dirname, '../../src/app.controller.ts'));
-      const filePaths = files.filter(fileName => fileName.endsWith('.controller.ts'));
-      for (const filePath of filePaths) {
-        const text = await fs.readFileSync(filePath, 'utf-8');
-        // 正则表达式来匹配单引号或双引号内的字符串
-        // 提取简单授权字符串
-        const simpleAuthorizeMatches = regularUtils.REGEX_MAIN_APP_1_match(text);
-        const simpleAuthorizePermissions = simpleAuthorizeMatches?.map(match => {
-          const permissionMatch = regularUtils.REGEX_MAIN_APP_3_match(match);
-          return permissionMatch ? permissionMatch[1] : null;
-        }) || [];
-        // 提取复杂授权对象字符串
-        const complexAuthorizeMatches = regularUtils.REGEX_MAIN_APP_2_match(text);
-        const complexAuthorizeObjects = complexAuthorizeMatches;
-
-        function parseAuthorizeObject(str) {
-          // 移除@Authorize和括号
-          const content = str.replace('@Authorize(', '').replace(/\s*\)\s*$/, '');
-          // 将字符串转换为对象
-          try {
-            return Function('"use strict";return (' + content + ');')();
-          } catch (e) {
-            return null;
-          }
-        }
-
-        const authorizeObject = complexAuthorizeObjects ? complexAuthorizeObjects.map(complexAuthorizeObject => parseAuthorizeObject(complexAuthorizeObject)).filter(item => item) : [];
-        allAuthApis[filePath] = {
-          authApiStrs: simpleAuthorizePermissions,
-          authApiObjs: authorizeObject,
-        };
-      }
-    } catch (e) {
-      this.winston.error(e);
-      throw new NonSupportException('读取源代码信息');
-    }
-    return R.ok(allAuthApis);
+  async getAllAuthApis(): Promise<R<PreAuthorizeParams[]>> {
+    const allPermissions = this.commonService.getAllPermissions();
+    return R.ok(allPermissions);
   }
 
   async getAllAuthApis2(): Promise<R> {
@@ -107,11 +65,11 @@ export class AppService {
       }
     })
     const dbPerms = dbData.filter(item => item.type === 'mb').map(item => [item.label, item.perms]);
-    const hdPerms = Object.values(hdData.data).map(item => item.authApiObjs).flat().map(item => [item.label, item.permission])
+    const hdPerms = hdData.data.map(d => [d.label, d.permission]);
     const dbPerms1 = dbPerms.map(_ => _[1]);
     const hdPerms1 = hdPerms.map(_ => _[1]);
     // 后端有数据库没有的
-    const permsNotInDb = hdPerms1.filter(item => !dbPerms1.includes(item)).filter(item => item !== '-')
+    const permsNotInDb = hdPerms1.filter(item => !dbPerms1.includes(item))
     // 数据库有后端没有的
     const permsNotInHd = dbPerms1.filter(item => !hdPerms1.includes(item))
     // label不一样的

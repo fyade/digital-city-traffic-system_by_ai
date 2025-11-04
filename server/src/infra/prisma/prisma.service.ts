@@ -4,26 +4,10 @@ import { PageVo } from '../../common/vo/PageVo';
 import { deepClone } from '../../util/ObjectUtils';
 import { PrismaParam, PrismaParamAll, SelectParamObj } from './dto';
 import { PrismaoService } from "./prismao.service";
-import { AuthService } from '../auth/auth.service';
 import { BaseContextService } from '../base-context/base-context.service';
 import { WinstonService } from "../winston/winston.service";
 import { baseUtils, objectUtils } from "@dcts/common";
 import { SQL_TRUE } from "./base";
-
-enum RowPermissionEnum {
-  all = 'all',
-  self = 'self',
-}
-
-class RowPermissionRet {
-  types: RowPermissionEnum[];
-  ids: (string | number)[];
-
-  constructor() {
-    this.types = [];
-    this.ids = [];
-  }
-}
 
 type _BaseClass = { id: string | number };
 
@@ -31,86 +15,10 @@ type _BaseClass = { id: string | number };
 export class PrismaService {
   constructor(
       protected readonly prismao: PrismaoService,
-      protected readonly authService: AuthService,
       protected readonly bcs: BaseContextService,
       protected readonly winston: WinstonService,
   ) {
   }
-
-  // /**
-  //  * 数据表行级别权限控制
-  //  * @param model
-  //  * @param arg
-  //  * @private
-  //  */
-  // private async tableRowPermission<T>({
-  //                                       model,
-  //                                       arg,
-  //                                     }: {
-  //                                       model: string,
-  //                                       arg: PrismaParam
-  //                                     },
-  // ): Promise<RowPermissionRet> {
-  //   const rowPermissionRet = new RowPermissionRet();
-  //   const userData = this.bcs.getUserData();
-  //   const permissionData = await this.mysqlPrismao.sys_menu.findFirst({
-  //     where: {
-  //       perms: userData.perms,
-  //       type: 'mb',
-  //       ...this.defaultSelArg().where,
-  //     },
-  //   });
-  //   if (!permissionData) {
-  //     this.winston.error(`不存在的权限：${userData.perms}`);
-  //     throw new UnknownException(userData.reqId);
-  //   }
-  //   const ifTopAdmin = userData.topAdmin;
-  //   if (ifTopAdmin) {
-  //     rowPermissionRet.types.push(RowPermissionEnum.all);
-  //   }
-  //   // 用户的角色/部门
-  //   const {allRoleIds, allDeptIds} = await this.authService.rolesAndDeptsOfUser(userData.userId, userData.loginRole);
-  //   const trpsRole = await this.mysqlPrismao.sys_table_row_permission.findMany({
-  //     where: {
-  //       action_type: UTDPTypeEnum.T_ROLE,
-  //       action_id: {
-  //         in: allRoleIds.map(_ => `${_}`),
-  //       },
-  //       permission_id: permissionData.id,
-  //       ...this.defaultSelArg().where,
-  //     },
-  //   });
-  //   const trpsDept = await this.mysqlPrismao.sys_table_row_permission.findMany({
-  //     where: {
-  //       action_type: UTDPTypeEnum.T_DEPT,
-  //       action_id: {
-  //         in: allDeptIds.map(_ => `${_}`),
-  //       },
-  //       permission_id: permissionData.id,
-  //       ...this.defaultSelArg().where,
-  //     },
-  //   });
-  //   const trps = [...trpsRole, ...trpsDept];
-  //   if (trps.length === 0) {
-  //     rowPermissionRet.types.push(RowPermissionEnum.all);
-  //   }
-  //   const dataTypes = trps.map(item => item.data_type);
-  //   if (dataTypes.includes('ALL')) {
-  //     rowPermissionRet.types.push(RowPermissionEnum.all);
-  //   }
-  //   if (dataTypes.includes('SELF_DEPT')) {
-  //   }
-  //   if (dataTypes.includes('DEPT_ONE_SON')) {
-  //   }
-  //   if (dataTypes.includes('DEPT_ALL_SON')) {
-  //   }
-  //   if (dataTypes.includes('SELF_ROLE')) {
-  //   }
-  //   if (dataTypes.includes('SELF')) {
-  //     rowPermissionRet.types.push(RowPermissionEnum.self);
-  //   }
-  //   return rowPermissionRet;
-  // }
 
   protected getModel(model: string): any {
     return null;

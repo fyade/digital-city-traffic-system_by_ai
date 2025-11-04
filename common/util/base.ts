@@ -28,11 +28,13 @@ export const authTypeDict = {
 export enum ColorStyleEnum {
   T_LIGHT = "light",
   T_DARK = "dark",
+  T_INHERIT = "inherit",
 }
 
 export const colorStyleDict = {
   [ColorStyleEnum.T_LIGHT]: "浅色",
   [ColorStyleEnum.T_DARK]: "深色",
+  [ColorStyleEnum.T_INHERIT]: "跟随系统",
 };
 
 // 菜单

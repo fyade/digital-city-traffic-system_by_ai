@@ -356,6 +356,32 @@ export class MapInteractionModule {
         const mouseMovePosition = this.getMouseMovePosition();
         this.asModule.addTempPoints(mouseMovePosition)
       }
+    },
+    {
+      id: EDIT_TYPE_ENUM.INS_APPLY_AIRSPACE,
+      func: () => {
+        if (!this.getMouseMovePosition) {
+          return
+        }
+        if (!this.asModule) {
+          return;
+        }
+        const mouseMovePosition = this.getMouseMovePosition();
+        this.asModule.addTempPoints(mouseMovePosition)
+      }
+    },
+    {
+      id: EDIT_TYPE_ENUM.INS_APPLY_FLIGHT_ROUTE,
+      func: () => {
+        if (!this.getMouseMovePosition) {
+          return
+        }
+        if (!this.asModule) {
+          return;
+        }
+        const mouseMovePosition = this.getMouseMovePosition();
+        this.asModule.addTempPoints(mouseMovePosition)
+      }
     }
   ]
 

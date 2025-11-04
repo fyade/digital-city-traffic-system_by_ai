@@ -111,12 +111,12 @@ const submitCallback = () => {
 
 const mapPoint = () => {
   if (ifIns) {
-    gotoDashboardHome()
     useCesium.setEditType(EDIT_TYPE_ENUM.INS_FLIGHT_ROUTE)
+    gotoDashboardHome()
   }
   if (ifUpd) {
-    gotoDashboardHome()
     useCesium.setEditType(EDIT_TYPE_ENUM.UPD_FLIGHT_ROUTE)
+    gotoDashboardHome()
   }
 }
 
@@ -165,7 +165,7 @@ watchEffect(() => {
           <n-form-item path="name" :label="flightRouteDict.name">
             <n-input v-model:value="form.name" :placeholder="flightRouteDict.name"/>
           </n-form-item>
-          <n-form-item path="path" :label="flightRouteDict.path">
+          <n-form-item class="no-padding-right" path="path" :label="flightRouteDict.path">
             <n-input v-model:value="form.path" :placeholder="flightRouteDict.path" disabled>
               <template #suffix>
                 <n-button @click="mapPoint">地图选点</n-button>
@@ -190,7 +190,4 @@ watchEffect(() => {
 </template>
 
 <style scoped>
-:deep(.n-input .n-input-wrapper) {
-  padding-right: 0;
-}
 </style>

@@ -16,6 +16,7 @@ import { MenuThrottleDto } from '../../module/main/sys-manage/menu-throttle/dto'
 import { WinstonService } from '../winston/winston.service';
 import { MysqlPrismaoService } from '../prisma/mysql.prismao.service';
 import { PrismaoService } from '../prisma/prismao.service';
+import { IdentityService } from "../../identity/identity.service";
 
 @Injectable()
 export class AuthService {
@@ -25,6 +26,7 @@ export class AuthService {
     private readonly cachePermissionService: CachePermissionService,
     private readonly bcs: BaseContextService,
     private readonly winston: WinstonService,
+    private readonly identityService: IdentityService,
   ) {}
 
   /**
@@ -64,7 +66,7 @@ export class AuthService {
     if (s) {
       return s === final.Y;
     }
-    if (loginRole === base.LoginRoleEnum.admin) {
+    if (this.identityService.identityIfAdmin(loginRole)) {
       const admintop = await this.mysqlPrismao.sys_admin_top.findFirst({
         where: {
           user_id: userId,

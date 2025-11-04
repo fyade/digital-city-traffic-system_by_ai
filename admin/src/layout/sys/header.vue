@@ -9,6 +9,7 @@ import { useSysStore } from "@/store/module/sys.ts";
 import { gotoDashboardHome, gotoThreeHome } from "@/views/dashboard/utils/base.ts";
 import { useSysConfigStore } from "@/store/module/sysConfig.ts";
 import { base } from "@dcts/common";
+import { getCurrentUserInfo } from "@/identity/utils/identityUtils.ts";
 
 const props = defineProps({
   ifShowBreadcrumb: {
@@ -24,19 +25,11 @@ const sysStore = useSysStore();
 const sysConfigStore = useSysConfigStore();
 
 const userInfo = computed(() => {
-  const userinfo = userStore.userinfo;
+  const currentUserInfo = getCurrentUserInfo();
   const ret = {
     _loginRole: '',
-    avatar: '',
-    nickname: '',
-  }
-  if (userStore.loginRole === base.LoginRoleEnum.admin) {
-    ret.avatar = userinfo.admin!.avatar;
-    ret.nickname = userinfo.admin!.nickname;
-  }
-  if (userStore.loginRole === base.LoginRoleEnum.visitor) {
-    ret.avatar = userinfo.visitor!.avatar;
-    ret.nickname = userinfo.visitor!.nickname;
+    avatar: currentUserInfo.avatar,
+    nickname: currentUserInfo.nickname,
   }
   const v = base.loginRoleDict[userStore.loginRole as base.LoginRoleEnum];
   if (v) {
@@ -117,7 +110,10 @@ if (props.ifShowBreadcrumb) {
         <SvgIcon name="theme" color="var(--menu-icon-color)"/>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item v-for="key in base.ColorStyleEnum" :key="key" @click="sysConfigStore.setColorStyle(key)">{{ base.colorStyleDict[key] }}模式</el-dropdown-item>
+            <el-dropdown-item v-for="key in base.ColorStyleEnum" :key="key" @click="sysConfigStore.setColorStyle(key)">
+              <span>{{ base.colorStyleDict[key] }}</span>
+              <span v-if="sysConfigStore.getColorStyle() === key">[当前]</span>
+            </el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>

@@ -70,7 +70,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/login',
     name: '~login',
-    component: () => import('@/views/user/login.vue')
+    component: () => import('@/views/user/login2.vue')
   },
   {
     path: '/dashboard',
@@ -109,6 +109,15 @@ const routes: RouteRecordRaw[] = [
                   icon: 'road',
                 },
                 component: () => import('@/views/module/dcts/airspace/userFlightRestrictionZoneUserApply/index.vue')
+              },
+              {
+                path: 'user-flight-route-user-apply',
+                name: '~dashboard/userPanel/airspace/userFlightRouteUserApply',
+                meta: {
+                  label: '我的航线申请',
+                  icon: 'road'
+                },
+                component: () => import('@/views/module/dcts/airspace/userFlightRouteUserApply/index.vue')
               }
             ]
           },
@@ -367,7 +376,7 @@ const currentConfig = adminConfig.currentConfig();
 const whitelist = ['/login']
 router.beforeEach((to, from, next) => {
   if (currentConfig.VITE_MODE === final.DEV) {
-    console.info(from.path, `\n${to.path}`)
+    console.info(from.fullPath, `\n${to.fullPath}`)
   }
   if (ifWebsiteLink(to.path, "/")) {
     return;

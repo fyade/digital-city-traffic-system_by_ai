@@ -236,7 +236,7 @@ const fCan2 = () => {
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
       <el-table-column prop="userId" :label="logUserLoginDict.userId" width="120"/>
-      <el-table-column prop="loginRole" :label="logUserLoginDict.loginRole" width="120">
+      <el-table-column prop="loginRole" :label="logUserLoginDict.loginRole" width="240">
         <template #default="{row}">
           {{ base.loginRoleDict[row.loginRole as base.LoginRoleEnum] }}
         </template>

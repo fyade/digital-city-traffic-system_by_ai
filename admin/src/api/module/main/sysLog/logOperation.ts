@@ -88,3 +88,11 @@ export const logOperationApi: ApiConfig<LogOperationDto, LogOperationUpdDto> = {
     data: ids
   })
 }
+
+export function getPermissionLabels(permissions: string[]) {
+  return request<{ label: string, permission: string }[]>({
+    url: '/main/sys-log/log-operation/get-permission-labels',
+    method: 'POST',
+    data: permissions
+  })
+}

@@ -2,7 +2,7 @@
 import { useRoute } from "vue-router";
 import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts";
 import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
-import { ref, useTemplateRef, watchEffect, watch } from "vue";
+import { ref, useTemplateRef, watchEffect, watch, onMounted, onBeforeUnmount } from "vue";
 import { FormInst, FormRules } from "naive-ui";
 import { FlightRestrictionZoneDto } from "@/type/module/dcts/airspace/flightRestrictionZone.ts";
 import { flightRestrictionZoneApi } from "@/api/module/dcts/airspace/flightRestrictionZone.ts";
@@ -32,6 +32,7 @@ if (ifDel && !itemId) {
   gotoDashboardHome()
 }
 
+const inited = ref(false)
 const init = () => {
   if (ifIns) {
     const cacheData = dashboardStore.getCurrentCacheData<FlightRestrictionZoneDto>(0)
@@ -41,6 +42,8 @@ const init = () => {
     if (itemGeometry && regularUtils.RegTest(regularUtils.REGEX_DCTS_GEOMETRY, itemGeometry)) {
       form.value.geometry = itemGeometry
     }
+    inited.value = true
+    dashboardStore.setCurrentCacheData<FlightRestrictionZoneDto>(0, form.value)
   }
   if (ifUpd) {
     formLoading.value = true
@@ -57,6 +60,8 @@ const init = () => {
       }
     }).finally(() => {
       formLoading.value = false
+      inited.value = true
+      dashboardStore.setCurrentCacheData<FlightRestrictionZoneDto>(0, form.value)
     })
   }
 }
@@ -72,6 +77,9 @@ const formRules: FormRules = {
   descr: [{required: true, trigger: 'change'}],
 }
 watch(form.value, () => {
+  if (!inited.value) {
+    return
+  }
   dashboardStore.setCurrentCacheData<FlightRestrictionZoneDto>(0, form.value)
 })
 const dCon = () => {
@@ -120,14 +128,36 @@ watchEffect(() => {
 })
 const mapPoint = () => {
   if (ifIns) {
-    gotoDashboardHome()
     useCesium.setEditType(EDIT_TYPE_ENUM.INS_FLIGHT_RESTRICTION_ZONE)
+    gotoDashboardHome()
   }
   if (ifUpd) {
-    gotoDashboardHome()
     useCesium.setEditType(EDIT_TYPE_ENUM.UPD_FLIGHT_RESTRICTION_ZONE)
+    gotoDashboardHome()
   }
 }
+
+onMounted(() => {
+  useCesium.previewFlightRestrictionZone(pointsss.value)
+})
+onBeforeUnmount(() => {
+  useCesium.previewFlightRestrictionZone(pointsss.value, true)
+})
+const pointsss = ref<[number, number][]>([])
+const setPointsss = (geometry: string) => {
+  pointsss.value = geometry.split(', ').map(str => str.split(' ').map(Number)).map(pos => [pos[0], pos[1]])
+}
+if (itemGeometry && regularUtils.RegTest(regularUtils.REGEX_DCTS_GEOMETRY, itemGeometry)) {
+  setPointsss(itemGeometry)
+}
+watchEffect(() => {
+  if (pointsss.value.length === 0) {
+    return
+  }
+  const geometryStr = pointsss.value.map(poi => poi.join(' ')).join(', ')
+  form.value.geometry = geometryStr
+  useCesium.previewFlightRestrictionZone(pointsss.value)
+})
 </script>
 
 <template>
@@ -159,7 +189,7 @@ const mapPoint = () => {
             <!--<n-input v-model:value="form.type" :placeholder="flightRestrictionZoneDict.type"/>-->
             <n-select v-model:value="form.type" :options="airspaceTypes" clearable filterable/>
           </n-form-item>
-          <n-form-item path="geometry" :label="flightRestrictionZoneDict.geometry">
+          <n-form-item class="no-padding-right" path="geometry" :label="flightRestrictionZoneDict.geometry">
             <n-input v-model:value="form.geometry" :placeholder="flightRestrictionZoneDict.geometry" disabled>
               <template #suffix>
                 <n-button @click="mapPoint">地图选点</n-button>
@@ -179,7 +209,4 @@ const mapPoint = () => {
 </template>
 
 <style scoped>
-:deep(.n-input .n-input-wrapper) {
-  padding-right: 0;
-}
 </style>

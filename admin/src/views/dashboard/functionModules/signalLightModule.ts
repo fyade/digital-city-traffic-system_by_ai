@@ -13,9 +13,7 @@ import {
 } from "@/views/dashboard/functionModules/constant.ts";
 import signalLight1Svg from "@/assets/images2/signal-light-1.png";
 import { getLightCanvas } from "@/views/dashboard/utils/funcsOfSignalLight.ts";
-import { useUserStore } from "@/store/module/user.ts";
-
-const userStore = useUserStore()
+import { identityIfAdmin } from "@/identity/utils/identityUtils.ts";
 
 /**
  * 信号灯模块
@@ -200,7 +198,7 @@ export class SignalLightModule {
                                        ifReplay?: boolean
                                      } = {}
   ) {
-    if (userStore.getLoginType() !== base.LoginRoleEnum.admin) {
+    if (!identityIfAdmin()) {
       return
     }
     if (!this.viewer) {

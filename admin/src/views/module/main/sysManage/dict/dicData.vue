@@ -356,8 +356,8 @@ const {
       <!--<el-table-column fixed prop="id" :label="dicDataDict.id" width="180"/>-->
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
-      <el-table-column prop="label" :label="dicDataDict.label" width="120"/>
-      <el-table-column prop="value" :label="dicDataDict.value" width="120"/>
+      <el-table-column prop="label" :label="dicDataDict.label" width="300"/>
+      <el-table-column prop="value" :label="dicDataDict.value" width="240"/>
       <el-table-column prop="ifDefault" :label="dicDataDict.ifDefault" width="120"/>
       <el-table-column prop="ifDisabled" :label="dicDataDict.ifDisabled" width="120"/>
       <el-table-column prop="orderNum" :label="dicDataDict.orderNum" width="120"/>

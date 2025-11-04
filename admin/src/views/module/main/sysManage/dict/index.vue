@@ -322,8 +322,8 @@ const setDicData = (row: DicTypeDto) => {
       <!--<el-table-column fixed prop="id" :label="dicTypeDict.id" width="180"/>-->
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
-      <el-table-column prop="name" :label="dicTypeDict.name" width="200"/>
-      <el-table-column prop="type" :label="dicTypeDict.type" width="200"/>
+      <el-table-column prop="name" :label="dicTypeDict.name" width="300"/>
+      <el-table-column prop="type" :label="dicTypeDict.type" width="240"/>
       <el-table-column prop="ifDisabled" :label="dicTypeDict.ifDisabled" width="120"/>
       <el-table-column prop="orderNum" :label="dicTypeDict.orderNum" width="120"/>
       <el-table-column prop="remark" :label="dicTypeDict.remark" width="200"/>

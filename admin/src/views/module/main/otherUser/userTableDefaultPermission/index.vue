@@ -396,7 +396,7 @@ const chooseUserGroup = (row: UserGroupDto) => {
       <!--<el-table-column fixed prop="id" :label="userTableDefaultPermissionDict.id" width="180"/>-->
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
-      <el-table-column prop="tableName" :label="userTableDefaultPermissionDict.tableName" width="180">
+      <el-table-column prop="tableName" :label="userTableDefaultPermissionDict.tableName" width="240">
         <template #default="{row}">
           {{ base.loginRoleDict[row.tableName as base.LoginRoleEnum] }}
         </template>
