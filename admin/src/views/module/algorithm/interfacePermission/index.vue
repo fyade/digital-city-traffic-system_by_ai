@@ -212,6 +212,12 @@ const userGroupPermissionConfig = new TablePageConfig<UserGroupPermissionDto>({
   },
   gInsCallback: () => {
     beforeAddUserGroupPermission()
+  },
+  beforeInsertCallback: () => {
+    userGroupPermissionDCon2()
+  },
+  beforeUpdateCallback: () => {
+    userGroupPermissionDCon2()
   }
 })
 
@@ -487,7 +493,6 @@ const showUseLog = () => {
 }
 const userGroupPermissionDCon2 = () => {
   delete userGroupPermissionState.dialogForm.count
-  userGroupPermissionDCon()
 }
 </script>
 
@@ -592,7 +597,7 @@ const userGroupPermissionDCon2 = () => {
       <span class="dialog-footer">
         <el-button type="primary" @click="showUseLog" v-if="!ifAddUserGroupPermission">查看调用日志</el-button>
         <el-button :disabled="userGroupPermissionDialogButtonLoadingRef" @click="userGroupPermissionDCan">取消</el-button>
-        <el-button type="primary" :disabled="userGroupPermissionDialogButtonLoadingRef" @click="userGroupPermissionDCon2" v-if="ifAddUserGroupPermission">确认</el-button>
+        <el-button type="primary" :disabled="userGroupPermissionDialogButtonLoadingRef" @click="userGroupPermissionDCon" v-if="ifAddUserGroupPermission">确认</el-button>
       </span>
     </template>
   </el-dialog>
@@ -763,8 +768,8 @@ const userGroupPermissionDCon2 = () => {
               <el-button type="primary" plain :icon="Refresh" @click="userGroupGRefresh">刷新</el-button>
               <!--<el-button type="primary" plain :icon="Plus" @click="userGroupGIns">新增</el-button>-->
               <!--<el-button type="success" plain :icon="Edit" :disabled="userGroupConfig.bulkOperation?userGroupMultipleSelection.length===0:userGroupMultipleSelection.length!==1" @click="userGroupGUpd">修改</el-button>-->
-              <!--<el-button type="danger" plain :icon="Delete" :disabled="userGroupMultipleSelection.length===0" @click="userGroupGDel()">删除</el-button>-->
-              <!--<el-button type="warning" plain :icon="Download" :disabled="userGroupMultipleSelection.length===0" @click="userGroupGExport()">导出</el-button>-->
+              <!--<el-button type="danger" plain :icon="Delete" :disabled="userGroupMultipleSelection.length===0" @click="userGroupGDel">删除</el-button>-->
+              <!--<el-button type="warning" plain :icon="Download" :disabled="userGroupMultipleSelection.length===0" @click="userGroupGExport">导出</el-button>-->
               <!--<el-button type="warning" plain :icon="Upload" @click="userGroupGImport">上传</el-button>-->
             </div>
             <div>
@@ -855,8 +860,8 @@ const userGroupPermissionDCon2 = () => {
               <el-button type="primary" plain :icon="Refresh" @click="interfaceGroupGRefresh">刷新</el-button>
               <!--<el-button type="primary" plain :icon="Plus" @click="interfaceGroupGIns">新增</el-button>-->
               <!--<el-button type="success" plain :icon="Edit" :disabled="interfaceGroupConfig.bulkOperation?interfaceGroupMultipleSelection.length===0:interfaceGroupMultipleSelection.length!==1" @click="interfaceGroupGUpd">修改</el-button>-->
-              <!--<el-button type="danger" plain :icon="Delete" :disabled="interfaceGroupMultipleSelection.length===0" @click="interfaceGroupGDel()">删除</el-button>-->
-              <!--<el-button type="warning" plain :icon="Download" :disabled="interfaceGroupStateMultipleSelection.length===0" @click="interfaceGroupGExport()">导出</el-button>-->
+              <!--<el-button type="danger" plain :icon="Delete" :disabled="interfaceGroupMultipleSelection.length===0" @click="interfaceGroupGDel">删除</el-button>-->
+              <!--<el-button type="warning" plain :icon="Download" :disabled="interfaceGroupStateMultipleSelection.length===0" @click="interfaceGroupGExport">导出</el-button>-->
               <!--<el-button type="warning" plain :icon="Upload" @click="interfaceGroupGImport">上传</el-button>-->
             </div>
             <div>

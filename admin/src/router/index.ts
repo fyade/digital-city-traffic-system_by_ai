@@ -382,7 +382,7 @@ router.beforeEach((to, from, next) => {
     return;
   }
   const sysStore = useSysStore();
-  if (to.path === "/home") {
+  if (!to.meta.fromDb) {
     sysStore.setCurrentSystem(null);
   }
   const name = sysStore.getCurrentSystem.name;

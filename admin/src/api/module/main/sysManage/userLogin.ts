@@ -43,7 +43,7 @@ export async function registApi(data: RegistDto) {
 }
 
 /**
- * 管理员登录
+ * 登录
  * @param data
  * @param ifAdminLogin
  */

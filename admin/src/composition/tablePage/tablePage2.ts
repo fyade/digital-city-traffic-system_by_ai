@@ -296,12 +296,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
     await tUpd(multipleSelection.value[0].id, !!config.bulkOperation && multipleSelection.value.length > 1)
   }
   // 删除
-  const gDel = ({
-                  delids = []
-                }: {
-                  delids?: (string | number)[]
-                } = {}
-  ) => {
+  const gDel = () => {
     if (multipleSelection.value.length === 0) {
       return ElMessage.warning('请至少选择 1 条数据。')
     }
@@ -321,12 +316,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
     })
   }
   // 导出
-  const gExport = async ({
-                           fileName = 'data.xlsx'
-                         }: {
-                           fileName?: string
-                         } = {}
-  ) => {
+  const gExport = async () => {
     await ElMessageBox.confirm(
         '目前只支持单表导出，不支持子主表、树表等所有涉及父子关系的导出，请确认是否知晓？',
         '警告',
@@ -355,7 +345,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
     // 导出excel
     const buffer = await workbook.xlsx.writeBuffer()
     const blob = new Blob([buffer], {type: ''})
-    downloadFromBlob(blob, fileName)
+    downloadFromBlob(blob, 'data.xlsx')
   }
   // 导入
   const gImport = async () => {

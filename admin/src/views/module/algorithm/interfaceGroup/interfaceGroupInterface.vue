@@ -328,7 +328,7 @@ const confirmAddInterfaceInterfaceGroup = () => {
       <!--<el-button type="primary" plain :icon="Plus" @click="gIns">新增</el-button>-->
       <!--<el-button type="success" plain :icon="Edit" :disabled="config.bulkOperation?interfaceInterfaceGroupMultipleSelection.length===0:interfaceInterfaceGroupMultipleSelection.length!==1" @click="gUpd">修改</el-button>-->
       <el-button type="danger" plain :icon="Delete" :disabled="interfaceInterfaceGroupMultipleSelection.length===0" @click="gdelInterfaceInterfaceGroup">移除接口</el-button>
-      <!--<el-button type="warning" plain :icon="Download" :disabled="interfaceInterfaceGroupMultipleSelection.length===0" @click="gExport()">导出</el-button>-->
+      <!--<el-button type="warning" plain :icon="Download" :disabled="interfaceInterfaceGroupMultipleSelection.length===0" @click="gExport">导出</el-button>-->
       <!--<el-button type="warning" plain :icon="Upload" @click="gImport">上传</el-button>-->
     </div>
     <div>
@@ -644,8 +644,8 @@ const confirmAddInterfaceInterfaceGroup = () => {
         <el-button type="primary" plain :icon="Refresh" @click="interfaceGRefresh">刷新</el-button>
         <!--<el-button type="primary" plain :icon="Plus" @click="interfaceGIns">新增</el-button>-->
         <!--<el-button type="success" plain :icon="Edit" :disabled="interfaceConfig.bulkOperation?interfaceMultipleSelection.length===0:interfaceMultipleSelection.length!==1" @click="interfaceGUpd">修改</el-button>-->
-        <!--<el-button type="danger" plain :icon="Delete" :disabled="interfaceMultipleSelection.length===0" @click="interfaceGDel()">删除</el-button>-->
-        <!--<el-button type="warning" plain :icon="Download" :disabled="interfaceMultipleSelection.length===0" @click="interfaceGExport()">导出</el-button>-->
+        <!--<el-button type="danger" plain :icon="Delete" :disabled="interfaceMultipleSelection.length===0" @click="interfaceGDel">删除</el-button>-->
+        <!--<el-button type="warning" plain :icon="Download" :disabled="interfaceMultipleSelection.length===0" @click="interfaceGExport">导出</el-button>-->
         <!--<el-button type="warning" plain :icon="Upload" @click="interfaceGImport">上传</el-button>-->
       </div>
       <div>

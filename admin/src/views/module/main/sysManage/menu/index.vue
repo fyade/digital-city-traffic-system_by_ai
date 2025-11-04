@@ -13,7 +13,7 @@ import { State2, TablePageConfig } from "@/type/tablePage.ts";
 import { FormRules } from "element-plus";
 import { Sort, Delete, Download, Edit, Plus, Refresh, Upload, Search, DArrowRight } from "@element-plus/icons-vue";
 import { MenuDto, MenuUpdDto } from "@/type/module/main/sysManage/menu.ts";
-import { menuApi, menuApi2 } from "@/api/module/main/sysManage/menu.ts";
+import { menuApi } from "@/api/module/main/sysManage/menu.ts";
 import { menuDict, menuDictI2, menuDictInter } from "@/dict/module/main/sysManage/menu.ts";
 import { useRouterStore } from "@/store/module/router.ts";
 import { arr2ToDiguiObj } from "@/utils/baseUtils.ts";
@@ -152,6 +152,9 @@ const configInter = new TablePageConfig<MenuDto>({
   },
   selectListCallback: () => {
     selAllSyss()
+  },
+  tInsCallback: row => {
+    tInsInter2(row)
   }
 })
 
@@ -185,6 +188,7 @@ const {
   gExport: gExportInter,
   gImport: gImportInter,
   gChangeFilterFormVisible: gChangeFilterFormVisibleInter,
+  tIns: tInsInter,
   tUpd: tUpdInter,
   tDel: tDelInter,
   handleSelectionChange: handleSelectionChangeInter,
@@ -270,7 +274,7 @@ watch(() => [state.dialogForm.parentId, activeTabName.value], () => {
 })
 
 // 表格内的新增
-const tIns2 = (row: MenuDto<string>) => {
+const tIns2 = (row: MenuDto) => {
   state.dialogForm.parentId = row.id
 }
 
@@ -347,9 +351,8 @@ const tableData3Inter = computed(() => {
   }
   return diguiObj
 })
-const tInsInter = (id: number) => {
-  stateInter.dialogForm.parentId = id
-  gInsInter()
+const tInsInter2 = (row: MenuDto) => {
+  stateInter.dialogForm.parentId = row.id
 }
 const selectInterGroup = reactive(new MenuDto())
 const manageInterDialogShow = ref(false)
@@ -409,6 +412,9 @@ const configI2 = new TablePageConfig<MenuDto>({
     if (stateI2.dialogForms) {
       stateI2.dialogForms[stateI2.dialogForms.length - 1].parentId = selectInterGroup.id
     }
+  },
+  gInsCallback: () => {
+    gInsI22()
   }
 })
 
@@ -462,7 +468,6 @@ const {
 
 const gInsI22 = () => {
   stateI2.dialogForm.parentId = selectInterGroup.id
-  gInsI2()
 }
 const gInsI222Loading = ref(false)
 const gInsI222Visible = ref(false)
@@ -851,11 +856,11 @@ const setThrottle = (row: MenuDto) => {
     <div class="zs-button-row">
       <div>
         <el-button type="primary" plain :icon="Refresh" @click="gRefreshI2">刷新</el-button>
-        <el-button type="primary" plain :icon="Plus" @click="gInsI22">新增</el-button>
+        <el-button type="primary" plain :icon="Plus" @click="gInsI2">新增</el-button>
         <el-button type="primary" plain :icon="Plus" @click="gInsI222">批量新增接口</el-button>
         <el-button type="success" plain :icon="Edit" :disabled="configI2.bulkOperation?multipleSelectionI2.length===0:multipleSelectionI2.length!==1" @click="gUpdI2">修改</el-button>
-        <el-button type="danger" plain :icon="Delete" :disabled="multipleSelectionI2.length===0" @click="gDelI2()">删除</el-button>
-        <!--<el-button type="warning" plain :icon="Download" :disabled="multipleSelectionI2.length===0" @click="gExportI2()">导出</el-button>-->
+        <el-button type="danger" plain :icon="Delete" :disabled="multipleSelectionI2.length===0" @click="gDelI2">删除</el-button>
+        <!--<el-button type="warning" plain :icon="Download" :disabled="multipleSelectionI2.length===0" @click="gExportI2">导出</el-button>-->
         <!--<el-button type="warning" plain :icon="Upload" @click="gImportI2">上传</el-button>-->
       </div>
       <div>
@@ -1561,8 +1566,8 @@ const setThrottle = (row: MenuDto) => {
           <el-button type="primary" plain :icon="Refresh" @click="gRefresh">刷新</el-button>
           <el-button type="primary" plain :icon="Plus" @click="gIns">新增</el-button>
           <el-button type="success" plain :icon="Edit" :disabled="config.bulkOperation?multipleSelection.length===0:multipleSelection.length!==1||(multipleSelection.length>0&&checkVisible(multipleSelection[0].type,[base.MenuTypeEnum.T_Inter]))" @click="gUpd">修改</el-button>
-          <el-button type="danger" plain :icon="Delete" :disabled="multipleSelection.length===0" @click="gDel()">删除</el-button>
-          <!--<el-button type="warning" plain :icon="Download" :disabled="multipleSelection.length===0" @click="gExport()">导出</el-button>-->
+          <el-button type="danger" plain :icon="Delete" :disabled="multipleSelection.length===0" @click="gDel">删除</el-button>
+          <!--<el-button type="warning" plain :icon="Download" :disabled="multipleSelection.length===0" @click="gExport">导出</el-button>-->
           <!--<el-button type="warning" plain :icon="Upload" @click="gImport">上传</el-button>-->
         </div>
         <div>
@@ -1685,8 +1690,8 @@ const setThrottle = (row: MenuDto) => {
           <el-button type="primary" plain :icon="Refresh" @click="gRefreshInter">刷新</el-button>
           <el-button type="primary" plain :icon="Plus" @click="gInsInter">新增</el-button>
           <el-button type="success" plain :icon="Edit" :disabled="configInter.bulkOperation?multipleSelectionInter.length===0:multipleSelectionInter.length!==1" @click="gUpdInter">修改</el-button>
-          <el-button type="danger" plain :icon="Delete" :disabled="multipleSelectionInter.length===0" @click="gDelInter()">删除</el-button>
-          <!--<el-button type="warning" plain :icon="Download" :disabled="multipleSelectionInter.length===0" @click="gExportInter()">导出</el-button>-->
+          <el-button type="danger" plain :icon="Delete" :disabled="multipleSelectionInter.length===0" @click="gDelInter">删除</el-button>
+          <!--<el-button type="warning" plain :icon="Download" :disabled="multipleSelectionInter.length===0" @click="gExportInter">导出</el-button>-->
           <!--<el-button type="warning" plain :icon="Upload" @click="gImportInter">上传</el-button>-->
         </div>
         <div>
@@ -1715,7 +1720,7 @@ const setThrottle = (row: MenuDto) => {
           <el-table-column fixed="right" label="操作" min-width="140">
             <template #default="{row}">
               <div class="zs-table-data-operate-button-row">
-                <el-button v-if="row.type!==base.MenuTypeEnum.T_Inter" link type="primary" size="small" :icon="Plus" @click="tInsInter(row.id)">新增</el-button>
+                <el-button v-if="row.type!==base.MenuTypeEnum.T_Inter" link type="primary" size="small" :icon="Plus" @click="tInsInter(row)">新增</el-button>
                 <el-button link type="primary" size="small" :icon="Edit" @click="tUpdInter(row.id)">修改</el-button>
                 <el-button link type="danger" size="small" :icon="Delete" @click="tDelInter(row.id)">删除</el-button>
                 <el-dropdown>

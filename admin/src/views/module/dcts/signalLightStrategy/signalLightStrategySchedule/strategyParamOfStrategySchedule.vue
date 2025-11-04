@@ -263,8 +263,8 @@ const _del = (...delids: number[]) => {
       <el-button type="primary" plain :icon="Refresh" @click="gRefresh">刷新</el-button>
       <!--<el-button type="primary" plain :icon="Plus" @click="gIns">新增</el-button>-->
       <!--<el-button type="success" plain :icon="Edit" :disabled="config.bulkOperation?multipleSelection.length===0:multipleSelection.length!==1" @click="gUpd">修改</el-button>-->
-      <!--<el-button type="danger" plain :icon="Delete" :disabled="multipleSelection.length===0" @click="gDel()">删除</el-button>-->
-      <!--<el-button type="warning" plain :icon="Download" :disabled="multipleSelection.length===0" @click="gExport()">导出</el-button>-->
+      <!--<el-button type="danger" plain :icon="Delete" :disabled="multipleSelection.length===0" @click="gDel">删除</el-button>-->
+      <!--<el-button type="warning" plain :icon="Download" :disabled="multipleSelection.length===0" @click="gExport">导出</el-button>-->
       <!--<el-button type="warning" plain :icon="Upload" @click="gImport">上传</el-button>-->
       <el-button type="success" plain :icon="Plus" @click="add2">添加策略调度</el-button>
       <el-button type="danger" plain :icon="Delete" @click="del2">删除策略调度</el-button>

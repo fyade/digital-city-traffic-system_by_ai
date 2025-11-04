@@ -46,6 +46,7 @@ export const goToSystem = async (
             ...item,
             asideMenu: true,
             sysPerms: dto.perms,
+            fromDb: true,
           },
           children: []
         }
