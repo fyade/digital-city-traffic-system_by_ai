@@ -4,13 +4,13 @@ node_modules
 */dist
 pnpm-lock.yaml
 .editorconfig
+*/tsconfig.tsbuildinfo
 
 /config/*/*prod.config.ts
 
 /admin/dist.zip
 /admin/public/cesium-static
 /admin/stats.html
-/admin/tsconfig.tsbuildinfo
 
 /prisma/migrations
 /prisma/mysql.schema.prisma

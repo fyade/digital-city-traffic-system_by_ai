@@ -1,11 +1,12 @@
 import { Request } from 'express';
 import { UAParser } from "ua-parser-js";
+import { IpInfoDto } from '../common/ipInfo';
 
 /**
  * 从请求中读取ip信息
  * @param request
  */
-export function getIpInfoFromRequest(request: Request) {
+export function getIpInfoFromRequest(request: Request): IpInfoDto {
   const loginIp: string = request.headers['x-real-ip'] || request.headers['x-forwarded-for'] || (request as any).ip;
   const proto_ = request.headers['x-forwarded-proto'] || request.protocol || 'http';
   const proto = Array.isArray(proto_) ? proto_[0] : proto_;

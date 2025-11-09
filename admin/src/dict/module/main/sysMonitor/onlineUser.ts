@@ -10,4 +10,5 @@ export const onlineUserDict: { [P in keyof OnlineUserDto]: string } = {
   loginIp: '登录ip',
   loginOs: '登录系统',
   loginBrowser: '登录浏览器',
+  expireTimeStamp: '到期时间',
 }

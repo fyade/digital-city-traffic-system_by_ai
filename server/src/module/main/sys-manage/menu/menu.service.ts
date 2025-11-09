@@ -16,7 +16,6 @@ export class MenuService {
     this.bcs.setFieldSelectParam('sys_menu', {
       notNullKeys: ['label', 'type', 'path', 'parentId', 'component', 'icon', 'orderNum', 'ifLink', 'ifVisible', 'ifDisabled', 'ifPublic', 'ifFixed', 'perms', 'sysId'],
       numberKeys: ['parentId', 'orderNum', 'sysId'],
-      completeMatchingKeys: ['type'],
     });
   }
 

@@ -8,6 +8,8 @@ export class LogOperationWsDto extends BaseClass2 {
   wsPerms!: string;
   userId!: string;
   loginRole!: string;
+  reqParam!: string;
+  from!: string;
   ifSuccess!: string;
   remark!: string;
 }
@@ -25,6 +27,8 @@ export class LogOperationWsInsDto {
   wsPerms!: string;
   userId!: string;
   loginRole!: string;
+  reqParam!: string;
+  from!: string;
   ifSuccess!: string;
   remark!: string;
 }

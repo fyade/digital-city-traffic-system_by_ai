@@ -6,4 +6,9 @@ export class TokenDto {
   loginIp: string;
   loginOs: string;
   loginBrowser: string;
+  expireTimeStamp: number;
+}
+
+export class WsTokenDto extends TokenDto {
+  pageContext: string | null;
 }

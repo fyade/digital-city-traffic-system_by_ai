@@ -9,11 +9,11 @@ import { TokenDto } from '../../../../common/token';
 import { WinstonService } from '../../../../infra/winston/winston.service';
 import { idUtils } from '@dcts/common';
 import { serverConfig } from '@dcts/config';
-import { deepClone } from "../../../../util/ObjectUtils";
+import { deepClone } from '../../../../util/ObjectUtils';
 
 @Injectable()
 export class OnlineUserService {
-  private UUID_TOKEN: string;
+  private SORT_UUID: string;
   private UUID1_UUID: string;
 
   constructor(
@@ -22,7 +22,7 @@ export class OnlineUserService {
     private readonly bcs: BaseContextService,
     private readonly winston: WinstonService,
   ) {
-    this.UUID_TOKEN = this.cacheTokenService.UUID_TOKEN;
+    this.SORT_UUID = this.cacheTokenService.SORT_UUID;
     this.UUID1_UUID = this.cacheTokenService.UUID1_UUID;
   }
 
@@ -44,7 +44,9 @@ export class OnlineUserService {
 
   async delOnlineUser(ids: string[]): Promise<R> {
     const keys = await this.redis.mget(...ids.map((id) => `${this.UUID1_UUID}:${id}`));
-    await this.redis.del(...keys.map((key) => `${this.UUID_TOKEN}:${key}`));
+    await this.cacheTokenService.deleteToken(...keys);
+    await this.redis.zrem(this.SORT_UUID, ...keys);
+    await this.redis.del(...ids.map((key) => `${this.UUID1_UUID}:${key}`));
     return R.ok(true);
   }
 
@@ -56,56 +58,36 @@ export class OnlineUserService {
     delete dto.pageSize;
     const keys: string[] = [];
     const values: TokenDto[] = [];
+    const allCount = await this.redis.zcard(this.SORT_UUID);
     let count = 0;
     let cursor = 0;
     let ifStop = false;
     do {
-      const [newCursor, foundKeys_] = await this.redis
-        .getRedis()
-        .scan(cursor, 'MATCH', `${this.UUID_TOKEN}:*`, 'COUNT', pageSize);
-      const foundKeys = [];
-      const foundValues__ = await this.redis.mget(...foundKeys_);
-      const foundValues_ = foundValues__.map((item) => JSON.parse(item) as TokenDto);
-      const foundValues = [];
-      for (let i = 0; i < foundKeys_.length; i++) {
-        const fkey = foundKeys_[i];
-        const fvalue = foundValues_[i];
-        if (!Object.values(dto).some((_) => _)) {
-          foundKeys.push(fkey);
-          foundValues.push(fvalue);
-          continue;
-        }
-        if (Object.keys(dto).every((key) => fvalue[key].includes(dto[key]))) {
-          foundKeys.push(fkey);
-          foundValues.push(fvalue);
+      const thisPageSize = Math.min(allCount - cursor, pageSize);
+      const uuids = await this.redis.zrevrange(this.SORT_UUID, cursor, cursor + thisPageSize - 1);
+      let _count = 0;
+      for (const uuid of uuids) {
+        const tokenDto = await this.cacheTokenService.verifyToken(uuid);
+        if (tokenDto) {
+          if (Object.keys(dto).every((key) => tokenDto[key].includes(dto[key]))) {
+            _count++;
+            if (
+              keys.length < pageSize &&
+              (pageNum - 1) * pageSize < count + _count &&
+              count + _count <= pageNum * pageSize
+            ) {
+              keys.push(uuid);
+              values.push(tokenDto);
+            }
+          }
         }
       }
-      const oldCount = count;
-      const newCount = count + foundKeys.length;
-      if (oldCount <= (pageNum - 1) * pageSize && newCount > (pageNum - 1) * pageSize) {
-        keys.push(...foundKeys.slice(foundKeys.length - (newCount - (pageNum - 1) * pageSize)));
-        values.push(...foundValues.slice(foundValues.length - (newCount - (pageNum - 1) * pageSize)));
-      } else if (oldCount > (pageNum - 1) * pageSize && newCount <= pageNum * pageSize) {
-        keys.push(...foundKeys);
-        values.push(...foundValues);
-      } else if (oldCount <= pageNum * pageSize && newCount > pageNum * pageSize) {
-        keys.push(...foundKeys.slice(0, pageNum * pageSize - oldCount));
-        values.push(...foundValues.slice(0, pageNum * pageSize - oldCount));
-      } else if (oldCount <= (pageNum - 1) * pageSize && newCount > pageNum * pageSize) {
-        keys.push(...foundKeys.slice((pageNum - 1) * pageSize - oldCount, pageNum * pageSize - oldCount));
-        values.push(...foundValues.slice((pageNum - 1) * pageSize - oldCount, pageNum * pageSize - oldCount));
-      }
-      count = newCount;
-      if (newCursor === '0') {
+      count += _count;
+      cursor += thisPageSize;
+      if (cursor >= allCount) {
         ifStop = true;
-      } else {
-        cursor = parseInt(newCursor);
       }
     } while (!ifStop);
-    return {
-      keys: keys.map((str) => str.replace(`${this.UUID_TOKEN}:`, '')),
-      count,
-      values: values,
-    };
+    return { keys, count, values };
   }
 }

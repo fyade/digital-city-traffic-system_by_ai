@@ -16,7 +16,6 @@ export class UserUserGroupService {
     this.bcs.setFieldSelectParam('sys_user_user_group', {
       notNullKeys: ['userId', 'userGroupId', 'loginRole'],
       numberKeys: ['userGroupId'],
-      completeMatchingKeys: ['userId', 'userGroupId', 'loginRole'],
     })
   }
 

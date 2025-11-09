@@ -13,6 +13,7 @@ export class InterfaceGroupService {
     this.bcs.setFieldSelectParam('sys_interface_group', {
       notNullKeys: ['label', 'parentId', 'perms', 'baseURL', 'orderNum'],
       numberKeys: ['parentId', 'orderNum'],
+      completeMatchingKeys: ['perms'],
     });
   }
 

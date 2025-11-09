@@ -633,6 +633,21 @@ model log_user_login {
   create_time    DateTime @default(now())
 }
 
+// 0.1.2 WebSocket 登录日志表
+model log_user_login_ws {
+  id             Int      @id @default(autoincrement()) @dbMysql.Int
+  user_id        String   @dbMysql.VarChar(10)
+  login_role     String   @dbMysql.VarChar(30)
+  login_ip       String   @dbMysql.VarChar(20)
+  login_position String   @dbMysql.VarChar(30)
+  login_browser  String   @dbMysql.VarChar(30)
+  login_os       String   @dbMysql.VarChar(30)
+  if_success     String   @dbMysql.Char(1)
+  fail_type      String   @dbMysql.VarChar(20)
+  remark         String?  @dbMysql.VarChar(100)
+  create_time    DateTime @default(now())
+}
+
 // 0.2 系统操作日志表
 model log_operation {
   id           Int      @id @default(autoincrement()) @dbMysql.Int
@@ -660,6 +675,8 @@ model log_operation_ws {
   ws_perms    String   @dbMysql.VarChar(100)
   user_id     String   @dbMysql.VarChar(10)
   login_role  String   @dbMysql.VarChar(30)
+  req_param   String   @dbMysql.Text
+  from        String   @dbMysql.VarChar(50)
   if_success  String   @dbMysql.Char(1)
   remark      String?  @dbMysql.VarChar(100)
   create_time DateTime @default(now())

@@ -1,9 +1,9 @@
-import { getIpInfoFromRequest } from '../../util/RequestUtils';
-import { base } from "@dcts/common";
+import { base } from '@dcts/common';
+import { IpInfoDto } from '../../common/ipInfo';
 
 export class LogOperationQueueJobDataDto {
   permission: string;
-  request: ReturnType<typeof getIpInfoFromRequest>;
+  request: IpInfoDto;
   ifSuccess: boolean | string;
   ifIgnoreParamInLog: boolean;
   reqBody: object;
@@ -26,13 +26,15 @@ export class LogScheduledTaskQueueJobDataDto {
 }
 
 export class LogOperationWsQueueJobDataDto {
-  socketId: string
-  callIp: string
-  hostName: string
-  wsPerms: string
-  userId: string
-  loginRole: string
-  ifSuccess: string
-  remark: string
+  socketId: string;
+  callIp: string;
+  hostName: string;
+  wsPerms: string;
+  userId: string;
+  loginRole: string;
+  reqParam: string;
+  from: string;
+  ifSuccess: string;
+  remark: string;
   createTime: Date;
 }

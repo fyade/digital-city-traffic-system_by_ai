@@ -349,7 +349,7 @@ export class UserService {
       ifSuccess: ifSuccess ? final.Y : final.N,
       failType: failType,
       loginRole: loginRole,
-      remark: ifSuccess ? '登录成功' : errorRemark ? errorRemark : '密码错误',
+      remark: ifSuccess ? '登录成功' : errorRemark,
     });
   }
 }

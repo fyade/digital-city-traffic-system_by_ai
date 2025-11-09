@@ -15,7 +15,6 @@ export class UserTableDefaultPermissionService {
     this.bcs.setFieldSelectParam('sys_user_table_default_permission', {
       notNullKeys: ['tableName', 'permType', 'permId'],
       numberKeys: ['permId'],
-      completeMatchingKeys: ['tableName', 'permType', 'permId'],
     });
   }
 

@@ -12,7 +12,6 @@ export class LogUserLoginService {
   ) {
     this.bcs.setFieldSelectParam('log_user_login', {
       notNullKeys: ['userId', 'loginIp', 'loginPosition', 'loginBrowser', 'loginOs', 'ifSuccess', 'failType', 'loginRole'],
-      completeMatchingKeys: ['userId', 'failType', 'loginRole'],
       ifCreateRole: false,
       ifUpdateRole: false,
       ifCreateBy: false,

@@ -19,6 +19,10 @@ export class LogOperationWsDto extends BaseDto2 {
 
   loginRole: string;
 
+  reqParam: string;
+
+  from: string;
+
   ifSuccess: string;
 
   remark: string;
@@ -42,6 +46,12 @@ export class LogOperationWsSelListDto extends PageDto {
 
   @ApiProperty({ description: '登录身份', required: false })
   loginRole: string;
+
+  @ApiProperty({ description: '请求参数', required: false })
+  reqParam: string;
+
+  @ApiProperty({ description: '请求方', required: false })
+  from: string;
 
   @ApiProperty({ description: '是否成功', required: false })
   ifSuccess: string;
@@ -68,6 +78,12 @@ export class LogOperationWsSelAllDto {
 
   @ApiProperty({ description: '登录身份', required: false })
   loginRole: string;
+
+  @ApiProperty({ description: '请求参数', required: false })
+  reqParam: string;
+
+  @ApiProperty({ description: '请求方', required: false })
+  from: string;
 
   @ApiProperty({ description: '是否成功', required: false })
   ifSuccess: string;
@@ -106,6 +122,15 @@ export class LogOperationWsInsOneDto {
   @IsNotEmpty({ message: '登录身份不能为空' })
   @MaxLength(30, { message: '登录身份不能超过30个字符' })
   loginRole: string;
+
+  @ApiProperty({ description: '请求参数', required: true })
+  @IsNotEmpty({ message: '请求参数不能为空' })
+  reqParam: string;
+
+  @ApiProperty({ description: '请求方', required: true })
+  @IsNotEmpty({ message: '请求方不能为空' })
+  @MaxLength(50, { message: '请求方不能超过50个字符' })
+  from: string;
 
   @ApiProperty({ description: '是否成功', required: true })
   @IsNotEmpty({ message: '是否成功不能为空' })

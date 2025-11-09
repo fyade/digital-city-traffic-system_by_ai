@@ -57,7 +57,7 @@ export const useUserStore = defineStore('userStore', () => {
             loginRole.value = res.loginRole
             ifLogin.value = true
             setUserStoreInfo(loginRole.value, userinfo, res.multiAuthUser)
-            if (route.query?.redirect && !ifWebsiteLink(route.query?.redirect.toString(), '/')) {
+            if (route.query.redirect && !ifWebsiteLink(route.query.redirect.toString(), '/')) {
               notification.close()
               await router.replace(route.query.redirect as string)
             } else {

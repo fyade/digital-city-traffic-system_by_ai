@@ -26,6 +26,8 @@ const state = reactive<State2<LogOperationWsDto, LogOperationWsUpdDto>>({
     wsPerms: '',
     userId: '',
     loginRole: '',
+    reqParam: '',
+    from: '',
     ifSuccess: '',
     remark: '',
   },
@@ -47,6 +49,8 @@ const dFormRules: FormRules<LogOperationWsDto> = {
   wsPerms: [{required: true, trigger: 'change'}],
   userId: [{required: true, trigger: 'change'}],
   loginRole: [{required: true, trigger: 'change'}],
+  reqParam: [{required: true, trigger: 'change'}],
+  from: [{required: true, trigger: 'change'}],
   ifSuccess: [{required: true, trigger: 'change'}],
 }
 const config = new TablePageConfig<LogOperationWsDto>({
@@ -247,6 +251,16 @@ const fCan2 = () => {
       <el-table-column prop="loginRole" :label="logOperationWsDict.loginRole" width="240">
         <template #default="{row}">
           {{ base.loginRoleDict[row.loginRole as base.LoginRoleEnum] }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="reqParam" :label="logOperationWsDict.reqParam" width="360">
+        <template #default="{row}">
+          <div style="max-height: 100px;overflow: auto;">{{ row.reqParam }}</div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="from" :label="logOperationWsDict.from" width="120">
+        <template #default="{row}">
+          {{ base.lOWSFTypeDict[row.from as base.LOWSFTypeEnum] }}
         </template>
       </el-table-column>
       <el-table-column prop="ifSuccess" :label="logOperationWsDict.ifSuccess" width="120">

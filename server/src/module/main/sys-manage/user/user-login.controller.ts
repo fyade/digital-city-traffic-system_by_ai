@@ -125,7 +125,6 @@ export class UserLoginController {
     permission: '-',
     label: '获取验证码',
     ifIgnore: true,
-    ifIgnoreButResolveToken: true,
     ifIgnoreParamInLog: true,
   })
   async getVerificationCode(): Promise<R> {

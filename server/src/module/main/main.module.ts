@@ -30,6 +30,8 @@ import { SysConfigModule } from './sys-manage/sys-config/sys-config.module';
 import { MenuThrottleModule } from './sys-manage/menu-throttle/menu-throttle.module';
 import { UserApiKeyModule } from './sys-manage/user-api-key/user-api-key.module';
 import { LogOperationWsModule } from './sys-log/log-operation-ws/log-operation-ws.module';
+import { WsOnlineUserModule } from './sys-monitor/ws-online-user/ws-online-user.module';
+import { LogUserLoginWsModule } from './sys-log/log-user-login-ws/log-user-login-ws.module';
 
 @Module({
   imports: [
@@ -64,6 +66,8 @@ import { LogOperationWsModule } from './sys-log/log-operation-ws/log-operation-w
     MenuThrottleModule,
     UserApiKeyModule,
     LogOperationWsModule,
+    WsOnlineUserModule,
+    LogUserLoginWsModule,
   ],
 })
 export class MainModule {}

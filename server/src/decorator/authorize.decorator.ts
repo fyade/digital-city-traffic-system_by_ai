@@ -15,6 +15,8 @@ export class PreAuthorizeParams {
   ifIgnore?: boolean;
   // 是否忽略权限控制但仍需要解析token
   ifIgnoreButResolveToken?: boolean;
+  // 是否不需要记录至操作日志
+  ifIgnoreLog?: boolean;
   // 是否在记录操作日志时不记录参数
   ifIgnoreParamInLog?: boolean;
 }

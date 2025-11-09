@@ -18,7 +18,6 @@ export class UserRoleService {
     this.bcs.setFieldSelectParam('sys_user_role', {
       notNullKeys: ['userId', 'roleId', 'loginRole'],
       numberKeys: ['roleId'],
-      completeMatchingKeys: ['userId', 'roleId', 'loginRole'],
     })
   }
 

@@ -24,6 +24,7 @@ class EventDataType {
 }
 
 export class WsClient {
+  private defaultCode = 'dcts200';
   private static instance: WsClient | null = null;
   private socket: Socket | null = null;
   private events = new Map<string, [string, (data: EventDataType) => void][]>();
@@ -104,7 +105,7 @@ export class WsClient {
    * @param msg
    * @param code
    */
-  public sendMsg(perm: string, msg: string, code: string = 'dcts200') {
+  public sendMsg(perm: string, msg: string, code: string = this.defaultCode) {
     if (!this.socket) {
       return;
     }

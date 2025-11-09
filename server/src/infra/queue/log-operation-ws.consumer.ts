@@ -21,6 +21,8 @@ export class LogOperationWsConsumer extends WorkerHost {
         ws_perms: data.wsPerms,
         user_id: data.userId,
         login_role: data.loginRole,
+        req_param: data.reqParam,
+        from: data.from,
         if_success: data.ifSuccess,
         remark: data.remark,
         create_time: data.createTime

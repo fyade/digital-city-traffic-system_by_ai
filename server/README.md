@@ -33,6 +33,7 @@ $ npx prisma generate
 ```
 
 prisma 从数据库同步结构
+
 ```bash
 $ npx prisma db pull --schema=./prisma/mysql.schema.prisma
 ```

@@ -28,11 +28,11 @@ export class RedisService {
   }
 
   async get(key: string): Promise<string | null> {
-    return await this.redis.get(key);
+    return this.redis.get(key);
   }
 
   async del(...keys: string[]): Promise<number> {
-    return await this.redis.del(...keys);
+    return this.redis.del(...keys);
   }
 
   async mget(...keys: string[]): Promise<(string | null)[]> {
@@ -43,11 +43,11 @@ export class RedisService {
   }
 
   async incr(key: string): Promise<number> {
-    return await this.redis.incr(key);
+    return this.redis.incr(key);
   }
 
   async decr(key: string): Promise<number> {
-    return await this.redis.decr(key);
+    return this.redis.decr(key);
   }
 
   async setex(key: string, seconds: number, value: string): Promise<void> {
@@ -57,53 +57,53 @@ export class RedisService {
   // 集合操作
 
   async sadd(key: string, ...members: string[]): Promise<number> {
-    return await this.redis.sadd(key, ...members);
+    return this.redis.sadd(key, ...members);
   }
 
   async smembers(key: string): Promise<string[]> {
-    return await this.redis.smembers(key);
+    return this.redis.smembers(key);
   }
 
   async srem(key: string, ...members: string[]): Promise<number> {
-    return await this.redis.srem(key, ...members);
+    return this.redis.srem(key, ...members);
   }
 
   async sismember(key: string, member: string): Promise<number> {
-    return await this.redis.sismember(key, member);
+    return this.redis.sismember(key, member);
   }
 
   async scard(key: string): Promise<number> {
-    return await this.redis.scard(key);
+    return this.redis.scard(key);
   }
 
   // 哈希操作
 
   async hset(key: string, field: string, value: string): Promise<number> {
-    return await this.redis.hset(key, field, value);
+    return this.redis.hset(key, field, value);
   }
 
   async hget(key: string, field: string): Promise<string | null> {
-    return await this.redis.hget(key, field);
+    return this.redis.hget(key, field);
   }
 
   async hgetall(key: string): Promise<{ [field: string]: string }> {
-    return await this.redis.hgetall(key);
+    return this.redis.hgetall(key);
   }
 
   async hdel(key: string, ...fields: string[]): Promise<number> {
-    return await this.redis.hdel(key, ...fields);
+    return this.redis.hdel(key, ...fields);
   }
 
   async hkeys(key: string): Promise<string[]> {
-    return await this.redis.hkeys(key);
+    return this.redis.hkeys(key);
   }
 
   async hvals(key: string): Promise<string[]> {
-    return await this.redis.hvals(key);
+    return this.redis.hvals(key);
   }
 
   async hlen(key: string): Promise<number> {
-    return await this.redis.hlen(key);
+    return this.redis.hlen(key);
   }
 
   async hscan(hashKey: string, cursor: number, pageSize: number): Promise<{
@@ -121,5 +121,57 @@ export class RedisService {
       entriesObject[key] = value;
     }
     return { nextCursor, entries: entriesObject };
+  }
+
+  // 列表操作
+
+  async lpush(key: string, ...values: string[]): Promise<number> {
+    return this.redis.lpush(key, ...values);
+  }
+
+  async rpush(key: string, ...values: string[]): Promise<number> {
+    return this.redis.rpush(key, ...values);
+  }
+
+  async lpop(key: string): Promise<string | null> {
+    return this.redis.lpop(key);
+  }
+
+  async rpop(key: string): Promise<string | null> {
+    return this.redis.rpop(key);
+  }
+
+  async lrange(key: string, start: number, stop: number): Promise<string[]> {
+    return this.redis.lrange(key, start, stop);
+  }
+
+  async llen(key: string): Promise<number> {
+    return this.redis.llen(key);
+  }
+
+  // 有序集合操作
+
+  async zadd(key: string, ...args: (number | string)[]): Promise<number> {
+    return this.redis.zadd(key, ...args);
+  }
+
+  async zrange(key: string, start: number, stop: number, withScores?: boolean): Promise<string[]> {
+    const arr: [string, number, number] = [key, start, stop];
+    if (withScores) arr.push('WITHSCORES');
+    return this.redis.zrange(...arr);
+  }
+
+  async zrevrange(key: string, start: number, stop: number, withScores?: boolean): Promise<string[]> {
+    const arr: [string, number, number] = [key, start, stop];
+    if (withScores) arr.push('WITHSCORES');
+    return this.redis.zrevrange(...arr);
+  }
+
+  async zrem(key: string, ...members: string[]): Promise<number> {
+    return this.redis.zrem(key, ...members);
+  }
+
+  async zcard(key: string): Promise<number> {
+    return this.redis.zcard(key);
   }
 }

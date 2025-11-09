@@ -145,9 +145,14 @@ const {
           {{ timeUtils.formatDate(new Date(row.loginTime)) }}
         </template>
       </el-table-column>
-      <el-table-column prop="loginIp" :label="onlineUserDict.loginIp" width="240"/>
+      <el-table-column prop="loginIp" :label="onlineUserDict.loginIp" width="180"/>
       <el-table-column prop="loginOs" :label="onlineUserDict.loginOs" width="120"/>
-      <el-table-column prop="loginBrowser" :label="onlineUserDict.loginBrowser" width="150"/>
+      <el-table-column prop="loginBrowser" :label="onlineUserDict.loginBrowser" width="240"/>
+      <el-table-column prop="expireTimeStamp" :label="onlineUserDict.expireTimeStamp" width="180">
+        <template #default="{row}">
+          {{ timeUtils.formatDate(new Date(row.expireTimeStamp)) }}
+        </template>
+      </el-table-column>
       <!--<el-table-column prop="remark" :label="onlineUserDict.remark" width="120"/>-->
       <!--在此上方添加表格列-->
       <!--<el-table-column prop="createRole" :label="onlineUserDict.createRole" width="120"/>-->

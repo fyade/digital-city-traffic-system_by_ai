@@ -22,7 +22,7 @@ const onSubmit = async () => {
     return;
   }
   logining.value = true
-  userStore.login(form).then().catch((e) => {
+  userStore.login(form, true).then().catch((e) => {
     logining.value = false
     refreshVerificationCode()
   })

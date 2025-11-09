@@ -254,6 +254,8 @@ const fCan2 = () => {
       <el-table-column prop="failType" :label="logUserLoginDict.failType" width="160"/>
       <el-table-column prop="remark" :label="logUserLoginDict.remark" width='160'/>
       <!--在此上方添加表格列-->
+      <!--<el-table-column prop="createRole" :label="logUserLoginDict.createRole" width='120'/>-->
+      <!--<el-table-column prop="updateRole" :label="logUserLoginDict.updateRole" width='120'/>-->
       <!--<el-table-column prop="createBy" :label="logUserLoginDict.createBy" width='120'/>-->
       <!--<el-table-column prop="updateBy" :label="logUserLoginDict.updateBy" width='120'/>-->
       <el-table-column prop="createTime" :label="logUserLoginDict.createTime" width="220">

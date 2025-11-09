@@ -20,10 +20,12 @@ export class ThrottleGuard implements CanActivate {
     const request: Request = context.switchToHttp().getRequest();
     const ifThrottle = await this.authService.ifRequestThrottle(request, authorizeParams.permission);
     if (!ifThrottle) {
-      await this.authService.insLogOperation(authorizeParams.permission, request, false, {
-        remark: '请求过于频繁',
-        ifIgnoreParamInLog: authorizeParams.ifIgnoreParamInLog,
-      });
+      if (!authorizeParams.ifIgnoreLog) {
+        await this.authService.insLogOperation(authorizeParams.permission, request, false, {
+          remark: '请求过于频繁',
+          ifIgnoreParamInLog: authorizeParams.ifIgnoreParamInLog,
+        });
+      }
       throw new Exception('请求过于频繁，请稍后再试。');
     }
     return true;

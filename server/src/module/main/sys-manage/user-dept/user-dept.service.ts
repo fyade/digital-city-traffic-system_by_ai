@@ -18,7 +18,6 @@ export class UserDeptService {
     this.bcs.setFieldSelectParam('sys_user_dept', {
       notNullKeys: ['userId', 'deptId', 'loginRole'],
       numberKeys: ['deptId'],
-      completeMatchingKeys: ['userId', 'deptId', 'loginRole'],
     })
   }
 

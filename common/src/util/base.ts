@@ -96,6 +96,17 @@ export const lSTOTTypeDict = {
   [LSTOTTypeEnum.T_USERTRIGGER]: "用户手动触发",
 };
 
+// WS操作日志信息来源方
+export enum LOWSFTypeEnum {
+  T_SYSTEM = "T_SYSTEM",
+  T_USER = "T_USER",
+}
+
+export const lOWSFTypeDict = {
+  [LOWSFTypeEnum.T_SYSTEM]: "系统",
+  [LOWSFTypeEnum.T_USER]: "用户",
+}
+
 
 // 信号灯策略类型类型
 export enum SLSTTTypeEnum {

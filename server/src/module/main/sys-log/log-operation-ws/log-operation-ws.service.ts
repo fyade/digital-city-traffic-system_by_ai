@@ -7,11 +7,11 @@ import { BaseContextService } from '../../../../infra/base-context/base-context.
 @Injectable()
 export class LogOperationWsService {
   constructor(
-      private readonly mysqlPrisma: MysqlPrismaService,
-      private readonly bcs: BaseContextService,
+    private readonly mysqlPrisma: MysqlPrismaService,
+    private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('log_operation_ws', {
-      notNullKeys: ['socketId', 'callIp', 'hostName', 'wsPerms', 'userId', 'loginRole', 'ifSuccess'],
+      notNullKeys: ['socketId', 'callIp', 'hostName', 'wsPerms', 'userId', 'loginRole', 'reqParam', 'from', 'ifSuccess'],
       ifCreateRole: false,
       ifUpdateRole: false,
       ifCreateBy: false,

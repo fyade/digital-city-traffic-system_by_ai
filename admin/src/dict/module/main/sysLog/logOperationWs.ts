@@ -9,5 +9,7 @@ export const logOperationWsDict: { [P in keyof LogOperationWsDto]: string } = {
   wsPerms: '权限标识',
   userId: '用户id',
   loginRole: '登录身份',
+  reqParam: '请求参数',
+  from: '请求方',
   ifSuccess: '是否成功',
 }

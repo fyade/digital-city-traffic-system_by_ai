@@ -13,7 +13,6 @@ export class TableRowPermissionService {
     this.bcs.setFieldSelectParam('sys_table_row_permission', {
       notNullKeys: ['permissionId', 'actionType', 'actionId', 'dataType'],
       numberKeys: ['permissionId'],
-      completeMatchingKeys: ['permissionId', 'actionType', 'actionId', 'dataType'],
     })
   }
 

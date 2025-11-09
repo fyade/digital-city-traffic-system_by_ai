@@ -17,6 +17,7 @@ import { WinstonService } from '../winston/winston.service';
 import { MysqlPrismaoService } from '../prisma/mysql.prismao.service';
 import { PrismaoService } from '../prisma/prismao.service';
 import { IdentityService } from "../../identity/identity.service";
+import { IpInfoDto } from '../../common/ipInfo';
 
 @Injectable()
 export class AuthService {
@@ -866,7 +867,7 @@ export class AuthService {
    */
   async insLogOperation2(
     permission: string,
-    request: ReturnType<typeof getIpInfoFromRequest>,
+    request: IpInfoDto,
     ifSuccess: boolean | string,
     {
       remark,

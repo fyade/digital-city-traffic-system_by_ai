@@ -9,6 +9,7 @@ export class OnlineUserDto extends BaseClass {
   loginIp!: string;
   loginOs!: string;
   loginBrowser!: string;
+  expireTimeStamp!: number;
 }
 
 export class OnlineUserSelDto extends PageDto {
@@ -25,6 +26,7 @@ export class OnlineUserInsDto {
   loginIp!: string;
   loginOs!: string;
   loginBrowser!: string;
+  expireTimeStamp!: number;
 }
 
 export class OnlineUserUpdDto extends OnlineUserInsDto {

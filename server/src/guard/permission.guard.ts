@@ -29,7 +29,7 @@ export class PermissionGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const authorizeParams = this.reflector.get<PreAuthorizeParams>(PRE_AUTHORIZE_KEY, context.getHandler());
-    const { permission, label, ifSF, ifIgnore, ifIgnoreButResolveToken, ifIgnoreParamInLog } = authorizeParams;
+    const { permission, label, ifSF, ifIgnore, ifIgnoreButResolveToken, ifIgnoreLog, ifIgnoreParamInLog } = authorizeParams;
     const request: Request = context.switchToHttp().getRequest();
 
     let tokenUsable = true;
@@ -82,10 +82,12 @@ export class PermissionGuard implements CanActivate {
     if (ifSF) {
       const reqBody = request.body as unknown as AlgorithmDto;
       if (!reqBody.pperms || !reqBody.perms) {
-        await this.authService.insLogOperation(permission, request, false, {
-          remark: '参数错误，权限标识不可为空。',
-          ifIgnoreParamInLog,
-        });
+        if (!ifIgnoreLog) {
+          await this.authService.insLogOperation(permission, request, false, {
+            remark: '参数错误，权限标识不可为空。',
+            ifIgnoreParamInLog,
+          });
+        }
         throw new ParameterException('参数错误，权限标识不可为空。');
       }
       if (userId) {
@@ -101,10 +103,12 @@ export class PermissionGuard implements CanActivate {
           return true;
         }
       }
-      await this.authService.insLogOperation(permission, request, false, {
-        remark: '您无当前算法权限。',
-        ifIgnoreParamInLog,
-      });
+      if (!ifIgnoreLog) {
+        await this.authService.insLogOperation(permission, request, false, {
+          remark: '您无当前算法权限。',
+          ifIgnoreParamInLog,
+        });
+      }
       throw new Exception('您无当前算法权限。');
     }
 
@@ -113,22 +117,34 @@ export class PermissionGuard implements CanActivate {
     // 是否被禁用
     const ifDisabled = await this.authService.permissionIfDisabled(permission);
     if (ifDisabled) {
-      await this.authService.insLogOperation(permission, request, false, { remark: '接口被禁用', ifIgnoreParamInLog });
+      if (!ifIgnoreLog) {
+        await this.authService.insLogOperation(permission, request, false, {
+          remark: '接口被禁用',
+          ifIgnoreParamInLog,
+        });
+      }
       throw new Exception('当前接口被禁用。', 403);
     }
     // 请求ip是否在此接口的ip白名单中
     const ifIpInWhiteList = await this.authService.ifIpInWhiteListOfPermission(permission, request);
     if (!ifIpInWhiteList) {
-      await this.authService.insLogOperation(permission, request, false, {
-        remark: '请求源IP不在白名单内。',
-        ifIgnoreParamInLog,
-      });
+      if (!ifIgnoreLog) {
+        await this.authService.insLogOperation(permission, request, false, {
+          remark: '请求源IP不在白名单内。',
+          ifIgnoreParamInLog,
+        });
+      }
       throw new IpNotInWhiteListException();
     }
     // 是否公共接口
     const ifPublicInterface = await this.authService.ifPublicInterface(permission);
     if (!ifTrue && !tokenUsable && !ifPublicInterface && !apiKeyUsable) {
-      await this.authService.insLogOperation(permission, request, false, { remark: '401', ifIgnoreParamInLog });
+      if (!ifIgnoreLog) {
+        await this.authService.insLogOperation(permission, request, false, {
+          remark: '401',
+          ifIgnoreParamInLog,
+        });
+      }
       throw new UnauthorizedException();
     }
     if (ifPublicInterface) {
@@ -151,7 +167,12 @@ export class PermissionGuard implements CanActivate {
     if (ifTrue) {
       return true;
     }
-    await this.authService.insLogOperation(permission, request, false, { remark: '403', ifIgnoreParamInLog });
+    if (!ifIgnoreLog) {
+      await this.authService.insLogOperation(permission, request, false, {
+        remark: '403',
+        ifIgnoreParamInLog,
+      });
+    }
     throw new ForbiddenException(label);
   }
 }

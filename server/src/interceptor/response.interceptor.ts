@@ -29,50 +29,54 @@ export class ResponseInterceptor implements NestInterceptor {
         tap(async (response: R) => {
           const request: Request = context.switchToHttp().getRequest();
           const authorizeParams = this.reflector.get<PreAuthorizeParams>(PRE_AUTHORIZE_KEY, context.getHandler());
-          const { permission, ifIgnoreParamInLog } = authorizeParams;
+          const { permission, ifIgnoreLog, ifIgnoreParamInLog } = authorizeParams;
           const ipInfoFromRequest = getIpInfoFromRequest(request);
           const reqId = userData.reqId;
           const userId = userData.userId;
           const loginRole = userData.loginRole;
-          await this.queueo.addLogOperationQueue('ins', {
-            permission: permission,
-            request: ipInfoFromRequest,
-            ifSuccess: response ? response.code === 200 : final.O,
-            ifIgnoreParamInLog: ifIgnoreParamInLog,
-            reqBody: request.body,
-            reqQuery: request.query,
-            reqParam: request.params,
-            reqMethod: request.method,
-            reqId: reqId,
-            userId: userId,
-            loginRole: loginRole,
-            authType: userData.authType,
-            createTime: new Date(),
-          });
+          if (!ifIgnoreLog) {
+            await this.queueo.addLogOperationQueue('ins', {
+              permission: permission,
+              request: ipInfoFromRequest,
+              ifSuccess: response ? response.code === 200 : final.O,
+              ifIgnoreParamInLog: ifIgnoreParamInLog,
+              reqBody: request.body,
+              reqQuery: request.query,
+              reqParam: request.params,
+              reqMethod: request.method,
+              reqId: reqId,
+              userId: userId,
+              loginRole: loginRole,
+              authType: userData.authType,
+              createTime: new Date(),
+            });
+          }
         }),
         catchError(async (error) => {
           const request: Request = context.switchToHttp().getRequest();
           const authorizeParams = this.reflector.get<PreAuthorizeParams>(PRE_AUTHORIZE_KEY, context.getHandler());
-          const { permission, ifIgnoreParamInLog } = authorizeParams;
+          const { permission, ifIgnoreLog, ifIgnoreParamInLog } = authorizeParams;
           const ipInfoFromRequest = getIpInfoFromRequest(request);
           const reqId = userData.reqId;
           const userId = userData.userId;
           const loginRole = userData.loginRole;
-          await this.queueo.addLogOperationQueue('ins', {
-            permission: permission,
-            request: ipInfoFromRequest,
-            ifSuccess: false,
-            ifIgnoreParamInLog: ifIgnoreParamInLog,
-            reqBody: request.body,
-            reqQuery: request.query,
-            reqParam: request.params,
-            reqMethod: request.method,
-            reqId: reqId,
-            userId: userId,
-            loginRole: loginRole,
-            authType: userData.authType,
-            createTime: new Date(),
-          });
+          if (!ifIgnoreLog) {
+            await this.queueo.addLogOperationQueue('ins', {
+              permission: permission,
+              request: ipInfoFromRequest,
+              ifSuccess: false,
+              ifIgnoreParamInLog: ifIgnoreParamInLog,
+              reqBody: request.body,
+              reqQuery: request.query,
+              reqParam: request.params,
+              reqMethod: request.method,
+              reqId: reqId,
+              userId: userId,
+              loginRole: loginRole,
+              authType: userData.authType,
+              createTime: new Date(),
+            });
+          }
           throw error;
         }),
     );
