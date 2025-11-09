@@ -33,10 +33,7 @@ export class DctsCoreService {
    * @private
    */
   public refreshLightWhenDatabaseChange() {
-    const users = this.wsService.getUsersByPageContext('dashboard');
-    for (const user of users) {
-      this.wsService.sendMsg(user.loginRole, user.userId, 'dcts:spatialData:refreshLightWhenDatabaseChange', '')
-    }
+    this.wsService.sendMsgByPageContext('dashboard', 'dcts:spatialData:refreshLightWhenDatabaseChange', '')
   }
 
   private async runCoreSchedule() {

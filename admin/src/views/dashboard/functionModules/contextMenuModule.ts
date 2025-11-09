@@ -2,7 +2,8 @@ import { ContextMenuItem } from "@/views/dashboard/index/dto.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
 import {
   ContextMenuOptionType,
-  EDIT_TYPE_ENUM, ID_PREFIX_FLIGHT_RESTRICTION_ZONE, ID_PREFIX_FLIGHT_ROUTE,
+  EDIT_TYPE_ENUM, ID_PREFIX_FLIGHT_AIRSPACE_USER_APPLY, ID_PREFIX_FLIGHT_RESTRICTION_ZONE, ID_PREFIX_FLIGHT_ROUTE,
+  ID_PREFIX_FLIGHT_ROUTE_USER_APPLY,
   ID_PREFIX_SIGNAL_LIGHT,
   ID_PREFIX_SIGNAL_LIGHT_GROUP,
   ID_PREFIX_VEHICLE_REAL_TIME
@@ -23,55 +24,55 @@ const dashboardStore = useDashboardStore();
 export class ContextMenuModule {
   private meModule: MapEntityModule | null = null
 
-  public setMeModule(meModule: MapEntityModule) {
+  public setMeModule(meModule: NonNullable<typeof this.meModule>) {
     this.meModule = meModule;
   }
 
   private miModule: MapInteractionModule | null = null
 
-  public setMiModule(miModule: MapInteractionModule) {
+  public setMiModule(miModule: NonNullable<typeof this.miModule>) {
     this.miModule = miModule;
   }
 
   private pModule: PermissionModule | null = null
 
-  public setPModule(pModule: PermissionModule) {
+  public setPModule(pModule: NonNullable<typeof this.pModule>) {
     this.pModule = pModule;
   }
 
   private slModule: SignalLightModule | null = null
 
-  public setSlModule(slModule: SignalLightModule) {
+  public setSlModule(slModule: NonNullable<typeof this.slModule>) {
     this.slModule = slModule
   }
 
   private setContextMenuShowCB: ((data: boolean) => void) | null = null
 
-  public setSetContextMenuShowCB(func: (data: boolean) => void) {
+  public setSetContextMenuShowCB(func: NonNullable<typeof this.setContextMenuShowCB>) {
     this.setContextMenuShowCB = func
   }
 
   private setContextMenuXYCB: ((data: [number, number]) => void) | null = null
 
-  public setSetContextMenuXYCB(func: (data: [number, number]) => void) {
+  public setSetContextMenuXYCB(func: NonNullable<typeof this.setContextMenuXYCB>) {
     this.setContextMenuXYCB = func
   }
 
   private setContextMenuOptionCB: ((data: ContextMenuOptionType) => void) | null = null
 
-  public setSetContextMenuOptionCB(func: (data: ContextMenuOptionType) => void) {
+  public setSetContextMenuOptionCB(func: NonNullable<typeof this.setContextMenuOptionCB>) {
     this.setContextMenuOptionCB = func
   }
 
   private setFormPanelTitleCB: (() => void) | null = null
 
-  public setSetFormPanelTitleCB(func: () => void) {
+  public setSetFormPanelTitleCB(func: NonNullable<typeof this.setFormPanelTitleCB>) {
     this.setFormPanelTitleCB = func
   }
 
   private trackEntity: ((entityId: string) => void) | null = null
 
-  public setTrackEntity(func: (entityId: string) => void) {
+  public setTrackEntity(func: NonNullable<typeof this.trackEntity>) {
     this.trackEntity = func
   }
 
@@ -593,6 +594,16 @@ export class ContextMenuModule {
         label: '申请航线',
         key: '~dctsDashboard~:applyFlightRoute',
         show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:applyFlightRoute')
+      },
+      {
+        label: '空域申请详情',
+        key: '~dctsDashboard~:applyAirspaceDetail',
+        show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:applyAirspaceDetail', [ID_PREFIX_FLIGHT_AIRSPACE_USER_APPLY])
+      },
+      {
+        label: '航线申请详情',
+        key: '~dctsDashboard~:applyFlightRouteDetail',
+        show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:applyFlightRouteDetail', [ID_PREFIX_FLIGHT_ROUTE_USER_APPLY])
       },
       {
         type: 'divider'

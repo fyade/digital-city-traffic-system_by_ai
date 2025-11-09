@@ -8,13 +8,13 @@ import { getSysTime } from "@/api/common/sys.ts";
 export class ClockModule {
   private viewer: Cesium.Viewer | null = null
 
-  public setViewer(viewer: Cesium.Viewer) {
+  public setViewer(viewer: NonNullable<typeof this.viewer>) {
     this.viewer = viewer;
   }
 
   private setCurrentTimeCB: ((data: number) => void) | null = null
 
-  public setSetCurrentTimeCB(func: (data: number) => void) {
+  public setSetCurrentTimeCB(func: NonNullable<typeof this.setCurrentTimeCB>) {
     this.setCurrentTimeCB = func
   }
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====

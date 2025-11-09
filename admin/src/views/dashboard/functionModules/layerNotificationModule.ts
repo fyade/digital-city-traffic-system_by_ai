@@ -15,19 +15,19 @@ const dashboardStore = useDashboardStore();
 export class LayerNotificationModule {
   private viewer: Cesium.Viewer | null = null
 
-  public setViewer(viewer: Cesium.Viewer) {
+  public setViewer(viewer: NonNullable<typeof this.viewer>) {
     this.viewer = viewer;
   }
 
   private setAllLabelsCB: ((data: string[][]) => void) | null = null
 
-  public setSetAllLabelsCB(func: (data: string[][]) => void) {
+  public setSetAllLabelsCB(func: NonNullable<typeof this.setAllLabelsCB>) {
     this.setAllLabelsCB = func
   }
 
   private layerLoadingEndCB: ((count: number) => void) | null = null
 
-  public setLayerLoadingEndCB(func: (count: number) => void) {
+  public setLayerLoadingEndCB(func: NonNullable<typeof this.layerLoadingEndCB>) {
     this.layerLoadingEndCB = func
   }
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====

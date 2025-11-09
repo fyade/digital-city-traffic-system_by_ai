@@ -8,6 +8,7 @@ import { CountSqlReturnDto } from "../../../../util/base";
 import { PageVo } from "../../../../common/vo/PageVo";
 import { SQL_TRUE } from "../../../../infra/prisma/base";
 import { PostgresqlPrismaService } from "../../../../infra/prisma/postgresql.prisma.service";
+import { base } from "@dcts/common";
 
 @Injectable()
 export class UserFlightRouteUserApplyService {
@@ -18,7 +19,7 @@ export class UserFlightRouteUserApplyService {
       private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('flight_route_user_apply', {
-      notNullKeys: ['aircraftId', 'taskName', 'path', 'startTime', 'endTime'],
+      notNullKeys: ['aircraftId', 'taskName', 'path', 'startTime', 'endTime', 'applyStatus', 'applyOpinion', 'files'],
       completeMatchingKeys: ['createRole', 'createBy'],
     });
   }
@@ -129,6 +130,7 @@ export class UserFlightRouteUserApplyService {
   }
 
   async insUserFlightRouteUserApply(dto: UserFlightRouteUserApplyInsOneDto): Promise<R> {
+    dto.applyStatus = base.AFRASTypeEnum.aaa;
     const sqls = this.cPgsqlPrismao.genSql<UserFlightRouteUserApplyDto>({
       type: 'ins',
       tblName: 'flight_route_user_apply',
@@ -149,6 +151,9 @@ export class UserFlightRouteUserApplyService {
   }
 
   async insUserFlightRouteUserApplys(dtos: UserFlightRouteUserApplyInsOneDto[]): Promise<R> {
+    for (const dto of dtos) {
+      dto.applyStatus = base.AFRASTypeEnum.aaa;
+    }
     const sqls = this.cPgsqlPrismao.genSql<UserFlightRouteUserApplyDto>({
       type: 'ins',
       tblName: 'flight_route_user_apply',

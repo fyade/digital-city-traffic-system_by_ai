@@ -21,37 +21,37 @@ import { identityIfAdmin } from "@/identity/utils/identityUtils.ts";
 export class SignalLightModule {
   private cModule: ClockModule | null = null
 
-  public setCModule(cModule: ClockModule) {
+  public setCModule(cModule: NonNullable<typeof this.cModule>) {
     this.cModule = cModule;
   }
 
   private lnModule: LayerNotificationModule | null = null
 
-  public setLnModule(lnModule: LayerNotificationModule) {
+  public setLnModule(lnModule: NonNullable<typeof this.lnModule>) {
     this.lnModule = lnModule;
   }
 
   private meModule: MapEntityModule | null = null
 
-  public setMeModule(meModule: MapEntityModule) {
+  public setMeModule(meModule: NonNullable<typeof this.meModule>) {
     this.meModule = meModule;
   }
 
   private vdModule: VersionDataModule | null = null
 
-  public setVdModule(vdModule: VersionDataModule) {
+  public setVdModule(vdModule: NonNullable<typeof this.vdModule>) {
     this.vdModule = vdModule;
   }
 
   private viewer: Cesium.Viewer | null = null
 
-  public setViewer(viewer: Cesium.Viewer) {
+  public setViewer(viewer: NonNullable<typeof this.viewer>) {
     this.viewer = viewer;
   }
 
   private getViewCornerCoordinates: (() => { lon: number, lat: number }[] | null) | null = null
 
-  public setGetViewCornerCoordinates(func: () => { lon: number, lat: number }[] | null) {
+  public setGetViewCornerCoordinates(func: NonNullable<typeof this.getViewCornerCoordinates>) {
     this.getViewCornerCoordinates = func
   }
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====

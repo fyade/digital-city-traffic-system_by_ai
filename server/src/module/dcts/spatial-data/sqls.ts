@@ -162,7 +162,7 @@ export function queryVehicleTrajectory(dto: QueryVehicleTrajectoryDto, vehicleId
   `
 }
 
-export function getAirspaceInPolygon(dto: GetAirspaceInPolygonDto) {
+export function getAirspaceInPolygon(dto: GetAirspaceInPolygonDto, loginRole: string, userid: string) {
   const pointsStr = dto.points.map(point => `${point.lon} ${point.lat}`).join(', ');
   const sql1 =  `
       select id                                                                                   as "id",
@@ -204,8 +204,62 @@ export function getAirspaceInPolygon(dto: GetAirspaceInPolygonDto) {
               st_geomfromtext('POLYGON((${pointsStr}))', 4326)
             );
   `
+  const sql3 =  `
+      select id                                                                                   as "id",
+             array_to_string(aircraft_id, ',')                                                    as "aircraftId",
+             task_name                                                                            as "taskName",
+             replace(replace(replace(st_astext(geometry), 'POLYGON((', ''), '))', ''), ',', ', ') as "geometry",
+             start_time                                                                           as "startTime",
+             end_time                                                                             as "endTime",
+             apply_status                                                                         as "applyStatus",
+             apply_opinion                                                                        as "applyOpinion",
+             files                                                                                as "files",
+             create_role                                                                          as "createRole",
+             update_role                                                                          as "updateRole",
+             create_by                                                                            as "createBy",
+             update_by                                                                            as "updateBy",
+             create_time                                                                          as "createTime",
+             update_time                                                                          as "updateTime",
+             deleted                                                                              as "deleted"
+      from flight_restriction_zone_user_apply
+      where deleted = '${final.N}'
+        and st_intersects(
+              geometry,
+              st_geomfromtext('POLYGON((${pointsStr}))', 4326)
+            )
+        and create_role = '${loginRole}'
+        and create_by = '${userid}';
+  `
+  const sql4 = `
+      select id                                                                                   as "id",
+             array_to_string(aircraft_id, ',')                                                    as "aircraftId",
+             task_name                                                                            as "taskName",
+             replace(replace(replace(st_astext(path), 'LINESTRING Z (', ''), ')', ''), ',', ', ') as "path",
+             start_time                                                                           as "startTime",
+             end_time                                                                             as "endTime",
+             apply_status                                                                         as "applyStatus",
+             apply_opinion                                                                        as "applyOpinion",
+             files                                                                                as "files",
+             create_role                                                                          as "createRole",
+             update_role                                                                          as "updateRole",
+             create_by                                                                            as "createBy",
+             update_by                                                                            as "updateBy",
+             create_time                                                                          as "createTime",
+             update_time                                                                          as "updateTime",
+             deleted                                                                              as "deleted"
+      from flight_route_user_apply
+      where deleted = '${final.N}'
+        and st_intersects(
+              path,
+              st_geomfromtext('POLYGON((${pointsStr}))', 4326)
+            )
+        and create_role = '${loginRole}'
+        and create_by = '${userid}';
+  `
   return {
     sql1,
     sql2,
+    sql3,
+    sql4,
   }
 }

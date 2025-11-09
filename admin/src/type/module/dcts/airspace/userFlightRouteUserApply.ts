@@ -7,6 +7,9 @@ export class UserFlightRouteUserApplyDto extends BaseClass {
   path!: string;
   startTime!: string;
   endTime!: string;
+  applyStatus!: string;
+  applyOpinion!: string;
+  files!: string;
 }
 
 export class UserFlightRouteUserApplySelDto extends PageDto {
@@ -21,6 +24,9 @@ export class UserFlightRouteUserApplyInsDto {
   path!: string;
   startTime!: string;
   endTime!: string;
+  applyStatus!: string;
+  applyOpinion!: string;
+  files!: string;
 }
 
 export class UserFlightRouteUserApplyUpdDto extends UserFlightRouteUserApplyInsDto {

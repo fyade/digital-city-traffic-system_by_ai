@@ -7,6 +7,9 @@ export class UserFlightRestrictionZoneUserApplyDto extends BaseClass {
   geometry!: string;
   startTime!: string;
   endTime!: string;
+  applyStatus!: string;
+  applyOpinion!: string;
+  files!: string;
 }
 
 export class UserFlightRestrictionZoneUserApplySelDto extends PageDto {
@@ -21,6 +24,9 @@ export class UserFlightRestrictionZoneUserApplyInsDto {
   geometry!: string;
   startTime!: string;
   endTime!: string;
+  applyStatus!: string;
+  applyOpinion!: string;
+  files!: string;
 }
 
 export class UserFlightRestrictionZoneUserApplyUpdDto extends UserFlightRestrictionZoneUserApplyInsDto {

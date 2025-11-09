@@ -151,12 +151,17 @@ export class SpatialDataService {
   }
 
   async getAirspaceInPolygon(dto: GetAirspaceInPolygonDto): Promise<R> {
-    const sqls = getAirspaceInPolygon(dto);
+    const userData = this.bcs.getUserData();
+    const sqls = getAirspaceInPolygon(dto, userData.loginRole, userData.userId);
     const s1 = await this.pgsqlPrismao.$queryRawUnsafe<GetAirspaceInPolygonVo['flightRestrictionZones']>(sqls.sql1);
     const s2 = await this.pgsqlPrismao.$queryRawUnsafe<GetAirspaceInPolygonVo['flightRoutes']>(sqls.sql2);
+    const s3 = await this.pgsqlPrismao.$queryRawUnsafe<GetAirspaceInPolygonVo['selfFlightRestrictionZones']>(sqls.sql3);
+    const s4 = await this.pgsqlPrismao.$queryRawUnsafe<GetAirspaceInPolygonVo['selfFlightRoutes']>(sqls.sql4);
     const ret = new GetAirspaceInPolygonVo()
     ret.flightRestrictionZones = s1
     ret.flightRoutes = s2
+    ret.selfFlightRestrictionZones = s3
+    ret.selfFlightRoutes = s4
     return R.ok(ret)
   }
 }

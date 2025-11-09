@@ -17,7 +17,11 @@ import { flightRouteUserApplyApi } from "@/api/module/dcts/airspace/flightRouteU
 import { flightRouteUserApplyDict } from "@/dict/module/dcts/airspace/flightRouteUserApply.ts";
 import { lowAltitudeAircraftApi } from "@/api/module/dcts/aircraftManage/lowAltitudeAircraft.ts";
 import { LowAltitudeAircraftDto } from "@/type/module/dcts/aircraftManage/lowAltitudeAircraft.ts";
-import { arrayUtils, timeUtils } from "@dcts/common";
+import { arrayUtils, base, timeUtils } from "@dcts/common";
+import { useSysStore } from "@/store/module/sys.ts";
+import { fileBaseUrl } from "@/api/request.ts";
+
+const sysStore = useSysStore()
 
 const state = reactive<State2<FlightRouteUserApplyDto, FlightRouteUserApplyUpdDto>>({
   dialogForm: {
@@ -27,11 +31,15 @@ const state = reactive<State2<FlightRouteUserApplyDto, FlightRouteUserApplyUpdDt
     path: '',
     startTime: '',
     endTime: '',
+    applyStatus: base.AFRASTypeEnum.aaa,
+    applyOpinion: '',
+    files: '',
   },
   dialogForms: [],
   filterForm: {
     aircraftId: '',
     taskName: '',
+    applyStatus: '',
   },
 })
 const dFormRules: FormRules<FlightRouteUserApplyDto> = {
@@ -40,6 +48,9 @@ const dFormRules: FormRules<FlightRouteUserApplyDto> = {
   path: [{required: true, trigger: 'change'}],
   startTime: [{required: true, trigger: 'change'}],
   endTime: [{required: true, trigger: 'change'}],
+  applyStatus: [{required: true, trigger: 'change'}],
+  applyOpinion: [{required: true, trigger: 'change'}],
+  files: [{required: true, trigger: 'change'}],
 }
 const config = new TablePageConfig<FlightRouteUserApplyDto>({
   bulkOperation: false,
@@ -202,6 +213,10 @@ const refreshLowAltitudeAircrafts = () => {
     selectOptions.value = res;
   })
 }
+
+const openFile = (filename: string) => {
+  window.open(sysStore.urlAddAuth(`${fileBaseUrl}${filename}`))
+}
 </script>
 
 <template>
@@ -275,6 +290,27 @@ const refreshLowAltitudeAircrafts = () => {
           <el-col :span="12">
             <el-form-item :label="flightRouteUserApplyDict.endTime" prop="endTime">
               <el-date-picker type="datetime" v-model="state.dialogForm.endTime" :placeholder="flightRouteUserApplyDict.endTime"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item :label="flightRouteUserApplyDict.applyStatus" prop="applyStatus">
+              <el-select v-model="state.dialogForm.applyStatus" :placeholder="flightRouteUserApplyDict.applyStatus" clearable filterable>
+                <el-option v-for="key in base.AFRASTypeEnum" :key="key" :label="base.aFRASTypeDict[key]" :value="key"/>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="flightRouteUserApplyDict.applyOpinion" prop="applyOpinion">
+              <el-input v-model="state.dialogForm.applyOpinion" :placeholder="flightRouteUserApplyDict.applyOpinion"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item :label="flightRouteUserApplyDict.files" prop="files">
+              <el-input v-model="state.dialogForm.files" :placeholder="flightRouteUserApplyDict.files"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -358,6 +394,11 @@ const refreshLowAltitudeAircrafts = () => {
             @change="datePicker2ValueChange"
         />
       </el-form-item>
+      <el-form-item :label="flightRouteUserApplyDict.applyStatus" prop="applyStatus">
+        <el-select v-model="state.filterForm.applyStatus" :placeholder="flightRouteUserApplyDict.applyStatus" clearable filterable>
+          <el-option v-for="key in base.AFRASTypeEnum" :key="key" :label="base.aFRASTypeDict[key]" :value="key"/>
+        </el-select>
+      </el-form-item>
       <!--在此上方添加表单项-->
       <el-form-item>
         <el-button type="primary" @click="fCon">筛选</el-button>
@@ -415,6 +456,17 @@ const refreshLowAltitudeAircrafts = () => {
           {{ timeUtils.formatDate(new Date(row.endTime)) }}
         </template>
       </el-table-column>
+      <el-table-column prop="applyStatus" :label="flightRouteUserApplyDict.applyStatus" width="120">
+        <template #default="{row}">
+          {{ base.aFRASTypeDict[row.applyStatus as base.AFRASTypeEnum] }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="applyOpinion" :label="flightRouteUserApplyDict.applyOpinion" width="240"/>
+      <el-table-column prop="files" :label="flightRouteUserApplyDict.files" width="200">
+        <template #default="{row}">
+          <p class="download" @click="openFile(row.files)">点击下载</p>
+        </template>
+      </el-table-column>
       <!--在此上方添加表格列-->
       <!--<el-table-column prop="createRole" :label="flightRouteUserApplyDict.createRole" width="120"/>-->
       <!--<el-table-column prop="updateRole" :label="flightRouteUserApplyDict.updateRole" width="120"/>-->
@@ -451,4 +503,9 @@ const refreshLowAltitudeAircrafts = () => {
 </template>
 
 <style scoped>
+.download {
+  font-style: oblique;
+  text-decoration: underline;
+  cursor: pointer;
+}
 </style>

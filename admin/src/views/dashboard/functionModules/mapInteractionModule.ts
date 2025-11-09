@@ -23,43 +23,43 @@ import { funcUtils } from "@dcts/common";
 export class MapInteractionModule {
   private asModule: AirspaceModule | null = null
 
-  public setAsModule(asModule: AirspaceModule) {
+  public setAsModule(asModule: NonNullable<typeof this.asModule>) {
     this.asModule = asModule;
   }
 
   private meModule: MapEntityModule | null = null
 
-  public setMeModule(meModule: MapEntityModule) {
+  public setMeModule(meModule: NonNullable<typeof this.meModule>) {
     this.meModule = meModule;
   }
 
   private vdModule: VersionDataModule | null = null
 
-  public setVdModule(vdModule: VersionDataModule) {
+  public setVdModule(vdModule: NonNullable<typeof this.vdModule>) {
     this.vdModule = vdModule;
   }
 
   private viewer: Cesium.Viewer | null = null
 
-  public setViewer(viewer: Cesium.Viewer) {
+  public setViewer(viewer: NonNullable<typeof this.viewer>) {
     this.viewer = viewer;
   }
 
   private getMouseMovePosition: (() => [number, number]) | null = null
 
-  public setGetMouseMovePosition(func: () => [number, number]) {
+  public setGetMouseMovePosition(func: NonNullable<typeof this.getMouseMovePosition>) {
     this.getMouseMovePosition = func
   }
 
   private setIfEditingCB: ((data: boolean) => void) | null = null
 
-  public setSetIfEditingCB(func: (data: boolean) => void) {
+  public setSetIfEditingCB(func: NonNullable<typeof this.setIfEditingCB>) {
     this.setIfEditingCB = func
   }
 
   private setEditTypeCB: ((data: EDIT_TYPE_ENUM) => void) | null = null
 
-  public setSetEditTypeCB(func: (data: EDIT_TYPE_ENUM) => void) {
+  public setSetEditTypeCB(func: NonNullable<typeof this.setEditTypeCB>) {
     this.setEditTypeCB = func
   }
 

@@ -7,6 +7,8 @@ import { base } from "@dcts/common";
 import { VehicleTrackPointDto } from "@/type/module/dcts/vehicle/vehicleTrackPoint.ts";
 import { FlightRestrictionZoneDto } from "@/type/module/dcts/airspace/flightRestrictionZone.ts";
 import { FlightRouteDto } from "@/type/module/dcts/airspace/flightRoute.ts";
+import { FlightRestrictionZoneUserApplyDto } from "@/type/module/dcts/airspace/flightRestrictionZoneUserApply.ts";
+import { FlightRouteUserApplyDto } from "@/type/module/dcts/airspace/flightRouteUserApply.ts";
 
 class PolygonPointDto {
   lon!: number;
@@ -94,4 +96,6 @@ export class GetAirspaceInPolygonDto {
 export class GetAirspaceInPolygonVo {
   flightRestrictionZones!: FlightRestrictionZoneDto[]
   flightRoutes!: FlightRouteDto[]
+  selfFlightRestrictionZones!: FlightRestrictionZoneUserApplyDto[]
+  selfFlightRoutes!: FlightRouteUserApplyDto[]
 }

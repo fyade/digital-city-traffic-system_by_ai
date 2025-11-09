@@ -17,7 +17,11 @@ import { userFlightRouteUserApplyApi } from "@/api/module/dcts/airspace/userFlig
 import { userFlightRouteUserApplyDict } from "@/dict/module/dcts/airspace/userFlightRouteUserApply.ts";
 import { userLowAltitudeAircraftApi } from "@/api/module/dcts/aircraftManage/userLowAltitudeAircraft.ts";
 import { UserLowAltitudeAircraftDto } from "@/type/module/dcts/aircraftManage/userLowAltitudeAircraft.ts";
-import { arrayUtils, timeUtils } from "@dcts/common";
+import { arrayUtils, base, timeUtils } from "@dcts/common";
+import { useSysStore } from "@/store/module/sys.ts";
+import { fileBaseUrl } from "@/api/request.ts";
+
+const sysStore = useSysStore()
 
 const state = reactive<State2<UserFlightRouteUserApplyDto, UserFlightRouteUserApplyUpdDto>>({
   dialogForm: {
@@ -27,11 +31,15 @@ const state = reactive<State2<UserFlightRouteUserApplyDto, UserFlightRouteUserAp
     path: '',
     startTime: '',
     endTime: '',
+    applyStatus: base.AFRASTypeEnum.aaa,
+    applyOpinion: '',
+    files: '',
   },
   dialogForms: [],
   filterForm: {
     aircraftId: '',
     taskName: '',
+    applyStatus: '',
   },
 })
 const dFormRules: FormRules<UserFlightRouteUserApplyDto> = {
@@ -40,6 +48,9 @@ const dFormRules: FormRules<UserFlightRouteUserApplyDto> = {
   path: [{required: true, trigger: 'change'}],
   startTime: [{required: true, trigger: 'change'}],
   endTime: [{required: true, trigger: 'change'}],
+  applyStatus: [{required: true, trigger: 'change'}],
+  applyOpinion: [{required: true, trigger: 'change'}],
+  files: [{required: true, trigger: 'change'}],
 }
 const config = new TablePageConfig<UserFlightRouteUserApplyDto>({
   bulkOperation: false,
@@ -202,6 +213,26 @@ const refreshLowAltitudeAircrafts = () => {
     selectOptions.value = res;
   })
 }
+
+const openFile = (filename: string) => {
+  window.open(sysStore.urlAddAuth(`${fileBaseUrl}${filename}`))
+}
+const tCancel = (row: UserFlightRouteUserApplyDto) => {
+  ElMessageBox.confirm(
+      '真的要取消本条申请吗',
+      '警告',
+      {
+        confirmButtonText: '真的',
+        cancelButtonText: '算了',
+        type: 'warning',
+        draggable: true
+      }
+  ).then(() => {
+    userFlightRouteUserApplyApi.updateOne({...row, applyStatus: base.AFRASTypeEnum.canceled}).then(() => {
+      refresh()
+    })
+  })
+}
 </script>
 
 <template>
@@ -275,6 +306,27 @@ const refreshLowAltitudeAircrafts = () => {
           <el-col :span="12">
             <el-form-item :label="userFlightRouteUserApplyDict.endTime" prop="endTime">
               <el-date-picker type="datetime" v-model="state.dialogForm.endTime" :placeholder="userFlightRouteUserApplyDict.endTime"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item :label="userFlightRouteUserApplyDict.applyStatus" prop="applyStatus">
+              <el-select v-model="state.dialogForm.applyStatus" :placeholder="userFlightRouteUserApplyDict.applyStatus" clearable filterable>
+                <el-option v-for="key in base.AFRASTypeEnum" :key="key" :label="base.aFRASTypeDict[key]" :value="key"/>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="userFlightRouteUserApplyDict.applyOpinion" prop="applyOpinion">
+              <el-input v-model="state.dialogForm.applyOpinion" :placeholder="userFlightRouteUserApplyDict.applyOpinion"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item :label="userFlightRouteUserApplyDict.files" prop="files">
+              <el-input v-model="state.dialogForm.files" :placeholder="userFlightRouteUserApplyDict.files"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -358,6 +410,11 @@ const refreshLowAltitudeAircrafts = () => {
             @change="datePicker2ValueChange"
         />
       </el-form-item>
+      <el-form-item :label="userFlightRouteUserApplyDict.applyStatus" prop="applyStatus">
+        <el-select v-model="state.filterForm.applyStatus" :placeholder="userFlightRouteUserApplyDict.applyStatus" clearable filterable>
+          <el-option v-for="key in base.AFRASTypeEnum" :key="key" :label="base.aFRASTypeDict[key]" :value="key"/>
+        </el-select>
+      </el-form-item>
       <!--在此上方添加表单项-->
       <el-form-item>
         <el-button type="primary" @click="fCon">筛选</el-button>
@@ -370,11 +427,11 @@ const refreshLowAltitudeAircrafts = () => {
   <div class="zs-button-row">
     <div>
       <el-button type="primary" plain :icon="Refresh" @click="gRefresh">刷新</el-button>
-      <el-button type="primary" plain :icon="Plus" @click="gIns">新增</el-button>
-      <el-button type="success" plain :icon="Edit" :disabled="config.bulkOperation?multipleSelection.length===0:multipleSelection.length!==1" @click="gUpd">修改</el-button>
-      <el-button type="danger" plain :icon="Delete" :disabled="multipleSelection.length===0" @click="gDel">删除</el-button>
-      <el-button type="warning" plain :icon="Download" :disabled="multipleSelection.length===0" @click="gExport">导出</el-button>
-      <el-button type="warning" plain :icon="Upload" @click="gImport">上传</el-button>
+      <!-- <el-button type="primary" plain :icon="Plus" @click="gIns">新增</el-button> -->
+      <!-- <el-button type="success" plain :icon="Edit" :disabled="config.bulkOperation?multipleSelection.length===0:multipleSelection.length!==1" @click="gUpd">修改</el-button> -->
+      <!-- <el-button type="danger" plain :icon="Delete" :disabled="multipleSelection.length===0" @click="gDel">删除</el-button> -->
+      <!-- <el-button type="warning" plain :icon="Download" :disabled="multipleSelection.length===0" @click="gExport">导出</el-button> -->
+      <!-- <el-button type="warning" plain :icon="Upload" @click="gImport">上传</el-button> -->
     </div>
     <div>
       <el-button v-if="filterFormVisible1" plain :icon="Search" circle @click="gChangeFilterFormVisible"/>
@@ -415,6 +472,17 @@ const refreshLowAltitudeAircrafts = () => {
           {{ timeUtils.formatDate(new Date(row.endTime)) }}
         </template>
       </el-table-column>
+      <el-table-column prop="applyStatus" :label="userFlightRouteUserApplyDict.applyStatus" width="120">
+        <template #default="{row}">
+          {{ base.aFRASTypeDict[row.applyStatus as base.AFRASTypeEnum] }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="applyOpinion" :label="userFlightRouteUserApplyDict.applyOpinion" width="240"/>
+      <el-table-column prop="files" :label="userFlightRouteUserApplyDict.files" width="200">
+        <template #default="{row}">
+          <p class="download" @click="openFile(row.files)">点击下载</p>
+        </template>
+      </el-table-column>
       <!--在此上方添加表格列-->
       <!--<el-table-column prop="createRole" :label="userFlightRouteUserApplyDict.createRole" width="120"/>-->
       <!--<el-table-column prop="updateRole" :label="userFlightRouteUserApplyDict.updateRole" width="120"/>-->
@@ -427,8 +495,9 @@ const refreshLowAltitudeAircrafts = () => {
       <el-table-column fixed="right" label="操作" min-width="140">
         <template #default="{row}">
           <div class="zs-table-data-operate-button-row">
-            <el-button link type="primary" size="small" :icon="Edit" @click="tUpd(row.id)">修改</el-button>
-            <el-button link type="danger" size="small" :icon="Delete" @click="tDel(row.id)">删除</el-button>
+            <!-- <el-button link type="primary" size="small" :icon="Edit" @click="tUpd(row.id)">修改</el-button> -->
+            <!-- <el-button link type="danger" size="small" :icon="Delete" @click="tDel(row.id)">删除</el-button> -->
+            <el-button v-if="row.applyStatus === base.AFRASTypeEnum.aaa" link type="danger" size="small" :icon="Delete" @click="tCancel(row)">取消</el-button>
           </div>
         </template>
       </el-table-column>
@@ -451,4 +520,9 @@ const refreshLowAltitudeAircrafts = () => {
 </template>
 
 <style scoped>
+.download {
+  font-style: oblique;
+  text-decoration: underline;
+  cursor: pointer;
+}
 </style>

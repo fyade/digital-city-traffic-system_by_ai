@@ -39,4 +39,34 @@ create table public.flight_route_user_apply
     deleted     CHAR(1)                     NOT NULL DEFAULT 'N'
 );
 
+-- ===== ===== ===== ===== ===== ===== 2025.11.09 ===== ===== ===== ===== ===== =====
+
+alter table public.flight_restriction_zone_user_apply
+    add apply_status varchar(20);
+alter table public.flight_restriction_zone_user_apply
+    add apply_opinion varchar(300);
+alter table public.flight_restriction_zone_user_apply
+    add files varchar(200);
+
+alter table public.flight_route_user_apply
+    add apply_status varchar(20);
+alter table public.flight_route_user_apply
+    add apply_opinion varchar(300);
+alter table public.flight_route_user_apply
+    add files varchar(200);
+
+alter table public.flight_restriction_zone_user_apply
+    alter column apply_status set not null;
+alter table public.flight_restriction_zone_user_apply
+    alter column apply_opinion set not null;
+alter table public.flight_restriction_zone_user_apply
+    alter column files set not null;
+
+alter table public.flight_route_user_apply
+    alter column apply_status set not null;
+alter table public.flight_route_user_apply
+    alter column apply_opinion set not null;
+alter table public.flight_route_user_apply
+    alter column files set not null;
+
 -- ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== =====

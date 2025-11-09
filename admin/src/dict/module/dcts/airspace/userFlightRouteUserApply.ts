@@ -8,4 +8,7 @@ export const userFlightRouteUserApplyDict: { [P in keyof UserFlightRouteUserAppl
   path: '航线',
   startTime: '开始时间',
   endTime: '结束时间',
+  applyStatus: '申请状态',
+  applyOpinion: '申请意见',
+  files: '附件',
 }

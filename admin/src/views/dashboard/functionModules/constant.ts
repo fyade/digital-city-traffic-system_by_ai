@@ -72,6 +72,10 @@ export const ID_PREFIX_VEHICLE_REAL_TIME = 'ID_PREFIX_VEHICLE_REAL_TIME:::::::::
 export const ID_PREFIX_FLIGHT_RESTRICTION_ZONE = 'ID_PREFIX_FLIGHT_RESTRICTION_ZONE::::::::::'
 // 航线
 export const ID_PREFIX_FLIGHT_ROUTE = 'ID_PREFIX_FLIGHT_ROUTE::::::::::'
+// 用户申请空域
+export const ID_PREFIX_FLIGHT_AIRSPACE_USER_APPLY = 'ID_PREFIX_FLIGHT_AIRSPACE_USER_APPLY::::::::::'
+// 用户申请航线
+export const ID_PREFIX_FLIGHT_ROUTE_USER_APPLY = 'ID_PREFIX_FLIGHT_ROUTE_USER_APPLY::::::::::'
 
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 默认值 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 export const CESIUM_DEFAULT = {

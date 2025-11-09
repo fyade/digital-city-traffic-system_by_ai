@@ -4,7 +4,7 @@ import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts
 import { useDashboardStore } from "@/store/module/dashboard.ts";
 import { onBeforeUnmount, onMounted, ref, useTemplateRef, watch, watchEffect } from "vue";
 import { FormInst, FormRules } from "naive-ui";
-import { objectUtils, regularUtils } from "@dcts/common";
+import { base, objectUtils, regularUtils } from "@dcts/common";
 import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
 import { EDIT_TYPE_ENUM } from "@/views/dashboard/functionModules/constant.ts";
 import { UserFlightRouteUserApplyDto } from "@/type/module/dcts/airspace/userFlightRouteUserApply.ts";
@@ -41,12 +41,17 @@ const init = () => {
 const formLoading = ref(false)
 const dialogFormRef = useTemplateRef<FormInst>('dialogFormRef')
 const form = ref(new UserFlightRouteUserApplyDto())
+form.value.applyStatus = base.AFRASTypeEnum.aaa
+form.value.applyOpinion = ''
 const formRules: FormRules = {
   aircraftId: [{required: true, trigger: 'change'}],
   taskName: [{required: true, trigger: 'change'}],
   path: [{required: true, trigger: 'change'}],
   startTime: [{required: true, trigger: 'change'}],
   endTime: [{required: true, trigger: 'change'}],
+  applyStatus: [{required: true, trigger: 'change'}],
+  applyOpinion: [{required: true, trigger: 'change'}],
+  files: [{required: true, trigger: 'change'}],
 }
 watch(form.value, () => {
   if (!inited.value) {
@@ -61,6 +66,7 @@ const dCon = () => {
     }
     formLoading.value = true
     userFlightRouteUserApplyApi.insertOne(form.value).then(_ => {
+      useCesium.refreshScreenEntities({ifRefresh: true, module: ['asModule']})
       gotoDashboardHome()
     }).finally(() => {
       formLoading.value = false
@@ -124,6 +130,9 @@ const update2 = (value: number | null) => {
   val2.value = value
   form.value.endTime = value ? new Date(value).toISOString() : ''
 }
+const uploadSuccess = (filename: string) => {
+  form.value.files = filename
+}
 </script>
 
 <template>
@@ -174,6 +183,17 @@ const update2 = (value: number | null) => {
           <n-date-picker v-model:value="val2" :placeholder="userFlightRouteUserApplyDict.endTime"
                          type="datetime" clearable :on-update:value="update2"/>
         </n-form-item>
+        <n-form-item path="files" :label="userFlightRouteUserApplyDict.files">
+          <!-- <n-input v-model:value="form.files" :placeholder="userFlightRouteUserApplyDict.files"/> -->
+          <FileUploadOneChunk label="上传文件" module="dcts:dashboard" @uploadSuccess="uploadSuccess"/>
+        </n-form-item>
+        <div>
+          <p>备注：</p>
+          <ul>
+            <li>附件需上传一个压缩包</li>
+            <li>附件内需包含空域/航线使用说明、无人机失控应急处置方案</li>
+          </ul>
+        </div>
         <template v-for="(item, index) in pointsss" :key="index">
           <n-form-item :label="`第${index+1}个点的高度`">
             <n-input-number v-model:value="pointsss[index][2]" :precision="2"/>

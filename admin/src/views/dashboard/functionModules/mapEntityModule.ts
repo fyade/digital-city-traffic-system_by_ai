@@ -1,6 +1,7 @@
 import * as Cesium from "cesium";
 import {
-  ID_PREFIX_FLIGHT_RESTRICTION_ZONE, ID_PREFIX_FLIGHT_ROUTE,
+  ID_PREFIX_FLIGHT_AIRSPACE_USER_APPLY,
+  ID_PREFIX_FLIGHT_RESTRICTION_ZONE, ID_PREFIX_FLIGHT_ROUTE, ID_PREFIX_FLIGHT_ROUTE_USER_APPLY,
   ID_PREFIX_SIGNAL_LIGHT,
   ID_PREFIX_SIGNAL_LIGHT_GROUP,
   ID_PREFIX_VEHICLE_REAL_TIME
@@ -21,43 +22,43 @@ const dashboardStore = useDashboardStore();
 export class MapEntityModule {
   private lnModule: LayerNotificationModule | null = null
 
-  public setLnModule(lnModule: LayerNotificationModule) {
+  public setLnModule(lnModule: NonNullable<typeof this.lnModule>) {
     this.lnModule = lnModule;
   }
 
   private slModule: SignalLightModule | null = null
 
-  public setSlModule(slModule: SignalLightModule) {
+  public setSlModule(slModule: NonNullable<typeof this.slModule>) {
     this.slModule = slModule
   }
 
   private vdModule: VersionDataModule | null = null
 
-  public setVdModule(vdModule: VersionDataModule) {
+  public setVdModule(vdModule: NonNullable<typeof this.vdModule>) {
     this.vdModule = vdModule;
   }
 
   private veModule: VehicleModule | null = null
 
-  public setVeModule(veModule: VehicleModule) {
+  public setVeModule(veModule: NonNullable<typeof this.veModule>) {
     this.veModule = veModule
   }
 
   private viewer: Cesium.Viewer | null = null
 
-  public setViewer(viewer: Cesium.Viewer) {
+  public setViewer(viewer: NonNullable<typeof this.viewer>) {
     this.viewer = viewer;
   }
 
   private refreshContextMenuOption: (() => void) | null = null
 
-  public setRefreshContextMenuOption(func: () => void) {
+  public setRefreshContextMenuOption(func: NonNullable<typeof this.refreshContextMenuOption>) {
     this.refreshContextMenuOption = func
   }
 
   private getViewCornerCoordinates: (() => { lon: number, lat: number }[] | null) | null = null
 
-  public setGetViewCornerCoordinates(func: () => { lon: number, lat: number }[] | null) {
+  public setGetViewCornerCoordinates(func: NonNullable<typeof this.getViewCornerCoordinates>) {
     this.getViewCornerCoordinates = func
   }
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -131,6 +132,14 @@ export class MapEntityModule {
       get flightRouteCount() {
         return this.flightRoute.length
       },
+      flightAirspaceUserApply: [] as string[],
+      get flightAirspaceUserApplyCount() {
+        return this.flightAirspaceUserApply.length
+      },
+      flightRouteUserApply: [] as string[],
+      get flightRouteUserApplyCount() {
+        return this.flightRouteUserApply.length
+      },
       get allIds() {
         return [
           ...this.signalLightGroupInfo,
@@ -138,6 +147,8 @@ export class MapEntityModule {
           ...this.vehicleRealTime,
           ...this.flightRestrictionZone,
           ...this.flightRoute,
+          ...this.flightAirspaceUserApply,
+          ...this.flightRouteUserApply,
         ]
       },
       get count() {
@@ -159,6 +170,12 @@ export class MapEntityModule {
       }
       if (selectedEntityId.startsWith(ID_PREFIX_FLIGHT_ROUTE)) {
         obj.flightRoute.push(selectedEntityId.replace(ID_PREFIX_FLIGHT_ROUTE, ''))
+      }
+      if (selectedEntityId.startsWith(ID_PREFIX_FLIGHT_AIRSPACE_USER_APPLY)) {
+        obj.flightAirspaceUserApply.push(selectedEntityId.replace(ID_PREFIX_FLIGHT_AIRSPACE_USER_APPLY, ''))
+      }
+      if (selectedEntityId.startsWith(ID_PREFIX_FLIGHT_ROUTE_USER_APPLY)) {
+        obj.flightRouteUserApply.push(selectedEntityId.replace(ID_PREFIX_FLIGHT_ROUTE_USER_APPLY, ''))
       }
     }
     return obj

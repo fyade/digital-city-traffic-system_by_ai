@@ -5,15 +5,20 @@ import * as Cesium from "cesium";
 import {
   CESIUM_DEFAULT,
   EDIT_TYPE_ENUM,
-  ID_PREFIX_FLIGHT_RESTRICTION_ZONE, ID_PREFIX_FLIGHT_ROUTE, ID_SPECIAL_MouseMovingPolyline,
+  ID_PREFIX_FLIGHT_AIRSPACE_USER_APPLY,
+  ID_PREFIX_FLIGHT_RESTRICTION_ZONE,
+  ID_PREFIX_FLIGHT_ROUTE,
+  ID_PREFIX_FLIGHT_ROUTE_USER_APPLY,
   ID_SPECIAL_preview_MouseMovingGeometry,
   ID_SPECIAL_preview_MouseMovingPolyline
 } from "@/views/dashboard/functionModules/constant.ts";
 import { VersionDataModule } from "@/views/dashboard/functionModules/versionDataModule.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
 import { useDashboardStore } from "@/store/module/dashboard.ts";
-import { objectUtils } from "@dcts/common";
+import { base, objectUtils, timeUtils } from "@dcts/common";
 import { computePolygonCenter } from "@/views/dashboard/utils/funcsOfCesium.ts";
+import { flightRouteUserApplyDict } from "@/dict/module/dcts/airspace/flightRouteUserApply.ts";
+import { flightRestrictionZoneUserApplyDict } from "@/dict/module/dcts/airspace/flightRestrictionZoneUserApply.ts";
 
 const dashboardStore = useDashboardStore();
 
@@ -23,31 +28,31 @@ const dashboardStore = useDashboardStore();
 export class AirspaceModule {
   private meModule: MapEntityModule | null = null
 
-  public setMeModule(meModule: MapEntityModule) {
+  public setMeModule(meModule: NonNullable<typeof this.meModule>) {
     this.meModule = meModule;
   }
 
   private miModule: MapInteractionModule | null = null
 
-  public setMiModule(miModule: MapInteractionModule) {
+  public setMiModule(miModule: NonNullable<typeof this.miModule>) {
     this.miModule = miModule;
   }
 
   private vdModule: VersionDataModule | null = null
 
-  public setVdModule(vdModule: VersionDataModule) {
+  public setVdModule(vdModule: NonNullable<typeof this.vdModule>) {
     this.vdModule = vdModule;
   }
 
   private viewer: Cesium.Viewer | null = null
 
-  public setViewer(viewer: Cesium.Viewer) {
+  public setViewer(viewer: NonNullable<typeof this.viewer>) {
     this.viewer = viewer;
   }
 
   private getViewCornerCoordinates: (() => { lon: number, lat: number }[] | null) | null = null
 
-  public setGetViewCornerCoordinates(func: () => { lon: number, lat: number }[] | null) {
+  public setGetViewCornerCoordinates(func: NonNullable<typeof this.getViewCornerCoordinates>) {
     this.getViewCornerCoordinates = func
   }
 
@@ -265,7 +270,7 @@ export class AirspaceModule {
             font: '14px sans-serif',
             fillColor: Cesium.Color.WHITE,
             outlineColor: Cesium.Color.BLACK,
-            outlineWidth: 2,
+            outlineWidth: 1,
             style: Cesium.LabelStyle.FILL_AND_OUTLINE,
             pixelOffset: new Cesium.Cartesian2(0, 0),
             heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
@@ -315,10 +320,117 @@ export class AirspaceModule {
             font: '14px sans-serif',
             fillColor: Cesium.Color.WHITE,
             outlineColor: Cesium.Color.BLACK,
-            outlineWidth: 2,
+            outlineWidth: 1,
             style: Cesium.LabelStyle.FILL_AND_OUTLINE,
             pixelOffset: new Cesium.Cartesian2(0, 0),
             heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+          },
+          id: d
+        })
+      }
+      // 申请的限飞区
+      if (ifRefresh) {
+        const ids = [
+          ...res.selfFlightRestrictionZones.map(item => item.id),
+          ...seidsByGroup.flightAirspaceUserApply
+        ]
+        if (this.vdModule) {
+          const haip = this.vdModule.getHistoryAirspaceInPolygonVo(-1);
+          if (haip) {
+            const _ids = haip.data.selfFlightRestrictionZones.map(item => item.id)
+            ids.push(..._ids)
+          }
+        }
+        for (const id of ids) {
+          const d = `${ID_PREFIX_FLIGHT_AIRSPACE_USER_APPLY}${id}`
+          const index = this.renderedItemIds.indexOf(d)
+          if (index > -1) {
+            this.viewer.entities.removeById(d)
+            this.renderedItemIds.splice(index, 1)
+          }
+        }
+      }
+      for (const re of res.selfFlightRestrictionZones) {
+        const d = `${ID_PREFIX_FLIGHT_AIRSPACE_USER_APPLY}${re.id}`;
+        if (this.renderedItemIds.includes(d)) {
+          continue
+        }
+        this.renderedItemIds.push(d)
+        const strings = re.geometry.split(', ')
+        const positions = strings.slice(0, strings.length - 1)
+            .map(str => str.split(' '))
+            .map(poArr => poArr.map(Number))
+            .map(poArr => Cesium.Cartesian3.fromDegrees(poArr[0], poArr[1], CESIUM_DEFAULT.HEIGHT_FLIGHT_RESTRICTION_ZONE))
+        const text = `我申请的空域` + `\n${flightRestrictionZoneUserApplyDict.taskName}：${re.taskName}` + `\n${flightRestrictionZoneUserApplyDict.startTime}：${timeUtils.formatDate(new Date(re.startTime))}` + `\n${flightRestrictionZoneUserApplyDict.endTime}：${timeUtils.formatDate(new Date(re.endTime))}` + `\n${flightRestrictionZoneUserApplyDict.applyStatus}：${base.aFRASTypeDict[re.applyStatus as base.AFRASTypeEnum]}`;
+        this.viewer.entities.add({
+          position: computePolygonCenter(positions),
+          polygon: {
+            hierarchy: new Cesium.PolygonHierarchy(positions),
+            material: CESIUM_DEFAULT.COLOR_DEFAULT_FLIGHT_RESTRICTION_ZONE,
+            outline: true,
+            outlineColor: CESIUM_DEFAULT.COLOR_OUTLINE_DEFAULT_FLIGHT_RESTRICTION_ZONE,
+            outlineWidth: CESIUM_DEFAULT.WIDTH_OUTLINE_DEFAULT_FLIGHT_RESTRICTION_ZONE
+          },
+          label: {
+            text: text,
+            font: '14px sans-serif',
+            fillColor: Cesium.Color.WHITE,
+            outlineColor: Cesium.Color.BLACK,
+            outlineWidth: 1,
+            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+            pixelOffset: new Cesium.Cartesian2(0, 0),
+            heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
+          },
+          id: d
+        })
+      }
+      // 申请的航线
+      if (ifRefresh) {
+        const ids = [
+          ...res.selfFlightRoutes.map(item => item.id),
+          ...seidsByGroup.flightRouteUserApply
+        ]
+        if (this.vdModule) {
+          const haip = this.vdModule.getHistoryAirspaceInPolygonVo(-1)
+          if (haip) {
+            const _ids = haip.data.selfFlightRoutes.map(item => item.id)
+            ids.push(..._ids)
+          }
+        }
+        for (const id of ids) {
+          const d = `${ID_PREFIX_FLIGHT_ROUTE_USER_APPLY}${id}`
+          const index = this.renderedItemIds.indexOf(d)
+          if (index > -1) {
+            this.viewer.entities.removeById(d)
+            this.renderedItemIds.splice(index, 1)
+          }
+        }
+      }
+      for (const re of res.selfFlightRoutes) {
+        const d = `${ID_PREFIX_FLIGHT_ROUTE_USER_APPLY}${re.id}`
+        if (this.renderedItemIds.includes(d)) {
+          continue
+        }
+        this.renderedItemIds.push(d)
+        const ps = re.path.split(', ').map(str => str.split(' ')).flat().map(Number)
+        const text = `我申请的航线` + `\n${flightRouteUserApplyDict.taskName}：${re.taskName}` + `\n${flightRouteUserApplyDict.startTime}：${timeUtils.formatDate(new Date(re.startTime))}` + `\n${flightRouteUserApplyDict.endTime}：${timeUtils.formatDate(new Date(re.endTime))}` + `\n${flightRouteUserApplyDict.applyStatus}：${base.aFRASTypeDict[re.applyStatus as base.AFRASTypeEnum]}`;
+        this.viewer.entities.add({
+          position: Cesium.Cartesian3.fromDegrees(ps[0], ps[1], ps[2]),
+          polyline: {
+            positions: Cesium.Cartesian3.fromDegreesArrayHeights(ps),
+            width: 3,
+            material: CESIUM_DEFAULT.COLOR_DEFAULT_FLIGHT_ROUTE,
+            arcType: Cesium.ArcType.NONE
+          },
+          label: {
+            text: text,
+            font: '14px sans-serif',
+            fillColor: Cesium.Color.WHITE,
+            outlineColor: Cesium.Color.BLACK,
+            outlineWidth: 1,
+            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+            pixelOffset: new Cesium.Cartesian2(0, 0),
+            heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
           },
           id: d
         })

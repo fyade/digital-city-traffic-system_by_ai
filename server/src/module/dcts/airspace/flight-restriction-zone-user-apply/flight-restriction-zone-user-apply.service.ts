@@ -7,6 +7,7 @@ import { PostgresqlPrismaoService } from "../../../../infra/prisma/postgresql.pr
 import { CountSqlReturnDto } from "../../../../util/base";
 import { PageVo } from "../../../../common/vo/PageVo";
 import { SQL_TRUE } from "../../../../infra/prisma/base";
+import { base } from "@dcts/common";
 
 @Injectable()
 export class FlightRestrictionZoneUserApplyService {
@@ -16,7 +17,7 @@ export class FlightRestrictionZoneUserApplyService {
       private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('flight_restriction_zone_user_apply', {
-      notNullKeys: ['aircraftId', 'taskName', 'geometry', 'startTime', 'endTime'],
+      notNullKeys: ['aircraftId', 'taskName', 'geometry', 'startTime', 'endTime', 'applyStatus', 'applyOpinion', 'files'],
       completeMatchingKeys: ['createRole', 'createBy'],
     });
   }
@@ -105,6 +106,7 @@ export class FlightRestrictionZoneUserApplyService {
   }
 
   async insFlightRestrictionZoneUserApply(dto: FlightRestrictionZoneUserApplyInsOneDto): Promise<R> {
+    dto.applyStatus = base.AFRASTypeEnum.aaa;
     const sqls = this.cPgsqlPrismao.genSql<FlightRestrictionZoneUserApplyDto>({
       type: 'ins',
       tblName: 'flight_restriction_zone_user_apply',
@@ -125,6 +127,9 @@ export class FlightRestrictionZoneUserApplyService {
   }
 
   async insFlightRestrictionZoneUserApplys(dtos: FlightRestrictionZoneUserApplyInsOneDto[]): Promise<R> {
+    for (const dto of dtos) {
+      dto.applyStatus = base.AFRASTypeEnum.aaa;
+    }
     const sqls = this.cPgsqlPrismao.genSql<FlightRestrictionZoneUserApplyDto>({
       type: 'ins',
       tblName: 'flight_restriction_zone_user_apply',

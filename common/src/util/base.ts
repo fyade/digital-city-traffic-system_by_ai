@@ -186,3 +186,18 @@ export const signalLightUnitStyleDict = {
   [SignalLightUnitStyleEnum.ROUND]: '圆灯',
   [SignalLightUnitStyleEnum.NUMBER]: '倒计时',
 }
+
+// 空域/航线申请状态
+export enum AFRASTypeEnum {
+  aaa = 'aaa',
+  approved = 'approved',
+  rejected = 'rejected',
+  canceled = 'canceled',
+}
+
+export const aFRASTypeDict = {
+  [AFRASTypeEnum.aaa]: '待审核',
+  [AFRASTypeEnum.approved]: '申请通过',
+  [AFRASTypeEnum.rejected]: '申请拒绝',
+  [AFRASTypeEnum.canceled]: '已取消',
+}

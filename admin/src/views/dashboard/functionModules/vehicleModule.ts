@@ -16,43 +16,43 @@ import { identityIfAdmin } from "@/identity/utils/identityUtils.ts";
 export class VehicleModule {
   private meModule: MapEntityModule | null = null
 
-  public setMeModule(meModule: MapEntityModule) {
+  public setMeModule(meModule: NonNullable<typeof this.meModule>) {
     this.meModule = meModule;
   }
 
   private viewer: Cesium.Viewer | null = null
 
-  public setViewer(viewer: Cesium.Viewer) {
+  public setViewer(viewer: NonNullable<typeof this.viewer>) {
     this.viewer = viewer;
   }
 
   private addLine: ((obj: CesiumLine) => CesiumLine | null) | null = null
 
-  public setAddLine(func: (obj: CesiumLine) => CesiumLine | null) {
+  public setAddLine(func: NonNullable<typeof this.addLine>) {
     this.addLine = func
   }
 
   private updLine: ((obj: CesiumLine) => CesiumLine | null) | null = null
 
-  public setUpdLine(func: (obj: CesiumLine) => CesiumLine | null) {
+  public setUpdLine(func: NonNullable<typeof this.updLine>) {
     this.updLine = func
   }
 
   private delLine: ((...ids: string[]) => void) | null = null
 
-  public setDelLine(func: (...ids: string[]) => void) {
+  public setDelLine(func: NonNullable<typeof this.delLine>) {
     this.delLine = func
   }
 
   private getViewCornerCoordinates: (() => { lon: number, lat: number }[] | null) | null = null
 
-  public setGetViewCornerCoordinates(func: () => { lon: number, lat: number }[] | null) {
+  public setGetViewCornerCoordinates(func: NonNullable<typeof this.getViewCornerCoordinates>) {
     this.getViewCornerCoordinates = func
   }
 
   private setDrawedVehicleTrajectoryIdsCB: ((data: DrawedVehicleTrajectoryClass[]) => void) | null = null
 
-  public setSetDrawedVehicleTrajectoryIdsCB(func: (data: DrawedVehicleTrajectoryClass[]) => void) {
+  public setSetDrawedVehicleTrajectoryIdsCB(func: NonNullable<typeof this.setDrawedVehicleTrajectoryIdsCB>) {
     this.setDrawedVehicleTrajectoryIdsCB = func
   }
 

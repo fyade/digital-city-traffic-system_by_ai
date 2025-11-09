@@ -18,6 +18,12 @@ export class FlightRestrictionZoneUserApplyDto extends BaseDto {
 
   endTime: string;
 
+  applyStatus: string;
+
+  applyOpinion: string;
+
+  files: string;
+
   constructor() {
     super();
     this.id = null;
@@ -26,6 +32,9 @@ export class FlightRestrictionZoneUserApplyDto extends BaseDto {
     this.geometry = null;
     this.startTime = null;
     this.endTime = null;
+    this.applyStatus = null;
+    this.applyOpinion = null;
+    this.files = null;
   }
 }
 
@@ -44,6 +53,15 @@ export class FlightRestrictionZoneUserApplySelListDto extends PageDto {
 
   @ApiProperty({ description: '结束时间', required: false })
   endTime: string;
+
+  @ApiProperty({ description: '申请状态', required: false })
+  applyStatus: string;
+
+  @ApiProperty({ description: '申请意见', required: false })
+  applyOpinion: string;
+
+  @ApiProperty({ description: '附件', required: false })
+  files: string;
 }
 
 export class FlightRestrictionZoneUserApplySelAllDto {
@@ -61,6 +79,15 @@ export class FlightRestrictionZoneUserApplySelAllDto {
 
   @ApiProperty({ description: '结束时间', required: false })
   endTime: string;
+
+  @ApiProperty({ description: '申请状态', required: false })
+  applyStatus: string;
+
+  @ApiProperty({ description: '申请意见', required: false })
+  applyOpinion: string;
+
+  @ApiProperty({ description: '附件', required: false })
+  files: string;
 }
 
 export class FlightRestrictionZoneUserApplyInsOneDto {
@@ -86,6 +113,21 @@ export class FlightRestrictionZoneUserApplyInsOneDto {
   @ApiProperty({ description: '结束时间', required: true })
   @IsNotEmpty({ message: '结束时间不能为空' })
   endTime: string;
+
+  @ApiProperty({ description: '申请状态', required: true })
+  @IsNotEmpty({ message: '申请状态不能为空' })
+  @MaxLength(20, { message: '申请状态不能超过20个字符' })
+  applyStatus: string;
+
+  @ApiProperty({ description: '申请意见', required: true })
+  @IsNotEmpty({ message: '申请意见不能为空' })
+  @MaxLength(300, { message: '申请意见不能超过300个字符' })
+  applyOpinion: string;
+
+  @ApiProperty({ description: '附件', required: true })
+  @IsNotEmpty({ message: '附件不能为空' })
+  @MaxLength(200, { message: '附件不能超过200个字符' })
+  files: string;
 }
 
 export class FlightRestrictionZoneUserApplyUpdOneDto extends FlightRestrictionZoneUserApplyInsOneDto {

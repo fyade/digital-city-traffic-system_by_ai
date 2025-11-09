@@ -711,34 +711,40 @@ model low_altitude_aircraft {
 
 // 用户申请空域表
 model flight_restriction_zone_user_apply {
-  id          Int                     @id @default(autoincrement())
-  aircraft_id Int[]
-  task_name   String                  @dbPostgresql.VarChar(500)
-  geometry    Unsupported("geometry")
-  start_time  DateTime                @dbPostgresql.Timestamptz(6)
-  end_time    DateTime                @dbPostgresql.Timestamptz(6)
-  create_role String                  @dbPostgresql.VarChar(30)
-  update_role String                  @dbPostgresql.VarChar(30)
-  create_by   String                  @dbPostgresql.VarChar(10)
-  update_by   String                  @dbPostgresql.VarChar(10)
-  create_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
-  update_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
-  deleted     String                  @default("N") @dbPostgresql.Char(1)
+  id            Int                     @id @default(autoincrement())
+  aircraft_id   Int[]
+  task_name     String                  @dbPostgresql.VarChar(500)
+  geometry      Unsupported("geometry")
+  start_time    DateTime                @dbPostgresql.Timestamptz(6)
+  end_time      DateTime                @dbPostgresql.Timestamptz(6)
+  create_role   String                  @dbPostgresql.VarChar(30)
+  update_role   String                  @dbPostgresql.VarChar(30)
+  create_by     String                  @dbPostgresql.VarChar(10)
+  update_by     String                  @dbPostgresql.VarChar(10)
+  create_time   DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time   DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted       String                  @default("N") @dbPostgresql.Char(1)
+  apply_status  String                  @dbPostgresql.VarChar(20)
+  apply_opinion String                  @dbPostgresql.VarChar(300)
+  files         String                  @dbPostgresql.VarChar(200)
 }
 
 // 用户申请航线表
 model flight_route_user_apply {
-  id          Int                     @id @default(autoincrement())
-  aircraft_id Int[]
-  task_name   String                  @dbPostgresql.VarChar(500)
-  path        Unsupported("geometry")
-  start_time  DateTime                @dbPostgresql.Timestamptz(6)
-  end_time    DateTime                @dbPostgresql.Timestamptz(6)
-  create_role String                  @dbPostgresql.VarChar(30)
-  update_role String                  @dbPostgresql.VarChar(30)
-  create_by   String                  @dbPostgresql.VarChar(10)
-  update_by   String                  @dbPostgresql.VarChar(10)
-  create_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
-  update_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
-  deleted     String                  @default("N") @dbPostgresql.Char(1)
+  id            Int                     @id @default(autoincrement())
+  aircraft_id   Int[]
+  task_name     String                  @dbPostgresql.VarChar(500)
+  path          Unsupported("geometry")
+  start_time    DateTime                @dbPostgresql.Timestamptz(6)
+  end_time      DateTime                @dbPostgresql.Timestamptz(6)
+  create_role   String                  @dbPostgresql.VarChar(30)
+  update_role   String                  @dbPostgresql.VarChar(30)
+  create_by     String                  @dbPostgresql.VarChar(10)
+  update_by     String                  @dbPostgresql.VarChar(10)
+  create_time   DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time   DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted       String                  @default("N") @dbPostgresql.Char(1)
+  apply_status  String                  @dbPostgresql.VarChar(20)
+  apply_opinion String                  @dbPostgresql.VarChar(300)
+  files         String                  @dbPostgresql.VarChar(200)
 }

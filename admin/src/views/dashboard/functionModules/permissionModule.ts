@@ -2,7 +2,8 @@ import { useSysStore } from "@/store/module/sys.ts";
 import { useUserStore } from "@/store/module/user.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
 import {
-  ID_PREFIX_FLIGHT_RESTRICTION_ZONE, ID_PREFIX_FLIGHT_ROUTE,
+  ID_PREFIX_FLIGHT_AIRSPACE_USER_APPLY,
+  ID_PREFIX_FLIGHT_RESTRICTION_ZONE, ID_PREFIX_FLIGHT_ROUTE, ID_PREFIX_FLIGHT_ROUTE_USER_APPLY,
   ID_PREFIX_SIGNAL_LIGHT,
   ID_PREFIX_SIGNAL_LIGHT_GROUP,
   ID_PREFIX_VEHICLE_REAL_TIME
@@ -19,7 +20,7 @@ const visibleButtons = sysStore.getVisibleButtons();
 export class PermissionModule {
   private meModule: MapEntityModule | null = null
 
-  public setMeModule(meModule: MapEntityModule) {
+  public setMeModule(meModule: NonNullable<typeof this.meModule>) {
     this.meModule = meModule;
   }
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -54,6 +55,12 @@ export class PermissionModule {
           if (basedOn.includes(ID_PREFIX_FLIGHT_ROUTE) && seidsByGroup.flightRouteCount > 0) {
             entityPermission = true
           }
+          if (basedOn.includes(ID_PREFIX_FLIGHT_AIRSPACE_USER_APPLY) && seidsByGroup.flightAirspaceUserApplyCount > 0) {
+            entityPermission = true
+          }
+          if (basedOn.includes(ID_PREFIX_FLIGHT_ROUTE_USER_APPLY) && seidsByGroup.flightRouteUserApplyCount > 0) {
+            entityPermission = true
+          }
         }
         if (notBasedOn.length > 0) {
           if (notBasedOn.includes(ID_PREFIX_SIGNAL_LIGHT_GROUP) && seidsByGroup.signalLightGroupInfoCount > 0) {
@@ -69,6 +76,12 @@ export class PermissionModule {
             entityPermission = false
           }
           if (notBasedOn.includes(ID_PREFIX_FLIGHT_ROUTE) && seidsByGroup.flightRouteCount > 0) {
+            entityPermission = false
+          }
+          if (notBasedOn.includes(ID_PREFIX_FLIGHT_AIRSPACE_USER_APPLY) && seidsByGroup.flightAirspaceUserApplyCount > 0) {
+            entityPermission = false
+          }
+          if (notBasedOn.includes(ID_PREFIX_FLIGHT_ROUTE_USER_APPLY) && seidsByGroup.flightRouteUserApplyCount > 0) {
             entityPermission = false
           }
         }
