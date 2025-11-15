@@ -37,7 +37,7 @@ export class SysConfigService {
   }
 
   async selOneSysConfig(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<SysConfigDto>('sys_config', Number(id));
+    const res = await this.mysqlPrisma.findById<SysConfigDto>('sys_config', id);
     return R.ok(res);
   }
 

@@ -40,7 +40,7 @@ export class MenuThrottleService {
   }
 
   async selOneMenuThrottle(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<MenuThrottleDto>('sys_menu_throttle', Number(id));
+    const res = await this.mysqlPrisma.findById<MenuThrottleDto>('sys_menu_throttle', id);
     return R.ok(res);
   }
 

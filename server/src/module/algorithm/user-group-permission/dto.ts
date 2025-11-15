@@ -140,6 +140,7 @@ export class UserGroupPermissionInsOneDto {
   limitRequestTimes: number;
 
   @ApiProperty({ description: '是否已用尽', required: false })
+  @IsOptional()
   @MaxLength(1, { message: '是否已用尽不能超过1个字符' })
   ifUseUp: string;
 

@@ -11,7 +11,7 @@ export class LogUserLoginService {
     private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('log_user_login', {
-      notNullKeys: ['userId', 'loginIp', 'loginPosition', 'loginBrowser', 'loginOs', 'ifSuccess', 'failType', 'loginRole'],
+      notNullKeys: ['userId', 'loginRole', 'loginType', 'loginIp', 'loginPosition', 'loginBrowser', 'loginOs', 'ifSuccess', 'failType'],
       ifCreateRole: false,
       ifUpdateRole: false,
       ifCreateBy: false,
@@ -29,18 +29,10 @@ export class LogUserLoginService {
     return R.ok(res);
   }
 
-  async selAllLogUserLogin(dto: LogUserLoginSelAllDto, {
-                             orderBy = false,
-                             range = {},
-                           }: {
-                             orderBy?: boolean | object,
-                             range?: object
-                           } = {},
-  ): Promise<R<LogUserLoginDto[]>> {
+  async selAllLogUserLogin(dto: LogUserLoginSelAllDto): Promise<R> {
     const res = await this.mysqlPrisma.findAll<LogUserLoginDto>('log_user_login', {
       data: dto,
-      orderBy,
-      range,
+      orderBy: false,
     });
     return R.ok(res);
   }
@@ -51,7 +43,7 @@ export class LogUserLoginService {
   }
 
   async selOneLogUserLogin(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<LogUserLoginDto>('log_user_login', Number(id));
+    const res = await this.mysqlPrisma.findById<LogUserLoginDto>('log_user_login', id);
     return R.ok(res);
   }
 

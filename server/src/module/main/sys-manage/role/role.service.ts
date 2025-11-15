@@ -15,7 +15,7 @@ export class RoleService {
     this.bcs.setFieldSelectParam('sys_role', {
       notNullKeys: ['label', 'ifAdmin', 'ifDisabled', 'orderNum'],
       numberKeys: ['orderNum'],
-    })
+    });
   }
 
   async selRole(dto: RoleSelListDto): Promise<R> {
@@ -40,7 +40,7 @@ export class RoleService {
   }
 
   async selOneRole(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<RoleDto>('sys_role', Number(id));
+    const res = await this.mysqlPrisma.findById<RoleDto>('sys_role', id);
     return R.ok(res);
   }
 

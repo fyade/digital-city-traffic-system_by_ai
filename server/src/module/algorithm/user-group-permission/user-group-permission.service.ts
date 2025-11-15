@@ -3,19 +3,20 @@ import { MysqlPrismaService } from '../../../infra/prisma/mysql.prisma.service';
 import { R } from '../../../common/R';
 import { UserGroupPermissionDto, UserGroupPermissionSelListDto, UserGroupPermissionSelAllDto, UserGroupPermissionInsOneDto, UserGroupPermissionUpdOneDto } from './dto';
 import { final } from '../../../util/base';
-import { LogAlgorithmCallDto } from '../log-algorithm-call/dto';
 import { BaseContextService } from '../../../infra/base-context/base-context.service';
+import { LogAlgorithmCallFacadeService } from '../log-algorithm-call/log-algorithm-call.facade.service';
 
 @Injectable()
 export class UserGroupPermissionService {
   constructor(
     private readonly mysqlPrisma: MysqlPrismaService,
     private readonly bcs: BaseContextService,
+    private readonly logAlgorithmCallFacadeService: LogAlgorithmCallFacadeService,
   ) {
     this.bcs.setFieldSelectParam('sys_user_group_permission', {
-      notNullKeys: ['userGroupId', 'permissionId'],
-      numberKeys: ['userGroupId', 'permissionId'],
-    })
+      notNullKeys: ['userGroupId', 'permissionId', 'ifLongTerm', 'ifLimitRequestTimes', 'ifRejectRequestUseUp', 'permissionStartTime', 'permissionEndTime', 'limitRequestTimes', 'orderNum'],
+      numberKeys: ['userGroupId', 'permissionId', 'limitRequestTimes', 'orderNum'],
+    });
   }
 
   async selUserGroupPermission(dto: UserGroupPermissionSelListDto): Promise<R> {
@@ -40,10 +41,8 @@ export class UserGroupPermissionService {
   }
 
   async selOneUserGroupPermission(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<UserGroupPermissionDto>('sys_user_group_permission', Number(id));
-    const count = await this.mysqlPrisma.count<LogAlgorithmCallDto>('log_algorithm_call', {
-      data: { userGroupPermissionId: id },
-    });
+    const res = await this.mysqlPrisma.findById<UserGroupPermissionDto>('sys_user_group_permission', id);
+    const count = await this.logAlgorithmCallFacadeService.getCountByUserGroupPermissionId(id);
     const res2 = {
       ...res,
       count: count,

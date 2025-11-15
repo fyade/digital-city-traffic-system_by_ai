@@ -5,6 +5,7 @@ import { ScheduledTaskDto, ScheduledTaskSelListDto, ScheduledTaskSelAllDto, Sche
 import { BaseContextService } from '../../../../infra/base-context/base-context.service';
 import { ScheduleService } from "../../../../infra/schedule/schedule.service";
 import { final } from "../../../../util/base";
+import { ScheduledTaskFacadeService } from './scheduled-task.facade.service';
 
 @Injectable()
 export class ScheduledTaskService {
@@ -12,6 +13,7 @@ export class ScheduledTaskService {
       private readonly mysqlPrisma: MysqlPrismaService,
       private readonly bcs: BaseContextService,
       private readonly scheduleService: ScheduleService,
+      private readonly scheduledTaskFacadeService: ScheduledTaskFacadeService,
   ) {
     this.bcs.setFieldSelectParam('sys_scheduled_task', {
       notNullKeys: ['name', 'target', 'cronExpression', 'orderNum', 'ifDisabled'],
@@ -35,13 +37,13 @@ export class ScheduledTaskService {
     return R.ok(res);
   }
 
-  async selOnesScheduledTask(ids: number[]): Promise<R<ScheduledTaskDto[]>> {
+  async selOnesScheduledTask(ids: number[]): Promise<R> {
     const res = await this.mysqlPrisma.findByIds<ScheduledTaskDto>('sys_scheduled_task', ids);
     return R.ok(res);
   }
 
-  async selOneScheduledTask(id: number): Promise<R<ScheduledTaskDto>> {
-    const res = await this.mysqlPrisma.findById<ScheduledTaskDto>('sys_scheduled_task', Number(id));
+  async selOneScheduledTask(id: number): Promise<R> {
+    const res = await this.mysqlPrisma.findById<ScheduledTaskDto>('sys_scheduled_task', id);
     return R.ok(res);
   }
 
@@ -59,9 +61,9 @@ export class ScheduledTaskService {
   }
 
   async updScheduledTask(dto: ScheduledTaskUpdOneDto): Promise<R> {
-    const oldTask = await this.selOneScheduledTask(dto.id);
+    const oldTask = await this.scheduledTaskFacadeService.getByIds([dto.id]);
     const res = await this.mysqlPrisma.updateById<ScheduledTaskDto>('sys_scheduled_task', dto);
-    this.scheduleService.delScheduleTask(oldTask.data.target)
+    this.scheduleService.delScheduleTask(oldTask[0].target)
     if (res.ifDisabled === final.N) {
       this.scheduleService.setScheduleCron(res.target, res.cronExpression)
     }
@@ -74,8 +76,8 @@ export class ScheduledTaskService {
   }
 
   async delScheduledTask(ids: number[]): Promise<R> {
-    const r = await this.selOnesScheduledTask(ids);
-    for (const datum of r.data) {
+    const r = await this.scheduledTaskFacadeService.getByIds(ids);
+    for (const datum of r) {
       this.scheduleService.delScheduleTask(datum.target)
     }
     const res = await this.mysqlPrisma.deleteById<ScheduledTaskDto>('sys_scheduled_task', ids);

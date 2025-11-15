@@ -15,11 +15,14 @@ export class RolePermissionService {
     this.bcs.setFieldSelectParam('sys_role_permission', {
       notNullKeys: ['roleId', 'permissionId'],
       numberKeys: ['roleId', 'permissionId'],
-    })
+    });
   }
 
   async selRolePermission(dto: RolePermissionSelListDto): Promise<R> {
-    const res = await this.mysqlPrisma.findPage<RolePermissionDto>('sys_role_permission', { data: dto });
+    const res = await this.mysqlPrisma.findPage<RolePermissionDto>('sys_role_permission', {
+      data: dto,
+      orderBy: false,
+    });
     return R.ok(res);
   }
 
@@ -32,7 +35,7 @@ export class RolePermissionService {
   }
 
   async selOneRolePermission(id: number): Promise<R> {
-    const one = await this.mysqlPrisma.findById<RolePermissionDto>('sys_role_permission', Number(id));
+    const one = await this.mysqlPrisma.findById<RolePermissionDto>('sys_role_permission', id);
     return R.ok(one);
   }
 
@@ -44,12 +47,12 @@ export class RolePermissionService {
     const addRPSPIDS = dto.permissionId.filter(item => perIds.indexOf(item) === -1);
     const delRPS = perIds.filter(item => dto.permissionId.indexOf(item) === -1);
     const delids = allRolePermissions.filter(item => delRPS.indexOf(item.permissionId) > -1).map(item => item.id);
-    await this.mysqlPrisma.deleteById('sys_role_permission', delids);
+    await this.mysqlPrisma.deleteById<RolePermissionDto>('sys_role_permission', delids);
     const addRPS = addRPSPIDS.map(item => ({
       roleId: dto.roleId,
       permissionId: item,
     }));
-    await this.mysqlPrisma.createMany('sys_role_permission', addRPS);
+    await this.mysqlPrisma.createMany<RolePermissionDto>('sys_role_permission', addRPS);
     await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(true);
   }

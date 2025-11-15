@@ -13,7 +13,7 @@ export class TableRowPermissionService {
     this.bcs.setFieldSelectParam('sys_table_row_permission', {
       notNullKeys: ['permissionId', 'actionType', 'actionId', 'dataType'],
       numberKeys: ['permissionId'],
-    })
+    });
   }
 
   async selTableRowPermission(dto: TableRowPermissionSelListDto): Promise<R> {
@@ -38,7 +38,7 @@ export class TableRowPermissionService {
   }
 
   async selOneTableRowPermission(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<TableRowPermissionDto>('sys_table_row_permission', Number(id));
+    const res = await this.mysqlPrisma.findById<TableRowPermissionDto>('sys_table_row_permission', id);
     return R.ok(res);
   }
 

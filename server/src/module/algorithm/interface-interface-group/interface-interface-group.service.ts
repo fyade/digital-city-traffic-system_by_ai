@@ -13,7 +13,7 @@ export class InterfaceInterfaceGroupService {
     this.bcs.setFieldSelectParam('sys_interface_interface_group', {
       notNullKeys: ['interfaceId', 'interfaceGroupId'],
       numberKeys: ['interfaceId', 'interfaceGroupId'],
-    })
+    });
   }
 
   async selInterfaceInterfaceGroup(dto: InterfaceInterfaceGroupSelListDto): Promise<R> {
@@ -38,7 +38,7 @@ export class InterfaceInterfaceGroupService {
   }
 
   async selOneInterfaceInterfaceGroup(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<InterfaceInterfaceGroupDto>('sys_interface_interface_group', Number(id));
+    const res = await this.mysqlPrisma.findById<InterfaceInterfaceGroupDto>('sys_interface_interface_group', id);
     return R.ok(res);
   }
 
@@ -53,8 +53,8 @@ export class InterfaceInterfaceGroupService {
       interfaceId: dto.interfaceId,
     }));
     const deleteIds = allInterfaceGroupsOfThisInterface.filter(item => dto.interfaceGroupId.indexOf(item.interfaceGroupId) === -1).map(item => item.id);
-    await this.mysqlPrisma.createMany('sys_interface_interface_group', data);
-    await this.mysqlPrisma.deleteById('sys_interface_interface_group', deleteIds);
+    await this.mysqlPrisma.createMany<InterfaceInterfaceGroupDto>('sys_interface_interface_group', data);
+    await this.mysqlPrisma.deleteById<InterfaceInterfaceGroupDto>('sys_interface_interface_group', deleteIds);
     return R.ok(true);
   }
 
@@ -68,7 +68,7 @@ export class InterfaceInterfaceGroupService {
       interfaceId: interfaceId,
       interfaceGroupId: dto.interfaceGroupId,
     }));
-    await this.mysqlPrisma.createMany('sys_interface_interface_group', data);
+    await this.mysqlPrisma.createMany<InterfaceInterfaceGroupDto>('sys_interface_interface_group', data);
     return R.ok(true);
   }
 

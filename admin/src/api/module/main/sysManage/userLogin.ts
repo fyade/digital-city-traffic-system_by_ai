@@ -42,6 +42,12 @@ export async function registApi(data: RegistDto) {
   })
 }
 
+type UserLoginVo = {
+  token: string;
+  loginRole: string;
+  multiAuthUser: MultiAuthUserDto;
+};
+
 /**
  * 登录
  * @param data
@@ -49,11 +55,7 @@ export async function registApi(data: RegistDto) {
  */
 export async function loginApi(data: LoginDto, ifAdminLogin = false) {
   if (!window.isSecureContext) {
-    return request<{
-      token: string,
-      loginRole: string,
-      multiAuthUser: MultiAuthUserDto,
-    }>({
+    return request<UserLoginVo>({
       url: ifAdminLogin ? '/sys/user/adminlogin' : '/sys/user/login',
       method: 'POST',
       data: {
@@ -65,11 +67,7 @@ export async function loginApi(data: LoginDto, ifAdminLogin = false) {
   }
   const key = await generateLoginKey();
   const newPassword = await encryptUtils.rsa.encrypt(key.publicKey, data.password);
-  return request<{
-    token: string,
-    loginRole: string,
-    multiAuthUser: MultiAuthUserDto,
-  }>({
+  return request<UserLoginVo>({
     url: ifAdminLogin ? '/sys/user/adminlogin' : '/sys/user/login',
     method: 'POST',
     data: {

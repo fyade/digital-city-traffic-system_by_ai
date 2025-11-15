@@ -4,11 +4,10 @@ import { AuthService } from './infra/auth/auth.service';
 import { BaseContextService } from './infra/base-context/base-context.service';
 import { serverConfig } from "@dcts/config";
 import { WinstonService } from "./infra/winston/winston.service";
-import { MysqlPrismaoService } from "./infra/prisma/mysql.prismao.service";
-import { PrismaoService } from './infra/prisma/prismao.service';
 import { base } from '@dcts/common';
 import { CommonService } from "./infra/common/common.service";
 import { PreAuthorizeParams } from "./decorator/authorize.decorator";
+import { MenuFacadeService } from './module/main/sys-manage/menu/menu.facade.service';
 
 const si = require("systeminformation");
 
@@ -19,10 +18,9 @@ export class AppService {
   constructor(
       private readonly authService: AuthService,
       private readonly bcs: BaseContextService,
-      private readonly prismao: PrismaoService,
-      private readonly mysqlPrismao: MysqlPrismaoService,
       private readonly winston: WinstonService,
       private readonly commonService: CommonService,
+      private readonly menuFacadeService: MenuFacadeService,
   ) {
     this.cpuUsageMSDefault = 100; // CPU 利用率默认时间段
   }
@@ -59,11 +57,7 @@ export class AppService {
 
   async getAllAuthApis2(): Promise<R> {
     const hdData = await this.getAllAuthApis();
-    const dbData = await this.mysqlPrismao.sys_menu.findMany({
-      where: {
-        ...this.prismao.defaultSelArg().where,
-      }
-    })
+    const dbData = await this.menuFacadeService.getAll();
     const dbPerms = dbData.filter(item => item.type === 'mb').map(item => [item.label, item.perms]);
     const hdPerms = hdData.data.map(d => [d.label, d.permission]);
     const dbPerms1 = dbPerms.map(_ => _[1]);

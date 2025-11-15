@@ -14,6 +14,8 @@ export class LogUserLoginDto extends BaseDto2 {
 
   loginRole: string;
 
+  loginType: string;
+
   loginIp: string;
 
   loginPosition: string;
@@ -35,6 +37,9 @@ export class LogUserLoginSelListDto extends PageDto {
 
   @ApiProperty({ description: '登录身份', required: false })
   loginRole: string;
+
+  @ApiProperty({ description: '登录方式', required: false })
+  loginType: string;
 
   @ApiProperty({ description: '登录ip', required: false })
   loginIp: string;
@@ -60,31 +65,34 @@ export class LogUserLoginSelListDto extends PageDto {
 
 export class LogUserLoginSelAllDto {
   @ApiProperty({ description: '用户id', required: false })
-  userId?: string;
+  userId: string;
 
   @ApiProperty({ description: '登录身份', required: false })
-  loginRole?: string;
+  loginRole: string;
+
+  @ApiProperty({ description: '登录方式', required: false })
+  loginType: string;
 
   @ApiProperty({ description: '登录ip', required: false })
-  loginIp?: string;
+  loginIp: string;
 
   @ApiProperty({ description: '登录地', required: false })
-  loginPosition?: string;
+  loginPosition: string;
 
   @ApiProperty({ description: '登录浏览器', required: false })
-  loginBrowser?: string;
+  loginBrowser: string;
 
   @ApiProperty({ description: '登录系统', required: false })
-  loginOs?: string;
+  loginOs: string;
 
   @ApiProperty({ description: '是否成功', required: false })
-  ifSuccess?: string;
+  ifSuccess: string;
 
   @ApiProperty({ description: '失败类型', required: false })
-  failType?: string;
+  failType: string;
 
   @ApiProperty({ description: '备注', required: false })
-  remark?: string;
+  remark: string;
 }
 
 export class LogUserLoginInsOneDto {
@@ -97,6 +105,11 @@ export class LogUserLoginInsOneDto {
   @IsNotEmpty({ message: '登录身份不能为空' })
   @MaxLength(30, { message: '登录身份不能超过30个字符' })
   loginRole: string;
+
+  @ApiProperty({ description: '登录方式', required: true })
+  @IsNotEmpty({ message: '登录方式不能为空' })
+  @MaxLength(30, { message: '登录方式不能超过30个字符' })
+  loginType: string;
 
   @ApiProperty({ description: '登录ip', required: true })
   @IsNotEmpty({ message: '登录ip不能为空' })

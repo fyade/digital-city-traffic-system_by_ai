@@ -63,8 +63,8 @@ export class DicTypeController {
     permission: 'main:sysManage:dicType:selOne',
     label: '查询单个字典类型',
   })
-  async selOneDicType(@Param('id') id: number): Promise<R> {
-    return this.dicTypeService.selOneDicType(id);
+  async selOneDicType(@Param('id') id: string): Promise<R> {
+    return this.dicTypeService.selOneDicType(Number(id));
   }
 
   @Post()

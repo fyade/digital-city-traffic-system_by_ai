@@ -3,6 +3,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { GlobalExceptionFilter } from './filter/global-exception.filter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { MenuFacadeService } from './module/main/sys-manage/menu/menu.facade.service';
 import { IdentityModule } from './identity/identity.module';
 import { InfraModule } from './infra/infra.module';
 import { ProxyModule } from './module/proxy/proxy.module';
@@ -25,6 +26,7 @@ import { MainModule } from './module/main/main.module';
       useClass: GlobalExceptionFilter,
     },
     AppService,
+    MenuFacadeService,
   ],
   controllers: [
     AppController,

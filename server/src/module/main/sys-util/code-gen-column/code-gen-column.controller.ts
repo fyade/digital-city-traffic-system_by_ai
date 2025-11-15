@@ -63,8 +63,8 @@ export class CodeGenColumnController {
     permission: 'main:sysUtil:codeGenColumn:selOne',
     label: '查询单个代码生成-列信息',
   })
-  async selOneCodeGenColumn(@Param('id') id: number): Promise<R> {
-    return this.codeGenColumnService.selOneCodeGenColumn(id);
+  async selOneCodeGenColumn(@Param('id') id: string): Promise<R> {
+    return this.codeGenColumnService.selOneCodeGenColumn(Number(id));
   }
 
   @Post()

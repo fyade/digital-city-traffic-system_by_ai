@@ -6,5 +6,4 @@ import { DicDataService } from './dic-data.service';
   controllers: [DicDataController],
   providers: [DicDataService],
 })
-export class DicDataModule {
-}
+export class DicDataModule {}

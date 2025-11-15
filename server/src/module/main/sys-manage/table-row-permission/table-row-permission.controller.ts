@@ -63,8 +63,8 @@ export class TableRowPermissionController {
     permission: 'main:sysManage:tableRowPermission:selOne',
     label: '查询单个数据表行权限',
   })
-  async selOneTableRowPermission(@Param('id') id: number): Promise<R> {
-    return this.tableRowPermissionService.selOneTableRowPermission(id);
+  async selOneTableRowPermission(@Param('id') id: string): Promise<R> {
+    return this.tableRowPermissionService.selOneTableRowPermission(Number(id));
   }
 
   @Post()

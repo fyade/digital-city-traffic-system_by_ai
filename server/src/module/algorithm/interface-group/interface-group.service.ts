@@ -38,8 +38,8 @@ export class InterfaceGroupService {
     return R.ok(res);
   }
 
-  async selOneInterfaceGroup(id: number): Promise<R<InterfaceGroupDto>> {
-    const res = await this.mysqlPrisma.findById<InterfaceGroupDto>('sys_interface_group', Number(id));
+  async selOneInterfaceGroup(id: number): Promise<R> {
+    const res = await this.mysqlPrisma.findById<InterfaceGroupDto>('sys_interface_group', id);
     return R.ok(res);
   }
 

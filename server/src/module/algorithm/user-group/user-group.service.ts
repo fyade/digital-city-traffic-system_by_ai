@@ -13,7 +13,7 @@ export class UserGroupService {
     this.bcs.setFieldSelectParam('sys_user_group', {
       notNullKeys: ['label', 'parentId', 'orderNum'],
       numberKeys: ['parentId', 'orderNum'],
-    })
+    });
   }
 
   async selUserGroup(dto: UserGroupSelListDto): Promise<R> {
@@ -38,7 +38,7 @@ export class UserGroupService {
   }
 
   async selOneUserGroup(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<UserGroupDto>('sys_user_group', Number(id));
+    const res = await this.mysqlPrisma.findById<UserGroupDto>('sys_user_group', id);
     return R.ok(res);
   }
 

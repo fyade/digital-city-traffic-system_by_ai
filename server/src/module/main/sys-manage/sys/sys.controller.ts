@@ -63,8 +63,8 @@ export class SysController {
     permission: 'main:sysManage:sys:selOne',
     label: '查询单个系统',
   })
-  async selOneSys(@Param('id') id: number): Promise<R> {
-    return this.sysService.selOneSys(id);
+  async selOneSys(@Param('id') id: string): Promise<R> {
+    return this.sysService.selOneSys(Number(id));
   }
 
   @Post()

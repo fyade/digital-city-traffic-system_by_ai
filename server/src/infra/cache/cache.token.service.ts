@@ -4,6 +4,7 @@ import { TokenDto } from '../../common/token';
 import { serverConfig } from '@dcts/config';
 import { idUtils } from '@dcts/common';
 import { ScheduleService } from '../schedule/schedule.service';
+import { IpInfoDto } from '../../common/ipInfo';
 
 const currentConfig = serverConfig.currentConfig();
 
@@ -50,18 +51,9 @@ export class CacheTokenService {
    * @param userId
    * @param username
    * @param loginRole
-   * @param loginIp
-   * @param loginOs
-   * @param loginBrowser
+   * @param netInfo
    */
-  async genToken(
-    userId: string,
-    username: string,
-    loginRole: string,
-    loginIp: string,
-    loginOs: string,
-    loginBrowser: string,
-  ) {
+  async genToken(userId: string, username: string, loginRole: string, netInfo: IpInfoDto) {
     const nowTimestamp = Date.now();
     const jwtConstants = currentConfig.jwtConstants;
     const expireTimeStamp = nowTimestamp + jwtConstants.expireTime * 1000;
@@ -70,9 +62,9 @@ export class CacheTokenService {
       username: username,
       loginRole: loginRole,
       loginTime: new Date(),
-      loginIp: loginIp,
-      loginBrowser: loginBrowser,
-      loginOs: loginOs,
+      loginIp: netInfo.ip,
+      loginBrowser: netInfo.browser,
+      loginOs: netInfo.os,
       expireTimeStamp: expireTimeStamp,
     };
     const uuid = idUtils.randomUUID();
@@ -116,7 +108,7 @@ export class CacheTokenService {
    * @param uuid
    */
   async getVerificationCode(uuid: string) {
-    return await this.redis.get(`${this.VERIFICATION_CODE}:${uuid}`);
+    return this.redis.get(`${this.VERIFICATION_CODE}:${uuid}`);
   }
 
   /**

@@ -43,7 +43,7 @@ export class LogScheduledTaskService {
   }
 
   async selOneLogScheduledTask(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<LogScheduledTaskDto>('log_scheduled_task', Number(id));
+    const res = await this.mysqlPrisma.findById<LogScheduledTaskDto>('log_scheduled_task', id);
     return R.ok(res);
   }
 

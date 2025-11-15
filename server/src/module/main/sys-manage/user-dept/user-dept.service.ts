@@ -18,7 +18,7 @@ export class UserDeptService {
     this.bcs.setFieldSelectParam('sys_user_dept', {
       notNullKeys: ['userId', 'deptId', 'loginRole'],
       numberKeys: ['deptId'],
-    })
+    });
   }
 
   async selUserDept(dto: UserDeptSelListDto): Promise<R> {
@@ -43,7 +43,7 @@ export class UserDeptService {
   }
 
   async selOneUserDept(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<UserDeptDto>('sys_user_dept', Number(id));
+    const res = await this.mysqlPrisma.findById<UserDeptDto>('sys_user_dept', id);
     return R.ok(res);
   }
 
@@ -56,8 +56,8 @@ export class UserDeptService {
     const addDepts = dto.deptId.filter(id => allDeptIds.indexOf(id) === -1);
     const delDeptIds = allDeptIds.filter(id => dto.deptId.indexOf(id) === -1);
     const delDepts = allDepts.filter(item => delDeptIds.indexOf(item.deptId) > -1).map(item => item.id);
-    await this.mysqlPrisma.deleteById('sys_user_dept', delDepts);
-    await this.mysqlPrisma.createMany('sys_user_dept', addDepts.map(item => ({ userId: dto.userId, deptId: item, loginRole: dto.loginRole })));
+    await this.mysqlPrisma.deleteById<UserDeptDto>('sys_user_dept', delDepts);
+    await this.mysqlPrisma.createMany<UserDeptDto>('sys_user_dept', addDepts.map(item => ({ userId: dto.userId, deptId: item, loginRole: dto.loginRole })));
     await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(true);
   }
@@ -80,7 +80,7 @@ export class UserDeptService {
         loginRole: dto.loginRole,
       });
     }
-    await this.mysqlPrisma.createMany('sys_user_dept', data);
+    await this.mysqlPrisma.createMany<UserDeptDto>('sys_user_dept', data);
     await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(true);
   }

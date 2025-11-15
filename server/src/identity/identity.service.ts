@@ -1,76 +1,65 @@
 import { Injectable } from '@nestjs/common';
-import { MysqlPrismaService } from "../infra/prisma/mysql.prisma.service";
-import { BaseContextService } from "../infra/base-context/base-context.service";
-import { base, encryptUtils, idUtils, timeUtils } from "@dcts/common";
-import { LoginDto, MultiAuthUserDto, RegistDto, UpdPsdDto, UserDto } from "../module/main/sys-manage/user/dto";
-import { UserVisitorDto } from "../module/main/other-user/user-visitor/dto";
-import { Exception } from "../exception/exception";
-import { PostgresqlPrismaService } from "../infra/prisma/postgresql.prisma.service";
-import { DctsUserDto } from "../module/dcts/user/dcts-user/dto";
-import { UserUnknownException } from "../exception/user-unknown.exception";
-import { LogUserLoginDto, PASSWORD_ERROR } from "../module/main/sys-log/log-user-login/dto";
-import { CacheTokenService } from "../infra/cache/cache.token.service";
+import { MysqlPrismaService } from '../infra/prisma/mysql.prisma.service';
+import { BaseContextService } from '../infra/base-context/base-context.service';
+import { base, encryptUtils, idUtils, timeUtils } from '@dcts/common';
+import { LoginDto, MultiAuthUserDto, RegistDto, UpdPsdDto, UserDto } from '../module/main/sys-manage/user/dto';
+import { UserVisitorDto } from '../module/main/other-user/user-visitor/dto';
+import { Exception } from '../exception/exception';
+import { PostgresqlPrismaService } from '../infra/prisma/postgresql.prisma.service';
+import { DctsUserDto } from '../module/dcts/user/dcts-user/dto';
+import { UserUnknownException } from '../exception/user-unknown.exception';
+import { PASSWORD_ERROR } from '../module/main/sys-log/log-user-login/dto';
+import { CacheTokenService } from '../infra/cache/cache.token.service';
+import { LogUserLoginFacadeService } from '../module/main/sys-log/log-user-login/log-user-login.facade.service';
+import { IpInfoDto } from '../common/ipInfo';
 
 @Injectable()
 export class IdentityService {
   constructor(
-      private readonly mysqlPrisma: MysqlPrismaService,
-      private readonly pgsqlPrisma: PostgresqlPrismaService,
-      private readonly bcs: BaseContextService,
-      private readonly cacheTokenService: CacheTokenService,
-  ) {
-  }
+    private readonly mysqlPrisma: MysqlPrismaService,
+    private readonly pgsqlPrisma: PostgresqlPrismaService,
+    private readonly bcs: BaseContextService,
+    private readonly cacheTokenService: CacheTokenService,
+    private readonly logUserLoginFacadeService: LogUserLoginFacadeService,
+  ) {}
 
-  private maxLoginFailCount: number | null = null
+  private maxLoginFailCount: number | null = null;
 
   public setMaxLoginFailCount(val: number) {
-    this.maxLoginFailCount = val
+    this.maxLoginFailCount = val;
   }
-
-  private getLoginLogsOfPasswordError: ((userId: string, loginIp: string, loginRole: string) => Promise<LogUserLoginDto[]>) | null = null
-
-  public setGetLoginLogsOfPasswordError(func: typeof this.getLoginLogsOfPasswordError) {
-    this.getLoginLogsOfPasswordError = func
-  }
-
-  private insLoginLog: ((loginIp: string, loginBrowser: string, loginPosition: string, loginOs: string, userId: string, loginRole: string, ifSuccess: boolean, failType?: string, errorRemark?: string) => void) | null = null
-
-  public setInsLoginLog(func: typeof this.insLoginLog) {
-    this.insLoginLog = func
-  }
-
 
   /**
    * 当前登录身份是否为管理员
    * @param loginRole
    */
   identityIfAdmin(loginRole: string) {
-    return loginRole === base.LoginRoleEnum.admin
+    return loginRole === base.LoginRoleEnum.admin;
   }
 
   /**
    * 获取用户信息
    */
   async getUserInfo() {
-    const {loginRole, userId} = this.bcs.getUserData();
+    const { loginRole, userId } = this.bcs.getUserData();
     const multiAuthUser = new MultiAuthUserDto();
-    let ifOk = false
+    let ifOk = false;
     if (loginRole === base.LoginRoleEnum.admin) {
       const user = await this.mysqlPrisma.findById<UserDto>('sys_user', userId);
       delete user.password;
       multiAuthUser.admin = user;
-      ifOk = true
+      ifOk = true;
     }
     if (loginRole === base.LoginRoleEnum.visitor) {
       const user = await this.mysqlPrisma.findById<UserVisitorDto>('sys_user_visitor', userId);
       delete user.password;
       multiAuthUser.visitor = user;
-      ifOk = true
+      ifOk = true;
     }
     return {
       multiAuthUser,
-      ifOk
-    }
+      ifOk,
+    };
   }
 
   /**
@@ -81,13 +70,13 @@ export class IdentityService {
     const loginRole = this.bcs.getUserData().loginRole;
     if (loginRole === base.LoginRoleEnum.admin) {
       await this.mysqlPrisma.updateById<UserDto>('sys_user', dto.admin);
-      return true
+      return true;
     }
     if (loginRole === base.LoginRoleEnum.visitor) {
       await this.mysqlPrisma.updateById<UserVisitorDto>('sys_user_visitor', dto.visitor);
-      return true
+      return true;
     }
-    return false
+    return false;
   }
 
   /**
@@ -95,7 +84,7 @@ export class IdentityService {
    * @param dto
    */
   async updUserPsd(dto: UpdPsdDto) {
-    const {loginRole, userId} = this.bcs.getUserData();
+    const { loginRole, userId } = this.bcs.getUserData();
     if (loginRole === base.LoginRoleEnum.admin) {
       const user_ = await this.mysqlPrisma.findById<UserDto>('sys_user', userId);
       const ifUserYes = await encryptUtils.bcrypt.comparePassword(dto.oldp, user_.password);
@@ -106,7 +95,7 @@ export class IdentityService {
         id: user_.id,
         password: await encryptUtils.bcrypt.hashPassword(dto.newp1),
       });
-      return true
+      return true;
     }
     if (loginRole === base.LoginRoleEnum.visitor) {
       const user_ = await this.mysqlPrisma.findById<UserVisitorDto>('sys_user_visitor', userId);
@@ -118,9 +107,9 @@ export class IdentityService {
         id: user_.id,
         password: await encryptUtils.bcrypt.hashPassword(dto.newp1),
       });
-      return true
+      return true;
     }
-    return false
+    return false;
   }
 
   /**
@@ -136,15 +125,19 @@ export class IdentityService {
         throw new Exception('用户名已被使用。');
       }
       const userid = idUtils.genId(5, false);
-      await this.mysqlPrisma.create<UserDto>('sys_user', {
-        id: userid,
-        username: dto.username,
-        password: await encryptUtils.bcrypt.hashPassword(dto.password),
-        createRole: dto.loginRole,
-        updateRole: dto.loginRole,
-        createBy: userid,
-        updateBy: userid,
-      }, {ifCustomizeId: true});
+      await this.mysqlPrisma.create<UserDto>(
+        'sys_user',
+        {
+          id: userid,
+          username: dto.username,
+          password: await encryptUtils.bcrypt.hashPassword(dto.password),
+          createRole: dto.loginRole,
+          updateRole: dto.loginRole,
+          createBy: userid,
+          updateBy: userid,
+        },
+        { ifCustomizeId: true },
+      );
       return true;
     }
     if (dto.loginRole === base.LoginRoleEnum.visitor) {
@@ -155,15 +148,19 @@ export class IdentityService {
         throw new Exception('用户名已被使用。');
       }
       const userid = idUtils.genId(10, false);
-      await this.mysqlPrisma.create<UserVisitorDto>('sys_user_visitor', {
-        id: userid,
-        username: dto.username,
-        password: await encryptUtils.bcrypt.hashPassword(dto.password),
-        createRole: dto.loginRole,
-        updateRole: dto.loginRole,
-        createBy: userid,
-        updateBy: userid,
-      }, {ifCustomizeId: true});
+      await this.mysqlPrisma.create<UserVisitorDto>(
+        'sys_user_visitor',
+        {
+          id: userid,
+          username: dto.username,
+          password: await encryptUtils.bcrypt.hashPassword(dto.password),
+          createRole: dto.loginRole,
+          updateRole: dto.loginRole,
+          createBy: userid,
+          updateBy: userid,
+        },
+        { ifCustomizeId: true },
+      );
       return true;
     }
     if (dto.loginRole === base.LoginRoleEnum.dcts) {
@@ -185,28 +182,16 @@ export class IdentityService {
       }, {ifCustomizeId: true})
       return true;
     }
-    return false
+    return false;
   }
 
   /**
    * 用户登录
    * @param dto
-   * @param loginIp
-   * @param loginBrowser
-   * @param loginOs
+   * @param netInfo
    * @param ifAdminLogin
    */
-  async login(dto: LoginDto,
-              {
-                loginIp,
-                loginBrowser,
-                loginOs
-              }: {
-                loginIp: string,
-                loginBrowser: string,
-                loginOs: string
-              },
-              ifAdminLogin = false) {
+  async login(dto: LoginDto, netInfo: IpInfoDto, ifAdminLogin = false) {
     const multiAuthUser = new MultiAuthUserDto();
     if (dto.loginRole === base.LoginRoleEnum.admin) {
       const user = await this.mysqlPrisma.findFirst<UserDto>('sys_user', {
@@ -215,22 +200,45 @@ export class IdentityService {
       if (!user) {
         throw new UserUnknownException();
       }
-      const loginlogs = await this.getLoginLogsOfPasswordError(user.id, loginIp, dto.loginRole);
+      const loginlogs = await this.logUserLoginFacadeService.selAllLogUserLogin(user.id, netInfo.ip, dto.loginRole);
       if (loginlogs.length >= this.maxLoginFailCount) {
         const sort = loginlogs.sort((a, b) => timeUtils.timestamp(a.createTime) - timeUtils.timestamp(b.createTime));
-        const number = Math.ceil(24 - (timeUtils.timestamp() - timeUtils.timestamp(sort[0].createTime)) / (1000 * 60 * 60));
+        const number = Math.ceil(
+          24 - (timeUtils.timestamp() - timeUtils.timestamp(sort[0].createTime)) / (1000 * 60 * 60),
+        );
         throw new Exception(`您的账号在当前IP密码错误次数过多，请${number}小时后重试或更换网络环境重试。`);
       }
       const b1 = await encryptUtils.bcrypt.comparePassword(dto.password, user.password);
       if (!b1) {
-        await this.insLoginLog(loginIp, loginBrowser, '', loginOs, user.id, dto.loginRole, b1, PASSWORD_ERROR);
+        await this.logUserLoginFacadeService.insLogUserLogin(
+          {
+            userId: user.id,
+            loginRole: dto.loginRole,
+            loginType: base.LoginTypeEnum.pw,
+            loginIp: netInfo.ip,
+            loginPosition: '',
+            loginBrowser: netInfo.browser,
+            loginOs: netInfo.os,
+            ifSuccess: b1,
+          },
+          PASSWORD_ERROR,
+        );
         throw new Exception(`密码错误，还剩${this.maxLoginFailCount - loginlogs.length - 1}次机会。`);
       }
       if (!ifAdminLogin) {
-        await this.insLoginLog(loginIp, loginBrowser, '', loginOs, user.id, dto.loginRole, b1);
+        await this.logUserLoginFacadeService.insLogUserLogin({
+          userId: user.id,
+          loginRole: dto.loginRole,
+          loginType: base.LoginTypeEnum.pw,
+          loginIp: netInfo.ip,
+          loginPosition: '',
+          loginBrowser: netInfo.browser,
+          loginOs: netInfo.os,
+          ifSuccess: b1,
+        });
       }
       delete user.password;
-      const token = await this.cacheTokenService.genToken(user.id, user.username, dto.loginRole, loginIp, loginOs, loginBrowser);
+      const token = await this.cacheTokenService.genToken(user.id, user.username, dto.loginRole, netInfo);
       multiAuthUser.admin = user;
       return {
         token: token,
@@ -245,22 +253,45 @@ export class IdentityService {
       if (!user) {
         throw new UserUnknownException();
       }
-      const loginlogs = await this.getLoginLogsOfPasswordError(user.id, loginIp, dto.loginRole);
+      const loginlogs = await this.logUserLoginFacadeService.selAllLogUserLogin(user.id, netInfo.ip, dto.loginRole);
       if (loginlogs.length >= this.maxLoginFailCount) {
         const sort = loginlogs.sort((a, b) => timeUtils.timestamp(a.createTime) - timeUtils.timestamp(b.createTime));
-        const number = Math.ceil(24 - (timeUtils.timestamp() - timeUtils.timestamp(sort[0].createTime)) / (1000 * 60 * 60));
+        const number = Math.ceil(
+          24 - (timeUtils.timestamp() - timeUtils.timestamp(sort[0].createTime)) / (1000 * 60 * 60),
+        );
         throw new Exception(`您的账号在当前IP密码错误次数过多，请${number}小时后重试或更换网络环境重试。`);
       }
       const b1 = await encryptUtils.bcrypt.comparePassword(dto.password, user.password);
       if (!b1) {
-        await this.insLoginLog(loginIp, loginBrowser, '', loginOs, user.id, dto.loginRole, b1, PASSWORD_ERROR);
+        await this.logUserLoginFacadeService.insLogUserLogin(
+          {
+            userId: user.id,
+            loginRole: dto.loginRole,
+            loginType: base.LoginTypeEnum.pw,
+            loginIp: netInfo.ip,
+            loginPosition: '',
+            loginBrowser: netInfo.browser,
+            loginOs: netInfo.os,
+            ifSuccess: b1,
+          },
+          PASSWORD_ERROR,
+        );
         throw new Exception(`密码错误，还剩${this.maxLoginFailCount - loginlogs.length - 1}次机会。`);
       }
       if (!ifAdminLogin) {
-        await this.insLoginLog(loginIp, loginBrowser, '', loginOs, user.id, dto.loginRole, b1);
+        await this.logUserLoginFacadeService.insLogUserLogin({
+          userId: user.id,
+          loginRole: dto.loginRole,
+          loginType: base.LoginTypeEnum.pw,
+          loginIp: netInfo.ip,
+          loginPosition: '',
+          loginBrowser: netInfo.browser,
+          loginOs: netInfo.os,
+          ifSuccess: b1,
+        });
       }
       delete user.password;
-      const token = await this.cacheTokenService.genToken(user.id, user.username, dto.loginRole, loginIp, loginOs, loginBrowser);
+      const token = await this.cacheTokenService.genToken(user.id, user.username, dto.loginRole, netInfo);
       multiAuthUser.visitor = user;
       return {
         token: token,
@@ -275,7 +306,7 @@ export class IdentityService {
       if (!user) {
         throw new UserUnknownException();
       }
-      const loginlogs = await this.getLoginLogsOfPasswordError(user.id, loginIp, dto.loginRole)
+      const loginlogs = await this.logUserLoginFacadeService.selAllLogUserLogin(user.id, netInfo.ip, dto.loginRole);
       if (loginlogs.length >= this.maxLoginFailCount) {
         const sort = loginlogs.sort((a, b) => timeUtils.timestamp(a.createTime) - timeUtils.timestamp(b.createTime))
         const number = Math.ceil(24 - (timeUtils.timestamp() - timeUtils.timestamp(sort[0].createTime)) / (1000 * 60 * 60));
@@ -283,14 +314,35 @@ export class IdentityService {
       }
       const b1 = await encryptUtils.bcrypt.comparePassword(dto.password, user.password)
       if (!b1) {
-        await this.insLoginLog(loginIp, loginBrowser, '', loginOs, user.id, dto.loginRole, b1, PASSWORD_ERROR);
+        await this.logUserLoginFacadeService.insLogUserLogin(
+            {
+              userId: user.id,
+              loginRole: dto.loginRole,
+              loginType: base.LoginTypeEnum.pw,
+              loginIp: netInfo.ip,
+              loginPosition: '',
+              loginBrowser: netInfo.browser,
+              loginOs: netInfo.os,
+              ifSuccess: b1,
+            },
+            PASSWORD_ERROR,
+        );
         throw new Exception(`密码错误，还剩${this.maxLoginFailCount - loginlogs.length - 1}次机会。`);
       }
       if (!ifAdminLogin) {
-        await this.insLoginLog(loginIp, loginBrowser, '', loginOs, user.id, dto.loginRole, b1);
+        await this.logUserLoginFacadeService.insLogUserLogin({
+          userId: user.id,
+          loginRole: dto.loginRole,
+          loginType: base.LoginTypeEnum.pw,
+          loginIp: netInfo.ip,
+          loginPosition: '',
+          loginBrowser: netInfo.browser,
+          loginOs: netInfo.os,
+          ifSuccess: b1,
+        });
       }
       delete user.password;
-      const token = await this.cacheTokenService.genToken(user.id, user.username, dto.loginRole, loginIp, loginOs, loginBrowser);
+      const token = await this.cacheTokenService.genToken(user.id, user.username, dto.loginRole, netInfo);
       multiAuthUser.dctsUser = user
       return {
         token: token,
@@ -298,6 +350,6 @@ export class IdentityService {
         multiAuthUser: multiAuthUser,
       };
     }
-    return null
+    return null;
   }
 }

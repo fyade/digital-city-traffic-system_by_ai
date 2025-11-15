@@ -4,6 +4,7 @@ export class LogUserLoginDto extends BaseClass2 {
   id!: number;
   userId!: string;
   loginRole!: string;
+  loginType!: string;
   loginIp!: string;
   loginPosition!: string;
   loginBrowser!: string;
@@ -22,6 +23,7 @@ export class LogUserLoginSelAllDto {
 export class LogUserLoginInsDto {
   userId!: string;
   loginRole!: string;
+  loginType!: string;
   loginIp!: string;
   loginPosition!: string;
   loginBrowser!: string;

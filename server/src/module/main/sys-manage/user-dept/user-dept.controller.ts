@@ -63,8 +63,8 @@ export class UserDeptController {
     permission: 'main:sysManage:userDept:selOne',
     label: '查询单个用户部门',
   })
-  async selOneUserDept(@Param('id') id: number): Promise<R> {
-    return this.userDeptService.selOneUserDept(id);
+  async selOneUserDept(@Param('id') id: string): Promise<R> {
+    return this.userDeptService.selOneUserDept(Number(id));
   }
 
   @Post('/ud')

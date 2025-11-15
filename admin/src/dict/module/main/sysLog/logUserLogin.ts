@@ -5,6 +5,7 @@ export const logUserLoginDict: { [P in keyof LogUserLoginDto]: string } = {
   ...publicDict,
   userId: '用户id',
   loginRole: '登录身份',
+  loginType: '登录方式',
   loginIp: '登录ip',
   loginPosition: '登录地',
   loginBrowser: '登录浏览器',

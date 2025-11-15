@@ -63,8 +63,8 @@ export class DeptSysController {
     permission: 'main:sysManage:deptSys:selOne',
     label: '查询单个部门系统',
   })
-  async selOneDeptSys(@Param('id') id: number): Promise<R> {
-    return this.deptSysService.selOneDeptSys(id);
+  async selOneDeptSys(@Param('id') id: string): Promise<R> {
+    return this.deptSysService.selOneDeptSys(Number(id));
   }
 
   @Post()

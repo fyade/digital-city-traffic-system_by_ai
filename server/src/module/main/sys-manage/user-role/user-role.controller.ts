@@ -45,8 +45,8 @@ export class UserRoleController {
     permission: 'main:sysManage:userRole:selOne',
     label: '查询单个用户角色',
   })
-  async selOneUserRole(@Param('id') id: number): Promise<R> {
-    return this.userRoleService.selOneUserRole(id);
+  async selOneUserRole(@Param('id') id: string): Promise<R> {
+    return this.userRoleService.selOneUserRole(Number(id));
   }
 
   @Post('/ur')

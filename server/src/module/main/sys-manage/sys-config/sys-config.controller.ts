@@ -63,8 +63,8 @@ export class SysConfigController {
     permission: 'main:sysManage:sysConfig:selOne',
     label: '查询单个系统配置',
   })
-  async selOneSysConfig(@Param('id') id: number): Promise<R> {
-    return this.sysConfigService.selOneSysConfig(id);
+  async selOneSysConfig(@Param('id') id: string): Promise<R> {
+    return this.sysConfigService.selOneSysConfig(Number(id));
   }
 
   @Post()

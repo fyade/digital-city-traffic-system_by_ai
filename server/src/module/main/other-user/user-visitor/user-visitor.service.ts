@@ -3,21 +3,27 @@ import { MysqlPrismaService } from '../../../../infra/prisma/mysql.prisma.servic
 import { R } from '../../../../common/R';
 import { UserVisitorDto, UserVisitorSelListDto, AdminNewUserVisitorDto, ResetUserVisitorPsdDto } from './dto';
 import { final } from '../../../../util/base';
-import { UserRoleDto } from '../../sys-manage/user-role/dto';
-import { RoleDto } from '../../sys-manage/role/dto';
-import { UserDeptDto } from '../../sys-manage/user-dept/dto';
-import { DeptDto } from '../../sys-manage/dept/dto';
-import { UserUserGroupDto } from '../../../algorithm/user-user-group/dto';
-import { UserGroupDto } from '../../../algorithm/user-group/dto';
 import { BaseContextService } from '../../../../infra/base-context/base-context.service';
 import { Exception } from "../../../../exception/exception";
 import { base, encryptUtils, idUtils } from '@dcts/common'
+import { UserRoleFacadeService } from '../../sys-manage/user-role/user-role.facade.service';
+import { RoleFacadeService } from '../../sys-manage/role/role.facade.service';
+import { UserDeptFacadeService } from '../../sys-manage/user-dept/user-dept.facade.service';
+import { DeptFacadeService } from '../../sys-manage/dept/dept.facade.service';
+import { UserUserGroupFacadeService } from '../../../algorithm/user-user-group/user-user-group.facade.service';
+import { UserGroupFacadeService } from '../../../algorithm/user-group/user-group.facade.service';
 
 @Injectable()
 export class UserVisitorService {
   constructor(
     private readonly mysqlPrisma: MysqlPrismaService,
     private readonly bcs: BaseContextService,
+    private readonly userRoleFacadeService: UserRoleFacadeService,
+    private readonly roleFacadeService: RoleFacadeService,
+    private readonly userDeptFacadeService: UserDeptFacadeService,
+    private readonly deptFacadeService: DeptFacadeService,
+    private readonly userUserGroupFacadeService: UserUserGroupFacadeService,
+    private readonly userGroupFacadeService: UserGroupFacadeService,
   ) {
     this.bcs.setFieldSelectParam('sys_user_visitor', {
       notNullKeys: ['id', 'username'],
@@ -39,66 +45,15 @@ export class UserVisitorService {
     }
     const res2 = [];
     const userIds = res.list.map(item => item.id);
-    const allUserRolesOfThoseUsers = await this.mysqlPrisma.findAll<UserRoleDto>('sys_user_role', {
-      data: {
-        userId: {
-          in: {
-            value: userIds
-          },
-        },
-        loginRole: base.LoginRoleEnum.visitor,
-      },
-    });
+    const allUserRolesOfThoseUsers = await this.userRoleFacadeService.getByUserInfo(userIds, base.LoginRoleEnum.visitor);
     const allRoleIdsOfThoseUsers = allUserRolesOfThoseUsers.map(item => item.roleId);
-    const allRolesOfThoseUsers = await this.mysqlPrisma.findAll<RoleDto>('sys_role', {
-      data: {
-        id: {
-          in: {
-            value: allRoleIdsOfThoseUsers
-          },
-        },
-      },
-    });
-    const allUserDeptsOfThoseUsers = await this.mysqlPrisma.findAll<UserDeptDto>('sys_user_dept', {
-      data: {
-        userId: {
-          in: {
-            value: userIds
-          },
-        },
-        loginRole: base.LoginRoleEnum.visitor,
-      },
-    });
+    const allRolesOfThoseUsers = await this.roleFacadeService.getByIds(allRoleIdsOfThoseUsers);
+    const allUserDeptsOfThoseUsers = await this.userDeptFacadeService.getByUserInfo(userIds, base.LoginRoleEnum.visitor);
     const allUserDeptIdsOfThoseUsers = allUserDeptsOfThoseUsers.map(item => item.deptId);
-    const allDeptsOfThoseUsers = await this.mysqlPrisma.findAll<DeptDto>('sys_dept', {
-      data: {
-        id: {
-          in: {
-            value: allUserDeptIdsOfThoseUsers
-          },
-        },
-      },
-    });
-    const allUserUserGroupsOfThoseUsers = await this.mysqlPrisma.findAll<UserUserGroupDto>('sys_user_user_group', {
-      data: {
-        userId: {
-          in: {
-            value: userIds
-          },
-        },
-        loginRole: base.LoginRoleEnum.visitor,
-      },
-    });
+    const allDeptsOfThoseUsers = await this.deptFacadeService.getByIds(allUserDeptIdsOfThoseUsers);
+    const allUserUserGroupsOfThoseUsers = await this.userUserGroupFacadeService.getByUserInfo(userIds, base.LoginRoleEnum.visitor);
     const allUserUserGroupIdsOfThoseUsers = allUserUserGroupsOfThoseUsers.map(item => item.userGroupId);
-    const allUserGroupsOfThoseUsers = await this.mysqlPrisma.findAll<UserGroupDto>('sys_user_group', {
-      data: {
-        id: {
-          in: {
-            value: allUserUserGroupIdsOfThoseUsers
-          },
-        },
-      },
-    });
+    const allUserGroupsOfThoseUsers = await this.userGroupFacadeService.getByIds(allUserUserGroupIdsOfThoseUsers);
     for (let i = 0; i < res.list.length; i++) {
       const roleIdsOfThisUser = allUserRolesOfThoseUsers.filter(item => item.userId === res.list[i].id).map(item => item.roleId);
       const rolesOfThisUser = allRolesOfThoseUsers.filter(item => roleIdsOfThisUser.indexOf(item.id) > -1);
@@ -124,7 +79,7 @@ export class UserVisitorService {
     if (userVisitor) {
       throw new Exception('用户名已存在。');
     }
-    await this.mysqlPrisma.create('sys_user_visitor', {
+    await this.mysqlPrisma.create<UserVisitorDto>('sys_user_visitor', {
       ...dto,
       password: await encryptUtils.bcrypt.hashPassword(dto.password),
       id: idUtils.genId(10, false),
@@ -133,7 +88,7 @@ export class UserVisitorService {
   }
 
   async adminResetUserVisitorPsd(dto: ResetUserVisitorPsdDto): Promise<R> {
-    await this.mysqlPrisma.updateById('sys_user_visitor', { ...dto, password: await encryptUtils.bcrypt.hashPassword(dto.password) });
+    await this.mysqlPrisma.updateById<UserVisitorDto>('sys_user_visitor', { ...dto, password: await encryptUtils.bcrypt.hashPassword(dto.password) });
     return R.ok(true);
   }
 }

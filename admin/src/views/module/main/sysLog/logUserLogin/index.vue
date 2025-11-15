@@ -22,6 +22,7 @@ const state = reactive<State2<LogUserLoginDto, LogUserLoginUpdDto>>({
     id: -1,
     userId: '',
     loginRole: '',
+    loginType: '',
     loginIp: '',
     loginPosition: '',
     loginBrowser: '',
@@ -34,6 +35,7 @@ const state = reactive<State2<LogUserLoginDto, LogUserLoginUpdDto>>({
   filterForm: {
     userId: '',
     loginRole: '',
+    loginType: '',
     loginIp: '',
     loginBrowser: '',
     loginOs: '',
@@ -43,6 +45,7 @@ const state = reactive<State2<LogUserLoginDto, LogUserLoginUpdDto>>({
 const dFormRules: FormRules<LogUserLoginDto> = {
   userId: [{required: true, trigger: 'change'}],
   loginRole: [{required: true, trigger: 'change'}],
+  loginType: [{required: true, trigger: 'change'}],
   loginIp: [{required: true, trigger: 'change'}],
   loginPosition: [{required: true, trigger: 'change'}],
   loginBrowser: [{required: true, trigger: 'change'}],
@@ -173,6 +176,12 @@ const fCan2 = () => {
           <el-option v-for="key in base.LoginRoleEnum" :key="key" :label="base.loginRoleDict[key]" :value="key"/>
         </el-select>
       </el-form-item>
+      <el-form-item :label="logUserLoginDict.loginType" prop="loginType">
+        <!-- <el-input v-model="state.filterForm.loginType" :placeholder="logUserLoginDict.loginType"/> -->
+        <el-select v-model="state.filterForm.loginType" :placeholder="logUserLoginDict.loginType" clearable filterable>
+          <el-option v-for="key in base.LoginTypeEnum" :key="key" :label="base.loginTypeDict[key]" :value="key"/>
+        </el-select>
+      </el-form-item>
       <el-form-item :label="logUserLoginDict.loginIp" prop="loginIp">
         <el-input v-model="state.filterForm.loginIp" :placeholder="logUserLoginDict.loginIp"/>
       </el-form-item>
@@ -239,6 +248,11 @@ const fCan2 = () => {
       <el-table-column prop="loginRole" :label="logUserLoginDict.loginRole" width="240">
         <template #default="{row}">
           {{ base.loginRoleDict[row.loginRole as base.LoginRoleEnum] }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="loginType" :label="logUserLoginDict.loginType" width="180">
+        <template #default="{row}">
+          {{ base.loginTypeDict[row.loginType as base.LoginTypeEnum] }}
         </template>
       </el-table-column>
       <el-table-column prop="loginIp" :label="logUserLoginDict.loginIp" width="200"/>

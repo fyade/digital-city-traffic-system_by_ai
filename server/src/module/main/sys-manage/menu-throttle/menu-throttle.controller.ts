@@ -63,8 +63,8 @@ export class MenuThrottleController {
     permission: 'main:sysManage:menuThrottle:selOne',
     label: '查询单个请求限速',
   })
-  async selOneMenuThrottle(@Param('id') id: number): Promise<R> {
-    return this.menuThrottleService.selOneMenuThrottle(id);
+  async selOneMenuThrottle(@Param('id') id: string): Promise<R> {
+    return this.menuThrottleService.selOneMenuThrottle(Number(id));
   }
 
   @Post()

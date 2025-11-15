@@ -63,8 +63,8 @@ export class LogOperationWsController {
     permission: 'main:sysLog:logOperationWs:selOne',
     label: '查询单个系统WS操作日志',
   })
-  async selOneLogOperationWs(@Param('id') id: number): Promise<R> {
-    return this.logOperationWsService.selOneLogOperationWs(id);
+  async selOneLogOperationWs(@Param('id') id: string): Promise<R> {
+    return this.logOperationWsService.selOneLogOperationWs(Number(id));
   }
 
   @Post()

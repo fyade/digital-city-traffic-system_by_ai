@@ -63,8 +63,8 @@ export class UserTableDefaultPermissionController {
     permission: 'main:otherUser:userTableDefaultPermission:selOne',
     label: '查询单个用户表默认权限',
   })
-  async selOneUserTableDefaultPermission(@Param('id') id: number): Promise<R> {
-    return this.userTableDefaultPermissionService.selOneUserTableDefaultPermission(id);
+  async selOneUserTableDefaultPermission(@Param('id') id: string): Promise<R> {
+    return this.userTableDefaultPermissionService.selOneUserTableDefaultPermission(Number(id));
   }
 
   @Post()

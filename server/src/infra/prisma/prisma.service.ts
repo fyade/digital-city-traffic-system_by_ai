@@ -44,7 +44,7 @@ export class PrismaService {
                             ifDeleted?: boolean,
                           } = {},
   ) {
-    const data_ = baseUtils.objToSnakeCase(data as object);
+    const data_ = data ? baseUtils.objToSnakeCase(data as object) : {};
     const publicData = this.prismao.defaultSelArg({selKeys, ifDeleted}).where;
     const ret = {
       AND: [
@@ -310,17 +310,20 @@ export class PrismaService {
    * @param orderBy
    * @param range
    * @param selKeys
+   * @param completeMatchingKeys
    */
   public async findPage<T>(model: string, {
                              data,
                              orderBy,
                              range = {},
                              selKeys = [],
+                             completeMatchingKeys = [],
                            }: {
                              data?: { [P in keyof T]?: T[P] | string | Partial<SelectParamObj> } & PageDto,
                              orderBy?: boolean | object,
                              range?: object,
                              selKeys?: string[],
+                             completeMatchingKeys?: string[],
                            } = {},
   ): Promise<PageVo<T>> {
     const pageNum = Number(data.pageNum);
@@ -343,7 +346,7 @@ export class PrismaService {
         selKeys,
         notNullKeys: fieldSelectParam.notNullKeys,
         numberKeys: fieldSelectParam.numberKeys,
-        completeMatchingKeys: fieldSelectParam.completeMatchingKeys,
+        completeMatchingKeys: [...fieldSelectParam.completeMatchingKeys, ...completeMatchingKeys],
         ifDeleted: fieldSelectParam.ifDeleted,
       }),
       ...(publicData.select ? {select: publicData.select} : {}),
@@ -377,17 +380,20 @@ export class PrismaService {
    * @param orderBy
    * @param range
    * @param selKeys
+   * @param completeMatchingKeys
    */
   public async findAll<T>(model: string, {
                             data,
                             orderBy,
                             range = {},
                             selKeys = [],
+                            completeMatchingKeys = [],
                           }: {
                             data?: { [P in keyof T]?: T[P] | string | Partial<SelectParamObj> },
                             orderBy?: boolean | object,
                             range?: object,
                             selKeys?: string[],
+                            completeMatchingKeys?: string[],
                           } = {},
   ): Promise<T[]> {
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
@@ -404,7 +410,7 @@ export class PrismaService {
         selKeys,
         notNullKeys: fieldSelectParam.notNullKeys,
         numberKeys: fieldSelectParam.numberKeys,
-        completeMatchingKeys: fieldSelectParam.completeMatchingKeys,
+        completeMatchingKeys: [...fieldSelectParam.completeMatchingKeys, ...completeMatchingKeys],
         ifDeleted: fieldSelectParam.ifDeleted,
       }),
       ...(publicData.select ? {select: publicData.select} : {}),
@@ -499,13 +505,16 @@ export class PrismaService {
    * @param model
    * @param data
    * @param range
+   * @param completeMatchingKeys
    */
   public async count<T>(model: string, {
                           data,
                           range = {},
+                          completeMatchingKeys = [],
                         }: {
                           data?: Partial<T>,
                           range?: object,
+                          completeMatchingKeys?: string[],
                         } = {},
   ): Promise<number> {
     const fieldSelectParam = this.bcs.getFieldSelectParam(model);
@@ -515,7 +524,7 @@ export class PrismaService {
         range,
         notNullKeys: fieldSelectParam.notNullKeys,
         numberKeys: fieldSelectParam.numberKeys,
-        completeMatchingKeys: fieldSelectParam.completeMatchingKeys,
+        completeMatchingKeys: [...fieldSelectParam.completeMatchingKeys, ...completeMatchingKeys],
         ifDeleted: fieldSelectParam.ifDeleted,
       }),
     };

@@ -40,7 +40,7 @@ export class UserTableDefaultPermissionService {
   }
 
   async selOneUserTableDefaultPermission(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<UserTableDefaultPermissionDto>('sys_user_table_default_permission', Number(id));
+    const res = await this.mysqlPrisma.findById<UserTableDefaultPermissionDto>('sys_user_table_default_permission', id);
     return R.ok(res);
   }
 

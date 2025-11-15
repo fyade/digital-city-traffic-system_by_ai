@@ -41,7 +41,7 @@ export class MenuService {
   }
 
   async selOneMenu(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<MenuDto>('sys_menu', Number(id));
+    const res = await this.mysqlPrisma.findById<MenuDto>('sys_menu', id);
     return R.ok(res);
   }
 

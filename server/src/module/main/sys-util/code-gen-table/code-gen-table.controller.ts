@@ -63,8 +63,8 @@ export class CodeGenTableController {
     permission: 'main:sysUtil:codeGenTable:selOne',
     label: '查询单个代码生成-表信息',
   })
-  async selOneCodeGenTable(@Param('id') id: number): Promise<R> {
-    return this.codeGenTableService.selOneCodeGenTable(id);
+  async selOneCodeGenTable(@Param('id') id: string): Promise<R> {
+    return this.codeGenTableService.selOneCodeGenTable(Number(id));
   }
 
   @Post()

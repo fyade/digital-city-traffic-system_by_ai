@@ -63,8 +63,8 @@ export class LogUserLoginController {
     permission: 'main:sysLog:logUserLogin:selOne',
     label: '查询单个登录日志',
   })
-  async selOneLogUserLogin(@Param('id') id: number): Promise<R> {
-    return this.logUserLoginService.selOneLogUserLogin(id);
+  async selOneLogUserLogin(@Param('id') id: string): Promise<R> {
+    return this.logUserLoginService.selOneLogUserLogin(Number(id));
   }
 
   @Post()

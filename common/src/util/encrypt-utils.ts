@@ -2,8 +2,7 @@ import * as crypto from 'node:crypto'
 import { publicConfig } from '@dcts/config';
 import * as crypto_ from 'crypto-js';
 import * as bcryptJs from 'bcryptjs';
-
-const isBrowser = typeof window !== 'undefined' && typeof window.crypto !== 'undefined';
+import { isBrowser } from './base.js';
 
 export const rsa = {
   /**

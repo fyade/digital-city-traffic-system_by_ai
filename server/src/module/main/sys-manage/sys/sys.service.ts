@@ -38,7 +38,7 @@ export class SysService {
   }
 
   async selOneSys(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<SysDto>('sys_sys', Number(id));
+    const res = await this.mysqlPrisma.findById<SysDto>('sys_sys', id);
     return R.ok(res);
   }
 

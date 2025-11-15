@@ -38,7 +38,7 @@ export class DicTypeService {
   }
 
   async selOneDicType(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<DicTypeDto>('sys_dic_type', Number(id));
+    const res = await this.mysqlPrisma.findById<DicTypeDto>('sys_dic_type', id);
     return R.ok(res);
   }
 

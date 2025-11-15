@@ -15,7 +15,7 @@ export class MenuIpWhiteListService {
     this.bcs.setFieldSelectParam('sys_menu_ip_white_list', {
       notNullKeys: ['menuId', 'whiteList', 'fromType', 'type'],
       numberKeys: ['menuId'],
-    })
+    });
   }
 
   async selMenuIpWhiteList(dto: MenuIpWhiteListSelListDto): Promise<R> {
@@ -40,7 +40,7 @@ export class MenuIpWhiteListService {
   }
 
   async selOneMenuIpWhiteList(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<MenuIpWhiteListDto>('sys_menu_ip_white_list', Number(id));
+    const res = await this.mysqlPrisma.findById<MenuIpWhiteListDto>('sys_menu_ip_white_list', id);
     return R.ok(res);
   }
 

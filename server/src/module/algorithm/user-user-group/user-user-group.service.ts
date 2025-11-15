@@ -16,7 +16,7 @@ export class UserUserGroupService {
     this.bcs.setFieldSelectParam('sys_user_user_group', {
       notNullKeys: ['userId', 'userGroupId', 'loginRole'],
       numberKeys: ['userGroupId'],
-    })
+    });
   }
 
   async selUserUserGroup(dto: UserUserGroupSelListDto): Promise<R> {
@@ -41,7 +41,7 @@ export class UserUserGroupService {
   }
 
   async selOneUserUserGroup(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<UserUserGroupDto>('sys_user_user_group', Number(id));
+    const res = await this.mysqlPrisma.findById<UserUserGroupDto>('sys_user_user_group', id);
     return R.ok(res);
   }
 
@@ -54,8 +54,8 @@ export class UserUserGroupService {
     const addUserGroups = dto.userGroupId.filter(id => allUserGroupIds.indexOf(id) === -1);
     const delUserGroupIds = allUserGroupIds.filter(id => dto.userGroupId.indexOf(id) === -1);
     const delUserGroups = allUserGroups.filter(item => delUserGroupIds.indexOf(item.userGroupId) > -1).map(item => item.id);
-    await this.mysqlPrisma.deleteById('sys_user_user_group', delUserGroupIds);
-    await this.mysqlPrisma.createMany('sys_user_user_group', addUserGroups.map(item => ({
+    await this.mysqlPrisma.deleteById<UserUserGroupDto>('sys_user_user_group', delUserGroupIds);
+    await this.mysqlPrisma.createMany<UserUserGroupDto>('sys_user_user_group', addUserGroups.map(item => ({
       userId: dto.userId,
       userGroupId: item,
       loginRole: dto.loginRole
@@ -81,7 +81,7 @@ export class UserUserGroupService {
         loginRole: dto.loginRole
       });
     }
-    await this.mysqlPrisma.createMany('sys_user_user_group', data);
+    await this.mysqlPrisma.createMany<UserUserGroupDto>('sys_user_user_group', data);
     return R.ok(true);
   }
 

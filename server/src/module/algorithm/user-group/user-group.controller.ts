@@ -63,8 +63,8 @@ export class UserGroupController {
     permission: 'algorithm:userGroup:selOne',
     label: '查询单个用户组',
   })
-  async selOneUserGroup(@Param('id') id: number): Promise<R> {
-    return this.userGroupService.selOneUserGroup(id);
+  async selOneUserGroup(@Param('id') id: string): Promise<R> {
+    return this.userGroupService.selOneUserGroup(Number(id));
   }
 
   @Post()

@@ -460,7 +460,7 @@ ${`    return R.ok(res);`}
 ${`  }`}
 ${``}
 ${`  async selOne${moduleName2}(id: number): Promise<R> {`}
-${`    const res = await this.mysqlPrisma.findById<${moduleName2}Dto>('${table.tableName}', Number(id)${hd2_prismaConfig.selOneParam});`}
+${`    const res = await this.mysqlPrisma.findById<${moduleName2}Dto>('${table.tableName}', id${hd2_prismaConfig.selOneParam});`}
 ${`    return R.ok(res);`}
 ${`  }`}
 ${``}
@@ -556,8 +556,8 @@ ${`  @Authorize({`}
 ${`    permission: '${sysPath}${isBusiness?`:${businessName1}`:''}:${moduleName1}:selOne',`}
 ${`    label: '查询单个${table.moduleNameCn}',`}
 ${`  })`}
-${`  async selOne${moduleName2}(@Param('id') id: number): Promise<R> {`}
-${`    return this.${moduleName1}Service.selOne${moduleName2}(id);`}
+${`  async selOne${moduleName2}(@Param('id') id: string): Promise<R> {`}
+${`    return this.${moduleName1}Service.selOne${moduleName2}(Number(id));`}
 ${`  }`}
 ${``}
 ${`  @Post()`}

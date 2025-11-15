@@ -11,7 +11,7 @@ export class InterfaceService {
     private readonly bcs: BaseContextService,
   ) {
     this.bcs.setFieldSelectParam('sys_interface', {
-      notNullKeys: ['label', 'orderNum', 'ifDisabled', 'ifPublic', 'perms', 'url'],
+      notNullKeys: ['label', 'icon', 'orderNum', 'ifDisabled', 'ifPublic', 'perms', 'url'],
       numberKeys: ['orderNum'],
       completeMatchingKeys: ['perms'],
     });
@@ -25,7 +25,7 @@ export class InterfaceService {
     return R.ok(res);
   }
 
-  async selAllInterface(dto: InterfaceSelAllDto): Promise<R<InterfaceDto[]>> {
+  async selAllInterface(dto: InterfaceSelAllDto): Promise<R> {
     const res = await this.mysqlPrisma.findAll<InterfaceDto>('sys_interface', {
       data: dto,
       orderBy: true,
@@ -39,7 +39,7 @@ export class InterfaceService {
   }
 
   async selOneInterface(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<InterfaceDto>('sys_interface', Number(id));
+    const res = await this.mysqlPrisma.findById<InterfaceDto>('sys_interface', id);
     return R.ok(res);
   }
 

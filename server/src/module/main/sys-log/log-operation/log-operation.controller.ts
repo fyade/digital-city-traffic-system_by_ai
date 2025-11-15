@@ -63,8 +63,8 @@ export class LogOperationController {
     permission: 'main:sysLog:logOperation:selOne',
     label: '查询单个系统操作日志',
   })
-  async selOneLogOperation(@Param('id') id: number): Promise<R> {
-    return this.logOperationService.selOneLogOperation(id);
+  async selOneLogOperation(@Param('id') id: string): Promise<R> {
+    return this.logOperationService.selOneLogOperation(Number(id));
   }
 
   @Post()

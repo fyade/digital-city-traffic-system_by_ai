@@ -63,8 +63,8 @@ export class InterfaceController {
     permission: 'algorithm:interface:selOne',
     label: '查询单个接口',
   })
-  async selOneInterface(@Param('id') id: number): Promise<R> {
-    return this.interfaceService.selOneInterface(id);
+  async selOneInterface(@Param('id') id: string): Promise<R> {
+    return this.interfaceService.selOneInterface(Number(id));
   }
 
   @Post()

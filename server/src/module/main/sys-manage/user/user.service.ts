@@ -13,40 +13,47 @@ import {
 import { AuthService } from '../../../../infra/auth/auth.service';
 import { HTTP } from '../../../../common/Enum';
 import { final } from '../../../../util/base';
-import { UserRoleDto } from '../user-role/dto';
 import { UserUnknownException } from '../../../../exception/user-unknown.exception';
 import { UserPermissionDeniedException } from '../../../../exception/user-permission-denied.exception';
-import { LogUserLoginService } from '../../sys-log/log-user-login/log-user-login.service';
-import { UserDeptDto } from '../user-dept/dto';
-import { UserGroupDto } from '../../../algorithm/user-group/dto';
-import { UserUserGroupDto } from '../../../algorithm/user-user-group/dto';
-import { RoleDto } from '../role/dto';
-import { DeptDto } from '../dept/dto';
+import { LogUserLoginFacadeService } from '../../sys-log/log-user-login/log-user-login.facade.service';
 import { CacheTokenService } from '../../../../infra/cache/cache.token.service';
 import { BaseContextService } from '../../../../infra/base-context/base-context.service';
-import { NOT_ADMIN, PASSWORD_ERROR } from '../../sys-log/log-user-login/dto';
+import { NOT_ADMIN } from '../../sys-log/log-user-login/dto';
 import * as svgCaptcha from 'svg-captcha';
-import { Exception } from "../../../../exception/exception";
-import { base, encryptUtils, idUtils, timeUtils } from '@dcts/common'
-import { serverConfig } from "@dcts/config";
+import { Exception } from '../../../../exception/exception';
+import { base, encryptUtils, idUtils } from '@dcts/common'
+import { serverConfig } from '@dcts/config';
 import { MysqlPrismaService } from '../../../../infra/prisma/mysql.prisma.service';
-import { MysqlPrismaoService } from "../../../../infra/prisma/mysql.prismao.service";
-import { PrismaoService } from "../../../../infra/prisma/prismao.service";
-import { IdentityService } from "../../../../identity/identity.service";
+import { IdentityService } from '../../../../identity/identity.service';
+import { IpInfoDto } from '../../../../common/ipInfo';
+import { UserRoleFacadeService } from '../user-role/user-role.facade.service';
+import { RoleFacadeService } from '../role/role.facade.service';
+import { UserDeptFacadeService } from '../user-dept/user-dept.facade.service';
+import { DeptFacadeService } from '../dept/dept.facade.service';
+import { UserUserGroupFacadeService } from '../../../algorithm/user-user-group/user-user-group.facade.service';
+import { UserGroupFacadeService } from '../../../algorithm/user-group/user-group.facade.service';
+import { AdminTopFacadeService } from '../admin-top/admin-top.facade.service';
+import { SysConfigFacadeService } from '../sys-config/sys-config.facade.service';
 
 @Injectable()
 export class UserService {
   private maxLoginFailCount: number;
 
   constructor(
-      private readonly prismao: PrismaoService,
-      private readonly mysqlPrisma: MysqlPrismaService,
-      private readonly mysqlPrismao: MysqlPrismaoService,
-      private readonly authService: AuthService,
-      private readonly logUserLoginService: LogUserLoginService,
-      private readonly cacheTokenService: CacheTokenService,
-      private readonly bcs: BaseContextService,
-      private readonly identityService: IdentityService,
+    private readonly mysqlPrisma: MysqlPrismaService,
+    private readonly authService: AuthService,
+    private readonly logUserLoginFacadeService: LogUserLoginFacadeService,
+    private readonly cacheTokenService: CacheTokenService,
+    private readonly bcs: BaseContextService,
+    private readonly identityService: IdentityService,
+    private readonly userRoleFacadeService: UserRoleFacadeService,
+    private readonly roleFacadeService: RoleFacadeService,
+    private readonly userDeptFacadeService: UserDeptFacadeService,
+    private readonly deptFacadeService: DeptFacadeService,
+    private readonly userUserGroupFacadeService: UserUserGroupFacadeService,
+    private readonly userGroupFacadeService: UserGroupFacadeService,
+    private readonly adminTopFacadeService: AdminTopFacadeService,
+    private readonly sysConfigFacadeService: SysConfigFacadeService,
   ) {
     this.maxLoginFailCount = 10;
     this.bcs.setFieldSelectParam('sys_user', {
@@ -54,8 +61,6 @@ export class UserService {
     });
 
     this.identityService.setMaxLoginFailCount(this.maxLoginFailCount);
-    this.identityService.setGetLoginLogsOfPasswordError(this.getLoginLogsOfPasswordError.bind(this));
-    this.identityService.setInsLoginLog(this.insLoginLog.bind(this));
   }
 
   async selUser(dto: UserSelListDto): Promise<R> {
@@ -65,96 +70,37 @@ export class UserService {
       data: dto,
       orderBy: false,
     });
-    res.list.forEach(item => {
+    res.list.forEach((item) => {
       delete item.password;
     });
     if (ifWithRole !== final.Y) {
       return R.ok(res);
     }
-    const topAdminUser = await this.mysqlPrisma.findAll<{ id: number; userId: string }>('sys_admin_top', {
-      data: {
-        userId: {
-          in: {
-            value: res.list.map(item => item.id),
-          },
-        },
-      },
-    });
+    const topAdminUser = await this.adminTopFacadeService.getAdminUsersByUserId(res.list.map((item) => item.id));
     const res2 = [];
-    const userIds = res.list.map(item => item.id);
-    const allUserRolesOfThoseUsers = await this.mysqlPrisma.findAll<UserRoleDto>('sys_user_role', {
-      data: {
-        userId: {
-          in: {
-            value: userIds,
-          },
-        },
-        loginRole: base.LoginRoleEnum.admin,
-      },
-    });
-    const allRoleIdsOfThoseUsers = allUserRolesOfThoseUsers.map(item => item.roleId);
-    const allRolesOfThoseUsers = await this.mysqlPrisma.findAll<RoleDto>('sys_role', {
-      data: {
-        id: {
-          in: {
-            value: allRoleIdsOfThoseUsers,
-          },
-        },
-      },
-    });
-    const allUserDeptsOfThoseUsers = await this.mysqlPrisma.findAll<UserDeptDto>('sys_user_dept', {
-      data: {
-        userId: {
-          in: {
-            value: userIds,
-          },
-        },
-        loginRole: base.LoginRoleEnum.admin,
-      },
-    });
-    const allUserDeptIdsOfThoseUsers = allUserDeptsOfThoseUsers.map(item => item.deptId);
-    const allDeptsOfThoseUsers = await this.mysqlPrisma.findAll<DeptDto>('sys_dept', {
-      data: {
-        id: {
-          in: {
-            value: allUserDeptIdsOfThoseUsers,
-          },
-        },
-      },
-    });
-    const allUserUserGroupsOfThoseUsers = await this.mysqlPrisma.findAll<UserUserGroupDto>('sys_user_user_group', {
-      data: {
-        userId: {
-          in: {
-            value: userIds,
-          },
-        },
-        loginRole: base.LoginRoleEnum.admin,
-      },
-    });
-    const allUserUserGroupIdsOfThoseUsers = allUserUserGroupsOfThoseUsers.map(item => item.userGroupId);
-    const allUserGroupsOfThoseUsers = await this.mysqlPrisma.findAll<UserGroupDto>('sys_user_group', {
-      data: {
-        id: {
-          in: {
-            value: allUserUserGroupIdsOfThoseUsers,
-          },
-        },
-      },
-    });
+    const userIds = res.list.map((item) => item.id);
+    const allUserRolesOfThoseUsers = await this.userRoleFacadeService.getByUserInfo(userIds, base.LoginRoleEnum.admin);
+    const allRoleIdsOfThoseUsers = allUserRolesOfThoseUsers.map((item) => item.roleId);
+    const allRolesOfThoseUsers = await this.roleFacadeService.getByIds(allRoleIdsOfThoseUsers);
+    const allUserDeptsOfThoseUsers = await this.userDeptFacadeService.getByUserInfo(userIds, base.LoginRoleEnum.admin);
+    const allUserDeptIdsOfThoseUsers = allUserDeptsOfThoseUsers.map((item) => item.deptId);
+    const allDeptsOfThoseUsers = await this.deptFacadeService.getByIds(allUserDeptIdsOfThoseUsers);
+    const allUserUserGroupsOfThoseUsers = await this.userUserGroupFacadeService.getByUserInfo(userIds, base.LoginRoleEnum.admin);
+    const allUserUserGroupIdsOfThoseUsers = allUserUserGroupsOfThoseUsers.map((item) => item.userGroupId);
+    const allUserGroupsOfThoseUsers = await this.userGroupFacadeService.getByIds(allUserUserGroupIdsOfThoseUsers);
     for (let i = 0; i < res.list.length; i++) {
-      const roleIdsOfThisUser = allUserRolesOfThoseUsers.filter(item => item.userId === res.list[i].id).map(item => item.roleId);
-      const rolesOfThisUser = allRolesOfThoseUsers.filter(item => roleIdsOfThisUser.indexOf(item.id) > -1);
-      const deptIdsOfThisUser = allUserDeptsOfThoseUsers.filter(item => item.userId === res.list[i].id).map(item => item.deptId);
-      const deptsOfThisUser = allDeptsOfThoseUsers.filter(item => deptIdsOfThisUser.indexOf(item.id) > -1);
-      const ugIdsOfThisUser = allUserUserGroupsOfThoseUsers.filter(item => item.userId === res.list[i].id).map(item => item.userGroupId);
-      const ugsOfThisUser = allUserGroupsOfThoseUsers.filter(item => ugIdsOfThisUser.indexOf(item.id) > -1);
+      const roleIdsOfThisUser = allUserRolesOfThoseUsers.filter((item) => item.userId === res.list[i].id).map((item) => item.roleId);
+      const rolesOfThisUser = allRolesOfThoseUsers.filter((item) => roleIdsOfThisUser.indexOf(item.id) > -1);
+      const deptIdsOfThisUser = allUserDeptsOfThoseUsers.filter((item) => item.userId === res.list[i].id).map((item) => item.deptId);
+      const deptsOfThisUser = allDeptsOfThoseUsers.filter((item) => deptIdsOfThisUser.indexOf(item.id) > -1);
+      const ugIdsOfThisUser = allUserUserGroupsOfThoseUsers.filter((item) => item.userId === res.list[i].id).map((item) => item.userGroupId);
+      const ugsOfThisUser = allUserGroupsOfThoseUsers.filter((item) => ugIdsOfThisUser.indexOf(item.id) > -1);
       res2.push({
         ...res.list[i],
         roles: rolesOfThisUser,
         depts: deptsOfThisUser,
         ugs: ugsOfThisUser,
-        ifTopAdmin: topAdminUser.findIndex(item => item.userId === res.list[i].id) > -1,
+        ifTopAdmin: topAdminUser.findIndex((item) => item.userId === res.list[i].id) > -1,
       });
     }
     return R.ok({
@@ -173,22 +119,26 @@ export class UserService {
 
   async selOnesUser(ids: string[]): Promise<R> {
     const res = await this.mysqlPrisma.findByIds<UserDto>('sys_user', ids);
-    res.forEach(item => {
+    res.forEach((item) => {
       delete item.password;
     });
     return R.ok(res);
   }
 
   async insUser(dto: AdminNewUserDto): Promise<R> {
-    const user = await this.mysqlPrisma.findFirst('sys_user', {username: dto.username});
+    const user = await this.mysqlPrisma.findFirst<UserDto>('sys_user', { username: dto.username });
     if (user) {
       throw new Exception('用户名已存在。');
     }
-    await this.mysqlPrisma.create('sys_user', {
-      ...dto,
-      password: await encryptUtils.bcrypt.hashPassword(dto.password),
-      id: idUtils.genId(5, false),
-    }, {ifCustomizeId: true});
+    await this.mysqlPrisma.create<UserDto>(
+      'sys_user',
+      {
+        ...dto,
+        password: await encryptUtils.bcrypt.hashPassword(dto.password),
+        id: idUtils.genId(5, false),
+      },
+      { ifCustomizeId: true },
+    );
     return R.ok(true);
   }
 
@@ -209,18 +159,18 @@ export class UserService {
   }
 
   async adminResetUserPsd(dto: ResetUserPsdDto): Promise<R> {
-    if (!await this.authService.ifAdminUserUpdNotAdminUser(this.bcs.getUserData().userId, dto.id)) {
+    if (!(await this.authService.ifAdminUserUpdNotAdminUser(this.bcs.getUserData().userId, dto.id))) {
       throw new UserPermissionDeniedException();
     }
-    await this.mysqlPrisma.updateById('sys_user', {
+    await this.mysqlPrisma.updateById<UserDto>('sys_user', {
       ...dto,
-      password: await encryptUtils.bcrypt.hashPassword(dto.password)
+      password: await encryptUtils.bcrypt.hashPassword(dto.password),
     });
     return R.ok(true);
   }
 
   async generateKey(): Promise<R> {
-    const key = await encryptUtils.rsa.generateKey()
+    const key = await encryptUtils.rsa.generateKey();
     const uuid = idUtils.randomUUID();
     await this.cacheTokenService.savePasswordKey(uuid, key);
     return R.ok({
@@ -230,15 +180,11 @@ export class UserService {
   }
 
   async regist(dto: RegistDto): Promise<R> {
-    const sysConfigs = await this.mysqlPrismao.sys_config.findMany({
-      where: {
-        ...this.prismao.defaultSelArg().where
-      }
-    });
+    const sysConfigs = await this.sysConfigFacadeService.getAllConfigs();
     if (sysConfigs.length > 0) {
       const sysConfig = sysConfigs[0];
-      if (sysConfig.if_allow_user_regist === final.N) {
-        throw new Exception('当前不允许新用户注册。')
+      if (sysConfig.ifAllowUserRegist === final.N) {
+        throw new Exception('当前不允许新用户注册。');
       }
     }
     const b = await this.identityService.regist(dto);
@@ -248,42 +194,35 @@ export class UserService {
     throw new UserUnknownException();
   }
 
-  async login(dto: LoginDto,
-              {
-                loginIp,
-                loginBrowser,
-                loginOs
-              }: {
-                loginIp: string,
-                loginBrowser: string,
-                loginOs: string
-              },
-              ifAdminLogin = false): Promise<R<
-      {
-        token: string,
-        loginRole: string,
-        multiAuthUser: MultiAuthUserDto,
-      }>> {
+  async login(
+    dto: LoginDto,
+    netInfo: IpInfoDto,
+    ifAdminLogin = false,
+  ): Promise<
+    R<{
+      token: string;
+      loginRole: string;
+      multiAuthUser: MultiAuthUserDto;
+    }>
+  > {
     if (!serverConfig.currentConfig().ifIgnoreVerificationCode) {
       const vcode = await this.cacheTokenService.getVerificationCode(dto.verificationCodeUuid);
       if (!vcode) {
         throw new Exception('验证码已过期。');
       }
-      await this.cacheTokenService.deleteVerificationCode(dto.verificationCodeUuid);
       if (vcode.toLowerCase() !== dto.verificationCode.toLowerCase()) {
         throw new Exception('验证码错误。');
       }
     }
-    await this.cacheTokenService.deletePasswordKey(dto.passwordKeyUuid);
-    const b = await this.identityService.login(dto, {loginIp, loginBrowser, loginOs}, ifAdminLogin);
+    const b = await this.identityService.login(dto, netInfo, ifAdminLogin);
     if (b) {
       return R.ok(b);
     }
     throw new UserUnknownException();
   }
 
-  async adminlogin(dto: LoginDto, {loginIp, loginBrowser, loginOs}): Promise<R> {
-    const userinfo = await this.login(dto, {loginIp, loginBrowser, loginOs}, true);
+  async adminlogin(dto: LoginDto, netInfo: IpInfoDto): Promise<R> {
+    const userinfo = await this.login(dto, netInfo, true);
     if (userinfo.code !== HTTP.SUCCESS().code) {
       throw new Exception(userinfo.msg);
     }
@@ -292,10 +231,32 @@ export class UserService {
     if (userinfo.data.multiAuthUser.visitor) userId = userinfo.data.multiAuthUser.visitor.id;
     const ifAdminUser = await this.authService.ifAdminUser(userId, dto.loginRole);
     if (ifAdminUser) {
-      await this.insLoginLog(loginIp, loginBrowser, '', loginOs, userId, dto.loginRole, true);
+      await this.logUserLoginFacadeService.insLogUserLogin({
+        userId: userId,
+        loginRole: dto.loginRole,
+        loginType: base.LoginTypeEnum.pw,
+        loginIp: netInfo.ip,
+        loginPosition: '',
+        loginBrowser: netInfo.browser,
+        loginOs: netInfo.os,
+        ifSuccess: true,
+      });
       return R.ok(userinfo.data);
     } else {
-      await this.insLoginLog(loginIp, loginBrowser, '', loginOs, userId, dto.loginRole, false, NOT_ADMIN, '不是管理员用户');
+      await this.logUserLoginFacadeService.insLogUserLogin(
+        {
+          userId: userId,
+          loginRole: dto.loginRole,
+          loginType: base.LoginTypeEnum.pw,
+          loginIp: netInfo.ip,
+          loginPosition: '',
+          loginBrowser: netInfo.browser,
+          loginOs: netInfo.os,
+          ifSuccess: false,
+        },
+        NOT_ADMIN,
+        '不是管理员用户',
+      );
       throw new Exception('你不是管理员用户。');
     }
     throw new UserUnknownException();
@@ -315,41 +276,8 @@ export class UserService {
       fontSize: 45,
     });
     const text = captcha.text;
-    const uuid = idUtils.randomUUID()
+    const uuid = idUtils.randomUUID();
     await this.cacheTokenService.saveVerificationCode(uuid, text);
-    return R.ok({uuid, svg: captcha.data});
-  }
-
-  private async getLoginLogsOfPasswordError(userId: string, loginIp: string, loginRole: string) {
-    const loginLog = await this.logUserLoginService.selAllLogUserLogin({
-      userId: userId,
-      ifSuccess: final.N,
-      failType: PASSWORD_ERROR,
-      loginIp: loginIp,
-      loginRole: loginRole,
-    }, {
-      orderBy: {createTime: 'desc'},
-      range: {
-        createTime: {
-          gte: new Date(timeUtils.timestamp() - 1000 * 60 * 60 * 24),
-          lte: new Date(timeUtils.timestamp()),
-        },
-      },
-    });
-    return loginLog.data;
-  }
-
-  private async insLoginLog(loginIp: string, loginBrowser: string, loginPosition: string, loginOs: string, userId: string, loginRole: string, ifSuccess: boolean, failType: string = '', errorRemark: string = '密码错误') {
-    await this.logUserLoginService.insLogUserLogin({
-      loginIp: loginIp,
-      loginBrowser: loginBrowser,
-      loginPosition: loginPosition,
-      loginOs: loginOs,
-      userId: userId,
-      ifSuccess: ifSuccess ? final.Y : final.N,
-      failType: failType,
-      loginRole: loginRole,
-      remark: ifSuccess ? '登录成功' : errorRemark,
-    });
+    return R.ok({ uuid, svg: captcha.data });
   }
 }

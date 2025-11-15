@@ -32,8 +32,8 @@ export class CodeGenerationController {
     permission: 'main:sysUtil:codeGeneration:getCode',
     label: '获取代码生成代码',
   })
-  async genCode(@Param('id') id: number): Promise<R> {
-    return this.codeGenerationService.genCode(id);
+  async genCode(@Param('id') id: string): Promise<R> {
+    return this.codeGenerationService.genCode(Number(id));
   }
 
   @Get('/z/:id')
@@ -44,7 +44,7 @@ export class CodeGenerationController {
     permission: 'main:sysUtil:codeGeneration:getCodeZip',
     label: '获取代码生成代码压缩包',
   })
-  async genCodeZip(@Param('id') id: number): Promise<R> {
-    return this.codeGenerationService.genCodeZip(id);
+  async genCodeZip(@Param('id') id: string): Promise<R> {
+    return this.codeGenerationService.genCodeZip(Number(id));
   }
 }

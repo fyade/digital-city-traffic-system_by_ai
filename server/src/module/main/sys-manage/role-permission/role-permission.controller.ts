@@ -45,8 +45,8 @@ export class RolePermissionController {
     permission: 'main:sysManage:rolePermission:selOne',
     label: '查询单个角色权限',
   })
-  async selOneRolePermission(@Param('id') id: number): Promise<R> {
-    return this.rolePermissionService.selOneRolePermission(id);
+  async selOneRolePermission(@Param('id') id: string): Promise<R> {
+    return this.rolePermissionService.selOneRolePermission(Number(id));
   }
 
   @Post('/rp')

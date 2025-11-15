@@ -63,8 +63,8 @@ export class RoleSysController {
     permission: 'main:sysManage:roleSys:selOne',
     label: '查询单个角色系统',
   })
-  async selOneRoleSys(@Param('id') id: number): Promise<R> {
-    return this.roleSysService.selOneRoleSys(id);
+  async selOneRoleSys(@Param('id') id: string): Promise<R> {
+    return this.roleSysService.selOneRoleSys(Number(id));
   }
 
   @Post()

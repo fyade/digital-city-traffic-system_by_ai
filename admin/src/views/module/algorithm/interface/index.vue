@@ -40,6 +40,7 @@ const state = reactive<State2<InterfaceDto, InterfaceUpdDto>>({
 })
 const dFormRules: FormRules<InterfaceDto> = {
   label: [{required: true, trigger: 'change'}],
+  icon: [{required: true, trigger: 'change'}],
   orderNum: [{required: true, trigger: 'change'}],
   ifDisabled: [{required: true, trigger: 'change'}],
   ifPublic: [{required: true, trigger: 'change'}],
@@ -409,6 +410,7 @@ provide('changeSelectInterfaceGroup', selectInterfaceGroups)
       <!--上面id列的宽度改一下-->
       <!--在此下方添加表格列-->
       <el-table-column prop="label" :label="interfaceDict.label" width="240"/>
+      <el-table-column prop="icon" :label="interfaceDict.icon" width="120"/>
       <el-table-column prop="orderNum" :label="interfaceDict.orderNum" width="120"/>
       <el-table-column prop="ifDisabled" :label="interfaceDict.ifDisabled" width="120"/>
       <el-table-column prop="ifPublic" :label="interfaceDict.ifPublic" width="120"/>

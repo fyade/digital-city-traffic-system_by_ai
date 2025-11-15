@@ -3,17 +3,20 @@ import { R } from '../../../../common/R';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { NonSupportException } from '../../../../exception/non-support.exception';
-import { MysqlPrismaService } from '../../../../infra/prisma/mysql.prisma.service';
 import { codeGeneration } from './codeGeneration';
-import { CodeGenTableDto } from '../code-gen-table/dto';
-import { CodeGenColumnDto } from '../code-gen-column/dto';
 import { CgTablesInterface } from './dto';
-import { SysDto } from '../../sys-manage/sys/dto';
 import { fileUtils, regularUtils } from '@dcts/common';
+import { CodeGenTableFacadeService } from '../code-gen-table/code-gen-table.facade.service';
+import { CodeGenColumnFacadeService } from '../code-gen-column/code-gen-column.facade.service';
+import { SysFacadeService } from '../../sys-manage/sys/sys.facade.service';
 
 @Injectable()
 export class CodeGenerationService {
-  constructor(private readonly mysqlPrisma: MysqlPrismaService) {
+  constructor(
+    private readonly codeGenTableFacadeService: CodeGenTableFacadeService,
+    private readonly codeGenColumnFacadeService: CodeGenColumnFacadeService,
+    private readonly sysFacadeService: SysFacadeService,
+  ) {
   }
 
   async getDatabaseInfo(): Promise<R> {
@@ -75,12 +78,9 @@ export class CodeGenerationService {
   }
 
   async genCode(id: number): Promise<R> {
-    const table = await this.mysqlPrisma.findById<CodeGenTableDto>('sys_code_gen_table', Number(id));
-    const columns = await this.mysqlPrisma.findAll<CodeGenColumnDto>('sys_code_gen_column', {
-      data: {tableId: Number(id)},
-      orderBy: true,
-    });
-    const sys = await this.mysqlPrisma.findById<SysDto>('sys_sys', table.sysId);
+    const table = await this.codeGenTableFacadeService.getById(id);
+    const columns = await this.codeGenColumnFacadeService.findByTableId(id);
+    const sys = await this.sysFacadeService.getById(table.sysId);
     const cgRes = codeGeneration({table, columns, sys});
     return R.ok({
       table,

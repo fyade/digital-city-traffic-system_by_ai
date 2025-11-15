@@ -15,7 +15,7 @@ export class DeptPermissionService {
     this.bcs.setFieldSelectParam('sys_dept_permission', {
       notNullKeys: ['deptId', 'permissionId'],
       numberKeys: ['deptId', 'permissionId'],
-    })
+    });
   }
 
   async selDeptPermission(dto: DeptPermissionSelListDto): Promise<R> {
@@ -40,7 +40,7 @@ export class DeptPermissionService {
   }
 
   async selOneDeptPermission(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<DeptPermissionDto>('sys_dept_permission', Number(id));
+    const res = await this.mysqlPrisma.findById<DeptPermissionDto>('sys_dept_permission', id);
     return R.ok(res);
   }
 
@@ -52,12 +52,12 @@ export class DeptPermissionService {
     const addDPSPIDS = dto.permissionId.filter(item => perIds.indexOf(item) === -1);
     const delDPS = perIds.filter(item => dto.permissionId.indexOf(item) === -1);
     const delids = allDeptPermission.filter(item => delDPS.indexOf(item.permissionId) > -1).map(item => item.id);
-    await this.mysqlPrisma.deleteById('sys_dept_permission', delids);
+    await this.mysqlPrisma.deleteById<DeptPermissionDto>('sys_dept_permission', delids);
     const addDPS = addDPSPIDS.map(item => ({
       deptId: dto.deptId,
       permissionId: item,
     }));
-    await this.mysqlPrisma.createMany('sys_dept_permission', addDPS);
+    await this.mysqlPrisma.createMany<DeptPermissionDto>('sys_dept_permission', addDPS);
     await this.cachePermissionService.clearPermissionsInCache();
     return R.ok(true);
   }

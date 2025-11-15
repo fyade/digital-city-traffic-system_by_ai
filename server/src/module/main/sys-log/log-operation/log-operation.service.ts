@@ -49,7 +49,7 @@ export class LogOperationService {
   }
 
   async selOneLogOperation(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<LogOperationDto>('log_operation', Number(id));
+    const res = await this.mysqlPrisma.findById<LogOperationDto>('log_operation', id);
     return R.ok(res);
   }
 

@@ -16,11 +16,11 @@ export const useDictStore = defineStore('dictStore', () => {
    * // const dict = dictStore.getDict('');
    * // watchEffect(() => {
    * //   if (dict.isLoading.value) {
-   * //     console.log('Loading...')
+   * //     //'Loading...'
    * //   } else if (dict.error.value) {
-   * //     console.error('Error:', dict.error.value)
+   * //     //'Error:', dict.error.value
    * //   } else {
-   * //     console.log('Data:', dict.data.value)
+   * //     //'Data:', dict.data.value
    * //   }
    * // })
    */

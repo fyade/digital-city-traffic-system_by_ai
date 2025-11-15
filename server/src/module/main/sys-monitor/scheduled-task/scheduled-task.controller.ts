@@ -63,8 +63,8 @@ export class ScheduledTaskController {
     permission: 'main:sysMonitor:scheduledTask:selOne',
     label: '查询单个定时任务',
   })
-  async selOneScheduledTask(@Param('id') id: number): Promise<R> {
-    return this.scheduledTaskService.selOneScheduledTask(id);
+  async selOneScheduledTask(@Param('id') id: string): Promise<R> {
+    return this.scheduledTaskService.selOneScheduledTask(Number(id));
   }
 
   @Post()

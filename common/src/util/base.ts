@@ -1,3 +1,5 @@
+export const isBrowser = typeof window !== 'undefined' && typeof window.crypto !== 'undefined';
+
 // 用户登录角色
 export enum LoginRoleEnum {
   admin = "admin",
@@ -10,6 +12,17 @@ export const loginRoleDict = {
   [LoginRoleEnum.visitor]: "访客",
   [LoginRoleEnum.dcts]: "数智交通全域调度系统用户",
 };
+
+// 用户登录方式
+export enum LoginTypeEnum {
+  pw = "pw",
+  wai = "wai",
+}
+
+export const loginTypeDict = {
+  [LoginTypeEnum.pw]: "账号密码登录",
+  [LoginTypeEnum.wai]: "WebAuthn登录",
+}
 
 // 用户认证类型
 export enum AuthTypeEnum {

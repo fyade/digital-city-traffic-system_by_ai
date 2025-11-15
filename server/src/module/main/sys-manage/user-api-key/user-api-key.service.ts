@@ -38,7 +38,7 @@ export class UserApiKeyService {
   }
 
   async selOneUserApiKey(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<UserApiKeyDto>('sys_user_api_key', Number(id));
+    const res = await this.mysqlPrisma.findById<UserApiKeyDto>('sys_user_api_key', id);
     return R.ok(res);
   }
 

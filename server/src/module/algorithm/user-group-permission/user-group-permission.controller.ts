@@ -63,8 +63,8 @@ export class UserGroupPermissionController {
     permission: 'algorithm:userGroupPermission:selOne',
     label: '查询单个用户组接口组',
   })
-  async selOneUserGroupPermission(@Param('id') id: number): Promise<R> {
-    return this.userGroupPermissionService.selOneUserGroupPermission(id);
+  async selOneUserGroupPermission(@Param('id') id: string): Promise<R> {
+    return this.userGroupPermissionService.selOneUserGroupPermission(Number(id));
   }
 
   @Post()

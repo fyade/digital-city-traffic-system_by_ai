@@ -63,8 +63,8 @@ export class InterfaceInterfaceGroupController {
     permission: 'algorithm:interfaceInterfaceGroup:selOne',
     label: '查询单个接口接口组',
   })
-  async selOneInterfaceInterfaceGroup(@Param('id') id: number): Promise<R> {
-    return this.interfaceInterfaceGroupService.selOneInterfaceInterfaceGroup(id);
+  async selOneInterfaceInterfaceGroup(@Param('id') id: string): Promise<R> {
+    return this.interfaceInterfaceGroupService.selOneInterfaceInterfaceGroup(Number(id));
   }
 
   @Post('/iig')

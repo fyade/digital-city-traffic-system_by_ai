@@ -63,8 +63,8 @@ export class UserApiKeyController {
     permission: 'main:sysManage:userApiKey:selOne',
     label: '查询单个用户apiKey',
   })
-  async selOneUserApiKey(@Param('id') id: number): Promise<R> {
-    return this.userApiKeyService.selOneUserApiKey(id);
+  async selOneUserApiKey(@Param('id') id: string): Promise<R> {
+    return this.userApiKeyService.selOneUserApiKey(Number(id));
   }
 
   @Post()

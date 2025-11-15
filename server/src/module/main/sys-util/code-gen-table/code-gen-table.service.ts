@@ -13,7 +13,7 @@ export class CodeGenTableService {
     this.bcs.setFieldSelectParam('sys_code_gen_table', {
       notNullKeys: ['tableName', 'tableDescr', 'entityName', 'businessName', 'moduleName', 'businessNameCn', 'moduleNameCn', 'sysId', 'orderNum'],
       numberKeys: ['sysId', 'orderNum'],
-    })
+    });
   }
 
   async selCodeGenTable(dto: CodeGenTableSelListDto): Promise<R> {
@@ -38,7 +38,7 @@ export class CodeGenTableService {
   }
 
   async selOneCodeGenTable(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<CodeGenTableDto>('sys_code_gen_table', Number(id));
+    const res = await this.mysqlPrisma.findById<CodeGenTableDto>('sys_code_gen_table', id);
     return R.ok(res);
   }
 

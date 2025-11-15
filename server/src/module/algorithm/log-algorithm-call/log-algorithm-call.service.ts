@@ -44,7 +44,7 @@ export class LogAlgorithmCallService {
   }
 
   async selOneLogAlgorithmCall(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<LogAlgorithmCallDto>('log_algorithm_call', Number(id));
+    const res = await this.mysqlPrisma.findById<LogAlgorithmCallDto>('log_algorithm_call', id);
     return R.ok(res);
   }
 

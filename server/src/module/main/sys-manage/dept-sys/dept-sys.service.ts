@@ -13,7 +13,7 @@ export class DeptSysService {
     this.bcs.setFieldSelectParam('sys_dept_sys', {
       notNullKeys: ['deptId', 'sysId'],
       numberKeys: ['deptId', 'sysId'],
-    })
+    });
   }
 
   async selDeptSys(dto: DeptSysSelListDto): Promise<R> {
@@ -38,7 +38,7 @@ export class DeptSysService {
   }
 
   async selOneDeptSys(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<DeptSysDto>('sys_dept_sys', Number(id));
+    const res = await this.mysqlPrisma.findById<DeptSysDto>('sys_dept_sys', id);
     return R.ok(res);
   }
 

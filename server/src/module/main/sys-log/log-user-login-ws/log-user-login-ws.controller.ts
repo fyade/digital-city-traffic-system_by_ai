@@ -63,8 +63,8 @@ export class LogUserLoginWsController {
     permission: 'main:sysLog:logUserLoginWs:selOne',
     label: '查询单个WS登录日志',
   })
-  async selOneLogUserLoginWs(@Param('id') id: number): Promise<R> {
-    return this.logUserLoginWsService.selOneLogUserLoginWs(id);
+  async selOneLogUserLoginWs(@Param('id') id: string): Promise<R> {
+    return this.logUserLoginWsService.selOneLogUserLoginWs(Number(id));
   }
 
   @Post()

@@ -43,7 +43,7 @@ export class LogUserLoginWsService {
   }
 
   async selOneLogUserLoginWs(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<LogUserLoginWsDto>('log_user_login_ws', Number(id));
+    const res = await this.mysqlPrisma.findById<LogUserLoginWsDto>('log_user_login_ws', id);
     return R.ok(res);
   }
 

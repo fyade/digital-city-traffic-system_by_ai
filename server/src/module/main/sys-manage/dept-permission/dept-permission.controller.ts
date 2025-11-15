@@ -63,8 +63,8 @@ export class DeptPermissionController {
     permission: 'main:sysManage:deptPermission:selOne',
     label: '查询单个部门权限',
   })
-  async selOneDeptPermission(@Param('id') id: number): Promise<R> {
-    return this.deptPermissionService.selOneDeptPermission(id);
+  async selOneDeptPermission(@Param('id') id: string): Promise<R> {
+    return this.deptPermissionService.selOneDeptPermission(Number(id));
   }
 
   @Post('/dp')

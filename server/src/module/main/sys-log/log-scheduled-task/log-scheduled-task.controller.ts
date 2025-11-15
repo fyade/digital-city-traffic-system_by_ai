@@ -63,8 +63,8 @@ export class LogScheduledTaskController {
     permission: 'main:sysLog:logScheduledTask:selOne',
     label: '查询单个定时任务运行日志',
   })
-  async selOneLogScheduledTask(@Param('id') id: number): Promise<R> {
-    return this.logScheduledTaskService.selOneLogScheduledTask(id);
+  async selOneLogScheduledTask(@Param('id') id: string): Promise<R> {
+    return this.logScheduledTaskService.selOneLogScheduledTask(Number(id));
   }
 
   @Post()

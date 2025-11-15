@@ -38,7 +38,7 @@ export class CodeGenColumnService {
   }
 
   async selOneCodeGenColumn(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<CodeGenColumnDto>('sys_code_gen_column', Number(id));
+    const res = await this.mysqlPrisma.findById<CodeGenColumnDto>('sys_code_gen_column', id);
     return R.ok(res);
   }
 

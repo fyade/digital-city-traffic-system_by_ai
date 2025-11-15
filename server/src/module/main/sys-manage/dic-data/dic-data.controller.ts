@@ -75,8 +75,8 @@ export class DicDataController {
     permission: 'main:sysManage:dicData:selOne',
     label: '查询单个字典数据',
   })
-  async selOneDicData(@Param('id') id: number): Promise<R> {
-    return this.dicDataService.selOneDicData(id);
+  async selOneDicData(@Param('id') id: string): Promise<R> {
+    return this.dicDataService.selOneDicData(Number(id));
   }
 
   @Post()

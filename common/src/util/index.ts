@@ -1,6 +1,7 @@
 export * as arrayUtils from './array-utils.js';
 export * as base from './base.js';
 export * as baseUtils from './base-utils.js';
+export * as bufferUtils from './buffer-utils.js';
 export * as encryptUtils from './encrypt-utils.js';
 export * as excelUtils from './excel-utils.js';
 export * as fileUtils from './file-utils.js';

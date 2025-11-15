@@ -43,7 +43,7 @@ export class LogOperationWsService {
   }
 
   async selOneLogOperationWs(id: number): Promise<R> {
-    const res = await this.mysqlPrisma.findById<LogOperationWsDto>('log_operation_ws', Number(id));
+    const res = await this.mysqlPrisma.findById<LogOperationWsDto>('log_operation_ws', id);
     return R.ok(res);
   }
 

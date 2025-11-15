@@ -7,7 +7,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { getIpInfoFromRequest } from '../../../../util/RequestUtils';
 import { Request } from 'express';
 import { encryptUtils } from '@dcts/common'
-import { CacheTokenService } from "../../../../infra/cache/cache.token.service";
+import { CacheTokenService } from '../../../../infra/cache/cache.token.service';
 
 @Controller('/sys/user')
 @ApiTags('系统/用户登录')
@@ -17,8 +17,7 @@ export class UserLoginController {
   constructor(
     private readonly userService: UserService,
     private readonly cacheTokenService: CacheTokenService,
-  ) {
-  }
+  ) {}
 
   @Post('/generate-key')
   @ApiOperation({
@@ -75,8 +74,8 @@ export class UserLoginController {
       dto.password = await encryptUtils.rsa.decrypt(key.privateKey, dto.password);
     }
     delete dto.psdType;
-    const { ip: loginIp, browser: loginBrowser, os: loginOs } = getIpInfoFromRequest(request);
-    return this.userService.login(dto, { loginIp, loginBrowser, loginOs });
+    const netInfo = getIpInfoFromRequest(request);
+    return this.userService.login(dto, netInfo);
   }
 
   @Post('/adminlogin')
@@ -98,8 +97,8 @@ export class UserLoginController {
       dto.password = await encryptUtils.rsa.decrypt(key.privateKey, dto.password);
     }
     delete dto.psdType;
-    const { ip: loginIp, browser: loginBrowser, os: loginOs } = getIpInfoFromRequest(request);
-    return this.userService.adminlogin(dto, { loginIp, loginBrowser, loginOs });
+    const netInfo = getIpInfoFromRequest(request);
+    return this.userService.adminlogin(dto, netInfo);
   }
 
   @Post('/log-out')

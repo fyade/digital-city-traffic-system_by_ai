@@ -63,8 +63,8 @@ export class LogAlgorithmCallController {
     permission: 'algorithm:logAlgorithmCall:selOne',
     label: '查询单个算法调用日志',
   })
-  async selOneLogAlgorithmCall(@Param('id') id: number): Promise<R> {
-    return this.logAlgorithmCallService.selOneLogAlgorithmCall(id);
+  async selOneLogAlgorithmCall(@Param('id') id: string): Promise<R> {
+    return this.logAlgorithmCallService.selOneLogAlgorithmCall(Number(id));
   }
 
   @Post()

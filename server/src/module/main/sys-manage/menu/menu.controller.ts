@@ -63,8 +63,8 @@ export class MenuController {
     permission: 'main:sysManage:menu:selOne',
     label: '查询单个菜单',
   })
-  async selOneMenu(@Param('id') id: number): Promise<R> {
-    return this.menuService.selOneMenu(id);
+  async selOneMenu(@Param('id') id: string): Promise<R> {
+    return this.menuService.selOneMenu(Number(id));
   }
 
   @Post()

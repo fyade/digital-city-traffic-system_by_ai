@@ -63,8 +63,8 @@ export class MenuIpWhiteListController {
     permission: 'main:sysManage:menuIpWhiteList:selOne',
     label: '查询单个菜单ip白名单',
   })
-  async selOneMenuIpWhiteList(@Param('id') id: number): Promise<R> {
-    return this.menuIpWhiteListService.selOneMenuIpWhiteList(id);
+  async selOneMenuIpWhiteList(@Param('id') id: string): Promise<R> {
+    return this.menuIpWhiteListService.selOneMenuIpWhiteList(Number(id));
   }
 
   @Post()
