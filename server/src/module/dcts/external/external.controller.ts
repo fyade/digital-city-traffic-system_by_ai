@@ -4,7 +4,7 @@ import { publicConfig } from "@dcts/config";
 import { R } from "../../../common/R";
 import { ExternalService } from "./external.service";
 import { Authorize } from "../../../decorator/authorize.decorator";
-import { AddRouteInformationDto, AddVehicleInfoDto, AddVehicleTrackPointDto } from "./dto";
+import { AddAircraftTrackPointDto, AddRouteInformationDto, AddVehicleInfoDto, AddVehicleTrackPointDto } from "./dto";
 
 @Controller('/dcts/external')
 @ApiTags(`${publicConfig.APP_NAME}/外部api`)
@@ -40,13 +40,25 @@ export class ExternalController {
 
   @Post('/add-vehicle-track-point')
   @ApiOperation({
-    summary: '添加轨迹信息'
+    summary: '添加车辆轨迹信息'
   })
   @Authorize({
     permission: 'dcts:external:addVehicleTrackPoint',
-    label: '添加轨迹信息'
+    label: '添加车辆轨迹信息'
   })
   async addVehicleTrackPoint(@Body() dto: AddVehicleTrackPointDto): Promise<R> {
     return this.externalService.addVehicleTrackPoint(dto)
+  }
+
+  @Post('/add-aircraft-track-point')
+  @ApiOperation({
+    summary: '添加航空器轨迹信息'
+  })
+  @Authorize({
+    permission: 'dcts:external:addAircraftTrackPoint',
+    label: '添加航空器轨迹信息'
+  })
+  async addAircraftTrackPoint(@Body() dto: AddAircraftTrackPointDto): Promise<R> {
+    return this.externalService.addAircraftTrackPoint(dto)
   }
 }

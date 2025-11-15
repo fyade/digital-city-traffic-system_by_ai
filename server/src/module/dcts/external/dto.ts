@@ -51,3 +51,17 @@ class AddVehicleTrackPointDtoDatas {
 export class AddVehicleTrackPointDto {
   datas: AddVehicleTrackPointDtoDatas[][]
 }
+
+class AddAircraftTrackPointDtoDatas {
+  lon: number
+  lat: number
+  height: number
+  time: number
+  heading: number
+  index: number
+}
+
+export class AddAircraftTrackPointDto {
+  datas: AddAircraftTrackPointDtoDatas[]
+  end: boolean
+}

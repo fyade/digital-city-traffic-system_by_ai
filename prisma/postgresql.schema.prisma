@@ -748,3 +748,19 @@ model flight_route_user_apply {
   apply_opinion String                  @dbPostgresql.VarChar(300)
   files         String                  @dbPostgresql.VarChar(200)
 }
+
+// 航空器轨迹点
+model aircraft_track_point {
+  id          Int                     @id @default(autoincrement())
+  aircraft_id Int
+  point       Unsupported("geometry")
+  height      Int
+  heading     Float                   @dbPostgresql.Real
+  create_role String                  @dbPostgresql.VarChar(30)
+  update_role String                  @dbPostgresql.VarChar(30)
+  create_by   String                  @dbPostgresql.VarChar(10)
+  update_by   String                  @dbPostgresql.VarChar(10)
+  create_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
+  update_time DateTime                @default(now()) @dbPostgresql.Timestamptz(6)
+  deleted     String                  @default("N") @dbPostgresql.Char(1)
+}

@@ -69,4 +69,22 @@ alter table public.flight_route_user_apply
 alter table public.flight_route_user_apply
     alter column files set not null;
 
+-- ===== ===== ===== ===== ===== ===== 2025.11.11 ===== ===== ===== ===== ===== =====
+
+create table aircraft_track_point
+(
+    id          serial primary key,
+    aircraft_id integer                  not null,
+    point       geometry(Point, 4326)    not null,
+    height      integer                  not null,
+    heading     real                     not null,
+    create_role VARCHAR(30)              NOT NULL,
+    update_role VARCHAR(30)              NOT NULL,
+    create_by   VARCHAR(10)              NOT NULL,
+    update_by   VARCHAR(10)              NOT NULL,
+    create_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted     CHAR(1)                  NOT NULL DEFAULT 'N'
+);
+
 -- ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== =====

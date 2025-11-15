@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { R } from "../../../common/R";
-import { AddRouteInformationDto, AddVehicleInfoDto, AddVehicleTrackPointDto } from "./dto";
+import { AddAircraftTrackPointDto, AddRouteInformationDto, AddVehicleInfoDto, AddVehicleTrackPointDto } from "./dto";
 import { SpatialDataService } from "../spatial-data/spatial-data.service";
-import { baseUtils, geoUtils, numberUtils } from "@dcts/common";
+import { arrayUtils, baseUtils, geoUtils, numberUtils } from "@dcts/common";
 import { CommonService } from "../../../infra/common/common.service";
 import { VehicleInfoDto } from "../vehicle/vehicle-info/dto";
 import { PostgresqlPrismaoService } from "../../../infra/prisma/postgresql.prismao.service";
 import { PrismaoService } from "../../../infra/prisma/prismao.service";
 import { VehicleTrackPointDto } from "../vehicle/vehicle-track-point/dto";
 import { CommonPostgresqlPrismaoService } from "../../../infra/prisma/common.postgresql.prismao.service";
+import { LowAltitudeAircraftDto } from "../aircraft-manage/low-altitude-aircraft/dto";
 
 @Injectable()
 export class ExternalService {
@@ -113,6 +114,29 @@ export class ExternalService {
     for (const sql of sqls) {
       const re = await this.pgsqlPrismao.$queryRawUnsafe(sql);
       res.push(re[0]);
+    }
+    return R.ok(true)
+  }
+
+  private addAircraftTrackPointMap = new Map<number, number>()
+
+  async addAircraftTrackPoint(dto: AddAircraftTrackPointDto): Promise<R> {
+    const lowAltitudeAircraftDtos = await this.pgsqlPrismao.$queryRawUnsafe<LowAltitudeAircraftDto[]>(`
+        select *
+        from low_altitude_aircraft
+        where deleted = 'N'
+        order by random() limit 1;
+    `);
+    const lowAltitudeAircraft = lowAltitudeAircraftDtos[0];
+    const indexs = arrayUtils.arrNoRepeat(dto.datas.map(item => item.index));
+    for (const index of indexs) {
+      if (!this.addAircraftTrackPointMap.has(index)) {
+        this.addAircraftTrackPointMap.set(index, lowAltitudeAircraft.id)
+      }
+    }
+
+    if (dto.end) {
+      this.addAircraftTrackPointMap.clear()
     }
     return R.ok(true)
   }
