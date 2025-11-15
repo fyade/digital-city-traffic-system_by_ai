@@ -42,7 +42,7 @@ export class SignalLightChildStyleMappingService {
   }
 
   async selOneSignalLightChildStyleMapping(id: number): Promise<R> {
-    const res = await this.pgsqlPrisma.findById<SignalLightChildStyleMappingDto>('signal_light_child_style_mapping', Number(id));
+    const res = await this.pgsqlPrisma.findById<SignalLightChildStyleMappingDto>('signal_light_child_style_mapping', id);
     return R.ok(res);
   }
 

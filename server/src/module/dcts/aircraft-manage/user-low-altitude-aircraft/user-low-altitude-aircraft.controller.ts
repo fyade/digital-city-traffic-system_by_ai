@@ -63,8 +63,8 @@ export class UserLowAltitudeAircraftController {
     permission: 'dcts:aircraftManage:userLowAltitudeAircraft:selOne',
     label: '查询单个[用户]低空航空器',
   })
-  async selOneUserLowAltitudeAircraft(@Param('id') id: number): Promise<R> {
-    return this.userLowAltitudeAircraftService.selOneUserLowAltitudeAircraft(id);
+  async selOneUserLowAltitudeAircraft(@Param('id') id: string): Promise<R> {
+    return this.userLowAltitudeAircraftService.selOneUserLowAltitudeAircraft(Number(id));
   }
 
   @Post()

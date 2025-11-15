@@ -63,8 +63,8 @@ export class UserFlightRouteUserApplyController {
     permission: 'dcts:airspace:userFlightRouteUserApply:selOne',
     label: '查询单个[用户]用户申请航线',
   })
-  async selOneUserFlightRouteUserApply(@Param('id') id: number): Promise<R> {
-    return this.userFlightRouteUserApplyService.selOneUserFlightRouteUserApply(id);
+  async selOneUserFlightRouteUserApply(@Param('id') id: string): Promise<R> {
+    return this.userFlightRouteUserApplyService.selOneUserFlightRouteUserApply(Number(id));
   }
 
   @Post()

@@ -63,8 +63,8 @@ export class ThreeDFileController {
     permission: 'dcts:asset:threeDFile:selOne',
     label: '查询单个三维文件',
   })
-  async selOneThreeDFile(@Param('id') id: number): Promise<R> {
-    return this.threeDFileService.selOneThreeDFile(id);
+  async selOneThreeDFile(@Param('id') id: string): Promise<R> {
+    return this.threeDFileService.selOneThreeDFile(Number(id));
   }
 
   @Post()

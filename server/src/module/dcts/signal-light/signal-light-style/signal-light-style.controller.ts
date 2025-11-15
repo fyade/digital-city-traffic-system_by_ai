@@ -64,8 +64,8 @@ export class SignalLightStyleController {
     permission: 'dcts:signalLight:signalLightStyle:selOne',
     label: '查询单个信号灯样式',
   })
-  async selOneSignalLightStyle(@Param('id') id: number): Promise<R> {
-    return this.signalLightStyleService.selOneSignalLightStyle(id);
+  async selOneSignalLightStyle(@Param('id') id: string): Promise<R> {
+    return this.signalLightStyleService.selOneSignalLightStyle(Number(id));
   }
 
   @Post()

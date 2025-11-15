@@ -40,7 +40,7 @@ export class SignalLightStrategyParamService {
   }
 
   async selOneSignalLightStrategyParam(id: number): Promise<R> {
-    const res = await this.pgsqlPrisma.findById<SignalLightStrategyParamDto>('signal_light_strategy_param', Number(id));
+    const res = await this.pgsqlPrisma.findById<SignalLightStrategyParamDto>('signal_light_strategy_param', id);
     return R.ok(res);
   }
 

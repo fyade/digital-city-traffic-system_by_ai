@@ -64,8 +64,8 @@ export class VehicleTrackPointController {
     permission: 'dcts:vehicle:vehicleTrackPoint:selOne',
     label: '查询单个车辆轨迹点',
   })
-  async selOneVehicleTrackPoint(@Param('id') id: number): Promise<R> {
-    return this.vehicleTrackPointService.selOneVehicleTrackPoint(id);
+  async selOneVehicleTrackPoint(@Param('id') id: string): Promise<R> {
+    return this.vehicleTrackPointService.selOneVehicleTrackPoint(Number(id));
   }
 
   @Post()

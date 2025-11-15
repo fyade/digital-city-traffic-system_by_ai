@@ -63,8 +63,8 @@ export class FlightRouteController {
     permission: 'dcts:airspace:flightRoute:selOne',
     label: '查询单个航线',
   })
-  async selOneFlightRoute(@Param('id') id: number): Promise<R> {
-    return this.flightRouteService.selOneFlightRoute(id);
+  async selOneFlightRoute(@Param('id') id: string): Promise<R> {
+    return this.flightRouteService.selOneFlightRoute(Number(id));
   }
 
   @Post()

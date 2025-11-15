@@ -44,7 +44,7 @@ export class SignalLightChildStrategyScheduleMappingService {
   }
 
   async selOneSignalLightChildStrategyScheduleMapping(id: number): Promise<R> {
-    const res = await this.pgsqlPrisma.findById<SignalLightChildStrategyScheduleMappingDto>('signal_light_child_strategy_schedule_mapping', Number(id));
+    const res = await this.pgsqlPrisma.findById<SignalLightChildStrategyScheduleMappingDto>('signal_light_child_strategy_schedule_mapping', id);
     return R.ok(res);
   }
 

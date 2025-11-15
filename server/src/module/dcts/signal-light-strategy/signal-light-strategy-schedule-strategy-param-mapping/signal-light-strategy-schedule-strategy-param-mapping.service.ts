@@ -40,7 +40,7 @@ export class SignalLightStrategyScheduleStrategyParamMappingService {
   }
 
   async selOneSignalLightStrategyScheduleStrategyParamMapping(id: number): Promise<R> {
-    const res = await this.pgsqlPrisma.findById<SignalLightStrategyScheduleStrategyParamMappingDto>('signal_light_strategy_schedule_strategy_param_mapping', Number(id));
+    const res = await this.pgsqlPrisma.findById<SignalLightStrategyScheduleStrategyParamMappingDto>('signal_light_strategy_schedule_strategy_param_mapping', id);
     return R.ok(res);
   }
 

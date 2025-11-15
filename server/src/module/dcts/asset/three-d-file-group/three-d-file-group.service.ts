@@ -38,7 +38,7 @@ export class ThreeDFileGroupService {
   }
 
   async selOneThreeDFileGroup(id: number): Promise<R> {
-    const res = await this.pgsqlPrisma.findById<ThreeDFileGroupDto>('three_d_file_group', Number(id));
+    const res = await this.pgsqlPrisma.findById<ThreeDFileGroupDto>('three_d_file_group', id);
     return R.ok(res);
   }
 

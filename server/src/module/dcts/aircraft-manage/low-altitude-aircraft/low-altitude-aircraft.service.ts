@@ -38,7 +38,7 @@ export class LowAltitudeAircraftService {
   }
 
   async selOneLowAltitudeAircraft(id: number): Promise<R> {
-    const res = await this.pgsqlPrisma.findById<LowAltitudeAircraftDto>('low_altitude_aircraft', Number(id));
+    const res = await this.pgsqlPrisma.findById<LowAltitudeAircraftDto>('low_altitude_aircraft', id);
     return R.ok(res);
   }
 

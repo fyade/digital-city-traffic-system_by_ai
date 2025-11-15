@@ -63,8 +63,8 @@ export class UserFlightRestrictionZoneUserApplyController {
     permission: 'dcts:airspace:userFlightRestrictionZoneUserApply:selOne',
     label: '查询单个[用户]用户申请空域',
   })
-  async selOneUserFlightRestrictionZoneUserApply(@Param('id') id: number): Promise<R> {
-    return this.userFlightRestrictionZoneUserApplyService.selOneUserFlightRestrictionZoneUserApply(id);
+  async selOneUserFlightRestrictionZoneUserApply(@Param('id') id: string): Promise<R> {
+    return this.userFlightRestrictionZoneUserApplyService.selOneUserFlightRestrictionZoneUserApply(Number(id));
   }
 
   @Post()

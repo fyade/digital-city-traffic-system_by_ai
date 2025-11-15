@@ -64,8 +64,8 @@ export class SignalLightChildStyleMappingController {
     permission: 'dcts:signalLight:signalLightChildStyleMapping:selOne',
     label: '查询单个子信号灯-信号灯样式关联',
   })
-  async selOneSignalLightChildStyleMapping(@Param('id') id: number): Promise<R> {
-    return this.signalLightChildStyleMappingService.selOneSignalLightChildStyleMapping(id);
+  async selOneSignalLightChildStyleMapping(@Param('id') id: string): Promise<R> {
+    return this.signalLightChildStyleMappingService.selOneSignalLightChildStyleMapping(Number(id));
   }
 
   @Post()

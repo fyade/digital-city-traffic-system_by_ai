@@ -38,7 +38,7 @@ export class ThreeDFileUnitService {
   }
 
   async selOneThreeDFileUnit(id: number): Promise<R> {
-    const res = await this.pgsqlPrisma.findById<ThreeDFileUnitDto>('three_d_file_unit', Number(id));
+    const res = await this.pgsqlPrisma.findById<ThreeDFileUnitDto>('three_d_file_unit', id);
     return R.ok(res);
   }
 

@@ -37,7 +37,7 @@ export class SignalLightStyleService {
   }
 
   async selOneSignalLightStyle(id: number): Promise<R> {
-    const res = await this.pgsqlPrisma.findById<SignalLightStyleDto>('signal_light_style', Number(id));
+    const res = await this.pgsqlPrisma.findById<SignalLightStyleDto>('signal_light_style', id);
     return R.ok(res);
   }
 

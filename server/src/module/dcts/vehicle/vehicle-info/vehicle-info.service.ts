@@ -37,7 +37,7 @@ export class VehicleInfoService {
   }
 
   async selOneVehicleInfo(id: number): Promise<R> {
-    const res = await this.pgsqlPrisma.findById<VehicleInfoDto>('vehicle_info', Number(id));
+    const res = await this.pgsqlPrisma.findById<VehicleInfoDto>('vehicle_info', id);
     return R.ok(res);
   }
 

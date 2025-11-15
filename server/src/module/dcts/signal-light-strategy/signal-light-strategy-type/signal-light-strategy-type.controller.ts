@@ -64,8 +64,8 @@ export class SignalLightStrategyTypeController {
     permission: 'dcts:signalLightStrategy:signalLightStrategyType:selOne',
     label: '查询单个信号灯策略类型',
   })
-  async selOneSignalLightStrategyType(@Param('id') id: number): Promise<R> {
-    return this.signalLightStrategyTypeService.selOneSignalLightStrategyType(id);
+  async selOneSignalLightStrategyType(@Param('id') id: string): Promise<R> {
+    return this.signalLightStrategyTypeService.selOneSignalLightStrategyType(Number(id));
   }
 
   @Post()

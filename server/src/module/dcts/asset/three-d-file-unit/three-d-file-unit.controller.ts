@@ -63,8 +63,8 @@ export class ThreeDFileUnitController {
     permission: 'dcts:asset:threeDFileUnit:selOne',
     label: '查询单个三维文件单元',
   })
-  async selOneThreeDFileUnit(@Param('id') id: number): Promise<R> {
-    return this.threeDFileUnitService.selOneThreeDFileUnit(id);
+  async selOneThreeDFileUnit(@Param('id') id: string): Promise<R> {
+    return this.threeDFileUnitService.selOneThreeDFileUnit(Number(id));
   }
 
   @Post()

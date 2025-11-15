@@ -64,8 +64,8 @@ export class SignalLightGroupChildMappingController {
     permission: 'dcts:signalLight:signalLightGroupChildMapping:selOne',
     label: '查询单个信号灯组-子信号灯对应',
   })
-  async selOneSignalLightGroupChildMapping(@Param('id') id: number): Promise<R> {
-    return this.signalLightGroupChildMappingService.selOneSignalLightGroupChildMapping(id);
+  async selOneSignalLightGroupChildMapping(@Param('id') id: string): Promise<R> {
+    return this.signalLightGroupChildMappingService.selOneSignalLightGroupChildMapping(Number(id));
   }
 
   @Post()

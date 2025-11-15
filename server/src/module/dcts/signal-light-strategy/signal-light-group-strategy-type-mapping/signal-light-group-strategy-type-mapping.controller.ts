@@ -64,8 +64,8 @@ export class SignalLightGroupStrategyTypeMappingController {
     permission: 'dcts:signalLightStrategy:signalLightGroupStrategyTypeMapping:selOne',
     label: '查询单个信号灯组-信号灯策略类型关联',
   })
-  async selOneSignalLightGroupStrategyTypeMapping(@Param('id') id: number): Promise<R> {
-    return this.signalLightGroupStrategyTypeMappingService.selOneSignalLightGroupStrategyTypeMapping(id);
+  async selOneSignalLightGroupStrategyTypeMapping(@Param('id') id: string): Promise<R> {
+    return this.signalLightGroupStrategyTypeMappingService.selOneSignalLightGroupStrategyTypeMapping(Number(id));
   }
 
   @Post()

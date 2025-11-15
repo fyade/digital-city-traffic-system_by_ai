@@ -64,8 +64,8 @@ export class SignalLightGroupInfoController {
     permission: 'dcts:signalLight:signalLightGroupInfo:selOne',
     label: '查询单个信号灯组信息',
   })
-  async selOneSignalLightGroupInfo(@Param('id') id: number): Promise<R> {
-    return this.signalLightGroupInfoService.selOneSignalLightGroupInfo(id);
+  async selOneSignalLightGroupInfo(@Param('id') id: string): Promise<R> {
+    return this.signalLightGroupInfoService.selOneSignalLightGroupInfo(Number(id));
   }
 
   @Post()

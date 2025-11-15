@@ -44,7 +44,7 @@ export class SignalLightGroupStrategyTypeMappingService {
   }
 
   async selOneSignalLightGroupStrategyTypeMapping(id: number): Promise<R> {
-    const res = await this.pgsqlPrisma.findById<SignalLightGroupStrategyTypeMappingDto>('signal_light_group_strategy_type_mapping', Number(id));
+    const res = await this.pgsqlPrisma.findById<SignalLightGroupStrategyTypeMappingDto>('signal_light_group_strategy_type_mapping', id);
     return R.ok(res);
   }
 

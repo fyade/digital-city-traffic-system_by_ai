@@ -40,7 +40,7 @@ export class SignalLightGroupChildMappingService {
   }
 
   async selOneSignalLightGroupChildMapping(id: number): Promise<R> {
-    const res = await this.pgsqlPrisma.findById<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', Number(id));
+    const res = await this.pgsqlPrisma.findById<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', id);
     return R.ok(res);
   }
 

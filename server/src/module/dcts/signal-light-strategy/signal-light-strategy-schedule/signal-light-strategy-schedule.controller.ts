@@ -64,8 +64,8 @@ export class SignalLightStrategyScheduleController {
     permission: 'dcts:signalLightStrategy:signalLightStrategySchedule:selOne',
     label: '查询单个信号灯策略调度',
   })
-  async selOneSignalLightStrategySchedule(@Param('id') id: number): Promise<R> {
-    return this.signalLightStrategyScheduleService.selOneSignalLightStrategySchedule(id);
+  async selOneSignalLightStrategySchedule(@Param('id') id: string): Promise<R> {
+    return this.signalLightStrategyScheduleService.selOneSignalLightStrategySchedule(Number(id));
   }
 
   @Post()

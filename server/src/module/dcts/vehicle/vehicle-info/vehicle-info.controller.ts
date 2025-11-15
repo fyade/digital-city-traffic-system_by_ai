@@ -64,8 +64,8 @@ export class VehicleInfoController {
     permission: 'dcts:vehicle:vehicleInfo:selOne',
     label: '查询单个车辆信息',
   })
-  async selOneVehicleInfo(@Param('id') id: number): Promise<R> {
-    return this.vehicleInfoService.selOneVehicleInfo(id);
+  async selOneVehicleInfo(@Param('id') id: string): Promise<R> {
+    return this.vehicleInfoService.selOneVehicleInfo(Number(id));
   }
 
   @Post()
