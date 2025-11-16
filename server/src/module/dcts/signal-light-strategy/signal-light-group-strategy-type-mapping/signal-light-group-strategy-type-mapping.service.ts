@@ -6,6 +6,8 @@ import { PostgresqlPrismaService } from "../../../../infra/prisma/postgresql.pri
 import { PostgresqlPrismaoService } from "../../../../infra/prisma/postgresql.prismao.service";
 import { PrismaoService } from "../../../../infra/prisma/prismao.service";
 import { DctsCoreService } from "../../core/dcts-core.service";
+import { SignalLightGroupChildMappingFacadeService } from "../../signal-light/signal-light-group-child-mapping/signal-light-group-child-mapping.facade.service";
+import { SignalLightChildStrategyScheduleMappingFacadeService } from "../signal-light-child-strategy-schedule-mapping/signal-light-child-strategy-schedule-mapping.facade.service";
 
 @Injectable()
 export class SignalLightGroupStrategyTypeMappingService {
@@ -15,6 +17,8 @@ export class SignalLightGroupStrategyTypeMappingService {
       private readonly pgsqlPrisma: PostgresqlPrismaService,
       private readonly bcs: BaseContextService,
       private readonly dctsCoreService: DctsCoreService,
+      private readonly signalLightGroupChildMappingFacadeService: SignalLightGroupChildMappingFacadeService,
+      private readonly signalLightChildStrategyScheduleMappingFacadeService: SignalLightChildStrategyScheduleMappingFacadeService,
   ) {
     this.bcs.setFieldSelectParam('signal_light_group_strategy_type_mapping', {
       notNullKeys: ['groupId', 'strategyTypeId'],
@@ -49,37 +53,36 @@ export class SignalLightGroupStrategyTypeMappingService {
   }
 
   async insSignalLightGroupStrategyTypeMapping(dto: SignalLightGroupStrategyTypeMappingInsOneDto): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.create<SignalLightGroupStrategyTypeMappingDto>('signal_light_group_strategy_type_mapping', dto);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 
   async insSignalLightGroupStrategyTypeMappings(dtos: SignalLightGroupStrategyTypeMappingInsOneDto[]): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.createMany<SignalLightGroupStrategyTypeMappingDto>('signal_light_group_strategy_type_mapping', dtos);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 
   async updSignalLightGroupStrategyTypeMapping(dto: SignalLightGroupStrategyTypeMappingUpdOneDto): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.updateById<SignalLightGroupStrategyTypeMappingDto>('signal_light_group_strategy_type_mapping', dto);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 
   async updSignalLightGroupStrategyTypeMappings(dtos: SignalLightGroupStrategyTypeMappingUpdOneDto[]): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.updateMany<SignalLightGroupStrategyTypeMappingDto>('signal_light_group_strategy_type_mapping', dtos);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 
   async delSignalLightGroupStrategyTypeMapping(ids: number[]): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.deleteById<SignalLightGroupStrategyTypeMappingDto>('signal_light_group_strategy_type_mapping', ids);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 
   async insSignalLightGroupStrategyTypeMappingV2(dto: SignalLightGroupStrategyTypeMappingInsOneDto): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     // 删除已有的信号灯组-信号灯策略类型关联
     const a = await this.pgsqlPrismao.signal_light_group_strategy_type_mapping.findMany({
       where: {
@@ -102,28 +105,12 @@ export class SignalLightGroupStrategyTypeMappingService {
       })
       // 删除子信号灯-信号灯策略调度关联
       const groupIds = a.map(item => item.group_id);
-      const slgcms = await this.pgsqlPrismao.signal_light_group_child_mapping.findMany({
-        where: {
-          group_id: {
-            in: groupIds
-          },
-          ...this.prismao.defaultSelArg().where
-        }
-      });
-      const childLightIds = slgcms.map(item => item.child_light_id);
-      await this.pgsqlPrismao.signal_light_child_strategy_schedule_mapping.updateMany({
-        data: {
-          ...defaultDelArg.data
-        },
-        where: {
-          child_light_id: {
-            in: childLightIds
-          },
-          ...defaultDelArg.where
-        }
-      })
+      const slgcms = await this.signalLightGroupChildMappingFacadeService.selByGroupIds(groupIds);
+      const childLightIds = slgcms.map(item => item.childLightId);
+      await this.signalLightChildStrategyScheduleMappingFacadeService.delByChildIds(childLightIds);
     }
     const res = await this.pgsqlPrisma.create<SignalLightGroupStrategyTypeMappingDto>('signal_light_group_strategy_type_mapping', dto);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 }

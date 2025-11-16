@@ -6,15 +6,15 @@ import { CommonPostgresqlPrismaoService } from "../../../../infra/prisma/common.
 import { PostgresqlPrismaoService } from "../../../../infra/prisma/postgresql.prismao.service";
 import { CountSqlReturnDto } from "../../../../util/base";
 import { PageVo } from "../../../../common/vo/PageVo";
-import { PrismaoService } from "../../../../infra/prisma/prismao.service";
+import { SignalLightGroupChildMappingFacadeService } from "../signal-light-group-child-mapping/signal-light-group-child-mapping.facade.service";
 
 @Injectable()
 export class SignalLightInfoService {
   constructor(
-      private readonly prismao: PrismaoService,
       private readonly cPgsqlPrismao: CommonPostgresqlPrismaoService,
       private readonly pgsqlPrismao: PostgresqlPrismaoService,
       private readonly bcs: BaseContextService,
+      private readonly signalLightGroupChildMappingFacadeService: SignalLightGroupChildMappingFacadeService,
   ) {
     this.bcs.setFieldSelectParam('signal_light_info', {
       notNullKeys: ['name', 'location', 'description'],
@@ -188,18 +188,7 @@ export class SignalLightInfoService {
     });
     await this.pgsqlPrismao.$queryRawUnsafe<null[]>(sqls[0]);
     // 删除信号灯组-子信号灯对应关联
-    const defaultDelArg = this.prismao.defaultDelArg();
-    await this.pgsqlPrismao.signal_light_group_child_mapping.updateMany({
-      data: {
-        ...defaultDelArg.data
-      },
-      where: {
-        child_light_id: {
-          in: ids
-        },
-        ...defaultDelArg.where
-      }
-    });
+    await this.signalLightGroupChildMappingFacadeService.delByChildIds(ids);
     return R.ok(true);
   }
 }

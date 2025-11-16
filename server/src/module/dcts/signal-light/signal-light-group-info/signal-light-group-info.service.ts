@@ -6,15 +6,17 @@ import { CommonPostgresqlPrismaoService } from "../../../../infra/prisma/common.
 import { PostgresqlPrismaoService } from "../../../../infra/prisma/postgresql.prismao.service";
 import { CountSqlReturnDto } from "../../../../util/base";
 import { PageVo } from "../../../../common/vo/PageVo";
-import { PrismaoService } from "../../../../infra/prisma/prismao.service";
+import { SignalLightGroupChildMappingFacadeService } from "../signal-light-group-child-mapping/signal-light-group-child-mapping.facade.service";
+import { SignalLightInfoFacadeService } from "../signal-light-info/signal-light-info.facade.service";
 
 @Injectable()
 export class SignalLightGroupInfoService {
   constructor(
-      private readonly prismao: PrismaoService,
       private readonly cPgsqlPrismao: CommonPostgresqlPrismaoService,
       private readonly pgsqlPrismao: PostgresqlPrismaoService,
       private readonly bcs: BaseContextService,
+      private readonly signalLightGroupChildMappingFacadeService: SignalLightGroupChildMappingFacadeService,
+      private readonly signalLightInfoFacadeService: SignalLightInfoFacadeService,
   ) {
     this.bcs.setFieldSelectParam('signal_light_group_info', {
       notNullKeys: ['name', 'location', 'description'],
@@ -188,38 +190,9 @@ export class SignalLightGroupInfoService {
     });
     await this.pgsqlPrismao.$queryRawUnsafe<null[]>(sqls[0]);
     // 删除子信号灯、信号灯组-子信号灯对应关联
-    const defaultSelArg = this.prismao.defaultSelArg();
-    const defaultDelArg = this.prismao.defaultDelArg();
-    const slgcms = await this.pgsqlPrismao.signal_light_group_child_mapping.findMany({
-      where: {
-        group_id: {
-          in: ids
-        },
-        ...defaultSelArg.where
-      }
-    });
-    await this.pgsqlPrismao.signal_light_group_child_mapping.updateMany({
-      data: {
-        ...defaultDelArg.data
-      },
-      where: {
-        id: {
-          in: slgcms.map(item => item.id)
-        },
-        ...defaultDelArg.where
-      }
-    })
-    await this.pgsqlPrismao.signal_light_info.updateMany({
-      data: {
-        ...defaultDelArg.data
-      },
-      where: {
-        id: {
-          in: slgcms.map(item => item.child_light_id)
-        },
-        ...defaultDelArg.where
-      }
-    })
+    const slgcms = await this.signalLightGroupChildMappingFacadeService.selByGroupIds(ids);
+    await this.signalLightGroupChildMappingFacadeService.delByIds(slgcms.map(item => item.id));
+    await this.signalLightInfoFacadeService.delByIds(slgcms.map(item => item.childLightId));
     return R.ok(true);
   }
 }

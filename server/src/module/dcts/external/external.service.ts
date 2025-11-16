@@ -2,14 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { R } from "../../../common/R";
 import { AddAircraftTrackPointDto, AddRouteInformationDto, AddVehicleInfoDto, AddVehicleTrackPointDto } from "./dto";
 import { SpatialDataService } from "../spatial-data/spatial-data.service";
-import { arrayUtils, baseUtils, geoUtils, numberUtils } from "@dcts/common";
+import { arrayUtils, geoUtils, numberUtils } from "@dcts/common";
 import { CommonService } from "../../../infra/common/common.service";
 import { VehicleInfoDto } from "../vehicle/vehicle-info/dto";
 import { PostgresqlPrismaoService } from "../../../infra/prisma/postgresql.prismao.service";
 import { PrismaoService } from "../../../infra/prisma/prismao.service";
-import { VehicleTrackPointDto } from "../vehicle/vehicle-track-point/dto";
+import { VehicleTrackPointDto, VehicleTrackPointInsOneDto } from "../vehicle/vehicle-track-point/dto";
 import { CommonPostgresqlPrismaoService } from "../../../infra/prisma/common.postgresql.prismao.service";
-import { LowAltitudeAircraftDto } from "../aircraft-manage/low-altitude-aircraft/dto";
+import { VehicleInfoFacadeService } from "../vehicle/vehicle-info/vehicle-info.facade.service";
+import { VehicleTrackPointFacadeService } from "../vehicle/vehicle-track-point/vehicle-track-point.facade.service";
+import { LowAltitudeAircraftFacadeService } from "../aircraft-manage/low-altitude-aircraft/low-altitude-aircraft.facade.service";
 
 @Injectable()
 export class ExternalService {
@@ -19,6 +21,9 @@ export class ExternalService {
       private readonly pgsqlPrismao: PostgresqlPrismaoService,
       private readonly prismao: PrismaoService,
       private readonly commonService: CommonService,
+      private readonly vehicleInfoFacadeService: VehicleInfoFacadeService,
+      private readonly vehicleTrackPointFacadeService: VehicleTrackPointFacadeService,
+      private readonly lowAltitudeAircraftFacadeService: LowAltitudeAircraftFacadeService,
   ) {
   }
 
@@ -42,7 +47,6 @@ export class ExternalService {
     const _carBoards = await this.commonService.selDicDataOfType('dcts:car:board')
     const carTypes = _carTypes.map(item => item.value);
     const carBoards = _carBoards.map(item => item.value);
-    const defaultInsArg = this.prismao.defaultInsArg();
     const vs = dto.plateNumbers.map((item, index) => {
       const vehicle = new VehicleInfoDto();
       vehicle.vehicleType = carTypes[index % carTypes.length];
@@ -52,24 +56,17 @@ export class ExternalService {
       vehicle.color = strings[1];
       return vehicle
     });
-    await this.pgsqlPrismao.vehicle_info.createMany({
-      data: vs.map(item => ({
-        plate_number: item.plateNumber,
-        vehicle_type: item.vehicleType,
-        brand: item.brand,
-        color: item.color,
-        ...defaultInsArg.data,
-      }))
-    })
+    await this.vehicleInfoFacadeService.insMore(vs.map(item => ({
+      plateNumber: item.plateNumber,
+      vehicleType: item.vehicleType,
+      brand: item.brand,
+      color: item.color,
+    })));
     return R.ok(true)
   }
 
   async addVehicleTrackPoint(dto: AddVehicleTrackPointDto): Promise<R> {
-    const vehicleInfos = await this.pgsqlPrismao.vehicle_info.findMany({
-      where: {
-        ...this.prismao.defaultSelArg().where
-      }
-    });
+    const vehicleInfos = await this.vehicleInfoFacadeService.selAll();
     const data1 = this.prismao.defaultInsArg().data;
     const datas: VehicleTrackPointDto[] = []
     for (const data of dto.datas) {
@@ -90,44 +87,14 @@ export class ExternalService {
         })
       }
     }
-    const sqls = this.cPgsqlPrismao.genSql<VehicleTrackPointDto>({
-      type: 'ins',
-      tblName: 'vehicle_track_point',
-      clas: new VehicleTrackPointDto(),
-      datas: datas,
-      selfDefineSelKey: {
-        point: 'concat(st_x(point)::text, \',\', st_y(point)::text)'
-      },
-      selfDefineInsUpdValue: {
-        point: value => `st_setsrid(st_makepoint(${value.split(',')[0]}, ${value.split(',')[1]}), 4326)`,
-        createTime: value => {
-          const date = new Date(value);
-          return `'${date.getFullYear()}-${numberUtils.addZero(date.getMonth() + 1)}-${numberUtils.addZero(date.getDate())} ${numberUtils.addZero(date.getHours())}:${numberUtils.addZero(date.getMinutes())}:${date.getSeconds()}.000000 +08:00'`
-        },
-        updateTime: value => {
-          const date = new Date(value);
-          return `'${date.getFullYear()}-${numberUtils.addZero(date.getMonth() + 1)}-${numberUtils.addZero(date.getDate())} ${numberUtils.addZero(date.getHours())}:${numberUtils.addZero(date.getMinutes())}:${date.getSeconds()}.000000 +08:00'`
-        },
-      }
-    });
-    const res = [];
-    for (const sql of sqls) {
-      const re = await this.pgsqlPrismao.$queryRawUnsafe(sql);
-      res.push(re[0]);
-    }
-    return R.ok(true)
+    await this.vehicleTrackPointFacadeService.insMore(datas);
+    return R.ok(true);
   }
 
   private addAircraftTrackPointMap = new Map<number, number>()
 
   async addAircraftTrackPoint(dto: AddAircraftTrackPointDto): Promise<R> {
-    const lowAltitudeAircraftDtos = await this.pgsqlPrismao.$queryRawUnsafe<LowAltitudeAircraftDto[]>(`
-        select *
-        from low_altitude_aircraft
-        where deleted = 'N'
-        order by random() limit 1;
-    `);
-    const lowAltitudeAircraft = lowAltitudeAircraftDtos[0];
+    const lowAltitudeAircraft = await this.lowAltitudeAircraftFacadeService.randomOne();
     const indexs = arrayUtils.arrNoRepeat(dto.datas.map(item => item.index));
     for (const index of indexs) {
       if (!this.addAircraftTrackPointMap.has(index)) {

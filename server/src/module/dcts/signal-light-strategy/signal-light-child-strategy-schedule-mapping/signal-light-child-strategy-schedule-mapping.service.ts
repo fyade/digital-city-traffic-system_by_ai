@@ -49,37 +49,36 @@ export class SignalLightChildStrategyScheduleMappingService {
   }
 
   async insSignalLightChildStrategyScheduleMapping(dto: SignalLightChildStrategyScheduleMappingInsOneDto): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.create<SignalLightChildStrategyScheduleMappingDto>('signal_light_child_strategy_schedule_mapping', dto);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 
   async insSignalLightChildStrategyScheduleMappings(dtos: SignalLightChildStrategyScheduleMappingInsOneDto[]): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.createMany<SignalLightChildStrategyScheduleMappingDto>('signal_light_child_strategy_schedule_mapping', dtos);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 
   async updSignalLightChildStrategyScheduleMapping(dto: SignalLightChildStrategyScheduleMappingUpdOneDto): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.updateById<SignalLightChildStrategyScheduleMappingDto>('signal_light_child_strategy_schedule_mapping', dto);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 
   async updSignalLightChildStrategyScheduleMappings(dtos: SignalLightChildStrategyScheduleMappingUpdOneDto[]): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.updateMany<SignalLightChildStrategyScheduleMappingDto>('signal_light_child_strategy_schedule_mapping', dtos);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 
   async delSignalLightChildStrategyScheduleMapping(ids: number[]): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.deleteById<SignalLightChildStrategyScheduleMappingDto>('signal_light_child_strategy_schedule_mapping', ids);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 
   async insSignalLightChildStrategyScheduleMappingV2(dto: SignalLightChildStrategyScheduleMappingInsOneDto): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     // 删除已有的子信号灯-信号灯策略调度关联
     const a = await this.pgsqlPrismao.signal_light_child_strategy_schedule_mapping.findMany({
       where: {
@@ -102,6 +101,7 @@ export class SignalLightChildStrategyScheduleMappingService {
       })
     }
     const res = await this.pgsqlPrisma.create<SignalLightChildStrategyScheduleMappingDto>('signal_light_child_strategy_schedule_mapping', dto);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 }

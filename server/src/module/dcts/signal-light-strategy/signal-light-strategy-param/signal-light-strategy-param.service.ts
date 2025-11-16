@@ -45,32 +45,32 @@ export class SignalLightStrategyParamService {
   }
 
   async insSignalLightStrategyParam(dto: SignalLightStrategyParamInsOneDto): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.create<SignalLightStrategyParamDto>('signal_light_strategy_param', dto);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 
   async insSignalLightStrategyParams(dtos: SignalLightStrategyParamInsOneDto[]): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.createMany<SignalLightStrategyParamDto>('signal_light_strategy_param', dtos);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 
   async updSignalLightStrategyParam(dto: SignalLightStrategyParamUpdOneDto): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.updateById<SignalLightStrategyParamDto>('signal_light_strategy_param', dto);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 
   async updSignalLightStrategyParams(dtos: SignalLightStrategyParamUpdOneDto[]): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.updateMany<SignalLightStrategyParamDto>('signal_light_strategy_param', dtos);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 
   async delSignalLightStrategyParam(ids: number[]): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.deleteById<SignalLightStrategyParamDto>('signal_light_strategy_param', ids);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 }

@@ -1,34 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { arrayUtils, base, baseUtils, timeUtils } from "@dcts/common";
-import { SignalLightGroupInfoDto } from "../signal-light/signal-light-group-info/dto";
-import { SignalLightGroupChildMappingDto } from "../signal-light/signal-light-group-child-mapping/dto";
-import { SignalLightInfoDto } from "../signal-light/signal-light-info/dto";
-import {
-  SignalLightGroupStrategyTypeMappingDto
-} from "../signal-light-strategy/signal-light-group-strategy-type-mapping/dto";
-import { final } from "../../../util/base";
-import { SignalLightStrategyTypeDto } from "../signal-light-strategy/signal-light-strategy-type/dto";
-import {
-  SignalLightChildStrategyScheduleMappingDto
-} from "../signal-light-strategy/signal-light-child-strategy-schedule-mapping/dto";
-import {
-  SignalLightStrategyTypeStrategyScheduleMappingDto
-} from "../signal-light-strategy/signal-light-strategy-type-strategy-schedule-mapping/dto";
-import { SignalLightStrategyScheduleDto } from "../signal-light-strategy/signal-light-strategy-schedule/dto";
-import {
-  SignalLightStrategyScheduleStrategyParamMappingDto
-} from "../signal-light-strategy/signal-light-strategy-schedule-strategy-param-mapping/dto";
-import { SignalLightStrategyParamDto } from "../signal-light-strategy/signal-light-strategy-param/dto";
+import { arrayUtils, base, timeUtils } from "@dcts/common";
 import { SignalLightRunParam, SignalLightRunParamDParam } from "./dto";
 import { dashboardConfig } from "@dcts/config";
 import { PrismaoService } from "../../../infra/prisma/prismao.service";
 import { PostgresqlPrismaoService } from "../../../infra/prisma/postgresql.prismao.service";
+import { SignalLightGroupInfoFacadeService } from "../signal-light/signal-light-group-info/signal-light-group-info.facade.service";
+import { SignalLightGroupChildMappingFacadeService } from "../signal-light/signal-light-group-child-mapping/signal-light-group-child-mapping.facade.service";
+import { SignalLightInfoFacadeService } from "../signal-light/signal-light-info/signal-light-info.facade.service";
+import { SignalLightGroupStrategyTypeMappingFacadeService } from "../signal-light-strategy/signal-light-group-strategy-type-mapping/signal-light-group-strategy-type-mapping.facade.service";
+import { SignalLightStrategyTypeFacadeService } from "../signal-light-strategy/signal-light-strategy-type/signal-light-strategy-type.facade.service";
+import { SignalLightChildStrategyScheduleMappingFacadeService } from "../signal-light-strategy/signal-light-child-strategy-schedule-mapping/signal-light-child-strategy-schedule-mapping.facade.service";
+import { SignalLightStrategyTypeStrategyScheduleMappingFacadeService } from "../signal-light-strategy/signal-light-strategy-type-strategy-schedule-mapping/signal-light-strategy-type-strategy-schedule-mapping.facade.service";
+import { SignalLightStrategyScheduleFacadeService } from "../signal-light-strategy/signal-light-strategy-schedule/signal-light-strategy-schedule.facade.service";
+import { SignalLightStrategyScheduleStrategyParamMappingFacadeService } from "../signal-light-strategy/signal-light-strategy-schedule-strategy-param-mapping/signal-light-strategy-schedule-strategy-param-mapping.facade.service";
+import { SignalLightStrategyParamFacadeService } from "../signal-light-strategy/signal-light-strategy-param/signal-light-strategy-param.facade.service";
 
 @Injectable()
 export class DctsCalculateService {
   constructor(
       private readonly prismao: PrismaoService,
       private readonly pgsqlPrismao: PostgresqlPrismaoService,
+      private readonly signalLightGroupInfoFacadeService: SignalLightGroupInfoFacadeService,
+      private readonly signalLightGroupChildMappingFacadeService: SignalLightGroupChildMappingFacadeService,
+      private readonly signalLightInfoFacadeService: SignalLightInfoFacadeService,
+      private readonly signalLightGroupStrategyTypeMappingFacadeService: SignalLightGroupStrategyTypeMappingFacadeService,
+      private readonly signalLightStrategyTypeFacadeService: SignalLightStrategyTypeFacadeService,
+      private readonly signalLightChildStrategyScheduleMappingFacadeService: SignalLightChildStrategyScheduleMappingFacadeService,
+      private readonly signalLightStrategyTypeStrategyScheduleMappingFacadeService: SignalLightStrategyTypeStrategyScheduleMappingFacadeService,
+      private readonly signalLightStrategyScheduleFacadeService: SignalLightStrategyScheduleFacadeService,
+      private readonly signalLightStrategyScheduleStrategyParamMappingFacadeService: SignalLightStrategyScheduleStrategyParamMappingFacadeService,
+      private readonly signalLightStrategyParamFacadeService: SignalLightStrategyParamFacadeService,
   ) {
   }
 
@@ -40,104 +41,19 @@ export class DctsCalculateService {
   public async calculateLight(signalLightGroupIds: number[], timeRange: [number, number] | null) {
     const start = performance.now();
     const defaultSelArg = this.prismao.defaultSelArg();
-    const allSignalLightGroups = (await this.pgsqlPrismao.signal_light_group_info.findMany({
-      where: {
-        id: {
-          in: signalLightGroupIds
-        },
-        ...defaultSelArg.where
-      }
-    })).map(baseUtils.objToCamelCase<SignalLightGroupInfoDto>)
-    const _signalLightGroup_signalLight = (await this.pgsqlPrismao.signal_light_group_child_mapping.findMany({
-      where: {
-        group_id: {
-          in: allSignalLightGroups.map(item => item.id)
-        },
-        ...defaultSelArg.where
-      }
-    })).map(baseUtils.objToCamelCase<SignalLightGroupChildMappingDto>)
-    const allSignalLights = (await this.pgsqlPrismao.signal_light_info.findMany({
-      where: {
-        id: {
-          in: _signalLightGroup_signalLight.map(item => item.childLightId)
-        },
-        ...defaultSelArg.where
-      }
-    })).map(baseUtils.objToCamelCase<SignalLightInfoDto>)
-    const _signalLightGroup_strategyType = (await this.pgsqlPrismao.signal_light_group_strategy_type_mapping.findMany({
-      where: {
-        group_id: {
-          in: allSignalLightGroups.map(item => item.id)
-        },
-        ...defaultSelArg.where
-      }
-    })).map(baseUtils.objToCamelCase<SignalLightGroupStrategyTypeMappingDto>)
-    const allStrategyTypes = (await this.pgsqlPrismao.signal_light_strategy_type.findMany({
-      where: {
-        id: {
-          in: _signalLightGroup_strategyType.map(item => item.strategyTypeId)
-        },
-        if_disabled: final.N,
-        ...defaultSelArg.where
-      },
-      orderBy: [
-        {order_num: 'asc'},
-        {create_time: 'desc'}
-      ]
-    })).map(baseUtils.objToCamelCase<SignalLightStrategyTypeDto>)
-    const _signalLight_strategySchedule = (await this.pgsqlPrismao.signal_light_child_strategy_schedule_mapping.findMany({
-      where: {
-        child_light_id: {
-          in: allSignalLights.map(item => item.id)
-        },
-        ...defaultSelArg.where
-      }
-    })).map(baseUtils.objToCamelCase<SignalLightChildStrategyScheduleMappingDto>)
-    const _strategyType_strategySchedule = (await this.pgsqlPrismao.signal_light_strategy_type_strategy_schedule_mapping.findMany({
-      where: {
-        strategy_type_id: {
-          in: allStrategyTypes.map(item => item.id)
-        },
-        ...defaultSelArg.where
-      }
-    })).map(baseUtils.objToCamelCase<SignalLightStrategyTypeStrategyScheduleMappingDto>)
-    const allStrategySchedules = (await this.pgsqlPrismao.signal_light_strategy_schedule.findMany({
-      where: {
-        id: {
-          in: [
-            ..._signalLight_strategySchedule.map(item => item.strategyScheduleId),
-            ..._strategyType_strategySchedule.map(item => item.strategyScheduleId)
-          ]
-        },
-        if_disabled: final.N,
-        ...defaultSelArg.where
-      },
-      orderBy: [
-        {order_num: 'asc'},
-        {create_time: 'desc'}
-      ]
-    })).map(baseUtils.objToCamelCase<SignalLightStrategyScheduleDto>)
-    const _strategySchedule_strategyParam = (await this.pgsqlPrismao.signal_light_strategy_schedule_strategy_param_mapping.findMany({
-      where: {
-        strategy_schedule_id: {
-          in: allStrategySchedules.map(item => item.id)
-        },
-        ...defaultSelArg.where
-      }
-    })).map(baseUtils.objToCamelCase<SignalLightStrategyScheduleStrategyParamMappingDto>)
-    const allStrategyParams = (await this.pgsqlPrismao.signal_light_strategy_param.findMany({
-      where: {
-        id: {
-          in: _strategySchedule_strategyParam.map(item => item.strategyParamId)
-        },
-        if_disabled: final.N,
-        ...defaultSelArg.where
-      },
-      orderBy: [
-        {order_num: 'asc'},
-        {create_time: 'desc'}
-      ]
-    })).map(baseUtils.objToCamelCase<SignalLightStrategyParamDto>)
+    const allSignalLightGroups = await this.signalLightGroupInfoFacadeService.selByIds(signalLightGroupIds);
+    const _signalLightGroup_signalLight  = await this.signalLightGroupChildMappingFacadeService.selByGroupIds(allSignalLightGroups.map(item => item.id));
+    const allSignalLights = await this.signalLightInfoFacadeService.selByIds(_signalLightGroup_signalLight.map(item => item.childLightId));
+    const _signalLightGroup_strategyType = await this.signalLightGroupStrategyTypeMappingFacadeService.selByGroupIds(allSignalLightGroups.map(item => item.id));
+    const allStrategyTypes = await this.signalLightStrategyTypeFacadeService.forCalculate(_signalLightGroup_strategyType.map(item => item.strategyTypeId));
+    const _signalLight_strategySchedule = await this.signalLightChildStrategyScheduleMappingFacadeService.selByChildIds(allSignalLights.map(item => item.id));
+    const _strategyType_strategySchedule = await this.signalLightStrategyTypeStrategyScheduleMappingFacadeService.selBySTypeIds(allStrategyTypes.map(item => item.id));
+    const allStrategySchedules = await this.signalLightStrategyScheduleFacadeService.forCalculate([
+      ..._signalLight_strategySchedule.map(item => item.strategyScheduleId),
+      ..._strategyType_strategySchedule.map(item => item.strategyScheduleId)
+    ]);
+    const _strategySchedule_strategyParam = await this.signalLightStrategyScheduleStrategyParamMappingFacadeService.selBySSIds(allStrategySchedules.map(item => item.id));
+    const allStrategyParams = await this.signalLightStrategyParamFacadeService.forCalculate(_strategySchedule_strategyParam.map(item => item.strategyParamId));
 
     // 开始计算每秒钟每种灯的状态
     const start2 = performance.now();

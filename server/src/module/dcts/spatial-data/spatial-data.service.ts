@@ -24,11 +24,12 @@ import { DctsCoreService } from "../core/dcts-core.service";
 import { BaseContextService } from "../../../infra/base-context/base-context.service";
 import { PrismaoService } from "../../../infra/prisma/prismao.service";
 import { arrayUtils, baseUtils } from "@dcts/common";
-import { SignalLightChildStyleMappingDto } from "../signal-light/signal-light-child-style-mapping/dto";
-import { SignalLightStyleDto } from "../signal-light/signal-light-style/dto";
 import { WsService } from "../../../infra/ws/ws.service";
 import { VehicleTrackPointDto } from "../vehicle/vehicle-track-point/dto";
 import { Exception } from "../../../exception/exception";
+import { SignalLightChildStyleMappingFacadeService } from "../signal-light/signal-light-child-style-mapping/signal-light-child-style-mapping.facade.service";
+import { SignalLightStyleFacadeService } from "../signal-light/signal-light-style/signal-light-style.facade.service";
+import { VehicleInfoFacadeService } from "../vehicle/vehicle-info/vehicle-info.facade.service";
 
 @Injectable()
 export class SpatialDataService {
@@ -37,7 +38,10 @@ export class SpatialDataService {
       private readonly pgsqlPrismao: PostgresqlPrismaoService,
       private readonly dctsCoreService: DctsCoreService,
       private readonly bcs: BaseContextService,
-      private readonly wsService: WsService
+      private readonly wsService: WsService,
+      private readonly signalLightChildStyleMappingFacadeService: SignalLightChildStyleMappingFacadeService,
+      private readonly signalLightStyleFacadeService: SignalLightStyleFacadeService,
+      private readonly vehicleInfoFacadeService: VehicleInfoFacadeService,
   ) {
   }
 
@@ -69,24 +73,9 @@ export class SpatialDataService {
           const s2 = signalLightGroupsInPolygon3(slgcmds.map(item => item.childLightId));
           const dtos1 = await this.pgsqlPrismao.$queryRawUnsafe<SignalLightInfoDto[]>(s2);
           ret.signalLightInfos = dtos1
-          const defaultSelArg = this.prismao.defaultSelArg();
-          const childStyleMappings = (await this.pgsqlPrismao.signal_light_child_style_mapping.findMany({
-            where: {
-              child_id: {
-                in: dtos1.map(item => item.id)
-              },
-              ...defaultSelArg.where
-            }
-          })).map(baseUtils.objToCamelCase<SignalLightChildStyleMappingDto>);
+          const childStyleMappings = await this.signalLightChildStyleMappingFacadeService.selByChildIds(dtos1.map(item => item.id));
           ret.signalLightChildStyleMappings = childStyleMappings
-          const styles = (await this.pgsqlPrismao.signal_light_style.findMany({
-            where: {
-              id: {
-                in: childStyleMappings.map(item => item.styleId)
-              },
-              ...defaultSelArg.where
-            }
-          })).map(baseUtils.objToCamelCase<SignalLightStyleDto>);
+          const styles = await this.signalLightStyleFacadeService.selByIds(childStyleMappings.map(item => item.styleId));
           ret.signalLightStyles = styles
         }
       }
@@ -136,12 +125,7 @@ export class SpatialDataService {
   }
 
   async queryVehicleTrajectory(dto: QueryVehicleTrajectoryDto): Promise<R> {
-    const vehicles = await this.pgsqlPrismao.vehicle_info.findMany({
-      where: {
-        plate_number: dto.plateNumber,
-        ...this.prismao.defaultSelArg().where
-      }
-    });
+    const vehicles = await this.vehicleInfoFacadeService.selByPlateNumber(dto.plateNumber);
     if (vehicles.length === 0) {
       throw new Exception('车辆不存在')
     }

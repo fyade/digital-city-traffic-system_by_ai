@@ -45,32 +45,32 @@ export class SignalLightGroupChildMappingService {
   }
 
   async insSignalLightGroupChildMapping(dto: SignalLightGroupChildMappingInsOneDto): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.create<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', dto);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 
   async insSignalLightGroupChildMappings(dtos: SignalLightGroupChildMappingInsOneDto[]): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.createMany<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', dtos);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 
   async updSignalLightGroupChildMapping(dto: SignalLightGroupChildMappingUpdOneDto): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.updateById<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', dto);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 
   async updSignalLightGroupChildMappings(dtos: SignalLightGroupChildMappingUpdOneDto[]): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.updateMany<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', dtos);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 
   async delSignalLightGroupChildMapping(ids: number[]): Promise<R> {
-    this.dctsCoreService.refreshLightWhenDatabaseChange();
     const res = await this.pgsqlPrisma.deleteById<SignalLightGroupChildMappingDto>('signal_light_group_child_mapping', ids);
+    this.dctsCoreService.refreshLightWhenDatabaseChange();
     return R.ok(res);
   }
 }
