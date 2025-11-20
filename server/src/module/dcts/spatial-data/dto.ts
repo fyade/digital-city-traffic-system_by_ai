@@ -157,4 +157,16 @@ export class GetAirspaceInPolygonDto {
   @ValidateNested({each: true})
   @Type(() => PolygonPointDto)
   points: PolygonPointDto[]
+
+  @ApiProperty({description: '查询开始时间', required: true})
+  @Type(() => Number)
+  @IsNotEmpty({message: '查询开始时间不能为空'})
+  @IsNumber({}, {message: '查询开始时间必须是数值'})
+  d1: number
+
+  @ApiProperty({description: '查询结束时间', required: true})
+  @Type(() => Number)
+  @IsNotEmpty({message: '查询结束时间不能为空'})
+  @IsNumber({}, {message: '查询结束时间必须是数值'})
+  d2: number
 }

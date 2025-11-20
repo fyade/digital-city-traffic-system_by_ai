@@ -185,6 +185,7 @@ const uploadSuccess = (filename: string) => {
         </n-form-item>
         <n-form-item path="files" :label="userFlightRestrictionZoneUserApplyDict.files">
           <!-- <n-input v-model:value="form.files" :placeholder="userFlightRestrictionZoneUserApplyDict.files"/> -->
+          {{ form.files }}
           <FileUploadOneChunk label="上传文件" module="dcts:dashboard" @uploadSuccess="uploadSuccess"/>
         </n-form-item>
         <div>

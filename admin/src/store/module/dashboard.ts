@@ -70,6 +70,22 @@ export const useDashboardStore = defineStore('dashboardStore', () => {
     return ifShowAirspace.value
   }
 
+  const showAroundDate1 = ref<number | null>(null)
+  const setShowAroundDate1 = (value: number) => {
+    showAroundDate1.value = value
+  }
+  const getShowAroundDate1 = () => {
+    return showAroundDate1.value
+  }
+
+  const showAroundDate2 = ref<number | null>(null)
+  const setShowAroundDate2 = (value: number) => {
+    showAroundDate2.value = value
+  }
+  const getShowAroundDate2 = () => {
+    return showAroundDate2.value
+  }
+
   return {
     currentCacheData,
     setCurrentCacheData,
@@ -90,6 +106,12 @@ export const useDashboardStore = defineStore('dashboardStore', () => {
     ifShowAirspace,
     setIfShowAirspace,
     getIfShowAirspace,
+    showAroundDate1,
+    setShowAroundDate1,
+    getShowAroundDate1,
+    showAroundDate2,
+    setShowAroundDate2,
+    getShowAroundDate2,
   }
 }, {
   persist: true

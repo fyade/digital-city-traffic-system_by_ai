@@ -66,7 +66,7 @@ const submitCallback = () => {
       <n-drawer
           v-model:show="drawerShow"
           :show-mask="false"
-          :width="props.wider ? CONFIG.dialog_width_wider : ''"
+          :width="props.wider ? CONFIG.dialog_width_wider : '30vw'"
           placement="left"
       >
         <n-drawer-content

@@ -2,7 +2,10 @@ import { ContextMenuItem } from "@/views/dashboard/index/dto.ts";
 import { MapEntityModule } from "@/views/dashboard/functionModules/mapEntityModule.ts";
 import {
   ContextMenuOptionType,
-  EDIT_TYPE_ENUM, ID_PREFIX_FLIGHT_AIRSPACE_USER_APPLY, ID_PREFIX_FLIGHT_RESTRICTION_ZONE, ID_PREFIX_FLIGHT_ROUTE,
+  EDIT_TYPE_ENUM,
+  ID_PREFIX_FLIGHT_AIRSPACE_USER_APPLY,
+  ID_PREFIX_FLIGHT_RESTRICTION_ZONE,
+  ID_PREFIX_FLIGHT_ROUTE,
   ID_PREFIX_FLIGHT_ROUTE_USER_APPLY,
   ID_PREFIX_SIGNAL_LIGHT,
   ID_PREFIX_SIGNAL_LIGHT_GROUP,
@@ -378,6 +381,50 @@ export class ContextMenuModule {
         this.miModule.setEditType(EDIT_TYPE_ENUM.INS_APPLY_FLIGHT_ROUTE)
       }
     },
+    // 空域申请详情
+    {
+      id: '~dctsDashboard~:applyAirspaceDetail',
+      func: () => {
+        if (!this.meModule) {
+          return
+        }
+        let itemId = ''
+        const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
+        if (seidsByGroup.flightAirspaceUserApplyCount > 0) {
+          itemId = seidsByGroup.flightAirspaceUserApply[0]
+        }
+        routerPushByName('~fp~:applyAirspaceDetail', {id: itemId})
+      }
+    },
+    // 航线申请详情
+    {
+      id: '~dctsDashboard~:applyFlightRouteDetail',
+      func: () => {
+        if (!this.meModule) {
+          return
+        }
+        let itemId = ''
+        const seidsByGroup = this.meModule.getSelectedEntityIdsByGroup();
+        if (seidsByGroup.flightRouteUserApplyCount > 0) {
+          itemId = seidsByGroup.flightRouteUserApply[0]
+        }
+        routerPushByName('~fp~:applyFlightRouteDetail', {id: itemId})
+      }
+    },
+    // 空域申请审核
+    {
+      id: '~dctsDashboard~:applyAirspaceReview',
+      func: () => {
+        routerPushByName('~fp~:applyAirspaceReview')
+      }
+    },
+    // 航线申请审核
+    {
+      id: '~dctsDashboard~:applyFlightRouteReview',
+      func: () => {
+        routerPushByName('~fp~:applyFlightRouteReview')
+      }
+    },
     // 关闭
     {
       id: '~dctsDashboard~:closeMenuOption',
@@ -604,6 +651,19 @@ export class ContextMenuModule {
         label: '航线申请详情',
         key: '~dctsDashboard~:applyFlightRouteDetail',
         show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:applyFlightRouteDetail', [ID_PREFIX_FLIGHT_ROUTE_USER_APPLY])
+      },
+      {
+        type: 'divider'
+      },
+      {
+        label: '空域申请审核',
+        key: '~dctsDashboard~:applyAirspaceReview',
+        show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:applyAirspaceReview')
+      },
+      {
+        label: '航线申请审核',
+        key: '~dctsDashboard~:applyFlightRouteReview',
+        show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:applyFlightRouteReview')
       },
       {
         type: 'divider'

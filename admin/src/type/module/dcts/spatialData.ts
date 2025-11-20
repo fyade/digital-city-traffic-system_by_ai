@@ -91,6 +91,8 @@ export class QueryVehicleTrajectoryDto {
 export class GetAirspaceInPolygonDto {
   version?: string
   points!: PolygonPointDto[]
+  d1!: number
+  d2!: number
 }
 
 export class GetAirspaceInPolygonVo {

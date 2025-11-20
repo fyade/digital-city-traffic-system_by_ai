@@ -479,8 +479,8 @@ const openFile = (filename: string) => {
       <el-table-column fixed="right" label="操作" min-width="140">
         <template #default="{row}">
           <div class="zs-table-data-operate-button-row">
-            <el-button link type="primary" size="small" :icon="Edit" @click="tUpd(row.id)">修改</el-button>
-            <el-button link type="danger" size="small" :icon="Delete" @click="tDel(row.id)">删除</el-button>
+            <!-- <el-button link type="primary" size="small" :icon="Edit" @click="tUpd(row.id)">修改</el-button> -->
+            <!-- <el-button link type="danger" size="small" :icon="Delete" @click="tDel(row.id)">删除</el-button> -->
           </div>
         </template>
       </el-table-column>

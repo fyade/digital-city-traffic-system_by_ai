@@ -61,6 +61,20 @@ const updateIfShowAirspace = (val: boolean) => {
   NMessage.success('修改成功。')
 }
 
+const showAroundDate1 = ref(useCesium.getShowAroundDate1())
+const updateShowAroundDate1 = (val: number) => {
+  useCesium.setShowAroundDate1(val)
+  showAroundDate1.value = useCesium.getShowAroundDate1()
+  NMessage.success('修改成功。')
+}
+
+const showAroundDate2 = ref(useCesium.getShowAroundDate2())
+const updateShowAroundDate2 = (val: number) => {
+  useCesium.setShowAroundDate2(val)
+  showAroundDate2.value = useCesium.getShowAroundDate2()
+  NMessage.success('修改成功。')
+}
+
 const ifAdminLogin = computed(() => userStore.loginType === 'admin')
 </script>
 
@@ -93,12 +107,12 @@ const ifAdminLogin = computed(() => userStore.loginType === 'admin')
     </n-form>
 
     <n-divider title-placement="left">实体</n-divider>
-    <n-grid style="line-height: 34px;" :y-gap="20" :cols="2">
+    <n-grid style="line-height: 34px;" :y-gap="20">
       <template v-if="ifAdminLogin">
-        <n-gi>
+        <n-gi :span="24">
           <n-grid>
-            <n-gi :span="6">信号灯</n-gi>
-            <n-gi :span="18">
+            <n-gi :span="3">信号灯</n-gi>
+            <n-gi :span="21">
               <n-switch :value="ifShowSignalLight" @update:value="updateIfShowSignalLight">
                 <template #checked>显示</template>
                 <template #unchecked>隐藏</template>
@@ -106,10 +120,9 @@ const ifAdminLogin = computed(() => userStore.loginType === 'admin')
             </n-gi>
           </n-grid>
         </n-gi>
-        <n-gi></n-gi>
       </template>
       <template v-if="ifAdminLogin">
-        <n-gi>
+        <n-gi :span="12">
           <n-grid>
             <n-gi :span="6">实时车流数据</n-gi>
             <n-gi :span="18">
@@ -120,7 +133,7 @@ const ifAdminLogin = computed(() => userStore.loginType === 'admin')
             </n-gi>
           </n-grid>
         </n-gi>
-        <n-gi>
+        <n-gi :span="12">
           <template v-if="ifShowVehicleRealTime">
             <n-grid>
               <n-gi :span="6">最近活动时间(秒)</n-gi>
@@ -131,10 +144,10 @@ const ifAdminLogin = computed(() => userStore.loginType === 'admin')
           </template>
         </n-gi>
       </template>
-      <n-gi>
+      <n-gi :span="8">
         <n-grid>
-          <n-gi :span="6">空域显示</n-gi>
-          <n-gi :span="18">
+          <n-gi :span="9">空域显示</n-gi>
+          <n-gi :span="15">
             <n-switch :value="ifShowAirspace" @update:value="updateIfShowAirspace">
               <template #checked>显示</template>
               <template #unchecked>隐藏</template>
@@ -142,9 +155,32 @@ const ifAdminLogin = computed(() => userStore.loginType === 'admin')
           </n-gi>
         </n-grid>
       </n-gi>
+      <n-gi :span="16">
+        <template v-if="ifShowAirspace">
+          <div class="airspaceShowDataSetting">
+            <p>查询今天前</p>
+            <n-input-number :value="showAroundDate1" @update:value="updateShowAroundDate1"/>
+            <p>天至后</p>
+            <n-input-number :value="showAroundDate2" @update:value="updateShowAroundDate2"/>
+            <p>天的空域申请数据</p>
+          </div>
+        </template>
+      </n-gi>
     </n-grid>
   </n-modal>
 </template>
 
 <style scoped>
+.airspaceShowDataSetting {
+  display: flex;
+
+  > * {
+    flex: 1;
+  }
+
+  > p {
+    flex: 0;
+    white-space: nowrap;
+  }
+}
 </style>

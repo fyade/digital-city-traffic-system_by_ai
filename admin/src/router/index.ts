@@ -334,6 +334,26 @@ const routes: RouteRecordRaw[] = [
             component: () => import('@/views/dashboard/formPanel/applyFlightRoute/index.vue')
           },
           {
+            path: 'apply-airspace-detail',
+            name: '~fp~:applyAirspaceDetail',
+            component: () => import('@/views/dashboard/formPanel/applyAirspaceDetail/index.vue')
+          },
+          {
+            path: 'apply-flight-route-detail',
+            name: '~fp~:applyFlightRouteDetail',
+            component: () => import('@/views/dashboard/formPanel/applyFlightRouteDetail/index.vue')
+          },
+          {
+            path: 'apply-airspace-review',
+            name: '~fp~:applyAirspaceReview',
+            component: () => import('@/views/dashboard/formPanel/applyAirspaceReview/index.vue')
+          },
+          {
+            path: 'apply-flight-route-review',
+            name: '~fp~:applyFlightRouteReview',
+            component: () => import('@/views/dashboard/formPanel/applyFlightRouteReview/index.vue')
+          },
+          {
             path: ':pathMatch(.*)*',
             redirect: '/dashboard'
           }

@@ -7,6 +7,7 @@ import {
 } from "./dto";
 import { final } from "../../../util/base";
 import { publicSqlSelectKey } from "../../../infra/prisma/custom.dto";
+import { base } from '@dcts/common';
 
 export function nodesWithWaysInPolygon(dto: NodesWithWaysInPolygonDto) {
   // 点数组转为字符串
@@ -204,6 +205,10 @@ export function getAirspaceInPolygon(dto: GetAirspaceInPolygonDto, loginRole: st
               st_geomfromtext('POLYGON((${pointsStr}))', 4326)
             );
   `
+  const date1 = new Date();
+  const t1 = new Date(date1.setDate(date1.getDate() - dto.d1)).setHours(0, 0, 0, 0);
+  const date2 = new Date();
+  const t2 = new Date(date2.setDate(date2.getDate() + dto.d2)).setHours(0, 0, 0, 0);
   const sql3 =  `
       select id                                                                                   as "id",
              array_to_string(aircraft_id, ',')                                                    as "aircraftId",
@@ -228,7 +233,12 @@ export function getAirspaceInPolygon(dto: GetAirspaceInPolygonDto, loginRole: st
               st_geomfromtext('POLYGON((${pointsStr}))', 4326)
             )
         and create_role = '${loginRole}'
-        and create_by = '${userid}';
+        and create_by = '${userid}'
+        and apply_status in (${[base.AFRASTypeEnum.aaa, base.AFRASTypeEnum.approved, base.AFRASTypeEnum.rejected].map(str => `'${str}'`).join(', ')})
+        and (
+          start_time between '${new Date(t1).toISOString()}'::timestamp and '${new Date(t2).toISOString()}'::timestamp or
+          end_time between '${new Date(t1).toISOString()}'::timestamp and '${new Date(t2).toISOString()}'::timestamp
+          );
   `
   const sql4 = `
       select id                                                                                   as "id",
@@ -254,7 +264,12 @@ export function getAirspaceInPolygon(dto: GetAirspaceInPolygonDto, loginRole: st
               st_geomfromtext('POLYGON((${pointsStr}))', 4326)
             )
         and create_role = '${loginRole}'
-        and create_by = '${userid}';
+        and create_by = '${userid}'
+        and apply_status in (${[base.AFRASTypeEnum.aaa, base.AFRASTypeEnum.approved, base.AFRASTypeEnum.rejected].map(str => `'${str}'`).join(', ')})
+        and (
+          start_time between '${new Date(t1).toISOString()}'::timestamp and '${new Date(t2).toISOString()}'::timestamp or
+          end_time between '${new Date(t1).toISOString()}'::timestamp and '${new Date(t2).toISOString()}'::timestamp
+          );
   `
   return {
     sql1,

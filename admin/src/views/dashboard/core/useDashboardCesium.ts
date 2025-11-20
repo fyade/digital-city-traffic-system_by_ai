@@ -134,8 +134,14 @@ class UseDashboardCesium extends UseCesium {
   public readonly endEditAirspace = this.asModule.endEditAirspace.bind(this.asModule)
   public readonly previewFlightRestrictionZone = this.asModule.previewFlightRestrictionZone.bind(this.asModule)
   public readonly previewFlightRoute = this.asModule.previewFlightRoute.bind(this.asModule)
+  public readonly previewFlightRestrictionZone2 = this.asModule.previewFlightRestrictionZone2.bind(this.asModule)
+  public readonly previewFlightRoute2 = this.asModule.previewFlightRoute2.bind(this.asModule)
   public readonly getIfShowAirspace = this.asModule.getIfShowAirspace.bind(this.asModule)
   public readonly setIfShowAirspace = this.asModule.setIfShowAirspace.bind(this.asModule)
+  public readonly setShowAroundDate1 = this.asModule.setShowAroundDate1.bind(this.asModule)
+  public readonly getShowAroundDate1 = this.asModule.getShowAroundDate1.bind(this.asModule)
+  public readonly setShowAroundDate2 = this.asModule.setShowAroundDate2.bind(this.asModule)
+  public readonly getShowAroundDate2 = this.asModule.getShowAroundDate2.bind(this.asModule)
 
   public readonly refreshContextMenuOption = this.cmModule.refreshContextMenuOption.bind(this.cmModule)
   public readonly contextMenuSelect = this.cmModule.contextMenuSelect.bind(this.cmModule)
@@ -174,6 +180,7 @@ class UseDashboardCesium extends UseCesium {
     this.asModule.setVdModule(this.vdModule)
     this.asModule.setViewer(this.viewer)
     this.asModule.setGetViewCornerCoordinates(this.getViewCornerCoordinates.bind(this))
+    this.asModule.setSetViewTo(this.setViewTo.bind(this))
 
     this.cModule.setViewer(this.viewer)
     this.cModule.setSetCurrentTimeCB((data) => {

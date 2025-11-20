@@ -56,6 +56,12 @@ export class AirspaceModule {
     this.getViewCornerCoordinates = func
   }
 
+  private setViewTo: ((lon: number, lat: number, obj?: { height?: number, ifFly?: boolean }) => void) | null = null
+
+  public setSetViewTo(func: NonNullable<typeof this.setViewTo>) {
+    this.setViewTo = func
+  }
+
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
@@ -63,6 +69,14 @@ export class AirspaceModule {
     const v = dashboardStore.getIfShowAirspace();
     if (objectUtils.ifValid(v)) {
       this._ifShowAirspace = v
+    }
+    const ddddd1 = dashboardStore.getShowAroundDate1()
+    if (objectUtils.ifValid(ddddd1)) {
+      this._showAroundDate1 = ddddd1
+    }
+    const ddddd2 = dashboardStore.getShowAroundDate2()
+    if (objectUtils.ifValid(ddddd2)) {
+      this._showAroundDate2 = ddddd2
     }
   }
 
@@ -182,6 +196,140 @@ export class AirspaceModule {
     }
   }
 
+  // 限飞区预览（管理员审核用户的申请 时的预览）及空域申请详情
+  public previewFlightRestrictionZone2({
+                                         points = [],
+                                         label = '',
+                                         ifDelete = false
+                                       }: {
+                                         points?: [number, number][]
+                                         label?: string
+                                         ifDelete?: boolean
+                                       }
+  ) {
+    if (!this.viewer) {
+      return
+    }
+    const entity = this.viewer.entities.getById(ID_SPECIAL_preview_MouseMovingGeometry)
+    if (ifDelete) {
+      this.viewer.entities.removeById(ID_SPECIAL_preview_MouseMovingGeometry)
+      return;
+    }
+    const positions = points.map(poArr => Cesium.Cartesian3.fromDegrees(poArr[0], poArr[1], CESIUM_DEFAULT.HEIGHT_FLIGHT_RESTRICTION_ZONE))
+    const positionCenter = computePolygonCenter(positions);
+    const lonlat_ = Cesium.Cartographic.fromCartesian(positionCenter);
+    const lonlat = {
+      lon: Cesium.Math.toDegrees(lonlat_.longitude),
+      lat: Cesium.Math.toDegrees(lonlat_.latitude),
+    }
+    if (this.setViewTo) {
+      this.setViewTo(lonlat.lon, lonlat.lat, {height: 5000, ifFly: true})
+    }
+    if (entity) {
+      entity.polygon!.hierarchy = new Cesium.ConstantProperty(new Cesium.PolygonHierarchy(positions))
+      entity.position = new Cesium.ConstantPositionProperty(positionCenter)
+      entity.label!.text = new Cesium.ConstantProperty(label)
+      return;
+    }
+    this.viewer.entities.add({
+      position: positionCenter,
+      polygon: {
+        hierarchy: new Cesium.PolygonHierarchy(positions),
+        material: new Cesium.StripeMaterialProperty({
+          orientation: Cesium.StripeOrientation.VERTICAL,
+          evenColor: CESIUM_DEFAULT.COLOR_DEFAULT_FLIGHT_RESTRICTION_ZONE.withAlpha(0.7),
+          oddColor: Cesium.Color.TRANSPARENT,
+          repeat: 100,
+          offset: 0.0
+        }),
+        outline: true,
+        outlineColor: CESIUM_DEFAULT.COLOR_OUTLINE_DEFAULT_FLIGHT_RESTRICTION_ZONE,
+        outlineWidth: CESIUM_DEFAULT.WIDTH_OUTLINE_DEFAULT_FLIGHT_RESTRICTION_ZONE,
+      },
+      // label: {
+      //   text: label,
+      //   fillColor: Cesium.Color.WHITE,
+      //   backgroundColor: Cesium.Color.BLACK.withAlpha(0.7),
+      //   backgroundPadding: new Cesium.Cartesian2(10, 10),
+      //   pixelOffset: new Cesium.Cartesian2(0, 0),
+      //   eyeOffset: new Cesium.Cartesian3(0, 0, 0),
+      //   heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+      //   horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+      //   verticalOrigin: Cesium.VerticalOrigin.CENTER,
+      //   showBackground: true,
+      //   scale: 0.5,
+      //   style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+      //   outlineWidth: 2,
+      //   outlineColor: Cesium.Color.BLACK
+      // },
+      id: ID_SPECIAL_preview_MouseMovingGeometry
+    })
+  }
+
+  // 航线预览（管理员审核用户的申请 时的预览）及航线申请详情
+  public previewFlightRoute2({
+                               points = [],
+                               label = '',
+                               ifDelete = false
+                             }: {
+                               points?: [number, number, number][]
+                               label?: string
+                               ifDelete?: boolean
+                             }
+  ) {
+    if (!this.viewer) {
+      return
+    }
+    const entity = this.viewer.entities.getById(ID_SPECIAL_preview_MouseMovingPolyline)
+    if (ifDelete) {
+      this.viewer.entities.removeById(ID_SPECIAL_preview_MouseMovingPolyline)
+      return;
+    }
+    const positions = points.map(poArr => Cesium.Cartesian3.fromDegrees(poArr[0], poArr[1], poArr[2]))
+    const positionCenter = computePolygonCenter(positions)
+    const lonlat_ = Cesium.Cartographic.fromCartesian(positionCenter)
+    const lonlat = {
+      lon: Cesium.Math.toDegrees(lonlat_.longitude),
+      lat: Cesium.Math.toDegrees(lonlat_.latitude),
+    }
+    if (this.setViewTo) {
+      this.setViewTo(lonlat.lon, lonlat.lat, {height: 5000, ifFly: true})
+    }
+    const coordinates = points.flat().length >= 3 ? points.flat() : [0, 0, 0];
+    if (entity) {
+      entity.polyline!.positions = new Cesium.ConstantProperty(Cesium.Cartesian3.fromDegreesArrayHeights(coordinates))
+      entity.position = new Cesium.ConstantPositionProperty(positionCenter)
+      entity.label!.text = new Cesium.ConstantProperty(label)
+      return;
+    }
+    this.viewer.entities.add({
+      position: positionCenter,
+      polyline: {
+        positions: Cesium.Cartesian3.fromDegreesArrayHeights(coordinates),
+        width: 3,
+        material: CESIUM_DEFAULT.COLOR_DEFAULT_FLIGHT_ROUTE,
+        arcType: Cesium.ArcType.NONE
+      },
+      // label: {
+      //   text: label,
+      //   fillColor: Cesium.Color.WHITE,
+      //   backgroundColor: Cesium.Color.BLACK.withAlpha(0.7),
+      //   backgroundPadding: new Cesium.Cartesian2(10, 10),
+      //   pixelOffset: new Cesium.Cartesian2(0, 0),
+      //   eyeOffset: new Cesium.Cartesian3(0, 0, 0),
+      //   heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+      //   horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+      //   verticalOrigin: Cesium.VerticalOrigin.CENTER,
+      //   showBackground: true,
+      //   scale: 0.5,
+      //   style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+      //   outlineWidth: 2,
+      //   outlineColor: Cesium.Color.BLACK
+      // },
+      id: ID_SPECIAL_preview_MouseMovingPolyline
+    });
+  }
+
   // 已渲染的空域
   private renderedItemIds: string[] = []
 
@@ -202,7 +350,11 @@ export class AirspaceModule {
       return;
     }
     coordinates.push(coordinates[0])
-    getAirspaceInPolygonApi({points: coordinates}).then(res => {
+    getAirspaceInPolygonApi({
+      points: coordinates,
+      d1: this.getShowAroundDate1(),
+      d2: this.getShowAroundDate2(),
+    }).then(res => {
       if (!this.viewer) {
         return;
       }
@@ -371,16 +523,16 @@ export class AirspaceModule {
             outlineColor: CESIUM_DEFAULT.COLOR_OUTLINE_DEFAULT_FLIGHT_RESTRICTION_ZONE,
             outlineWidth: CESIUM_DEFAULT.WIDTH_OUTLINE_DEFAULT_FLIGHT_RESTRICTION_ZONE
           },
-          label: {
-            text: text,
-            font: '14px sans-serif',
-            fillColor: Cesium.Color.WHITE,
-            outlineColor: Cesium.Color.BLACK,
-            outlineWidth: 1,
-            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-            pixelOffset: new Cesium.Cartesian2(0, 0),
-            heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
-          },
+          // label: {
+          //   text: text,
+          //   font: '14px sans-serif',
+          //   fillColor: Cesium.Color.WHITE,
+          //   outlineColor: Cesium.Color.BLACK,
+          //   outlineWidth: 1,
+          //   style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+          //   pixelOffset: new Cesium.Cartesian2(0, 0),
+          //   heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
+          // },
           id: d
         })
       }
@@ -422,16 +574,16 @@ export class AirspaceModule {
             material: CESIUM_DEFAULT.COLOR_DEFAULT_FLIGHT_ROUTE,
             arcType: Cesium.ArcType.NONE
           },
-          label: {
-            text: text,
-            font: '14px sans-serif',
-            fillColor: Cesium.Color.WHITE,
-            outlineColor: Cesium.Color.BLACK,
-            outlineWidth: 1,
-            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-            pixelOffset: new Cesium.Cartesian2(0, 0),
-            heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
-          },
+          // label: {
+          //   text: text,
+          //   font: '14px sans-serif',
+          //   fillColor: Cesium.Color.WHITE,
+          //   outlineColor: Cesium.Color.BLACK,
+          //   outlineWidth: 1,
+          //   style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+          //   pixelOffset: new Cesium.Cartesian2(0, 0),
+          //   heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
+          // },
           id: d
         })
       }
@@ -459,5 +611,29 @@ export class AirspaceModule {
 
   public getIfShowAirspace() {
     return this._ifShowAirspace
+  }
+
+  // 显示前后几天申请的空域/航线
+  private _showAroundDate1 = 3
+  private _showAroundDate2 = 3
+
+  public setShowAroundDate1(value: number) {
+    this._showAroundDate1 = value
+    dashboardStore.setShowAroundDate1(this._showAroundDate1)
+    this.refreshScreenAirspace({ifRefresh: true})
+  }
+
+  public getShowAroundDate1() {
+    return this._showAroundDate1
+  }
+
+  public setShowAroundDate2(value: number) {
+    this._showAroundDate2 = value
+    dashboardStore.setShowAroundDate2(this._showAroundDate2)
+    this.refreshScreenAirspace({ifRefresh: true})
+  }
+
+  public getShowAroundDate2() {
+    return this._showAroundDate2
   }
 }
