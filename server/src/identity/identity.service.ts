@@ -217,7 +217,7 @@ export class IdentityService {
             {
               userId: user.id,
               loginRole: dto.loginRole,
-              loginType: base.LoginTypeEnum.pw,
+              loginType: ltype === 'psd' ? base.LoginTypeEnum.pw : base.LoginTypeEnum.yzm,
               loginIp: netInfo.ip,
               loginPosition: '',
               loginBrowser: netInfo.browser,
@@ -233,7 +233,7 @@ export class IdentityService {
         await this.logUserLoginFacadeService.insLogUserLogin({
           userId: user.id,
           loginRole: dto.loginRole,
-          loginType: base.LoginTypeEnum.pw,
+          loginType: ltype === 'psd' ? base.LoginTypeEnum.pw : base.LoginTypeEnum.yzm,
           loginIp: netInfo.ip,
           loginPosition: '',
           loginBrowser: netInfo.browser,
@@ -273,7 +273,7 @@ export class IdentityService {
               {
                 userId: user.id,
                 loginRole: dto.loginRole,
-                loginType: base.LoginTypeEnum.pw,
+                loginType: ltype === 'psd' ? base.LoginTypeEnum.pw : base.LoginTypeEnum.yzm,
                 loginIp: netInfo.ip,
                 loginPosition: '',
                 loginBrowser: netInfo.browser,
@@ -289,7 +289,7 @@ export class IdentityService {
         await this.logUserLoginFacadeService.insLogUserLogin({
           userId: user.id,
           loginRole: dto.loginRole,
-          loginType: base.LoginTypeEnum.pw,
+          loginType: ltype === 'psd' ? base.LoginTypeEnum.pw : base.LoginTypeEnum.yzm,
           loginIp: netInfo.ip,
           loginPosition: '',
           loginBrowser: netInfo.browser,
@@ -327,7 +327,7 @@ export class IdentityService {
               {
                 userId: user.id,
                 loginRole: dto.loginRole,
-                loginType: base.LoginTypeEnum.pw,
+                loginType: ltype === 'psd' ? base.LoginTypeEnum.pw : base.LoginTypeEnum.yzm,
                 loginIp: netInfo.ip,
                 loginPosition: '',
                 loginBrowser: netInfo.browser,
@@ -342,7 +342,7 @@ export class IdentityService {
           await this.logUserLoginFacadeService.insLogUserLogin({
             userId: user.id,
             loginRole: dto.loginRole,
-            loginType: base.LoginTypeEnum.pw,
+            loginType: ltype === 'psd' ? base.LoginTypeEnum.pw : base.LoginTypeEnum.yzm,
             loginIp: netInfo.ip,
             loginPosition: '',
             loginBrowser: netInfo.browser,

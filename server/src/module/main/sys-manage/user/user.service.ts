@@ -343,7 +343,7 @@ export class UserService {
       await this.logUserLoginFacadeService.insLogUserLogin({
         userId: userId,
         loginRole: dto.loginRole,
-        loginType: base.LoginTypeEnum.pw,
+        loginType: base.LoginTypeEnum.yzm,
         loginIp: netInfo.ip,
         loginPosition: '',
         loginBrowser: netInfo.browser,
@@ -356,7 +356,7 @@ export class UserService {
           {
             userId: userId,
             loginRole: dto.loginRole,
-            loginType: base.LoginTypeEnum.pw,
+            loginType: base.LoginTypeEnum.yzm,
             loginIp: netInfo.ip,
             loginPosition: '',
             loginBrowser: netInfo.browser,

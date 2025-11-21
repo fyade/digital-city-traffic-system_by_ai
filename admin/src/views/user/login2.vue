@@ -3,7 +3,7 @@ import { reactive, ref, watchEffect } from 'vue'
 import { useUserStore } from "@/store/module/user.ts";
 import { useSysStore } from "@/store/module/sys.ts";
 import { getEmailCodeApi, getVerificationCode, regist2Api } from "@/api/module/main/sysManage/userLogin.ts";
-import { adminConfig, publicConfig } from "@dcts/config";
+import { adminConfig, mail126Config, publicConfig } from "@dcts/config";
 import { base } from "@dcts/common";
 import { FormRules } from "element-plus";
 import { LoginCodeDto } from "@/type/module/main/sysManage/user.ts";
@@ -134,6 +134,15 @@ watchEffect(() => {
         />
         <br/>
       </template>
+      <template v-if="radio1==='regist' || ifCodewLogin==='code'">
+        <el-alert
+            :title="`发送验证码的邮箱为${mail126Config.user}，若未收到邮件，请检查垃圾箱或黑名单。注意${mail126Config.user}只作为邮箱发送服务使用，请不要给此邮箱写信或回信。`"
+            type="info"
+            show-icon
+            :closable="false"
+        />
+        <br/>
+      </template>
       <el-form-item label="邮箱">
         <el-input v-model="form.username"/>
       </el-form-item>
@@ -163,8 +172,8 @@ watchEffect(() => {
       </el-form-item>
       <div class="button-row">
         <el-button v-if="radio1==='user'||radio1==='admin'" @click="changeCodeLogin">
-          <span v-if="ifCodewLogin==='psd'">验证码登录</span>
-          <span v-if="ifCodewLogin==='code'">密码登录</span>
+          <span v-if="ifCodewLogin==='psd'">不喜欢密码？点此切换为验证码登录</span>
+          <span v-if="ifCodewLogin==='code'">不喜欢验证码？点此切换为密码登录</span>
         </el-button>
         <el-button type="primary" :disabled="logining" :loading="logining" @click="onSubmit">
           <span v-if="radio1==='user'">用户登录</span>
@@ -175,12 +184,12 @@ watchEffect(() => {
     </el-form>
   </div>
 
-  <div class="bottom-text">
-    <div class="grey">
-      <p>前端版本：{{ sysStore.version.qd }}</p>
-      <p>后端版本：{{ sysStore.version.hd }}</p>
-    </div>
-  </div>
+  <!-- <div class="bottom-text"> -->
+  <!--   <div class="grey"> -->
+  <!--     <p>前端版本：{{ sysStore.version.qd }}</p> -->
+  <!--     <p>后端版本：{{ sysStore.version.hd }}</p> -->
+  <!--   </div> -->
+  <!-- </div> -->
 </template>
 
 <style scoped>
@@ -191,7 +200,7 @@ watchEffect(() => {
   top: 50%;
   width: calc(100% - 20px);
   max-width: 500px;
-  height: 500px;
+  height: auto;
   transform: translate(-50%, -50%);
 
   > .title {

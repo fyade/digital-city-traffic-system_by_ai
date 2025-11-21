@@ -105,7 +105,7 @@ if (props.ifShowBreadcrumb) {
     <div class="center"></div>
     <div class="right">
       <el-button link @click="gotoDashboardHome" style="text-decoration: underline;">前往地图大屏端</el-button>
-      <el-button link @click="gotoThreeHome" style="text-decoration: underline;margin-left: 0;">前往三维端</el-button>
+      <!-- <el-button link @click="gotoThreeHome" style="text-decoration: underline;margin-left: 0;">前往三维端</el-button> -->
       <el-dropdown>
         <SvgIcon name="theme" color="var(--menu-icon-color)"/>
         <template #dropdown>
