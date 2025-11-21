@@ -1,84 +1,84 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
-import { useUserStore } from "@/store/module/user.ts";
-import { useSysStore } from "@/store/module/sys.ts";
-import { getVerificationCode } from "@/api/module/main/sysManage/userLogin.ts";
-import { publicConfig } from "@dcts/config";
-import { base } from "@dcts/common";
-
-const userStore = useUserStore();
-const sysStore = useSysStore();
-const form = reactive({
-  username: '',
-  password: '',
-  loginRole: base.LoginRoleEnum.admin,
-  verificationCode: '',
-  verificationCodeUuid: '',
-})
-
-const logining = ref(false)
-const onSubmit = async () => {
-  if (logining.value) {
-    return;
-  }
-  logining.value = true
-  userStore.login(form, true).then().catch((e) => {
-    logining.value = false
-    refreshVerificationCode()
-  })
-}
-
-const vcode = ref('')
-const refreshVerificationCode = () => {
-  getVerificationCode().then(res => {
-    form.verificationCodeUuid = res.uuid
-    vcode.value = res.svg
-  })
-}
-refreshVerificationCode()
+// import { reactive, ref } from 'vue'
+// import { useUserStore } from "@/store/module/user.ts";
+// import { useSysStore } from "@/store/module/sys.ts";
+// import { getVerificationCode } from "@/api/module/main/sysManage/userLogin.ts";
+// import { publicConfig } from "@dcts/config";
+// import { base } from "@dcts/common";
+//
+// const userStore = useUserStore();
+// const sysStore = useSysStore();
+// const form = reactive({
+//   username: '',
+//   password: '',
+//   loginRole: base.LoginRoleEnum.admin,
+//   verificationCode: '',
+//   verificationCodeUuid: '',
+// })
+//
+// const logining = ref(false)
+// const onSubmit = async () => {
+//   if (logining.value) {
+//     return;
+//   }
+//   logining.value = true
+//   userStore.login(form, true).then().catch((e) => {
+//     logining.value = false
+//     refreshVerificationCode()
+//   })
+// }
+//
+// const vcode = ref('')
+// const refreshVerificationCode = () => {
+//   getVerificationCode().then(res => {
+//     form.verificationCodeUuid = res.uuid
+//     vcode.value = res.svg
+//   })
+// }
+// refreshVerificationCode()
 </script>
 
 <template>
-  <div class="el">
-    <p class="title">{{ publicConfig.APP_NAME }}</p>
-    <el-form
-        :model="form"
-        label-width="80px"
-        label-position="left"
-        @keyup.enter="onSubmit"
-    >
-      <el-form-item label="用户名">
-        <el-input v-model="form.username"/>
-      </el-form-item>
-      <el-form-item label="密码">
-        <el-input type="password" v-model="form.password"/>
-      </el-form-item>
-      <el-form-item label="登录身份">
-        <el-select v-model="form.loginRole">
-          <el-option v-for="key in base.LoginRoleEnum" :key="key" :label="base.loginRoleDict[key]" :value="key"/>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="验证码">
-        <el-input v-model="form.verificationCode">
-          <template #append>
-            <div class="vcodeBox" @click="refreshVerificationCode">
-              <div v-html="vcode"></div>
-            </div>
-          </template>
-        </el-input>
-      </el-form-item>
-      <div class="button-row">
-        <el-button type="primary" :disabled="logining" :loading="logining" @click="onSubmit">登录</el-button>
-      </div>
-    </el-form>
-  </div>
+  <!-- <div class="el"> -->
+  <!--   <p class="title">{{ publicConfig.APP_NAME }}</p> -->
+  <!--   <el-form -->
+  <!--       :model="form" -->
+  <!--       label-width="80px" -->
+  <!--       label-position="left" -->
+  <!--       @keyup.enter="onSubmit" -->
+  <!--   > -->
+  <!--     <el-form-item label="用户名"> -->
+  <!--       <el-input v-model="form.username"/> -->
+  <!--     </el-form-item> -->
+  <!--     <el-form-item label="密码"> -->
+  <!--       <el-input type="password" v-model="form.password"/> -->
+  <!--     </el-form-item> -->
+  <!--     <el-form-item label="登录身份"> -->
+  <!--       <el-select v-model="form.loginRole"> -->
+  <!--         <el-option v-for="key in base.LoginRoleEnum" :key="key" :label="base.loginRoleDict[key]" :value="key"/> -->
+  <!--       </el-select> -->
+  <!--     </el-form-item> -->
+  <!--     <el-form-item label="验证码"> -->
+  <!--       <el-input v-model="form.verificationCode"> -->
+  <!--         <template #append> -->
+  <!--           <div class="vcodeBox" @click="refreshVerificationCode"> -->
+  <!--             <div v-html="vcode"></div> -->
+  <!--           </div> -->
+  <!--         </template> -->
+  <!--       </el-input> -->
+  <!--     </el-form-item> -->
+  <!--     <div class="button-row"> -->
+  <!--       <el-button type="primary" :disabled="logining" :loading="logining" @click="onSubmit">登录</el-button> -->
+  <!--     </div> -->
+  <!--   </el-form> -->
+  <!-- </div> -->
 
-  <div class="bottom-text">
-    <div class="grey">
-      <p>前端版本：{{ sysStore.version.qd }}</p>
-      <p>后端版本：{{ sysStore.version.hd }}</p>
-    </div>
-  </div>
+  <!-- <div class="bottom-text"> -->
+  <!--   <div class="grey"> -->
+  <!--     <p>前端版本：{{ sysStore.version.qd }}</p> -->
+  <!--     <p>后端版本：{{ sysStore.version.hd }}</p> -->
+  <!--   </div> -->
+  <!-- </div> -->
 </template>
 
 <style scoped>
