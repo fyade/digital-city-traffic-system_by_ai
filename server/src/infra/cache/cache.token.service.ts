@@ -16,6 +16,8 @@ export class CacheTokenService {
   readonly VERIFICATION_CODE = 'zzz:verification:code';
   readonly PASSWORD_KEY = 'zzz:password:key';
 
+  readonly EMAIL_CODE = 'zzz:email:code';
+
   constructor(
     private readonly redis: RedisService,
     private readonly scheduleService: ScheduleService,
@@ -144,5 +146,17 @@ export class CacheTokenService {
    */
   async deletePasswordKey(uuid: string) {
     await this.redis.del(`${this.PASSWORD_KEY}:${uuid}`);
+  }
+
+  async saveEmailCode(email: string, code: string) {
+    await this.redis.setex(`${this.EMAIL_CODE}:${email}`, currentConfig.VERIFICATION_CODE_EXPIRE_TIME, code);
+  }
+
+  async getEmailCode(email: string) {
+    return this.redis.get(`${this.EMAIL_CODE}:${email}`);
+  }
+
+  async deleteEmailCode(email: string) {
+    await this.redis.del(`${this.EMAIL_CODE}:${email}`);
   }
 }

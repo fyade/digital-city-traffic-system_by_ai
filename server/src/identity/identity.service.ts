@@ -190,8 +190,9 @@ export class IdentityService {
    * @param dto
    * @param netInfo
    * @param ifAdminLogin
+   * @param ltype
    */
-  async login(dto: LoginDto, netInfo: IpInfoDto, ifAdminLogin = false) {
+  async login(dto: LoginDto, netInfo: IpInfoDto, ifAdminLogin = false, ltype: 'psd' | 'code' = 'psd') {
     const multiAuthUser = new MultiAuthUserDto();
     if (dto.loginRole === base.LoginRoleEnum.admin) {
       const user = await this.mysqlPrisma.findFirst<UserDto>('sys_user', {
@@ -200,30 +201,33 @@ export class IdentityService {
       if (!user) {
         throw new UserUnknownException();
       }
-      const loginlogs = await this.logUserLoginFacadeService.selAllLogUserLogin(user.id, netInfo.ip, dto.loginRole);
-      if (loginlogs.length >= this.maxLoginFailCount) {
-        const sort = loginlogs.sort((a, b) => timeUtils.timestamp(a.createTime) - timeUtils.timestamp(b.createTime));
-        const number = Math.ceil(
-          24 - (timeUtils.timestamp() - timeUtils.timestamp(sort[0].createTime)) / (1000 * 60 * 60),
-        );
-        throw new Exception(`您的账号在当前IP密码错误次数过多，请${number}小时后重试或更换网络环境重试。`);
-      }
-      const b1 = await encryptUtils.bcrypt.comparePassword(dto.password, user.password);
-      if (!b1) {
-        await this.logUserLoginFacadeService.insLogUserLogin(
-          {
-            userId: user.id,
-            loginRole: dto.loginRole,
-            loginType: base.LoginTypeEnum.pw,
-            loginIp: netInfo.ip,
-            loginPosition: '',
-            loginBrowser: netInfo.browser,
-            loginOs: netInfo.os,
-            ifSuccess: b1,
-          },
-          PASSWORD_ERROR,
-        );
-        throw new Exception(`密码错误，还剩${this.maxLoginFailCount - loginlogs.length - 1}次机会。`);
+      let b1 = true;
+      if (ltype === 'psd') {
+        const loginlogs = await this.logUserLoginFacadeService.selAllLogUserLogin(user.id, netInfo.ip, dto.loginRole);
+        if (loginlogs.length >= this.maxLoginFailCount) {
+          const sort = loginlogs.sort((a, b) => timeUtils.timestamp(a.createTime) - timeUtils.timestamp(b.createTime));
+          const number = Math.ceil(
+              24 - (timeUtils.timestamp() - timeUtils.timestamp(sort[0].createTime)) / (1000 * 60 * 60),
+          );
+          throw new Exception(`您的账号在当前IP密码错误次数过多，请${number}小时后重试或更换网络环境重试。`);
+        }
+        b1 = await encryptUtils.bcrypt.comparePassword(dto.password, user.password);
+        if (!b1) {
+          await this.logUserLoginFacadeService.insLogUserLogin(
+            {
+              userId: user.id,
+              loginRole: dto.loginRole,
+              loginType: base.LoginTypeEnum.pw,
+              loginIp: netInfo.ip,
+              loginPosition: '',
+              loginBrowser: netInfo.browser,
+              loginOs: netInfo.os,
+              ifSuccess: b1,
+            },
+            PASSWORD_ERROR,
+          );
+          throw new Exception(`密码错误，还剩${this.maxLoginFailCount - loginlogs.length - 1}次机会。`);
+        }
       }
       if (!ifAdminLogin) {
         await this.logUserLoginFacadeService.insLogUserLogin({
@@ -253,30 +257,33 @@ export class IdentityService {
       if (!user) {
         throw new UserUnknownException();
       }
-      const loginlogs = await this.logUserLoginFacadeService.selAllLogUserLogin(user.id, netInfo.ip, dto.loginRole);
-      if (loginlogs.length >= this.maxLoginFailCount) {
-        const sort = loginlogs.sort((a, b) => timeUtils.timestamp(a.createTime) - timeUtils.timestamp(b.createTime));
-        const number = Math.ceil(
-          24 - (timeUtils.timestamp() - timeUtils.timestamp(sort[0].createTime)) / (1000 * 60 * 60),
-        );
-        throw new Exception(`您的账号在当前IP密码错误次数过多，请${number}小时后重试或更换网络环境重试。`);
-      }
-      const b1 = await encryptUtils.bcrypt.comparePassword(dto.password, user.password);
-      if (!b1) {
-        await this.logUserLoginFacadeService.insLogUserLogin(
-          {
-            userId: user.id,
-            loginRole: dto.loginRole,
-            loginType: base.LoginTypeEnum.pw,
-            loginIp: netInfo.ip,
-            loginPosition: '',
-            loginBrowser: netInfo.browser,
-            loginOs: netInfo.os,
-            ifSuccess: b1,
-          },
-          PASSWORD_ERROR,
-        );
-        throw new Exception(`密码错误，还剩${this.maxLoginFailCount - loginlogs.length - 1}次机会。`);
+      let b1 = true;
+      if (ltype === 'psd') {
+        const loginlogs = await this.logUserLoginFacadeService.selAllLogUserLogin(user.id, netInfo.ip, dto.loginRole);
+        if (loginlogs.length >= this.maxLoginFailCount) {
+          const sort = loginlogs.sort((a, b) => timeUtils.timestamp(a.createTime) - timeUtils.timestamp(b.createTime));
+          const number = Math.ceil(
+              24 - (timeUtils.timestamp() - timeUtils.timestamp(sort[0].createTime)) / (1000 * 60 * 60),
+          );
+          throw new Exception(`您的账号在当前IP密码错误次数过多，请${number}小时后重试或更换网络环境重试。`);
+        }
+        b1 = await encryptUtils.bcrypt.comparePassword(dto.password, user.password);
+        if (!b1) {
+          await this.logUserLoginFacadeService.insLogUserLogin(
+              {
+                userId: user.id,
+                loginRole: dto.loginRole,
+                loginType: base.LoginTypeEnum.pw,
+                loginIp: netInfo.ip,
+                loginPosition: '',
+                loginBrowser: netInfo.browser,
+                loginOs: netInfo.os,
+                ifSuccess: b1,
+              },
+              PASSWORD_ERROR,
+          );
+          throw new Exception(`密码错误，还剩${this.maxLoginFailCount - loginlogs.length - 1}次机会。`);
+        }
       }
       if (!ifAdminLogin) {
         await this.logUserLoginFacadeService.insLogUserLogin({
@@ -306,40 +313,43 @@ export class IdentityService {
       if (!user) {
         throw new UserUnknownException();
       }
-      const loginlogs = await this.logUserLoginFacadeService.selAllLogUserLogin(user.id, netInfo.ip, dto.loginRole);
-      if (loginlogs.length >= this.maxLoginFailCount) {
-        const sort = loginlogs.sort((a, b) => timeUtils.timestamp(a.createTime) - timeUtils.timestamp(b.createTime))
-        const number = Math.ceil(24 - (timeUtils.timestamp() - timeUtils.timestamp(sort[0].createTime)) / (1000 * 60 * 60));
-        throw new Exception(`您的账号在当前IP密码错误次数过多，请${number}小时后重试或更换网络环境重试。`);
-      }
-      const b1 = await encryptUtils.bcrypt.comparePassword(dto.password, user.password)
-      if (!b1) {
-        await this.logUserLoginFacadeService.insLogUserLogin(
-            {
-              userId: user.id,
-              loginRole: dto.loginRole,
-              loginType: base.LoginTypeEnum.pw,
-              loginIp: netInfo.ip,
-              loginPosition: '',
-              loginBrowser: netInfo.browser,
-              loginOs: netInfo.os,
-              ifSuccess: b1,
-            },
-            PASSWORD_ERROR,
-        );
-        throw new Exception(`密码错误，还剩${this.maxLoginFailCount - loginlogs.length - 1}次机会。`);
-      }
-      if (!ifAdminLogin) {
-        await this.logUserLoginFacadeService.insLogUserLogin({
-          userId: user.id,
-          loginRole: dto.loginRole,
-          loginType: base.LoginTypeEnum.pw,
-          loginIp: netInfo.ip,
-          loginPosition: '',
-          loginBrowser: netInfo.browser,
-          loginOs: netInfo.os,
-          ifSuccess: b1,
-        });
+      let b1 = true;
+      if (ltype === 'psd') {
+        const loginlogs = await this.logUserLoginFacadeService.selAllLogUserLogin(user.id, netInfo.ip, dto.loginRole);
+        if (loginlogs.length >= this.maxLoginFailCount) {
+          const sort = loginlogs.sort((a, b) => timeUtils.timestamp(a.createTime) - timeUtils.timestamp(b.createTime))
+          const number = Math.ceil(24 - (timeUtils.timestamp() - timeUtils.timestamp(sort[0].createTime)) / (1000 * 60 * 60));
+          throw new Exception(`您的账号在当前IP密码错误次数过多，请${number}小时后重试或更换网络环境重试。`);
+        }
+        b1 = await encryptUtils.bcrypt.comparePassword(dto.password, user.password)
+        if (!b1) {
+          await this.logUserLoginFacadeService.insLogUserLogin(
+              {
+                userId: user.id,
+                loginRole: dto.loginRole,
+                loginType: base.LoginTypeEnum.pw,
+                loginIp: netInfo.ip,
+                loginPosition: '',
+                loginBrowser: netInfo.browser,
+                loginOs: netInfo.os,
+                ifSuccess: b1,
+              },
+              PASSWORD_ERROR,
+          );
+          throw new Exception(`密码错误，还剩${this.maxLoginFailCount - loginlogs.length - 1}次机会。`);
+        }
+        if (!ifAdminLogin) {
+          await this.logUserLoginFacadeService.insLogUserLogin({
+            userId: user.id,
+            loginRole: dto.loginRole,
+            loginType: base.LoginTypeEnum.pw,
+            loginIp: netInfo.ip,
+            loginPosition: '',
+            loginBrowser: netInfo.browser,
+            loginOs: netInfo.os,
+            ifSuccess: b1,
+          });
+        }
       }
       delete user.password;
       const token = await this.cacheTokenService.genToken(user.id, user.username, dto.loginRole, netInfo);

@@ -2,11 +2,11 @@ import { defineStore } from "pinia";
 import { reactive, ref } from "vue";
 import { ElMessage, ElNotification, NotificationHandle } from "element-plus";
 import { useRoute, useRouter } from "vue-router";
-import { LoginDto, MultiAuthUserDto } from "@/type/module/main/sysManage/user.ts";
+import { LoginCodeDto, LoginDto, MultiAuthUserDto } from "@/type/module/main/sysManage/user.ts";
 import { getSelfInfo } from "@/api/module/main/sysManage/user.ts";
 import { ifWebsiteLink } from "@/utils/LinkUtils.ts";
 import { BCService } from "@/services/broadcastChannel.ts";
-import { loginApi, logOutApi } from "@/api/module/main/sysManage/userLogin.ts";
+import { loginApi, loginCodeApi, logOutApi } from "@/api/module/main/sysManage/userLogin.ts";
 import { gotoDashboardHome } from "@/views/dashboard/utils/base.ts";
 import { setUserStoreInfo } from "@/identity/utils/identityUtils.ts";
 
@@ -39,9 +39,9 @@ export const useUserStore = defineStore('userStore', () => {
     }
   }
   refreshLoginRoleCB()
-  const login = async (user: LoginDto, ifAdminLogin = false) => {
+  const login = async (user: LoginDto, user2: LoginCodeDto, ifAdminLogin = false, loginType: 'psd' | 'code' = 'psd') => {
     return new Promise((resolve, reject) => {
-      loginApi(user, ifAdminLogin).then(async res => {
+      (loginType === 'psd' ? loginApi(user, ifAdminLogin) : loginCodeApi(user2, ifAdminLogin)).then(async res => {
         // 其他标签页如果有不同用户，则将其登出
         BCService.emit('login', {username: user.username, loginRole: user.loginRole})
         if (res) {

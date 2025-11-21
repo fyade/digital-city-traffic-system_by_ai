@@ -2,9 +2,11 @@
 import { reactive, ref, watchEffect } from 'vue'
 import { useUserStore } from "@/store/module/user.ts";
 import { useSysStore } from "@/store/module/sys.ts";
-import { getVerificationCode, registApi } from "@/api/module/main/sysManage/userLogin.ts";
-import { publicConfig } from "@dcts/config";
+import { getEmailCodeApi, getVerificationCode, regist2Api } from "@/api/module/main/sysManage/userLogin.ts";
+import { adminConfig, publicConfig } from "@dcts/config";
 import { base } from "@dcts/common";
+import { FormRules } from "element-plus";
+import { LoginCodeDto } from "@/type/module/main/sysManage/user.ts";
 
 const userStore = useUserStore();
 const sysStore = useSysStore();
@@ -15,6 +17,8 @@ const form = reactive({
   verificationCode: '',
   verificationCodeUuid: '',
 })
+const emailCode = ref('')
+const rules: FormRules<typeof form> = {}
 
 const logining = ref(false)
 const onSubmit = async () => {
@@ -29,14 +33,21 @@ const onSubmit = async () => {
   }
   if (radio1.value === 'user' || radio1.value === 'admin') {
     logining.value = true
-    userStore.login(form, radio1.value === 'admin').then().catch((e) => {
+    const user2: LoginCodeDto = {
+      username: form.username,
+      code: emailCode.value,
+      loginRole: form.loginRole,
+      verificationCode: form.verificationCode,
+      verificationCodeUuid: form.verificationCodeUuid,
+    };
+    userStore.login(form, user2, radio1.value === 'admin', ifCodewLogin.value).then().catch((e) => {
       logining.value = false
       refreshVerificationCode()
     })
   }
   if (radio1.value === 'regist') {
     logining.value = true
-    registApi(form).then((res) => {
+    regist2Api({...form, emailCode: emailCode.value}).then((res) => {
       ElMessage.success('注册成功，请前往"用户登录" tab 页登录。')
     }).finally(() => {
       logining.value = false
@@ -54,12 +65,37 @@ const refreshVerificationCode = () => {
 }
 refreshVerificationCode()
 
-const radio1 = ref('user')
+const emailCodewLoading = ref(false)
+const getEmailCode_ = () => {
+  if (!/^.+@.+\..+$/.test(form.username)) {
+    ElMessage.warning('邮箱格式错误。')
+    return
+  }
+  emailCodewLoading.value = true
+  getEmailCodeApi({email: form.username})
+      .then(() => {
+        ElMessage.success('邮件已发送，请注意查收。')
+      })
+      .finally(() => {
+        emailCodewLoading.value = false
+      })
+}
+
+const ifCodewLogin = ref<'psd' | 'code'>('psd')
+const changeCodeLogin = () => {
+  ifCodewLogin.value = ifCodewLogin.value === 'psd' ? 'code' : 'psd'
+}
+
+const radio1 = ref<'user' | 'admin' | 'regist'>('user')
 watchEffect(() => {
   if (radio1.value === 'admin') {
     form.loginRole = base.LoginRoleEnum.admin
   } else if (radio1.value === 'user' || radio1.value === 'regist') {
     form.loginRole = base.LoginRoleEnum.dcts
+  }
+
+  if (radio1.value === 'regist') {
+    ifCodewLogin.value = 'psd'
   }
 })
 </script>
@@ -67,31 +103,54 @@ watchEffect(() => {
 <template>
   <div class="el">
     <p class="title">{{ publicConfig.APP_NAME }}</p>
+    <p class="title title2">
+      <span>前端版本</span>
+      <span>{{ adminConfig.currentVersion }}</span>
+      <span>后端版本</span>
+      <span>{{ sysStore.version.hd }}</span>
+    </p>
 
     <el-tabs v-model="radio1">
       <el-tab-pane label="用户登录" name="user"/>
-      <el-tab-pane label="用户注册" name="regist"/>
       <el-tab-pane label="管理员登录" name="admin"/>
+      <el-tab-pane label="注册" name="regist"/>
     </el-tabs>
 
     <br/>
 
     <el-form
         :model="form"
-        label-width="80px"
+        :rules="rules"
+        label-width="100px"
         label-position="left"
         @keyup.enter="onSubmit"
     >
-      <el-form-item label="用户名">
+      <template v-if="radio1==='regist'">
+        <el-alert
+            title="注册成功后，可使用“用户登录”登录用户端，也可使用“管理员登录”登录后台。"
+            type="info"
+            show-icon
+            :closable="false"
+        />
+        <br/>
+      </template>
+      <el-form-item label="邮箱">
         <el-input v-model="form.username"/>
       </el-form-item>
-      <el-form-item label="密码">
+      <el-form-item label="密码" v-if="ifCodewLogin==='psd'">
         <el-input type="password" v-model="form.password"/>
       </el-form-item>
-      <el-form-item label="登录身份" v-show="radio1 === 'admin'">
-        <el-select v-model="form.loginRole">
-          <el-option v-for="key in base.LoginRoleEnum" :key="key" :label="base.loginRoleDict[key]" :value="key"/>
-        </el-select>
+      <!-- <el-form-item label="登录身份" v-show="radio1 === 'admin'"> -->
+      <!--   <el-select v-model="form.loginRole" disabled> -->
+      <!--     <el-option v-for="key in base.LoginRoleEnum" :key="key" :label="base.loginRoleDict[key]" :value="key"/> -->
+      <!--   </el-select> -->
+      <!-- </el-form-item> -->
+      <el-form-item label="邮箱验证码" v-if="radio1==='regist'||ifCodewLogin==='code'">
+        <el-input v-model="emailCode">
+          <template #append>
+            <el-button :disabled="emailCodewLoading" @click="getEmailCode_">获取验证码</el-button>
+          </template>
+        </el-input>
       </el-form-item>
       <el-form-item label="验证码">
         <el-input v-model="form.verificationCode">
@@ -103,7 +162,15 @@ watchEffect(() => {
         </el-input>
       </el-form-item>
       <div class="button-row">
-        <el-button type="primary" :disabled="logining" :loading="logining" @click="onSubmit">登录</el-button>
+        <el-button v-if="radio1==='user'||radio1==='admin'" @click="changeCodeLogin">
+          <span v-if="ifCodewLogin==='psd'">验证码登录</span>
+          <span v-if="ifCodewLogin==='code'">密码登录</span>
+        </el-button>
+        <el-button type="primary" :disabled="logining" :loading="logining" @click="onSubmit">
+          <span v-if="radio1==='user'">用户登录</span>
+          <span v-if="radio1==='admin'">管理员登录</span>
+          <span v-if="radio1==='regist'">注册</span>
+        </el-button>
       </div>
     </el-form>
   </div>
@@ -132,6 +199,14 @@ watchEffect(() => {
     font-size: 24px;
     line-height: 2;
     margin-bottom: 24px;
+  }
+
+  > .title2 {
+    font-size: 14px;
+    font-weight: lighter;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
   }
 
   .vcodeBox {

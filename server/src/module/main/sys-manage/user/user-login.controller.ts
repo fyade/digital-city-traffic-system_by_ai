@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Req, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UserService } from './user.service';
-import { LoginDto, RegistDto } from './dto';
+import { EmailCodeDto, LoginCodeDto, LoginDto, Regist2Dto, RegistDto } from './dto';
 import { R } from '../../../../common/R';
 import { Authorize } from '../../../../decorator/authorize.decorator';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -55,6 +55,42 @@ export class UserLoginController {
     return this.userService.regist(dto);
   }
 
+  @Post('/regist2')
+  @ApiOperation({
+    summary: '用户注册（支持不同登录身份）',
+  })
+  @Authorize({
+    permission: '-',
+    label: '用户注册（支持不同登录身份）',
+    ifIgnore: true,
+    ifIgnoreParamInLog: true,
+  })
+  async regist2(@Body() dto: Regist2Dto): Promise<R> {
+    if (dto.psdType === 'b') {
+      dto.password = encryptUtils.aes.decrypt(dto.password);
+    }
+    if (dto.psdType === 'c') {
+      const key = await this.cacheTokenService.getPasswordKey(dto.passwordKeyUuid);
+      dto.password = await encryptUtils.rsa.decrypt(key.privateKey, dto.password);
+    }
+    delete dto.psdType;
+    return this.userService.regist2(dto);
+  }
+
+  @Post('/get-email-code')
+  @ApiOperation({
+    summary: '获取邮箱验证码',
+  })
+  @Authorize({
+    permission: '-',
+    label: '获取邮箱验证码',
+    ifIgnore: true,
+    ifIgnoreParamInLog: true,
+  })
+  async getEmailCode(@Body() dto: EmailCodeDto): Promise<R> {
+    return this.userService.getEmailCode(dto);
+  }
+
   @Post('/login')
   @ApiOperation({
     summary: '用户登录（支持不同登录身份）',
@@ -99,6 +135,36 @@ export class UserLoginController {
     delete dto.psdType;
     const netInfo = getIpInfoFromRequest(request);
     return this.userService.adminlogin(dto, netInfo);
+  }
+
+  @Post('/login-code')
+  @ApiOperation({
+    summary: '用户验证码登录（支持不同登录身份）',
+  })
+  @Authorize({
+    permission: '-',
+    label: '用户验证码登录（支持不同登录身份）',
+    ifIgnore: true,
+    ifIgnoreParamInLog: true,
+  })
+  async loginCode(@Body() dto: LoginCodeDto, @Req() request: Request): Promise<R> {
+    const netInfo = getIpInfoFromRequest(request);
+    return this.userService.loginCode(dto, netInfo);
+  }
+
+  @Post('/adminlogin-code')
+  @ApiOperation({
+    summary: '管理员验证码登录（支持不同登录身份）',
+  })
+  @Authorize({
+    permission: '-',
+    label: '管理员验证码登录（支持不同登录身份）',
+    ifIgnore: true,
+    ifIgnoreParamInLog: true,
+  })
+  async adminLoginCode(@Body() dto: LoginCodeDto, @Req() request: Request): Promise<R> {
+    const netInfo = getIpInfoFromRequest(request);
+    return this.userService.adminloginCode(dto, netInfo);
   }
 
   @Post('/log-out')

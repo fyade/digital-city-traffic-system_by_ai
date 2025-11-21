@@ -17,11 +17,13 @@ export const loginRoleDict = {
 export enum LoginTypeEnum {
   pw = "pw",
   wai = "wai",
+  yzm = "yzm",
 }
 
 export const loginTypeDict = {
   [LoginTypeEnum.pw]: "账号密码登录",
   [LoginTypeEnum.wai]: "WebAuthn登录",
+  [LoginTypeEnum.yzm]: "验证码登录",
 }
 
 // 用户认证类型

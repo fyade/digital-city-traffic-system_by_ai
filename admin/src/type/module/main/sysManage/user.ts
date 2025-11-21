@@ -58,6 +58,22 @@ export class LoginDto extends LoginDto2 {
 export class RegistDto extends LoginDto2 {
 }
 
+export class Regist2Dto extends RegistDto {
+  emailCode!: string
+}
+
+export class EmailCodeDto {
+  email!: string
+}
+
+export class LoginCodeDto {
+  username!: string
+  code!: string
+  loginRole!: string
+  verificationCode!: string
+  verificationCodeUuid!: string
+}
+
 export class UserUpdPsdDto {
   oldp!: string
   newp1!: string

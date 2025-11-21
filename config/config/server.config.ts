@@ -49,7 +49,7 @@ const config = {
     },
     headerApiKeyName: 'dcts-api-key',
     ifShowSwagger: true,
-    ifIgnoreVerificationCode: true,
+    ifIgnoreVerificationCode: false,
     ifLogSQLExecutionTime: true,
     prismaLogLevel: ['query', 'info', 'warn', 'error'],
     jwtConstants: {

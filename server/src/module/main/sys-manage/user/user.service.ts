@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { R } from '../../../../common/R';
 import {
-  AdminNewUserDto,
+  AdminNewUserDto, EmailCodeDto, LoginCodeDto,
   LoginDto,
-  MultiAuthUserDto,
+  MultiAuthUserDto, Regist2Dto,
   RegistDto,
   ResetUserPsdDto,
   UpdPsdDto,
@@ -34,6 +34,7 @@ import { UserUserGroupFacadeService } from '../../../algorithm/user-user-group/u
 import { UserGroupFacadeService } from '../../../algorithm/user-group/user-group.facade.service';
 import { AdminTopFacadeService } from '../admin-top/admin-top.facade.service';
 import { SysConfigFacadeService } from '../sys-config/sys-config.facade.service';
+import { MailService } from "../../../../infra/sender/mail/mail.service";
 
 @Injectable()
 export class UserService {
@@ -54,6 +55,7 @@ export class UserService {
     private readonly userGroupFacadeService: UserGroupFacadeService,
     private readonly adminTopFacadeService: AdminTopFacadeService,
     private readonly sysConfigFacadeService: SysConfigFacadeService,
+    private readonly mailService: MailService,
   ) {
     this.maxLoginFailCount = 10;
     this.bcs.setFieldSelectParam('sys_user', {
@@ -194,6 +196,36 @@ export class UserService {
     throw new UserUnknownException();
   }
 
+  async regist2(dto: Regist2Dto): Promise<R> {
+    if (!serverConfig.currentConfig().ifIgnoreVerificationCode) {
+      const vcode = await this.cacheTokenService.getVerificationCode(dto.verificationCodeUuid);
+      if (!vcode) {
+        throw new Exception('验证码已过期。');
+      }
+      if (vcode.toLowerCase() !== dto.verificationCode.toLowerCase()) {
+        throw new Exception('验证码错误。');
+      }
+    }
+    const code = await this.cacheTokenService.getEmailCode(dto.username);
+    if (!code) {
+      throw new Exception('邮箱验证码错误或已过期。');
+    }
+    if (code.trim().toLowerCase() !== dto.emailCode.trim().toLowerCase()) {
+      throw new Exception('邮箱验证码错误。');
+    }
+    await this.cacheTokenService.deleteEmailCode(dto.username);
+    await this.regist({...dto, loginRole: base.LoginRoleEnum.admin})
+    await this.regist({...dto, loginRole: base.LoginRoleEnum.dcts})
+    return R.ok('注册成功。');
+  }
+
+  async getEmailCode(dto: EmailCodeDto): Promise<R> {
+    const code = idUtils.genId(6, false).toUpperCase();
+    await this.mailService.sendCode(dto.email, code, serverConfig.currentConfig().VERIFICATION_CODE_EXPIRE_TIME)
+    await this.cacheTokenService.saveEmailCode(dto.email, code)
+    return R.ok('邮箱验证码已发送，请注意查收');
+  }
+
   async login(
     dto: LoginDto,
     netInfo: IpInfoDto,
@@ -256,6 +288,83 @@ export class UserService {
         },
         NOT_ADMIN,
         '不是管理员用户',
+      );
+      throw new Exception('你不是管理员用户。');
+    }
+    throw new UserUnknownException();
+  }
+
+  async loginCode(
+      dto: LoginCodeDto,
+      netInfo: IpInfoDto,
+      ifAdminLogin = false,
+      ltype: 'psd' | 'code' = 'code',
+  ): Promise<
+      R<{
+        token: string;
+        loginRole: string;
+        multiAuthUser: MultiAuthUserDto;
+      }>
+  > {
+    if (!serverConfig.currentConfig().ifIgnoreVerificationCode) {
+      const vcode = await this.cacheTokenService.getVerificationCode(dto.verificationCodeUuid);
+      if (!vcode) {
+        throw new Exception('验证码已过期。');
+      }
+      if (vcode.toLowerCase() !== dto.verificationCode.toLowerCase()) {
+        throw new Exception('验证码错误。');
+      }
+    }
+    const ecode = await this.cacheTokenService.getEmailCode(dto.username);
+    if (!ecode) {
+      throw new Exception('邮箱验证码错误或已过期。');
+    }
+    if (ecode.trim().toLowerCase() !== dto.code.trim().toLowerCase()) {
+      throw new Exception('邮箱验证码错误。');
+    }
+    await this.cacheTokenService.deleteEmailCode(dto.username);
+    const b = await this.identityService.login({...dto, password: '', passwordKeyUuid: '', psdType: ''}, netInfo, ifAdminLogin, ltype);
+    if (b) {
+      return R.ok(b);
+    }
+    throw new UserUnknownException();
+  }
+
+  async adminloginCode(dto: LoginCodeDto, netInfo: IpInfoDto): Promise<R> {
+    const userinfo = await this.loginCode(dto, netInfo, true);
+    if (userinfo.code !== HTTP.SUCCESS().code) {
+      throw new Exception(userinfo.msg);
+    }
+    let userId = '';
+    if (userinfo.data.multiAuthUser.admin) userId = userinfo.data.multiAuthUser.admin.id;
+    if (userinfo.data.multiAuthUser.visitor) userId = userinfo.data.multiAuthUser.visitor.id;
+    const ifAdminUser = await this.authService.ifAdminUser(userId, dto.loginRole);
+    if (ifAdminUser) {
+      await this.logUserLoginFacadeService.insLogUserLogin({
+        userId: userId,
+        loginRole: dto.loginRole,
+        loginType: base.LoginTypeEnum.pw,
+        loginIp: netInfo.ip,
+        loginPosition: '',
+        loginBrowser: netInfo.browser,
+        loginOs: netInfo.os,
+        ifSuccess: true,
+      });
+      return R.ok(userinfo.data);
+    } else {
+      await this.logUserLoginFacadeService.insLogUserLogin(
+          {
+            userId: userId,
+            loginRole: dto.loginRole,
+            loginType: base.LoginTypeEnum.pw,
+            loginIp: netInfo.ip,
+            loginPosition: '',
+            loginBrowser: netInfo.browser,
+            loginOs: netInfo.os,
+            ifSuccess: false,
+          },
+          NOT_ADMIN,
+          '不是管理员用户',
       );
       throw new Exception('你不是管理员用户。');
     }

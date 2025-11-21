@@ -78,6 +78,43 @@ export class LoginDto extends LoginDto2 {
 export class RegistDto extends LoginDto2 {
 }
 
+export class Regist2Dto extends RegistDto {
+  @ApiProperty({ description: '邮箱验证码', required: true })
+  emailCode: string;
+
+  @ApiProperty({ description: '验证码', required: true })
+  verificationCode: string;
+
+  @ApiProperty({ description: '验证码uuid', required: true })
+  verificationCodeUuid: string;
+}
+
+export class EmailCodeDto {
+  @ApiProperty({ description: '邮箱', required: true })
+  @IsNotEmpty({ message: '邮箱不能为空' })
+  email: string;
+}
+
+export class LoginCodeDto {
+  @ApiProperty({ description: '用户名', required: true })
+  @IsNotEmpty({ message: '用户名不能为空' })
+  username: string;
+
+  @ApiProperty({ description: '邮箱验证码', required: true })
+  @IsNotEmpty({ message: '邮箱验证码不能为空' })
+  code: string;
+
+  @ApiProperty({ description: '登录身份', required: true })
+  @IsNotEmpty({ message: '登录身份不能为空' })
+  loginRole: string;
+
+  @ApiProperty({ description: '验证码', required: true })
+  verificationCode: string;
+
+  @ApiProperty({ description: '验证码uuid', required: true })
+  verificationCodeUuid: string;
+}
+
 export class UpdPsdDto {
   @ApiProperty({ description: '旧密码', required: true })
   @IsNotEmpty({ message: '旧密码不能为空' })
