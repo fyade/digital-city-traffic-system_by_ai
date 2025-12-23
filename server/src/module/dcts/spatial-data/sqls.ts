@@ -1,4 +1,5 @@
 import {
+  GetAircraftsInPolygonDto,
   GetAirspaceInPolygonDto,
   GetVehiclesInPolygonDto,
   NodesWithWaysInPolygonDto,
@@ -277,4 +278,32 @@ export function getAirspaceInPolygon(dto: GetAirspaceInPolygonDto, loginRole: st
     sql3,
     sql4,
   }
+}
+
+export function getAircraftsInPolygon(dto: GetAircraftsInPolygonDto) {
+  let end = new Date()
+  let start = new Date(end.getTime() - 1000 * dto.lastActiveInterval)
+  if (dto.timeRange) {
+    start = new Date(dto.timeRange[0])
+    end = new Date(dto.timeRange[1])
+  }
+  return `
+    select atp.id                               as "id",
+           atp.aircraft_id                      as "aircraftId",
+           ST_AsText(atp.point)                 as "point",
+           atp.height                           as "height",
+           atp.heading                          as "heading",
+           atp.create_role                      as "createRole",
+           atp.update_role                      as "updateRole",
+           atp.create_by                        as "createBy",
+           atp.update_by                        as "updateBy",
+           ${publicSqlSelectKey.kvs.createTime} as "createTime",
+           ${publicSqlSelectKey.kvs.updateTime} as "updateTime",
+           atp.deleted                          as "deleted"
+    from public.aircraft_track_point atp
+    where st_within(atp.point, st_geomfromtext('POLYGON((${dto.points.map(p => `${p.lon} ${p.lat}`).join(',')}))', 4326))
+      and atp.create_time between '${start.toISOString()}'::timestamp and '${end.toISOString()}'::timestamp
+      and atp.deleted = '${final.N}'
+    order by aircraft_id asc, create_time desc;
+  `
 }

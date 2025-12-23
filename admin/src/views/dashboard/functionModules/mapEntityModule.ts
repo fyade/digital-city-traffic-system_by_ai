@@ -1,5 +1,6 @@
 import * as Cesium from "cesium";
 import {
+  ID_PREFIX_AIRCRAFT_REAL_TIME,
   ID_PREFIX_FLIGHT_AIRSPACE_USER_APPLY,
   ID_PREFIX_FLIGHT_RESTRICTION_ZONE, ID_PREFIX_FLIGHT_ROUTE, ID_PREFIX_FLIGHT_ROUTE_USER_APPLY,
   ID_PREFIX_SIGNAL_LIGHT,
@@ -61,6 +62,7 @@ export class MapEntityModule {
   public setGetViewCornerCoordinates(func: NonNullable<typeof this.getViewCornerCoordinates>) {
     this.getViewCornerCoordinates = func
   }
+
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
@@ -124,6 +126,10 @@ export class MapEntityModule {
       get vehicleRealTimeCount() {
         return this.vehicleRealTime.length
       },
+      aircraftRealTime: [] as string[],
+      get aircraftRealTimeCount() {
+        return this.aircraftRealTime.length
+      },
       flightRestrictionZone: [] as string[],
       get flightRestrictionZoneCount() {
         return this.flightRestrictionZone.length
@@ -145,6 +151,7 @@ export class MapEntityModule {
           ...this.signalLightGroupInfo,
           ...this.signalLightInfo,
           ...this.vehicleRealTime,
+          ...this.aircraftRealTime,
           ...this.flightRestrictionZone,
           ...this.flightRoute,
           ...this.flightAirspaceUserApply,
@@ -164,6 +171,9 @@ export class MapEntityModule {
       }
       if (selectedEntityId.startsWith(ID_PREFIX_VEHICLE_REAL_TIME)) {
         obj.vehicleRealTime.push(selectedEntityId.replace(ID_PREFIX_VEHICLE_REAL_TIME, ''))
+      }
+      if (selectedEntityId.startsWith(ID_PREFIX_AIRCRAFT_REAL_TIME)) {
+        obj.aircraftRealTime.push(selectedEntityId.replace(ID_PREFIX_AIRCRAFT_REAL_TIME, ''))
       }
       if (selectedEntityId.startsWith(ID_PREFIX_FLIGHT_RESTRICTION_ZONE)) {
         obj.flightRestrictionZone.push(selectedEntityId.replace(ID_PREFIX_FLIGHT_RESTRICTION_ZONE, ''))

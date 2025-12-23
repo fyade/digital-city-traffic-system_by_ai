@@ -75,12 +75,25 @@ const updateShowAroundDate2 = (val: number) => {
   NMessage.success('修改成功。')
 }
 
+const ifShowAircraftRealTime = ref(useCesium.getIfShowAircraftRealTime())
+const updateIfShowAircraftRealTime = (val: boolean) => {
+  useCesium.setIfShowAircraftRealTime(val)
+  ifShowAircraftRealTime.value = useCesium.getIfShowAircraftRealTime()
+  NMessage.success('修改成功。')
+}
+const lastActiveInterval2 = ref(useCesium.getLastActiveInterval2())
+const updateLastActiveInterval2 = (val: number) => {
+  useCesium.setLastActiveInterval2(val)
+  lastActiveInterval2.value = useCesium.getLastActiveInterval2()
+  NMessage.success('修改成功。')
+}
+
 const ifAdminLogin = computed(() => userStore.loginType === 'admin')
 </script>
 
 <template>
   <n-modal
-      style="width: 60%;height: 60vh;"
+      style="width: 60%;height: 60vh;min-width: 860px;"
       :auto-focus="false"
       content-style="overflow: auto;"
       show
@@ -166,6 +179,29 @@ const ifAdminLogin = computed(() => userStore.loginType === 'admin')
           </div>
         </template>
       </n-gi>
+      <template v-if="ifAdminLogin">
+        <n-gi :span="12">
+          <n-grid>
+            <n-gi :span="6">航空器实时监控</n-gi>
+            <n-gi :span="18">
+              <n-switch :value="ifShowAircraftRealTime" @update:value="updateIfShowAircraftRealTime">
+                <template #checked>显示</template>
+                <template #unchecked>隐藏</template>
+              </n-switch>
+            </n-gi>
+          </n-grid>
+        </n-gi>
+        <n-gi :span="12">
+          <template v-if="ifShowAircraftRealTime">
+            <n-grid>
+              <n-gi :span="6">最近活动时间(秒)</n-gi>
+              <n-gi :span="18">
+                <n-input-number :value="lastActiveInterval2" @update:value="updateLastActiveInterval2" :max="60" :min="10"/>
+              </n-gi>
+            </n-grid>
+          </template>
+        </n-gi>
+      </template>
     </n-grid>
   </n-modal>
 </template>

@@ -1,12 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { R } from '../../../../common/R';
-import {
-  VehicleTrackPointDto,
-  VehicleTrackPointSelListDto,
-  VehicleTrackPointSelAllDto,
-  VehicleTrackPointInsOneDto,
-  VehicleTrackPointUpdOneDto
-} from './dto';
+import { VehicleTrackPointDto, VehicleTrackPointSelListDto, VehicleTrackPointSelAllDto, VehicleTrackPointInsOneDto, VehicleTrackPointUpdOneDto } from './dto';
 import { BaseContextService } from '../../../../infra/base-context/base-context.service';
 import { CommonPostgresqlPrismaoService } from "../../../../infra/prisma/common.postgresql.prismao.service";
 import { PostgresqlPrismaoService } from "../../../../infra/prisma/postgresql.prismao.service";

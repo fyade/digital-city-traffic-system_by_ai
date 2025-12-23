@@ -9,6 +9,7 @@ import { FlightRestrictionZoneDto } from "@/type/module/dcts/airspace/flightRest
 import { FlightRouteDto } from "@/type/module/dcts/airspace/flightRoute.ts";
 import { FlightRestrictionZoneUserApplyDto } from "@/type/module/dcts/airspace/flightRestrictionZoneUserApply.ts";
 import { FlightRouteUserApplyDto } from "@/type/module/dcts/airspace/flightRouteUserApply.ts";
+import { AircraftTrackPointDto } from "@/type/module/dcts/aircraftManage/aircraftTrackPoint.ts";
 
 class PolygonPointDto {
   lon!: number;
@@ -100,4 +101,20 @@ export class GetAirspaceInPolygonVo {
   flightRoutes!: FlightRouteDto[]
   selfFlightRestrictionZones!: FlightRestrictionZoneUserApplyDto[]
   selfFlightRoutes!: FlightRouteUserApplyDto[]
+}
+
+export class GetAircraftsInPolygonDto {
+  version?: string
+  lastActiveInterval!: number
+  points!: PolygonPointDto[]
+  timeRange?: [number, number]
+}
+
+class GetAircraftsInPolygonVoData {
+  aircraftId!: number
+  points!: AircraftTrackPointDto[]
+}
+
+export class GetAircraftsInPolygonVo {
+  data!: GetAircraftsInPolygonVoData[]
 }

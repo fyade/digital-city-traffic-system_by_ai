@@ -5,10 +5,11 @@ import {
   SignalLightGroupsInPolygonDto,
   CalculateLightsInPolygonDto,
   GetVehiclesInPolygonDto,
-  QueryVehicleTrajectoryDto, GetAirspaceInPolygonDto,
+  QueryVehicleTrajectoryDto, GetAirspaceInPolygonDto, GetAircraftsInPolygonDto,
 } from "./dto";
 import { PostgresqlPrismaoService } from "../../../infra/prisma/postgresql.prismao.service";
 import {
+  getAircraftsInPolygon,
   getAirspaceInPolygon,
   getVehiclesInPolygon,
   nodesWithWaysInPolygon, queryVehicleTrajectory,
@@ -27,9 +28,12 @@ import { arrayUtils, baseUtils } from "@dcts/common";
 import { WsService } from "../../../infra/ws/ws.service";
 import { VehicleTrackPointDto } from "../vehicle/vehicle-track-point/dto";
 import { Exception } from "../../../exception/exception";
-import { SignalLightChildStyleMappingFacadeService } from "../signal-light/signal-light-child-style-mapping/signal-light-child-style-mapping.facade.service";
+import {
+  SignalLightChildStyleMappingFacadeService
+} from "../signal-light/signal-light-child-style-mapping/signal-light-child-style-mapping.facade.service";
 import { SignalLightStyleFacadeService } from "../signal-light/signal-light-style/signal-light-style.facade.service";
 import { VehicleInfoFacadeService } from "../vehicle/vehicle-info/vehicle-info.facade.service";
+import { AircraftTrackPointDto } from "../aircraft-manage/aircraft-track-point/dto";
 
 @Injectable()
 export class SpatialDataService {
@@ -147,5 +151,22 @@ export class SpatialDataService {
     ret.selfFlightRestrictionZones = s3
     ret.selfFlightRoutes = s4
     return R.ok(ret)
+  }
+
+  async getAircraftsInPolygon(dto: GetAircraftsInPolygonDto): Promise<R> {
+    const sql = getAircraftsInPolygon(dto)
+    const ret = await this.pgsqlPrismao.$queryRawUnsafe<AircraftTrackPointDto[]>(sql)
+    const rett: { aircraftId: number, points: AircraftTrackPointDto[] }[] = []
+    const allCIds = arrayUtils.arrNoRepeat(ret.map(item => item.aircraftId))
+    for (const allCId of allCIds) {
+      rett.push({
+        aircraftId: allCId,
+        points: ret.filter(item => item.aircraftId === allCId)
+      })
+    }
+    const userData = this.bcs.getUserData()
+    const rettt = {data: rett}
+    this.wsService.sendMsg(userData.loginRole, userData.userId, 'dcts:spatialData:getAircraftsInPolygon', JSON.stringify(rettt))
+    return R.ok(true)
   }
 }

@@ -14,11 +14,15 @@ import { watch } from "vue";
 import * as Cesium from "cesium";
 import { useSysStore } from "@/store/module/sys.ts";
 import { adminConfig } from "@dcts/config";
-import { CalculateLightsInPolygonVo, GetVehiclesInPolygonVo } from "@/type/module/dcts/spatialData.ts";
+import {
+  CalculateLightsInPolygonVo,
+  GetAircraftsInPolygonVo,
+  GetVehiclesInPolygonVo
+} from "@/type/module/dcts/spatialData.ts";
 import { final } from "@/utils/base.ts";
 import {
   ContextMenuOptionType,
-  EDIT_TYPE_ENUM,
+  EDIT_TYPE_ENUM, ID_PREFIX_AIRCRAFT_REAL_TIME,
   ID_PREFIX_VEHICLE_REAL_TIME
 } from "@/views/dashboard/functionModules/constant.ts";
 import { DrawedVehicleTrajectoryClass } from "@/views/dashboard/utils/class.ts";
@@ -66,6 +70,10 @@ class UseDashboardCesium extends UseCesium {
     this.wsClient.addEventListener('dcts:spatialData:getVehiclesInPolygon', data => {
       const result = JSON.parse(data.msg) as GetVehiclesInPolygonVo;
       this.veModule.addTask(result)
+    })
+    this.wsClient.addEventListener('dcts:spatialData:getAircraftsInPolygon', data => {
+      const result = JSON.parse(data.msg) as GetAircraftsInPolygonVo
+      this.acModule.addTask(result)
     })
   }
 
@@ -131,6 +139,11 @@ class UseDashboardCesium extends UseCesium {
   }
 
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 外部访问 ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+  public readonly setIfShowAircraftRealTime = this.acModule.setIfShowAircraftRealTime.bind(this.acModule)
+  public readonly getIfShowAircraftRealTime = this.acModule.getIfShowAircraftRealTime.bind(this.acModule)
+  public readonly setLastActiveInterval2 = this.acModule.setLastActiveInterval2.bind(this.acModule)
+  public readonly getLastActiveInterval2 = this.acModule.getLastActiveInterval2.bind(this.acModule)
+
   public readonly endEditAirspace = this.asModule.endEditAirspace.bind(this.asModule)
   public readonly previewFlightRestrictionZone = this.asModule.previewFlightRestrictionZone.bind(this.asModule)
   public readonly previewFlightRoute = this.asModule.previewFlightRoute.bind(this.asModule)
@@ -174,6 +187,10 @@ class UseDashboardCesium extends UseCesium {
     if (!this.viewer) {
       return
     }
+
+    this.acModule.setMeModule(this.meModule)
+    this.acModule.setViewer(this.viewer)
+    this.acModule.setGetViewCornerCoordinates(this.getViewCornerCoordinates.bind(this))
 
     this.asModule.setMeModule(this.meModule)
     this.asModule.setMiModule(this.miModule)
@@ -271,6 +288,7 @@ class UseDashboardCesium extends UseCesium {
       }
     })
 
+    this.acModule.init()
     this.asModule.init()
     this.cModule.init()
     this.lnModule.init()
@@ -313,6 +331,9 @@ class UseDashboardCesium extends UseCesium {
 
   protected clockOnTickCB() {
     super.clockOnTickCB();
+    if (this.acModule) {
+      this.acModule.tick()
+    }
     if (this.slModule) {
       this.slModule.tick()
     }
@@ -375,6 +396,10 @@ class UseDashboardCesium extends UseCesium {
     this.viewer.trackedEntity = void 0
     if (seidsByGroup.vehicleRealTimeCount > 0) {
       const id = `${ID_PREFIX_VEHICLE_REAL_TIME}${seidsByGroup.vehicleRealTime[0]}`
+      this.trackEntity(id)
+    }
+    if (seidsByGroup.aircraftRealTimeCount > 0) {
+      const id = `${ID_PREFIX_AIRCRAFT_REAL_TIME}${seidsByGroup.aircraftRealTime[0]}`
       this.trackEntity(id)
     }
   }

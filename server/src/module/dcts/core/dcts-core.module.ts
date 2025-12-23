@@ -18,6 +18,9 @@ import { SignalLightStrategyTypeFacadeService } from "../signal-light-strategy/s
 import { SignalLightStrategyTypeStrategyScheduleMappingFacadeService } from "../signal-light-strategy/signal-light-strategy-type-strategy-schedule-mapping/signal-light-strategy-type-strategy-schedule-mapping.facade.service";
 import { VehicleInfoFacadeService } from "../vehicle/vehicle-info/vehicle-info.facade.service";
 import { VehicleTrackPointFacadeService } from "../vehicle/vehicle-track-point/vehicle-track-point.facade.service";
+import {
+  AircraftTrackPointFacadeService
+} from "../aircraft-manage/aircraft-track-point/aircraft-track-point.facade.service";
 
 @Global()
 @Module({
@@ -41,6 +44,7 @@ import { VehicleTrackPointFacadeService } from "../vehicle/vehicle-track-point/v
     SignalLightStrategyTypeStrategyScheduleMappingFacadeService,
     VehicleInfoFacadeService,
     VehicleTrackPointFacadeService,
+    AircraftTrackPointFacadeService,
   ],
   exports: [
     DctsCoreService,
@@ -62,6 +66,7 @@ import { VehicleTrackPointFacadeService } from "../vehicle/vehicle-track-point/v
     SignalLightStrategyTypeStrategyScheduleMappingFacadeService,
     VehicleInfoFacadeService,
     VehicleTrackPointFacadeService,
+    AircraftTrackPointFacadeService,
   ],
 })
 export class DctsCoreModule {

@@ -11,7 +11,13 @@ import { VehicleTrackPointDto, VehicleTrackPointInsOneDto } from "../vehicle/veh
 import { CommonPostgresqlPrismaoService } from "../../../infra/prisma/common.postgresql.prismao.service";
 import { VehicleInfoFacadeService } from "../vehicle/vehicle-info/vehicle-info.facade.service";
 import { VehicleTrackPointFacadeService } from "../vehicle/vehicle-track-point/vehicle-track-point.facade.service";
-import { LowAltitudeAircraftFacadeService } from "../aircraft-manage/low-altitude-aircraft/low-altitude-aircraft.facade.service";
+import {
+  LowAltitudeAircraftFacadeService
+} from "../aircraft-manage/low-altitude-aircraft/low-altitude-aircraft.facade.service";
+import {
+  AircraftTrackPointFacadeService
+} from "../aircraft-manage/aircraft-track-point/aircraft-track-point.facade.service";
+import { AircraftTrackPointDto, AircraftTrackPointInsOneDto } from "../aircraft-manage/aircraft-track-point/dto";
 
 @Injectable()
 export class ExternalService {
@@ -24,6 +30,7 @@ export class ExternalService {
       private readonly vehicleInfoFacadeService: VehicleInfoFacadeService,
       private readonly vehicleTrackPointFacadeService: VehicleTrackPointFacadeService,
       private readonly lowAltitudeAircraftFacadeService: LowAltitudeAircraftFacadeService,
+      private readonly aircraftTrackPointFacadeService: AircraftTrackPointFacadeService,
   ) {
   }
 
@@ -94,14 +101,32 @@ export class ExternalService {
   private addAircraftTrackPointMap = new Map<number, number>()
 
   async addAircraftTrackPoint(dto: AddAircraftTrackPointDto): Promise<R> {
-    const lowAltitudeAircraft = await this.lowAltitudeAircraftFacadeService.randomOne();
     const indexs = arrayUtils.arrNoRepeat(dto.datas.map(item => item.index));
     for (const index of indexs) {
       if (!this.addAircraftTrackPointMap.has(index)) {
+        const lowAltitudeAircraft = await this.lowAltitudeAircraftFacadeService.randomOne();
         this.addAircraftTrackPointMap.set(index, lowAltitudeAircraft.id)
       }
     }
-
+    const datas: AircraftTrackPointDto[] = []
+    const data1 = this.prismao.defaultInsArg().data;
+    for (const data of dto.datas) {
+      datas.push({
+        id: null,
+        aircraftId: this.addAircraftTrackPointMap.get(data.index),
+        point: `${data.lon},${data.lat}`,
+        height: data.height,
+        heading: data.heading,
+        createBy: data1.create_by,
+        createRole: data1.create_role,
+        createTime: new Date(data.time).toISOString(),
+        updateBy: data1.update_by,
+        updateRole: data1.update_role,
+        updateTime: new Date(data.time).toISOString(),
+        deleted: data1.deleted,
+      })
+    }
+    await this.aircraftTrackPointFacadeService.insMore(datas)
     if (dto.end) {
       this.addAircraftTrackPointMap.clear()
     }

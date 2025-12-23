@@ -86,6 +86,22 @@ export const useDashboardStore = defineStore('dashboardStore', () => {
     return showAroundDate2.value
   }
 
+  const ifShowAircraftRealTime = ref<boolean | null>(null)
+  const setIfShowAircraftRealTime = (value: boolean) => {
+    ifShowAircraftRealTime.value = value
+  }
+  const getIfShowAircraftRealTime = () => {
+    return ifShowAircraftRealTime.value
+  }
+
+  const lastActiveInterval2 = ref<number | null>(null)
+  const setLastActiveInterval2 = (value: number) => {
+    lastActiveInterval2.value = value
+  }
+  const getLastActiveInterval2 = () => {
+    return lastActiveInterval2.value
+  }
+
   return {
     currentCacheData,
     setCurrentCacheData,
@@ -112,6 +128,12 @@ export const useDashboardStore = defineStore('dashboardStore', () => {
     showAroundDate2,
     setShowAroundDate2,
     getShowAroundDate2,
+    ifShowAircraftRealTime,
+    setIfShowAircraftRealTime,
+    getIfShowAircraftRealTime,
+    lastActiveInterval2,
+    setLastActiveInterval2,
+    getLastActiveInterval2,
   }
 }, {
   persist: true

@@ -5,13 +5,16 @@ import { useDashboardCesium } from "@/views/dashboard/core/useDashboardCesium.ts
 import {
   EDIT_TYPE_DICT,
   EDIT_TYPE_ENUM,
-  ID_PREFIX_VEHICLE_REAL_TIME, EDIT_TYPES_SPECIAL_1
+  ID_PREFIX_VEHICLE_REAL_TIME, EDIT_TYPES_SPECIAL_1, ID_PREFIX_AIRCRAFT_REAL_TIME
 } from "@/views/dashboard/functionModules/constant.ts";
 import { vehicleInfoApi } from "@/api/module/dcts/vehicle/vehicleInfo.ts";
 import { VehicleInfoDto } from "@/type/module/dcts/vehicle/vehicleInfo.ts";
 import { vehicleInfoDict } from "@/dict/module/dcts/vehicle/vehicleInfo.ts";
 import { queryVehicleTrajectoryDict } from "@/dict/module/dcts/spatialData.ts";
 import { DrawedVehicleTrajectoryClass } from "@/views/dashboard/utils/class.ts";
+import { lowAltitudeAircraftDict } from "@/dict/module/dcts/aircraftManage/lowAltitudeAircraft.ts";
+import { LowAltitudeAircraftDto } from "@/type/module/dcts/aircraftManage/lowAltitudeAircraft.ts";
+import { lowAltitudeAircraftApi } from "@/api/module/dcts/aircraftManage/lowAltitudeAircraft.ts";
 
 const cesiumClass = useDashboardCesium
 
@@ -33,17 +36,28 @@ const trackedEntityType = ref<string | null>(null)
 cesiumClass.setSetTrackedEntityIdCB(data => {
   trackedEntityId.value = data
   trackedEntityType.value = null
-  if (trackedEntityId.value && trackedEntityId.value.startsWith(ID_PREFIX_VEHICLE_REAL_TIME)) {
-    trackedEntityType.value = ID_PREFIX_VEHICLE_REAL_TIME
-    vehicleInfoApi.selectById(Number(trackedEntityId.value.replace(ID_PREFIX_VEHICLE_REAL_TIME, ''))).then(res => {
-      if (res) {
-        vehicleInfoRef.value = res
-      }
-    })
+  if (trackedEntityId.value) {
+    if (trackedEntityId.value.startsWith(ID_PREFIX_VEHICLE_REAL_TIME)) {
+      trackedEntityType.value = ID_PREFIX_VEHICLE_REAL_TIME
+      vehicleInfoApi.selectById(Number(trackedEntityId.value.replace(ID_PREFIX_VEHICLE_REAL_TIME, ''))).then(res => {
+        if (res) {
+          vehicleInfoRef.value = res
+        }
+      })
+    }
+    if (trackedEntityId.value.startsWith(ID_PREFIX_AIRCRAFT_REAL_TIME)) {
+      trackedEntityType.value = ID_PREFIX_AIRCRAFT_REAL_TIME
+      lowAltitudeAircraftApi.selectById(Number(trackedEntityId.value.replace(ID_PREFIX_AIRCRAFT_REAL_TIME, ''))).then(res => {
+        if (res) {
+          aircraftInfoRef.value = res
+        }
+      })
+    }
   }
 })
 
 const vehicleInfoRef = ref<VehicleInfoDto>(new VehicleInfoDto())
+const aircraftInfoRef = ref<LowAltitudeAircraftDto>(new LowAltitudeAircraftDto())
 
 const cancelTrackEntity = () => {
   cesiumClass.trackEntity(null)
@@ -131,6 +145,41 @@ const endEditAirspace = () => {
           <n-grid>
             <n-gi :span="8">{{ vehicleInfoDict.color }}</n-gi>
             <n-gi :span="16">{{ vehicleInfoRef.color }}</n-gi>
+          </n-grid>
+        </n-gi>
+        <n-gi>
+          <n-button @click="cancelTrackEntity">取消跟踪</n-button>
+        </n-gi>
+      </template>
+
+      <template v-if="trackedEntityType===ID_PREFIX_AIRCRAFT_REAL_TIME">
+        <n-gi>
+          <n-divider style="margin: 0;" title-placement="left">聚焦实体</n-divider>
+        </n-gi>
+        <n-gi>
+          <n-grid>
+            <n-gi :span="8">实体类型</n-gi>
+            <n-gi :span="16"><strong>航空器</strong></n-gi>
+          </n-grid>
+          <n-grid>
+            <n-gi :span="8">实体id</n-gi>
+            <n-gi :span="16">{{ trackedEntityId?.replace(ID_PREFIX_AIRCRAFT_REAL_TIME, '') }}</n-gi>
+          </n-grid>
+          <n-grid>
+            <n-gi :span="8">{{ lowAltitudeAircraftDict.aircraftName }}</n-gi>
+            <n-gi :span="16">{{ aircraftInfoRef.aircraftName }}</n-gi>
+          </n-grid>
+          <n-grid>
+            <n-gi :span="8">{{ lowAltitudeAircraftDict.serialNumber }}</n-gi>
+            <n-gi :span="16">{{ aircraftInfoRef.serialNumber }}</n-gi>
+          </n-grid>
+          <n-grid>
+            <n-gi :span="8">{{ lowAltitudeAircraftDict.registrationNumber }}</n-gi>
+            <n-gi :span="16">{{ aircraftInfoRef.registrationNumber }}</n-gi>
+          </n-grid>
+          <n-grid>
+            <n-gi :span="8">{{ lowAltitudeAircraftDict.type }}</n-gi>
+            <n-gi :span="16">{{ aircraftInfoRef.type }}</n-gi>
           </n-grid>
         </n-gi>
         <n-gi>

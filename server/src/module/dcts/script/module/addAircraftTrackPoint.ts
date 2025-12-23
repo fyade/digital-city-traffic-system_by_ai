@@ -18,7 +18,7 @@ export class AddAircraftTrackPointModule {
       datas: [],
       end: false
     }
-    const dataCount = 1
+    const dataCount = 2
     for (let i = 0; i < dataCount; i++) {
       const pointNum = numberUtils.randomNumber(3, 10);
       const trackPoints: [number, number][] = []
@@ -44,7 +44,7 @@ export class AddAircraftTrackPointModule {
             lon: startPoint[0] + (endPoint[0] - startPoint[0]) * (k / second),
             lat: startPoint[1] + (endPoint[1] - startPoint[1]) * (k / second),
             height: height + h,
-            time: now++,
+            time: now += 1000,
             heading: 120,
             index: i,
           })
@@ -57,10 +57,14 @@ export class AddAircraftTrackPointModule {
       if (i === chunks - 1) {
         reqData.end = true
       }
+      const data = reqData.datas.slice(chunkSize * i, chunkSize * (i + 1));
       await request({
         url: '/dcts/external/add-aircraft-track-point',
         method: 'POST',
-        data: reqData.datas.slice(chunkSize * i, chunkSize * (i + 1))
+        data: {
+          ...reqData,
+          datas: data,
+        }
       })
     }
   }

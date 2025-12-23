@@ -170,3 +170,33 @@ export class GetAirspaceInPolygonDto {
   @IsNumber({}, {message: '查询结束时间必须是数值'})
   d2: number
 }
+
+export class GetAircraftsInPolygonDto {
+  @ApiProperty({description: '参数版本', default: '1.0'})
+  @IsOptional()
+  @IsIn(['1.0'], {message: '参数版本值不在允许的值中'})
+  version?: string = '1.0';
+
+  @ApiProperty({description: '最近活动时间', required: true})
+  @Type(() => Number)
+  @IsNotEmpty({message: '最近活动时间不能为空'})
+  @IsNumber({}, {message: '最近活动时间必须是数值'})
+  @Max(60, {message: '最近活动时间最大不能超过60'})
+  @Min(10, {message: '最近活动时间最小不能低于10'})
+  lastActiveInterval: number;
+
+  @ApiProperty({description: '多边形', required: true, type: [PolygonPointDto]})
+  @IsNotEmpty({message: '多边形不能为空'})
+  @IsArray({message: '多边形必须为数组'})
+  @ArrayMinSize(3, {message: '多边形至少需要 3 个顶点'})
+  @ValidateNested({each: true})
+  @Type(() => PolygonPointDto)
+  points: PolygonPointDto[]
+
+  @ApiProperty({description: '时间范围', type: [Number], default: null, nullable: true})
+  @IsOptional()
+  @IsArray({message: '时间范围必须为数组'})
+  @IsNumber({}, {each: true, message: '时间范围的每个元素必须是数值类型'})
+  @ArrayMinSize(2, {message: '时间范围必须包含至少2个元素'})
+  timeRange?: [number, number] | null = null
+}
