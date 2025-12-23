@@ -125,6 +125,18 @@ watchEffect(() => {
         label-position="left"
         @keyup.enter="onSubmit"
     >
+      <template v-if="radio1==='user' || radio1==='admin'">
+        <el-alert
+            type="info"
+            show-icon
+            :closable="false"
+        >
+          <p>演示用户：test@example.com</p>
+          <p>演示密码：123456</p>
+          <p>也可自行注册账号</p>
+        </el-alert>
+        <br/>
+      </template>
       <template v-if="radio1==='regist'">
         <el-alert
             title="注册成功后，可使用“用户登录”登录用户端，也可使用“管理员登录”登录后台。"
@@ -157,7 +169,7 @@ watchEffect(() => {
       <el-form-item label="邮箱验证码" v-if="radio1==='regist'||ifCodewLogin==='code'">
         <el-input v-model="emailCode">
           <template #append>
-            <el-button :disabled="emailCodewLoading" @click="getEmailCode_">获取验证码</el-button>
+            <el-button :disabled="emailCodewLoading" @click="getEmailCode_">获取邮箱验证码</el-button>
           </template>
         </el-input>
       </el-form-item>
