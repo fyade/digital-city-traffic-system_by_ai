@@ -39,13 +39,24 @@ export class AddAircraftTrackPointModule {
         const speed = numberUtils.randomNumber(1, 10, 2);
         const second = Math.floor(distance / speed)
         const h = numberUtils.randomNumber(-10, 10, 2)
+        const allPoints: [number, number][] = []
         for (let k = 0; k < second; k++) {
+          allPoints.push([
+            startPoint[0] + (endPoint[0] - startPoint[0]) * (k / second),
+            startPoint[1] + (endPoint[1] - startPoint[1]) * (k / second),
+          ])
+        }
+        for (let k = 0; k < second; k++) {
+          let heading = 0
+          if (k > 0) {
+            heading = this.bearing(allPoints[k - 1], allPoints[k])
+          }
           reqData.datas.push({
-            lon: startPoint[0] + (endPoint[0] - startPoint[0]) * (k / second),
-            lat: startPoint[1] + (endPoint[1] - startPoint[1]) * (k / second),
+            lon: allPoints[k][0],
+            lat: allPoints[k][1],
             height: height + h,
             time: now += 1000,
-            heading: 120,
+            heading: heading,
             index: i,
           })
         }
@@ -67,5 +78,25 @@ export class AddAircraftTrackPointModule {
         }
       })
     }
+  }
+
+  /**
+   * 计算两点的航向角 (度)
+   */
+  private bearing(p1: [number, number], p2: [number, number]): number {
+    const toRad = (d: number) => (d * Math.PI) / 180;
+    const toDeg = (r: number) => (r * 180) / Math.PI;
+
+    const lat1 = toRad(p1[1]);
+    const lat2 = toRad(p2[1]);
+    const dLng = toRad(p2[0] - p1[0]);
+
+    const y = Math.sin(dLng) * Math.cos(lat2);
+    const x =
+        Math.cos(lat1) * Math.sin(lat2) -
+        Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+
+    const brng = toDeg(Math.atan2(y, x));
+    return 360 - (brng + 360) % 360; // 0–360
   }
 }

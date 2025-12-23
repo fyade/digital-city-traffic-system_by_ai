@@ -129,7 +129,7 @@ export class AddVehicleTrackPointModule {
         Math.cos(lat1) * Math.sin(lat2) -
         Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
 
-    let brng = toDeg(Math.atan2(y, x));
+    const brng = toDeg(Math.atan2(y, x));
     return 360 - (brng + 360) % 360; // 0–360
   }
 
