@@ -39,6 +39,9 @@ export class DctsCalculateService {
    * @param timeRange
    */
   public async calculateLight(signalLightGroupIds: number[], timeRange: [number, number] | null) {
+    if (signalLightGroupIds.length === 0) {
+      return [];
+    }
     const start = performance.now();
     const defaultSelArg = this.prismao.defaultSelArg();
     const allSignalLightGroups = await this.signalLightGroupInfoFacadeService.selByIds(signalLightGroupIds);
