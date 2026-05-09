@@ -23,7 +23,7 @@ export class CodeGenerationService {
     let text = '';
     try {
       const pathJoin = path.join(__dirname, '../../../../../../../');
-      const prismaPath = path.join(pathJoin.endsWith('dist\\') ? pathJoin.substring(0, pathJoin.length - 5) : pathJoin, 'prisma');
+      const prismaPath = path.join(pathJoin.endsWith('dist/') ? pathJoin.substring(0, pathJoin.length - 5) : pathJoin, 'prisma');
       const files = fileUtils.getAllFiles(prismaPath, { ifIncludeSubFolder: false });
       const prismaFiles = files.filter((item) => item.endsWith('.prisma'));
       for (const file of prismaFiles) {
