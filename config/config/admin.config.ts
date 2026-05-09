@@ -1,5 +1,5 @@
 import { getCurrentConfig } from '../index.js'
-import { configProd } from "./admin-prod.config.js";
+// import { configProd } from "./admin-prod.config.js";
 import { currentVersion as cv, publicConfigDev } from './public.config.js'
 
 export const currentVersion = `${cv}.front`
@@ -18,5 +18,5 @@ const config = {
     VITE_API_WS_PREFIX: '/api-ws-dev',
     CHUNK_SIZE: 1024 * 1024 * 2,
   },
-  prod: configProd,
+  // prod: configProd,
 }

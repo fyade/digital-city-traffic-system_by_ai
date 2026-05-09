@@ -6,7 +6,7 @@ generator clientMysql {
 
 datasource dbMysql {
   provider = "mysql"
-  url      = "mysql://root:123456@localhost:3306/proj_digital-city-traffic-system"
+  url      = "mysql://root:123456@localhost:3306/proj_digital-city-traffic-system_by_ai"
 }
 
 // 1.0 系统配置

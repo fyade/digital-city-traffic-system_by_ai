@@ -1,5 +1,5 @@
 import { getCurrentConfig } from "../index.js";
-import { configProd } from "./public-prod.config.js";
+// import { configProd } from "./public-prod.config.js";
 
 export const APP_NAME = '数智交通全域调度系统'
 export const currentVersion = '1.0.3';
@@ -19,8 +19,8 @@ const config = {
     docSwaggerPath: '/doc-swagger',
     SECRET_KEY: 'ajkfbdaJHG@Dk',
   },
-  prod: configProd,
+  // prod: configProd,
 }
 
 export const publicConfigDev = config.dev
-export const publicConfigProd = config.prod
+// export const publicConfigProd = config.prod

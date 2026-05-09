@@ -6,7 +6,7 @@ generator clientPostgresql {
 
 datasource dbPostgresql {
   provider = "postgresql"
-  url      = "postgresql://postgres:123456@localhost:5432/digital-city-traffic-system?schema=public"
+  url      = "postgresql://postgres:123456@localhost:5432/digital-city-traffic-system_by_ai?schema=public"
 }
 
 // osm2pgsql_properties

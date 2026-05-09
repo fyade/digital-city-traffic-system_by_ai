@@ -1,5 +1,5 @@
 import { getCurrentConfig } from "../index.js";
-import { configProd } from "./server-prod.config.js";
+// import { configProd } from "./server-prod.config.js";
 import { currentVersion as cv, publicConfigDev } from './public.config.js'
 
 export const currentVersion = `${cv}.server`;
@@ -19,15 +19,15 @@ const config = {
       host: 'localhost',
       port: 6379,
       password: '123456',
-      database: 15,
-      databaseForQueue: 25,
+      database: 19,
+      databaseForQueue: 29,
     },
     mysql: {
       host: 'localhost',
       port: 3306,
       username: 'root',
       password: '123456',
-      database: 'proj_digital-city-traffic-system',
+      database: 'proj_digital-city-traffic-system_by_ai',
       timezone: 'Asia/Shanghai',
     },
     postgresql: {
@@ -35,16 +35,16 @@ const config = {
       port: 5432,
       username: 'postgres',
       password: '123456',
-      database: 'digital-city-traffic-system',
+      database: 'digital-city-traffic-system_by_ai',
       schema: 'public',
       timezone: 'Asia/Shanghai',
     },
     file: {
-      uploadPath: 'D:\\DevelopmentTools\\nestProjFilePath\\digital-city-traffic-system\\',
+      uploadPath: 'D:\\DevelopmentTools\\nestProjFilePath\\digital-city-traffic-system_by_ai\\',
       maxSizeOfFull: 1024 * 1024 * 10,
     },
     log: {
-      logSavePath: 'D:\\DevelopmentTools\\nestProjLogPath\\digital-city-traffic-system\\',
+      logSavePath: 'D:\\DevelopmentTools\\nestProjLogPath\\digital-city-traffic-system_by_ai\\',
       maxSizeOfKogFile: 1024 * 1024,
     },
     headerApiKeyName: 'dcts-api-key',
@@ -60,7 +60,7 @@ const config = {
     SECRET_KEY_HD_DB: 'almfdma@alkfmLNLK',
     SECRET_CON_PROJ_AUTH: 'aklsjKJB@san',
   },
-  prod: configProd,
+  // prod: configProd,
 };
 
 export function getMysqlUrlFromEnv(env: typeof config.dev): string {
