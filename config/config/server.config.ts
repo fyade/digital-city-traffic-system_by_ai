@@ -40,11 +40,11 @@ const config = {
       timezone: 'Asia/Shanghai',
     },
     file: {
-      uploadPath: '~/桌面/nestProjFilePath/digital-city-traffic-system_by_ai/',
+      uploadPath: '/home/fy/桌面/nestProjFilePath/digital-city-traffic-system_by_ai/',
       maxSizeOfFull: 1024 * 1024 * 10,
     },
     log: {
-      logSavePath: '~/桌面/nestProjLogPath/digital-city-traffic-system_by_ai/',
+      logSavePath: '/home/fy/桌面/nestProjLogPath/digital-city-traffic-system_by_ai/',
       maxSizeOfKogFile: 1024 * 1024,
     },
     headerApiKeyName: 'dcts-api-key',
