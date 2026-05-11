@@ -14,6 +14,10 @@ const whiteList = [
 ];
 
 async function main() {
+  const currentConfig = adminConfig.currentConfig();
+  if (currentConfig.VITE_MODE !== final.DEV) {
+    return
+  }
   await baseUtils.sleep(1000)
   const oldHtml = document.documentElement.outerHTML
   const oldTag_ = regularUtils.getScriptTagFromHtmlText(oldHtml)
@@ -29,10 +33,7 @@ async function main() {
   })
   const html = await fetch(`/?timestamp=${new Date().getTime()}`).then(res => res.text())
   const newTag = regularUtils.getScriptTagFromHtmlText(html)
-  const currentConfig = adminConfig.currentConfig();
-  if (currentConfig.VITE_MODE === final.DEV) {
-    console.info(oldTag, newTag)
-  }
+  console.info(oldTag, newTag)
   const ifNeedUpdate = !arrayUtils.ifSameArray(oldTag, newTag)
   if (ifNeedUpdate) {
     confirm('检测到新版本，请点击确定更新。')

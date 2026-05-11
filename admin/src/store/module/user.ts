@@ -91,7 +91,7 @@ export const useUserStore = defineStore('userStore', () => {
     setTimeout(() => {
       removeToken()
       if (ifReload) {
-        location.reload()
+        router.replace('/login')
       }
     })
   }
