@@ -6,7 +6,6 @@ import { AppService } from './app.service';
 import { MenuFacadeService } from './module/main/sys-manage/menu/menu.facade.service';
 import { IdentityModule } from './identity/identity.module';
 import { InfraModule } from './infra/infra.module';
-import { ProxyModule } from './module/proxy/proxy.module';
 import { AlgorithmModule } from './module/algorithm/algorithm.module';
 import { DctsModule } from "./module/dcts/dcts.module";
 import { MainModule } from './module/main/main.module';
@@ -15,7 +14,6 @@ import { MainModule } from './module/main/main.module';
   imports: [
     IdentityModule,
     InfraModule,
-    ProxyModule,
     AlgorithmModule,
     DctsModule,
     MainModule
