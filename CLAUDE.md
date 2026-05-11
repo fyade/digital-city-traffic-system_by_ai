@@ -59,6 +59,20 @@ AppModule
 - **MySQL** (`prisma/mysql.schema.prisma`): Main business data. All models managed by Prisma, with soft delete (`deleted = 'N'/'Y'`) and audit fields (`create_by`, `update_by`, `create_role`, `update_role`, `create_time`, `update_time`).
 - **PostgreSQL + PostGIS** (`prisma/postgresql.schema.prisma`): Geographic data. OSM road network tables (`planet_osm_nodes/ways/rels/line`) imported by osm2pgsql — these table structures must NOT be modified (per README).
 
+### Module Directory Convention
+
+See `docs/二开注意事项.md` for full details. Quick reference:
+
+**Backend**: `server/src/module/{域}/{业务名}/{模块名}/` (complex) or `server/src/module/{域}/{业务名}/` (simple). Each module has: `dto.ts`, `*.controller.ts`, `*.module.ts`, `*.service.ts`, `*.facade.service.ts` (optional).
+
+**Frontend** mirrors backend at `admin/src/{api,dict,type,views}/module/{域}/{业务名}/{模块名}/`.
+
+### CRUD Route Convention
+
+Every module has exactly **9 standard routes**: `GET /` (page), `GET /all`, `GET /ids`, `GET /:id`, `POST /` (insert), `POST /s` (batch insert), `PUT /` (update), `PUT /s` (batch update), `DELETE /`. All return `R<T>` wrapper.
+
+For new single-table CRUD modules, ask the user to generate via the built-in code generator. Multi-table join queries can be hand-written.
+
 ### Key Service Patterns
 
 - **PrismaService** (`server/src/infra/prisma/prisma.service.ts`): Wrapper around raw Prisma with built-in soft-delete filtering, snake_case/CamelCase conversion, dynamic query construction, and pagination. Use `MysqlPrismaService` for MySQL tables, `PostgresqlPrismaService` for PostgreSQL tables.
