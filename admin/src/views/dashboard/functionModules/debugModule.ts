@@ -10,6 +10,7 @@ import { CesiumLine, CesiumPoint } from "@/views/dashboard/utils/dto.ts";
  */
 export class DebugModule {
   private viewer: Cesium.Viewer | null = null
+  private carAnimationTimer: ReturnType<typeof setTimeout> | null = null
 
   public setViewer(viewer: Cesium.Viewer) {
     this.viewer = viewer;
@@ -32,6 +33,14 @@ export class DebugModule {
   public setSetViewTo(func: (lon: number, lat: number, obj?: { height?: number, ifFly?: boolean }) => void) {
     this.setViewTo = func
   }
+
+  public destroy() {
+    if (this.carAnimationTimer) {
+      clearTimeout(this.carAnimationTimer)
+      this.carAnimationTimer = null
+    }
+  }
+
   // ===== ===== ===== ===== ===== ===== ===== ===== ===== =====  ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
@@ -285,14 +294,14 @@ export class DebugModule {
     let distanceMoved = 0; // 已移动距离（米）
     const speed = 5; // 速度：米/秒
 
-    function moveCar() {
+    const moveCar = () => {
       distanceMoved += speed;
 
       // 如果到达终点，重置到起点
       if (distanceMoved >= pathLength) {
         distanceMoved = 0;
         carEntity.position = new Cesium.ConstantPositionProperty(pathPositions[0]);
-        setTimeout(moveCar, 1000);
+        this.carAnimationTimer = setTimeout(moveCar, 1000);
         return;
       }
 

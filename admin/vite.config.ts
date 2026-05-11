@@ -45,7 +45,7 @@ export default defineConfig(({mode}) => {
       }),
       AutoImport({
         resolvers: [
-          ElementPlusResolver(),
+          ElementPlusResolver({ importStyle: 'css' }),
           IconsResolver({
             prefix: 'Icon',
           }),
@@ -54,7 +54,7 @@ export default defineConfig(({mode}) => {
       }),
       Components({
         resolvers: [
-          ElementPlusResolver(),
+          ElementPlusResolver({ importStyle: 'css' }),
           IconsResolver({
             enabledCollections: ['ep'],
           })
@@ -109,7 +109,18 @@ export default defineConfig(({mode}) => {
       },
     },
     build: {
-      assetsDir: `./${adminConfig.currentVersion}`
+      assetsDir: `./${adminConfig.currentVersion}`,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            cesium: ['cesium'],
+            'element-plus': ['element-plus'],
+            'naive-ui': ['naive-ui'],
+            vendor: ['vue', 'vue-router', 'pinia', 'pinia-plugin-persistedstate'],
+            'chart-vendor': ['three', 'pixi.js', '@antv/g2'],
+          },
+        },
+      },
     }
   }
 })

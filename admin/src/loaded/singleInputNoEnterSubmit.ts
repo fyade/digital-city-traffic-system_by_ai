@@ -14,7 +14,7 @@ const observer = new MutationObserver(() => {
     form.addEventListener('submit', handleFormSubmit)
   })
 });
-observer.observe(document.body, {
+observer.observe(document.querySelector('#app') || document.body, {
   subtree: true,
   childList: true,
   attributes: false,

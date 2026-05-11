@@ -299,6 +299,7 @@ class UseDashboardCesium extends UseCesium {
   destroy() {
     super.destroy();
     this.cModule.destroy()
+    this.debugModule.destroy()
     this.lnModule.closeLayerLoading()
     useDashboardCesium = createDashboardCesium()
     this.wsClient.destroy()

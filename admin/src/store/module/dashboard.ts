@@ -136,5 +136,7 @@ export const useDashboardStore = defineStore('dashboardStore', () => {
     getLastActiveInterval2,
   }
 }, {
-  persist: true
+  persist: {
+    omit: ['currentCacheData']
+  }
 })

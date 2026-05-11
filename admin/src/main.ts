@@ -6,7 +6,6 @@ import directives from "@/dicevtive/index.ts";
 import { createPinia } from "pinia";
 import { createPersistedState } from 'pinia-plugin-persistedstate'
 import 'virtual:svg-icons-register'
-import 'element-plus/theme-chalk/index.css'
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import naive from "naive-ui";
 import 'cesium/Build/Cesium/Widgets/widgets.css'
