@@ -85,6 +85,8 @@ For new single-table CRUD modules, ask the user to generate via the built-in cod
 
 `config/config/` stores environment-specific config (`dev`/`prod` keys). Access via `serverConfig.currentConfig()`, `adminConfig.currentConfig()`, etc. The `getCurrentConfig()` function reads `NODE_ENV` (server) or `import.meta.env.MODE` (Vite) to select the right environment. Prod config files are gitignored (`*prod.config.ts`).
 
+**Important**: When making code changes, always bump `currentVersion` in `config/config/public.config.ts`. This version is used for `assetsDir` to bust static resource caches.
+
 ## Frontend Architecture
 
 Two distinct UIs share the same `@dcts/admin` package:
