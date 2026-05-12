@@ -26,6 +26,7 @@ let signalLightChart: echarts.ECharts | null = null;
 const activeVehicles = ref<ActiveVehicleVo[]>([]);
 const congestionCells = ref<CongestionCellVo[]>([]);
 const congestionMax = ref(0);
+const refreshing = ref(false);
 
 const overviewCards = [
   { label: '车辆总数', key: 'totalVehicles' as const },
@@ -33,82 +34,79 @@ const overviewCards = [
   { label: '近5分钟活跃车辆', key: 'activeVehiclesLast5Min' as const },
 ];
 
-onMounted(async () => {
-  // 加载概览数据
-  const overviewRes = await trafficOverviewApi();
-  overview.value = overviewRes;
-
-  // 加载车辆流量（默认北京区域、最近24小时）
-  const now = Date.now();
-  const dayAgo = now - 24 * 60 * 60 * 1000;
-  const flowRes = await vehicleFlowStatisticsApi({
-    points: [
-      { lon: 116.0, lat: 39.6 },
-      { lon: 116.8, lat: 39.6 },
-      { lon: 116.8, lat: 40.2 },
-      { lon: 116.0, lat: 40.2 },
-    ],
-    startTime: dayAgo,
-    endTime: now,
-    groupBy: 'hour',
-  });
-
-  // 初始化ECharts
-  if (vehicleFlowChartRef.value) {
-    vehicleFlowChart = echarts.init(vehicleFlowChartRef.value);
-    vehicleFlowChart.setOption({
-      tooltip: { trigger: 'axis' },
-      xAxis: {
-        type: 'category',
-        data: flowRes.map((item: VehicleFlowVo) => item.timeBucket),
-        axisLabel: { rotate: 45 },
-      },
-      yAxis: { type: 'value', name: '车辆数' },
-      series: [
-        {
-          name: '车辆数',
-          type: 'bar',
-          data: flowRes.map((item: VehicleFlowVo) => item.vehicleCount),
-          itemStyle: { color: '#1890ff' },
-        },
-      ],
-      grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
-    });
-  }
-
-  // 信号灯状态分布
+async function loadAllData() {
+  refreshing.value = true;
   try {
-    const groups = await signalLightGroupInfoApi.selectAll({});
-    const groupIds = (groups as { id: number }[]).map(g => g.id);
-    if (groupIds.length > 0) {
-      const statusRes = await signalLightStatusApi({ groupIds, timeRange: [dayAgo, now] });
-      const colorSums: Record<string, number> = {};
-      for (const item of statusRes as SignalLightStatusDistributionVo[]) {
-        colorSums[item.color] = (colorSums[item.color] || 0) + item.totalDurationMs;
-      }
-      if (signalLightChartRef.value) {
-        signalLightChart = echarts.init(signalLightChartRef.value);
+    const overviewRes = await trafficOverviewApi();
+    overview.value = overviewRes;
+
+    const now = Date.now();
+    const dayAgo = now - 24 * 60 * 60 * 1000;
+    const flowRes = await vehicleFlowStatisticsApi({
+      points: [
+        { lon: 116.0, lat: 39.6 },
+        { lon: 116.8, lat: 39.6 },
+        { lon: 116.8, lat: 40.2 },
+        { lon: 116.0, lat: 40.2 },
+      ],
+      startTime: dayAgo,
+      endTime: now,
+      groupBy: 'hour',
+    });
+
+    if (vehicleFlowChart) {
+      vehicleFlowChart.setOption({
+        xAxis: { data: flowRes.map((item: VehicleFlowVo) => item.timeBucket) },
+        series: [{ data: flowRes.map((item: VehicleFlowVo) => item.vehicleCount) }],
+      });
+    }
+
+    try {
+      const groups = await signalLightGroupInfoApi.selectAll({});
+      const groupIds = (groups as { id: number }[]).map(g => g.id);
+      if (groupIds.length > 0 && signalLightChart) {
+        const statusRes = await signalLightStatusApi({ groupIds, timeRange: [dayAgo, now] });
+        const colorSums: Record<string, number> = {};
+        for (const item of statusRes as SignalLightStatusDistributionVo[]) {
+          colorSums[item.color] = (colorSums[item.color] || 0) + item.totalDurationMs;
+        }
         signalLightChart.setOption({
-          tooltip: { trigger: 'item', formatter: (p: { name: string; value: number }) => {
-            const sec = (p.value / 1000).toFixed(1);
-            return `${p.name}: ${sec}s`;
-          }},
           series: [{
-            name: '灯色占比',
-            type: 'pie',
-            radius: ['40%', '70%'],
             data: [
               { value: colorSums['green'] || 0, name: '绿灯', itemStyle: { color: '#52c41a' } },
               { value: colorSums['red'] || 0, name: '红灯', itemStyle: { color: '#f5222d' } },
               { value: colorSums['yellow'] || 0, name: '黄灯', itemStyle: { color: '#faad14' } },
             ],
-            label: { formatter: '{b}: {d}%' },
           }],
         });
       }
-    }
-  } catch { /* 无信号灯数据时保持空饼图 */ }
-  if (!signalLightChart && signalLightChartRef.value) {
+    } catch { /* ignore */ }
+
+    try { activeVehicles.value = await activeVehiclesApi(); } catch { /* ignore */ }
+
+    try {
+      const cells = await congestionApi({ minLon: 116.0, maxLon: 116.8, minLat: 39.6, maxLat: 40.2, cellsPerSide: 8 });
+      congestionCells.value = cells as CongestionCellVo[];
+      congestionMax.value = Math.max(...(cells as CongestionCellVo[]).map(c => c.vehicleCount), 1);
+    } catch { /* ignore */ }
+  } finally {
+    refreshing.value = false;
+  }
+}
+
+onMounted(async () => {
+  // 初始化ECharts
+  if (vehicleFlowChartRef.value) {
+    vehicleFlowChart = echarts.init(vehicleFlowChartRef.value);
+    vehicleFlowChart.setOption({
+      tooltip: { trigger: 'axis' },
+      xAxis: { type: 'category', data: [], axisLabel: { rotate: 45 } },
+      yAxis: { type: 'value', name: '车辆数' },
+      series: [{ name: '车辆数', type: 'bar', data: [], itemStyle: { color: '#1890ff' } }],
+      grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+    });
+  }
+  if (signalLightChartRef.value) {
     signalLightChart = echarts.init(signalLightChartRef.value);
     signalLightChart.setOption({
       tooltip: { trigger: 'item' },
@@ -124,16 +122,7 @@ onMounted(async () => {
     });
   }
 
-  // 活跃车辆列表
-  try { activeVehicles.value = await activeVehiclesApi(); } catch { /* ignore */ }
-
-  // 拥堵检测
-  try {
-    const cells = await congestionApi({ minLon: 116.0, maxLon: 116.8, minLat: 39.6, maxLat: 40.2, cellsPerSide: 8 });
-    congestionCells.value = cells as CongestionCellVo[];
-    congestionMax.value = Math.max(...(cells as CongestionCellVo[]).map(c => c.vehicleCount), 1);
-  } catch { /* ignore */ }
-
+  await loadAllData();
   window.addEventListener('resize', handleResize);
 });
 
@@ -154,9 +143,12 @@ onBeforeUnmount(() => {
     <div class="statistics-container">
       <div class="page-header">
         <h2 class="page-title">交通流量统计</h2>
-        <n-button text @click="gotoDashboardHome" class="close-btn">
-          <n-icon :component="Close" size="24" />
-        </n-button>
+        <div class="header-actions">
+          <n-button size="small" :loading="refreshing" @click="loadAllData">刷新数据</n-button>
+          <n-button text @click="gotoDashboardHome" class="close-btn">
+            <n-icon :component="Close" size="24" />
+          </n-button>
+        </div>
       </div>
 
     <!-- 概览卡片 -->
@@ -254,8 +246,14 @@ onBeforeUnmount(() => {
   margin: 0;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .close-btn {
-  margin-left: auto;
+  margin-left: 0;
 }
 
 .overview-section {
