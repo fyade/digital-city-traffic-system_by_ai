@@ -78,10 +78,10 @@ export class WsClient {
         this.socket.on('disconnect', () => {
           if (this.ifSelfDisConnect) {
             messageSuccess('服务端实时通信连接已正常断开。')
+            this.socket = null
           } else {
-            messageError('服务端实时通信连接断开。')
+            messageError('服务端实时通信连接断开，正在尝试重连...')
           }
-          this.socket = null
         });
         this.socket.on('connect_error', (err) => {
           messageError('服务端实时通信连接发生错误。')
