@@ -18,7 +18,19 @@ const form = reactive({
   verificationCodeUuid: '',
 })
 const emailCode = ref('')
-const rules: FormRules<typeof form> = {}
+const rules: FormRules<typeof form> = {
+  username: [
+    { required: true, message: '请输入邮箱', trigger: 'blur' },
+    { type: 'email', message: '请输入有效的邮箱地址', trigger: 'blur' },
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 6, message: '密码至少6位', trigger: 'blur' },
+  ],
+  verificationCode: [
+    { required: true, message: '请输入验证码', trigger: 'blur' },
+  ],
+}
 
 const logining = ref(false)
 const onSubmit = async () => {
