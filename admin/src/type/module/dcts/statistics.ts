@@ -43,3 +43,20 @@ export class ActiveVehicleVo {
   lastLat!: number;
   lastSeen!: string;
 }
+
+export class CongestionDto {
+  minLon!: number;
+  maxLon!: number;
+  minLat!: number;
+  maxLat!: number;
+  cellsPerSide?: number;
+}
+
+export class CongestionCellVo {
+  cellX!: number;
+  cellY!: number;
+  cellLon!: number;
+  cellLat!: number;
+  vehicleCount!: number;
+  level!: 'low' | 'medium' | 'high';
+}

@@ -3,8 +3,8 @@ import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { NButton, NCard, NGrid, NGridItem, NIcon, NStatistic, NTable } from 'naive-ui';
 import { Close } from '@vicons/ionicons5';
 import * as echarts from 'echarts';
-import { activeVehiclesApi, signalLightStatusApi, trafficOverviewApi, vehicleFlowStatisticsApi } from '@/api/module/dcts/statistics.ts';
-import type { ActiveVehicleVo, SignalLightStatusDistributionVo, TrafficOverviewVo, VehicleFlowVo } from '@/type/module/dcts/statistics.ts';
+import { activeVehiclesApi, congestionApi, signalLightStatusApi, trafficOverviewApi, vehicleFlowStatisticsApi } from '@/api/module/dcts/statistics.ts';
+import type { ActiveVehicleVo, CongestionCellVo, SignalLightStatusDistributionVo, TrafficOverviewVo, VehicleFlowVo } from '@/type/module/dcts/statistics.ts';
 import { gotoDashboardHome } from '@/views/dashboard/utils/base.ts';
 import { signalLightGroupInfoApi } from '@/api/module/dcts/signalLight/signalLightGroupInfo.ts';
 
@@ -24,6 +24,8 @@ const signalLightChartRef = ref<HTMLDivElement>();
 let signalLightChart: echarts.ECharts | null = null;
 
 const activeVehicles = ref<ActiveVehicleVo[]>([]);
+const congestionCells = ref<CongestionCellVo[]>([]);
+const congestionMax = ref(0);
 
 const overviewCards = [
   { label: '车辆总数', key: 'totalVehicles' as const },
@@ -125,6 +127,13 @@ onMounted(async () => {
   // 活跃车辆列表
   try { activeVehicles.value = await activeVehiclesApi(); } catch { /* ignore */ }
 
+  // 拥堵检测
+  try {
+    const cells = await congestionApi({ minLon: 116.0, maxLon: 116.8, minLat: 39.6, maxLat: 40.2, cellsPerSide: 8 });
+    congestionCells.value = cells as CongestionCellVo[];
+    congestionMax.value = Math.max(...(cells as CongestionCellVo[]).map(c => c.vehicleCount), 1);
+  } catch { /* ignore */ }
+
   window.addEventListener('resize', handleResize);
 });
 
@@ -167,6 +176,23 @@ onBeforeUnmount(() => {
     <!-- 信号灯状态分布 -->
     <n-card title="信号灯状态分布" class="chart-card">
       <div ref="signalLightChartRef" class="chart-box"></div>
+    </n-card>
+
+    <!-- 拥堵检测 -->
+    <n-card title="拥堵检测（近15分钟网格密度）" class="chart-card">
+      <div class="congestion-grid" v-if="congestionCells.length > 0">
+        <div
+          v-for="cell in congestionCells"
+          :key="`${cell.cellX}-${cell.cellY}`"
+          class="congestion-cell"
+          :class="cell.level"
+          :style="{ opacity: 0.3 + (cell.vehicleCount / congestionMax) * 0.7 }"
+          :title="`(${cell.cellLon.toFixed(4)}, ${cell.cellLat.toFixed(4)}): ${cell.vehicleCount}辆`"
+        >
+          <span class="cell-count">{{ cell.vehicleCount }}</span>
+        </div>
+      </div>
+      <div v-else class="empty-hint">暂无拥堵数据</div>
     </n-card>
 
     <!-- 活跃车辆列表 -->
@@ -243,5 +269,39 @@ onBeforeUnmount(() => {
 .chart-box {
   width: 100%;
   height: 400px;
+}
+
+.congestion-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+}
+
+.congestion-cell {
+  aspect-ratio: 1;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+}
+
+.congestion-cell.low {
+  background-color: #52c41a;
+}
+
+.congestion-cell.medium {
+  background-color: #faad14;
+}
+
+.congestion-cell.high {
+  background-color: #f5222d;
+}
+
+.cell-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 </style>

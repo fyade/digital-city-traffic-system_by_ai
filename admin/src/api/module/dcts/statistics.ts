@@ -36,3 +36,11 @@ export function activeVehiclesApi() {
     method: 'GET',
   });
 }
+
+export function congestionApi(data: CongestionDto) {
+  return request<CongestionCellVo[]>({
+    url: '/dcts/statistics/congestion',
+    method: 'POST',
+    data,
+  });
+}

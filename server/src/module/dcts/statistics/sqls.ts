@@ -46,6 +46,62 @@ export function activeVehiclesSql(): string {
   `;
 }
 
+export function congestionSql(
+  minLon: number,
+  maxLon: number,
+  minLat: number,
+  maxLat: number,
+  cellsPerSide: number,
+): string {
+  const lonStep = (maxLon - minLon) / cellsPerSide;
+  const latStep = (maxLat - minLat) / cellsPerSide;
+
+  // 生成网格cell的UNION ALL
+  const cells: string[] = [];
+  for (let i = 0; i < cellsPerSide; i++) {
+    for (let j = 0; j < cellsPerSide; j++) {
+      const cellMinLon = minLon + i * lonStep;
+      const cellMaxLon = cellMinLon + lonStep;
+      const cellMinLat = minLat + j * latStep;
+      const cellMaxLat = cellMinLat + latStep;
+      cells.push(
+        `SELECT ${i} AS "cellX", ${j} AS "cellY", ${cellMinLon} AS "minLon", ${cellMaxLon} AS "maxLon", ${cellMinLat} AS "minLat", ${cellMaxLat} AS "maxLat"`,
+      );
+    }
+  }
+
+  return `
+    WITH cells AS (
+      ${cells.join('\n      UNION ALL\n      ')}
+    ),
+    active_points AS (
+      SELECT vtp.point
+      FROM vehicle_track_point vtp
+      WHERE vtp.create_time >= NOW() - INTERVAL '15 minutes'
+        AND vtp.deleted = '${final.N}'
+        AND vtp.point && ST_MakeEnvelope(${minLon}, ${minLat}, ${maxLon}, ${maxLat}, 4326)
+    )
+    SELECT
+      c."cellX",
+      c."cellY",
+      (c."minLon" + c."maxLon") / 2 AS "cellLon",
+      (c."minLat" + c."maxLat") / 2 AS "cellLat",
+      COUNT(ap.point)::int AS "vehicleCount",
+      CASE
+        WHEN COUNT(ap.point) >= 5 THEN 'high'
+        WHEN COUNT(ap.point) >= 3 THEN 'medium'
+        ELSE 'low'
+      END AS "level"
+    FROM cells c
+    LEFT JOIN active_points ap ON
+      ST_X(ap.point) BETWEEN c."minLon" AND c."maxLon"
+      AND ST_Y(ap.point) BETWEEN c."minLat" AND c."maxLat"
+    GROUP BY c."cellX", c."cellY", c."minLon", c."maxLon", c."minLat", c."maxLat"
+    HAVING COUNT(ap.point) > 0
+    ORDER BY "vehicleCount" DESC
+  `;
+}
+
 export function activeVehiclesLast5MinSql(): string {
   return `
     SELECT COUNT(DISTINCT vehicle_id)::int AS "activeCount"

@@ -4,6 +4,7 @@ import { StatisticsService } from './statistics.service';
 import { Authorize } from '../../../decorator/authorize.decorator';
 import { R } from '../../../common/R';
 import {
+  CongestionDto,
   SignalLightStatusDistributionDto,
   VehicleFlowStatisticsDto,
 } from './dto';
@@ -56,5 +57,15 @@ export class StatisticsController {
   })
   async activeVehicles(): Promise<R> {
     return this.statisticsService.activeVehicles();
+  }
+
+  @Post('/congestion')
+  @ApiOperation({ summary: '拥堵检测（网格密度分析）' })
+  @Authorize({
+    permission: 'dcts:statistics:congestion',
+    label: '拥堵检测',
+  })
+  async congestion(@Body() dto: CongestionDto): Promise<R> {
+    return this.statisticsService.congestion(dto);
   }
 }

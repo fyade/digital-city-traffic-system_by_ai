@@ -76,3 +76,35 @@ export class SignalLightStatusDistributionDto {
   @ArrayMinSize(2, { message: '时间范围必须包含至少2个元素' })
   timeRange: [number, number];
 }
+
+export class CongestionDto {
+  @ApiProperty({ description: '最小经度', required: true })
+  @Type(() => Number)
+  @IsNotEmpty()
+  @IsNumber()
+  minLon: number;
+
+  @ApiProperty({ description: '最大经度', required: true })
+  @Type(() => Number)
+  @IsNotEmpty()
+  @IsNumber()
+  maxLon: number;
+
+  @ApiProperty({ description: '最小纬度', required: true })
+  @Type(() => Number)
+  @IsNotEmpty()
+  @IsNumber()
+  minLat: number;
+
+  @ApiProperty({ description: '最大纬度', required: true })
+  @Type(() => Number)
+  @IsNotEmpty()
+  @IsNumber()
+  maxLat: number;
+
+  @ApiProperty({ description: '每边网格数', default: 10 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  cellsPerSide?: number = 10;
+}

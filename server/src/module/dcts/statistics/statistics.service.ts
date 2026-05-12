@@ -3,10 +3,11 @@ import { PostgresqlPrismaoService } from '../../../infra/prisma/postgresql.prism
 import { DctsCalculateService } from '../core/dcts-calculate.service';
 import { R } from '../../../common/R';
 import {
+  CongestionDto,
   SignalLightStatusDistributionDto,
   VehicleFlowStatisticsDto,
 } from './dto';
-import { activeVehiclesLast5MinSql, activeVehiclesSql, vehicleFlowSql } from './sqls';
+import { activeVehiclesLast5MinSql, activeVehiclesSql, congestionSql, vehicleFlowSql } from './sqls';
 import { final } from '../../../util/base';
 
 @Injectable()
@@ -94,6 +95,22 @@ export class StatisticsService {
       lastLon: Number(r.lastLon),
       lastLat: Number(r.lastLat),
       lastSeen: r.lastSeen,
+    })));
+  }
+
+  async congestion(dto: CongestionDto): Promise<R> {
+    const cellsPerSide = dto.cellsPerSide || 10;
+    const sql = congestionSql(dto.minLon, dto.maxLon, dto.minLat, dto.maxLat, cellsPerSide);
+    const rows = await this.pgsqlPrismao.$queryRawUnsafe<
+      { cellX: number; cellY: number; cellLon: string; cellLat: string; vehicleCount: number; level: string }[]
+    >(sql);
+    return R.ok(rows.map(r => ({
+      cellX: r.cellX,
+      cellY: r.cellY,
+      cellLon: Number(r.cellLon),
+      cellLat: Number(r.cellLat),
+      vehicleCount: r.vehicleCount,
+      level: r.level,
     })));
   }
 }
