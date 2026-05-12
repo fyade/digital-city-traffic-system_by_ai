@@ -76,7 +76,6 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
         config.selectListCallback && config.selectListCallback()
       }).catch(() => {
         tableData.value = []
-        ElMessage.error('查询失败')
       }).finally(() => {
         tableLoadingRef.value = false
       })
@@ -88,7 +87,6 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
         config.selectListCallback && config.selectListCallback()
       }).catch(() => {
         tableData.value = []
-        ElMessage.error('查询失败')
       }).finally(() => {
         tableLoadingRef.value = false
       })
@@ -151,7 +149,6 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
         }
       }).catch(() => {
         tableLoadingRef.value = false
-        ElMessage.error('更新失败')
       }).finally(() => {
         dialogButtonLoadingRef.value = false
       })
@@ -168,7 +165,6 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
         }
       }).catch(() => {
         tableLoadingRef.value = false
-        ElMessage.error('更新失败')
       }).finally(() => {
         dialogButtonLoadingRef.value = false
       })
@@ -191,7 +187,6 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
       }
     }).catch(() => {
       tableLoadingRef.value = false
-      ElMessage.error('删除失败')
     })
   }
 
@@ -509,7 +504,6 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
           objectUtils.copyObject(state.dialogForm, res as unknown as T2, exportIgnoreKeys)
         }).catch(() => {
           dialogVisible.value = false
-          ElMessage.error('查询失败')
         }).finally(() => {
           dialogLoadingRef.value = false
           config.dialogFormLoadingFinishCallback && config.dialogFormLoadingFinishCallback(activeTabName.value)
