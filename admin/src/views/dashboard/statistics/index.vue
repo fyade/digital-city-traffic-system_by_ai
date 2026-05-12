@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { NButton, NCard, NDatePicker, NGrid, NGridItem, NIcon, NSpace, NStatistic, NTable } from 'naive-ui';
+import { NButton, NCard, NDatePicker, NGrid, NGridItem, NIcon, NInput, NSpace, NStatistic, NTable } from 'naive-ui';
 import { Close } from '@vicons/ionicons5';
 import * as echarts from 'echarts';
 import { activeVehiclesApi, congestionApi, signalLightStatusApi, trafficOverviewApi, vehicleFlowStatisticsApi } from '@/api/module/dcts/statistics.ts';
 import type { ActiveVehicleVo, CongestionCellVo, SignalLightStatusDistributionVo, TrafficOverviewVo, VehicleFlowVo } from '@/type/module/dcts/statistics.ts';
 import { gotoDashboardHome } from '@/views/dashboard/utils/base.ts';
 import { signalLightGroupInfoApi } from '@/api/module/dcts/signalLight/signalLightGroupInfo.ts';
+import { queryVehicleTrajectoryApi } from '@/api/module/dcts/spatialData.ts';
+import type { VehicleTrackPointDto } from '@/type/module/dcts/vehicle/vehicleTrackPoint.ts';
 
 // 概览数据
 const overview = ref<TrafficOverviewVo>({
@@ -26,6 +28,10 @@ let signalLightChart: echarts.ECharts | null = null;
 const activeVehicles = ref<ActiveVehicleVo[]>([]);
 const congestionCells = ref<CongestionCellVo[]>([]);
 const congestionMax = ref(0);
+const trajectoryPlate = ref('');
+const trajectoryPoints = ref<VehicleTrackPointDto[]>([]);
+const trajectoryLoading = ref(false);
+
 const refreshing = ref(false);
 const timeRange = ref<[number, number]>([
   Date.now() - 24 * 60 * 60 * 1000,
@@ -134,6 +140,23 @@ function handleResize() {
   signalLightChart?.resize();
 }
 
+async function queryTrajectory() {
+  if (!trajectoryPlate.value) return;
+  trajectoryLoading.value = true;
+  try {
+    const [startTime, endTime] = timeRange.value;
+    trajectoryPoints.value = await queryVehicleTrajectoryApi({
+      plateNumber: trajectoryPlate.value,
+      startTime,
+      endTime,
+    }) as VehicleTrackPointDto[];
+  } catch {
+    trajectoryPoints.value = [];
+  } finally {
+    trajectoryLoading.value = false;
+  }
+}
+
 function exportActiveVehiclesCSV() {
   if (activeVehicles.value.length === 0) return;
   const header = '车牌号,车辆类型,最后经度,最后纬度,最后活跃时间';
@@ -239,6 +262,39 @@ onBeforeUnmount(() => {
           </tr>
         </tbody>
       </n-table>
+    </n-card>
+
+    <!-- 车辆轨迹查询 -->
+    <n-card title="车辆轨迹查询" class="chart-card">
+      <n-space align="center" style="margin-bottom: 12px">
+        <n-input
+          v-model:value="trajectoryPlate"
+          placeholder="输入车牌号，如 京A12345"
+          clearable
+          style="width: 200px"
+          @keyup.enter="queryTrajectory"
+        />
+        <n-button size="small" :loading="trajectoryLoading" @click="queryTrajectory">查询轨迹</n-button>
+      </n-space>
+      <n-table :single-line="false" size="small" v-if="trajectoryPoints.length > 0">
+        <thead>
+          <tr>
+            <th>序号</th>
+            <th>位置(经度,纬度)</th>
+            <th>方向角</th>
+            <th>时间</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(pt, idx) in trajectoryPoints" :key="pt.id">
+            <td>{{ idx + 1 }}</td>
+            <td>{{ pt.point }}</td>
+            <td>{{ pt.heading }}°</td>
+            <td>{{ new Date(pt.createTime).toLocaleString() }}</td>
+          </tr>
+        </tbody>
+      </n-table>
+      <div v-else class="empty-hint">输入车牌号查询车辆轨迹</div>
     </n-card>
     </div>
   </div>
