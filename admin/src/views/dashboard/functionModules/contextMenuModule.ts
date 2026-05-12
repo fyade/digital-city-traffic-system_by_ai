@@ -425,6 +425,13 @@ export class ContextMenuModule {
         routerPushByName('~fp~:applyFlightRouteReview')
       }
     },
+    // 交通统计看板
+    {
+      id: '~dctsDashboard~:statistics',
+      func: () => {
+        routerPushByName('~dashboard/statistics')
+      }
+    },
     // 关闭
     {
       id: '~dctsDashboard~:closeMenuOption',
@@ -664,6 +671,14 @@ export class ContextMenuModule {
         label: '航线申请审核',
         key: '~dctsDashboard~:applyFlightRouteReview',
         show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:applyFlightRouteReview')
+      },
+      {
+        type: 'divider'
+      },
+      {
+        label: '交通统计看板',
+        key: '~dctsDashboard~:statistics',
+        show: !this.pModule || this.pModule.cmihp('~dctsDashboard~:statistics'),
       },
       {
         type: 'divider'
