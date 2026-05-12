@@ -18,7 +18,7 @@ export class DctsCoreService {
                                           timeRange = null,
                                         }: {
                                           signalLightGroupIds: number[]
-                                          timeRange?: [number, number]
+                                          timeRange?: [number, number] | null
                                         },
                                         loginRole: string, userId: string, ifSendWs: boolean) {
     const signalLightRunParams = await this.dctsCalculateService.calculateLight(signalLightGroupIds, timeRange);
