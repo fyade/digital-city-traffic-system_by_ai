@@ -3,9 +3,10 @@ import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { NButton, NCard, NGrid, NGridItem, NIcon, NStatistic } from 'naive-ui';
 import { Close } from '@vicons/ionicons5';
 import * as echarts from 'echarts';
-import { trafficOverviewApi, vehicleFlowStatisticsApi } from '@/api/module/dcts/statistics.ts';
-import type { TrafficOverviewVo, VehicleFlowVo } from '@/type/module/dcts/statistics.ts';
+import { signalLightStatusApi, trafficOverviewApi, vehicleFlowStatisticsApi } from '@/api/module/dcts/statistics.ts';
+import type { SignalLightStatusDistributionVo, TrafficOverviewVo, VehicleFlowVo } from '@/type/module/dcts/statistics.ts';
 import { gotoDashboardHome } from '@/views/dashboard/utils/base.ts';
+import { signalLightGroupInfoApi } from '@/api/module/dcts/signalLight/signalLightGroupInfo.ts';
 
 // 概览数据
 const overview = ref<TrafficOverviewVo>({
@@ -71,24 +72,51 @@ onMounted(async () => {
     });
   }
 
-  // 信号灯状态分布（占位饼图）
-  if (signalLightChartRef.value) {
+  // 信号灯状态分布
+  try {
+    const groups = await signalLightGroupInfoApi.selectAll({});
+    const groupIds = (groups as { id: number }[]).map(g => g.id);
+    if (groupIds.length > 0) {
+      const statusRes = await signalLightStatusApi({ groupIds, timeRange: [dayAgo, now] });
+      const colorSums: Record<string, number> = {};
+      for (const item of statusRes as SignalLightStatusDistributionVo[]) {
+        colorSums[item.color] = (colorSums[item.color] || 0) + item.totalDurationMs;
+      }
+      if (signalLightChartRef.value) {
+        signalLightChart = echarts.init(signalLightChartRef.value);
+        signalLightChart.setOption({
+          tooltip: { trigger: 'item', formatter: (p: { name: string; value: number }) => {
+            const sec = (p.value / 1000).toFixed(1);
+            return `${p.name}: ${sec}s`;
+          }},
+          series: [{
+            name: '灯色占比',
+            type: 'pie',
+            radius: ['40%', '70%'],
+            data: [
+              { value: colorSums['green'] || 0, name: '绿灯', itemStyle: { color: '#52c41a' } },
+              { value: colorSums['red'] || 0, name: '红灯', itemStyle: { color: '#f5222d' } },
+              { value: colorSums['yellow'] || 0, name: '黄灯', itemStyle: { color: '#faad14' } },
+            ],
+            label: { formatter: '{b}: {d}%' },
+          }],
+        });
+      }
+    }
+  } catch { /* 无信号灯数据时保持空饼图 */ }
+  if (!signalLightChart && signalLightChartRef.value) {
     signalLightChart = echarts.init(signalLightChartRef.value);
     signalLightChart.setOption({
       tooltip: { trigger: 'item' },
-      series: [
-        {
-          name: '灯色占比',
-          type: 'pie',
-          radius: ['40%', '70%'],
-          data: [
-            { value: 0, name: '绿灯', itemStyle: { color: '#52c41a' } },
-            { value: 0, name: '红灯', itemStyle: { color: '#f5222d' } },
-            { value: 0, name: '黄灯', itemStyle: { color: '#faad14' } },
-          ],
-          label: { formatter: '{b}: {d}%' },
-        },
-      ],
+      series: [{
+        name: '灯色占比', type: 'pie', radius: ['40%', '70%'],
+        data: [
+          { value: 0, name: '绿灯', itemStyle: { color: '#52c41a' } },
+          { value: 0, name: '红灯', itemStyle: { color: '#f5222d' } },
+          { value: 0, name: '黄灯', itemStyle: { color: '#faad14' } },
+        ],
+        label: { formatter: '{b}: {d}%' },
+      }],
     });
   }
 
