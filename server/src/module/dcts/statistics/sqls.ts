@@ -2,9 +2,14 @@ import { VehicleFlowStatisticsDto } from "./dto";
 import { final } from "../../../util/base";
 
 export function vehicleFlowSql(dto: VehicleFlowStatisticsDto): string {
-  const pointsString = dto.points
-    .map(p => `${p.lon} ${p.lat}`)
-    .join(', ');
+  // 确保多边形闭合：如果首尾点不一致，自动补上第一个点
+  const pts = dto.points.map(p => ({ lon: p.lon, lat: p.lat }));
+  const first = pts[0];
+  const last = pts[pts.length - 1];
+  if (first.lon !== last.lon || first.lat !== last.lat) {
+    pts.push({ lon: first.lon, lat: first.lat });
+  }
+  const pointsString = pts.map(p => `${p.lon} ${p.lat}`).join(', ');
   const startISO = new Date(dto.startTime).toISOString();
   const endISO = new Date(dto.endTime).toISOString();
   const groupBy = dto.groupBy || 'hour';
