@@ -33,6 +33,7 @@ import { FlightRouteUserApplyModule } from './airspace/flight-route-user-apply/f
 import { UserFlightRouteUserApplyModule } from './airspace/user-flight-route-user-apply/user-flight-route-user-apply.module';
 import { AircraftTrackPointModule } from './aircraft-manage/aircraft-track-point/aircraft-track-point.module';
 import { StatisticsModule } from './statistics/statistics.module';
+import { StrategyOverviewModule } from './strategy-overview/strategy-overview.module';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { StatisticsModule } from './statistics/statistics.module';
     UserFlightRouteUserApplyModule,
     AircraftTrackPointModule,
     StatisticsModule,
+    StrategyOverviewModule,
   ]
 })
 export class DctsModule {

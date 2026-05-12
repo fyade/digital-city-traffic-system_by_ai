@@ -4,6 +4,7 @@ import { AddRouteInformationModule } from "./module/addRouteInformation";
 import { AddVehicleInfoModule } from "./module/addVehicleInfo";
 import { AddVehicleTrackPointModule } from "./module/addVehicleTrackPoint";
 import { AddAircraftTrackPointModule } from "./module/addAircraftTrackPoint";
+import { GenerateMockStrategyDataModule } from './module/generateMockStrategyData';
 
 @Module({
   providers: [
@@ -12,6 +13,7 @@ import { AddAircraftTrackPointModule } from "./module/addAircraftTrackPoint";
     AddRouteInformationModule,
     AddVehicleInfoModule,
     AddVehicleTrackPointModule,
+    GenerateMockStrategyDataModule,
   ]
 })
 export class ScriptModule {
