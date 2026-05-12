@@ -76,6 +76,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
         config.selectListCallback && config.selectListCallback()
       }).catch(() => {
         tableData.value = []
+        ElMessage.error('查询失败')
       }).finally(() => {
         tableLoadingRef.value = false
       })
@@ -87,6 +88,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
         config.selectListCallback && config.selectListCallback()
       }).catch(() => {
         tableData.value = []
+        ElMessage.error('查询失败')
       }).finally(() => {
         tableLoadingRef.value = false
       })
@@ -149,6 +151,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
         }
       }).catch(() => {
         tableLoadingRef.value = false
+        ElMessage.error('更新失败')
       }).finally(() => {
         dialogButtonLoadingRef.value = false
       })
@@ -165,6 +168,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
         }
       }).catch(() => {
         tableLoadingRef.value = false
+        ElMessage.error('更新失败')
       }).finally(() => {
         dialogButtonLoadingRef.value = false
       })
@@ -187,6 +191,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
       }
     }).catch(() => {
       tableLoadingRef.value = false
+      ElMessage.error('删除失败')
     })
   }
 
@@ -325,8 +330,12 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
           cancelButtonText: '取消',
           type: 'warning',
         }
-    )
-    const rows = deepClone<T[]>(toRaw(multipleSelection.value).map((item) => toRaw(item))).map(obj => {
+    ).catch(() => {})
+    if (multipleSelection.value.length === 0) {
+      ElMessage.warning('请先选择要导出的数据')
+      return
+    }
+    const rows = deepClone<T[]>(multipleSelection.value).map(obj => {
       exportIgnoreKeys.forEach(key => {
         delete obj[key as keyof typeof obj]
       })
@@ -357,7 +366,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
           cancelButtonText: '取消',
           type: 'warning',
         }
-    )
+    ).catch(() => {})
     const sFiles = await selectFiles()
     if (sFiles.length === 0) {
       return
@@ -500,6 +509,7 @@ export const funcTablePage = <T extends { id: string | number }, T2 = T>({
           objectUtils.copyObject(state.dialogForm, res as unknown as T2, exportIgnoreKeys)
         }).catch(() => {
           dialogVisible.value = false
+          ElMessage.error('查询失败')
         }).finally(() => {
           dialogLoadingRef.value = false
           config.dialogFormLoadingFinishCallback && config.dialogFormLoadingFinishCallback(activeTabName.value)
