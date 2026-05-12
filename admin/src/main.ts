@@ -26,5 +26,3 @@ app.use(pinia)
 app.use(naive)
 app.use(directives)
 app.mount('#app')
-
-console.info(import.meta.env.MODE)

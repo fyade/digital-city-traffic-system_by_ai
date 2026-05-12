@@ -273,7 +273,7 @@ export class FileUploadService {
       },
     });
     if (chunks.length !== fileInfo.chunkNum) {
-      throw new Exception('合并失败，请重试。');
+      throw new Exception('合并失败，请重试。', 500);
     }
     const outputFile = path.join(this.env.file.uploadPath, fileInfo.fileNewName);
     const outputFd = fs.openSync(outputFile, 'w');

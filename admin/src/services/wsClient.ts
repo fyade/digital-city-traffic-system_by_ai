@@ -68,8 +68,12 @@ export class WsClient {
           }
         });
         this.socket.on('message', (data) => {
-          const parse = JSON.parse(data) as EventDataType;
-          this.runEvent(parse)
+          try {
+            const parse = JSON.parse(data) as EventDataType;
+            this.runEvent(parse)
+          } catch {
+            // Ignore malformed messages
+          }
         });
         this.socket.on('disconnect', () => {
           if (this.ifSelfDisConnect) {

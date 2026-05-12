@@ -13,16 +13,6 @@ export class MailService {
     },
   });
 
-  // 示例代码
-  // async init() {
-  //   await this.transport.sendMail({
-  //     from: `"dcts-${serverConfig.currentConfig().mode}" ${mail126Config.user}`,
-  //     to: '',
-  //     subject: `test subject ${new Date().toISOString()}`,
-  //     text: `test text ${new Date().toISOString()}`,
-  //   });
-  // }
-
   private async sendmail(to: string, subject: string, text: string) {
     await this.transport.sendMail({
       from: `"dcts-${serverConfig.currentConfig().mode}" ${mail126Config.user}`,

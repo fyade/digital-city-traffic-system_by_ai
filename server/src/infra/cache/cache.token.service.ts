@@ -84,8 +84,12 @@ export class CacheTokenService {
     if (!payloadString) {
       return null;
     }
-    const decoded = JSON.parse(payloadString) as TokenDto;
-    return decoded;
+    try {
+      const decoded = JSON.parse(payloadString) as TokenDto;
+      return decoded;
+    } catch {
+      return null;
+    }
   }
 
   /**
@@ -137,7 +141,11 @@ export class CacheTokenService {
    */
   async getPasswordKey(uuid: string) {
     const s = await this.redis.get(`${this.PASSWORD_KEY}:${uuid}`);
-    return JSON.parse(s) as { publicKey: string; privateKey: string };
+    try {
+      return JSON.parse(s) as { publicKey: string; privateKey: string };
+    } catch {
+      return null;
+    }
   }
 
   /**

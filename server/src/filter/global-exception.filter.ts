@@ -30,7 +30,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const response1 = exception.getResponse() as {
         message: string[];
       };
-      status = HTTP.SERVER_ERROR().code;
+      status = exception.getStatus();
       if (exception.message.endsWith('is not valid JSON')) {
         message = '非法JSON格式。'
       } else {

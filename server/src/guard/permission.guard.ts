@@ -29,6 +29,9 @@ export class PermissionGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const authorizeParams = this.reflector.get<PreAuthorizeParams>(PRE_AUTHORIZE_KEY, context.getHandler());
+    if (!authorizeParams) {
+      return true;
+    }
     const { permission, label, ifSF, ifIgnore, ifIgnoreButResolveToken, ifIgnoreLog, ifIgnoreParamInLog } = authorizeParams;
     const request: Request = context.switchToHttp().getRequest();
 
@@ -109,7 +112,7 @@ export class PermissionGuard implements CanActivate {
           ifIgnoreParamInLog,
         });
       }
-      throw new Exception('您无当前算法权限。');
+      throw new Exception('您无当前算法权限。', 403);
     }
 
     // 页面接口权限控制

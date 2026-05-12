@@ -132,9 +132,14 @@ export class AuthService {
     const menuIpWhiteLists = await this.cachePermissionService.getIpWhiteListOfPermissionInCache(permission);
     const ips: MenuIpWhiteListDto[] = [];
     if (menuIpWhiteLists) {
-      const parse = JSON.parse(menuIpWhiteLists) as MenuIpWhiteListDto[];
-      ips.push(...parse);
-    } else {
+      try {
+        const parse = JSON.parse(menuIpWhiteLists) as MenuIpWhiteListDto[];
+        ips.push(...parse);
+      } catch {
+        // Cache data corrupted, fall through to DB lookup
+      }
+    }
+    if (ips.length === 0) {
       // 接口是否存在
       const menus = await this.mysqlPrismao.sys_menu.findMany({
         where: {
@@ -381,9 +386,14 @@ export class AuthService {
     const menuThrottles: MenuThrottleDto[] = [];
     const s = await this.cachePermissionService.getMenuThrottleInCache(permission);
     if (s) {
-      const parse = JSON.parse(s) as MenuThrottleDto[];
-      menuThrottles.push(...parse);
-    } else {
+      try {
+        const parse = JSON.parse(s) as MenuThrottleDto[];
+        menuThrottles.push(...parse);
+      } catch {
+        // Cache data corrupted, fall through to DB lookup
+      }
+    }
+    if (menuThrottles.length === 0) {
       const menus = await this.mysqlPrismao.sys_menu.findMany({
         where: {
           if_disabled: final.N,
@@ -514,7 +524,7 @@ export class AuthService {
       },
     });
     if (interfg.length === 0 || interf.length === 0) {
-      throw new Exception('算法组或算法不存在。');
+      throw new Exception('算法组或算法不存在。', 404);
     }
     const interfgf = await this.mysqlPrismao.sys_interface_interface_group.findMany({
       where: {
@@ -524,7 +534,7 @@ export class AuthService {
       },
     });
     if (interfgf.length === 0) {
-      throw new Exception('当前算法组中不存在当前算法。');
+      throw new Exception('当前算法组中不存在当前算法。', 404);
     }
     if (interf.length > 0) {
       // 是否公共算法
@@ -544,14 +554,14 @@ export class AuthService {
       }
       // 是否禁用
       if (interf[0].if_disabled === final.Y) {
-        throw new Exception('当前算法被禁用。');
+        throw new Exception('当前算法被禁用。', 403);
       }
     }
     const permissions = await this.getSFPermissionsOfUserid(userid, ppermission, permission, loginRole);
     if (permissions.length === 0) {
       const permissions2 = await this.getSFPermissionsOfUserid(userid, ppermission, permission, loginRole, final.Y);
       if (permissions2.length > 0) {
-        throw new Exception('请求次数已使用完。');
+        throw new Exception('请求次数已使用完。', 429);
       } else {
         return false;
       }
@@ -564,7 +574,7 @@ export class AuthService {
         timeUtils.timestamp() < timeUtils.timestamp(userGroupPermission.permissionStartTime) ||
         timeUtils.timestamp() > timeUtils.timestamp(userGroupPermission.permissionEndTime)
       ) {
-        throw new Exception('您不在权限期限内。');
+        throw new Exception('您不在权限期限内。', 403);
       }
     }
     // 在期限内，且不限制次数，则放行
@@ -636,7 +646,7 @@ export class AuthService {
         set if_use_up = ${final.Y}
         where id = ${userGroupPermission.id};
       `;
-      throw new Exception('请求次数已使用完。');
+      throw new Exception('请求次数已使用完。', 429);
     }
   }
 
@@ -917,8 +927,8 @@ export class AuthService {
         login_role: loginRole || '???',
         auth_type: authType || '???',
         req_param: ifIgnoreParamInLog
-          ? JSON.stringify({ body: 'hidden', query: 'hidden', param: 'hidden' })
-          : JSON.stringify({ body: reqBody, query: reqQuery, param: reqParam }),
+          ? '{"body":"hidden","query":"hidden","param":"hidden"}'
+          : this.safeStringify({ body: reqBody, query: reqQuery, param: reqParam }),
         old_value: '',
         operate_type: reqMethod,
         if_success: typeof ifSuccess === 'boolean' ? (ifSuccess ? final.Y : final.N) : ifSuccess,
@@ -964,5 +974,13 @@ export class AuthService {
         remark: remark,
       },
     });
+  }
+
+  private safeStringify(obj: object): string {
+    try {
+      return JSON.stringify(obj);
+    } catch {
+      return '{"error":"serialization failed"}';
+    }
   }
 }

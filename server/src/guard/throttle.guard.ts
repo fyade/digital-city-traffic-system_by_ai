@@ -26,7 +26,7 @@ export class ThrottleGuard implements CanActivate {
           ifIgnoreParamInLog: authorizeParams.ifIgnoreParamInLog,
         });
       }
-      throw new Exception('请求过于频繁，请稍后再试。');
+      throw new Exception('请求过于频繁，请稍后再试。', 429);
     }
     return true;
   }

@@ -39,14 +39,13 @@ export class AppService {
 
   async getSystemUsingInfo(): Promise<R> {
     const ress = await Promise.allSettled([
-      this.getCPUUsage(),
       this.getMemoryInfo(),
       this.getDiskInfo()
     ])
     return R.ok({
-      cpu: ress[0].status === 'fulfilled' ? ress[0].value : null,
-      memory: ress[1].status === 'fulfilled' ? ress[1].value : null,
-      disk: ress[2].status === 'fulfilled' ? ress[2].value : null,
+      cpu: null,
+      memory: ress[0].status === 'fulfilled' ? ress[0].value : null,
+      disk: ress[1].status === 'fulfilled' ? ress[1].value : null,
     })
   }
 
@@ -117,16 +116,6 @@ export class AppService {
       menuType: [base.MenuTypeEnum.T_IS, base.MenuTypeEnum.T_Inter],
     });
     return R.ok(buttonsOfUser);
-  }
-
-  /**
-   * 获取CPU信息
-   */
-  private async getCPUUsage() {
-    return new Promise(resolve => {
-      // si.cpu().then(data => resolve(data));
-      resolve(null)
-    })
   }
 
   /**

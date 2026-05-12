@@ -38,13 +38,10 @@ cesiumClass.setSetContextMenuOptionCB(data => contextMenuOption.value = data)
  * 初始化
  */
 const init = async () => {
-  console.info('开始加载');
-
   cesiumClass.setContainer('cesiumContainer')
   cesiumClass.init2()
 
   await sysStore.refreshVisibleButton('sys:dcts')
-  console.info('加载完成')
   ifInited.value = true
 }
 

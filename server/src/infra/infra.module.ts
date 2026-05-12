@@ -11,7 +11,6 @@ import { StaticModule } from './static/static.module';
 import { WinstonModule } from './winston/winston.module';
 import { WsModule } from './ws/ws.module';
 import { MailModule } from './sender/mail/mail.module';
-import { SmsModule } from './sender/sms/sms.module';
 
 @Module({
   imports:[
@@ -27,7 +26,6 @@ import { SmsModule } from './sender/sms/sms.module';
     WinstonModule,
     WsModule,
     MailModule,
-    SmsModule,
   ]
 })
 export class InfraModule {}

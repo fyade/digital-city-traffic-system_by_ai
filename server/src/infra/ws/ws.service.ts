@@ -138,8 +138,12 @@ export class WsService {
     this.io.on('connection', async (socket) => {
       this.onlineUsers.set(`${socket.data.user.loginRole}:::${socket.data.user.userid}`, socket.data.user);
       socket.on('message', async (data) => {
-        const parse = JSON.parse(data) as EventDataType;
-        await this.runEvent(parse, socket.id, socket.data.user, socket.data.ipInfo);
+        try {
+          const parse = JSON.parse(data) as EventDataType;
+          await this.runEvent(parse, socket.id, socket.data.user, socket.data.ipInfo);
+        } catch {
+          // Ignore malformed WebSocket messages
+        }
       });
       socket.on('disconnect', () => {
         this.onlineUsers.delete(`${socket.data.user.loginRole}:::${socket.data.user.userid}`);

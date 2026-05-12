@@ -32,7 +32,7 @@ export async function serverRequest<T>(config: AxiosRequestConfig) {
  * 算法请求
  * @param config
  */
-export async function requestSF(config: AxiosRequestConfig) {
+export async function requestSF<T = any>(config: AxiosRequestConfig): Promise<T> {
   const ret = await axi({
     baseURL: config.baseURL,
     url: config.url,
@@ -44,7 +44,5 @@ export async function requestSF(config: AxiosRequestConfig) {
       'Content-Type': 'application/json',
     },
   });
-  return new Promise((resolve) => {
-    resolve(ret.data);
-  });
+  return ret.data;
 }

@@ -57,14 +57,6 @@ const routes: RouteRecordRaw[] = [
         },
         component: () => import('@/views/user/edit-psd.vue')
       },
-      // {
-      //   path: 'api-key',
-      //   meta: {
-      //     icon: '',
-      //     label: 'apiKey管理'
-      //   },
-      //   component: () => import('@/views/user/api-key.vue')
-      // }
     ]
   },
   {

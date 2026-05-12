@@ -43,7 +43,7 @@ request.interceptors.response.use(
     return Promise.resolve(response)
   },
   async error => {
-    if (error.response.data.code === 401) {
+    if (error.response?.data?.code === 401) {
       // messageError('登录已过期，请重新登录。')
       if (status401) {
         return;
@@ -54,11 +54,11 @@ request.interceptors.response.use(
       })
       status401 = true;
     } else {
-      let msg = error.response.data.msg
+      let msg = error.response?.data?.msg
       if (!msg) msg = '系统繁忙，请稍后再试。'
       messageError(msg)
     }
-    return Promise.reject(error.response)
+    return Promise.reject(error?.response || error)
   }
 )
 
@@ -98,7 +98,6 @@ export async function request2<T = any>(param: AxiosRequestConfig, {
         resolve(response.data.data as any)
       }
     } catch (err: any) {
-      console.error(err);
       if (errLevel === 0) {
         reject(err)
       } else if (errLevel === 1) {

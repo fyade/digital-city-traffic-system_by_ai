@@ -18,11 +18,8 @@ const ifInited = ref(false)
  * 初始化
  */
 const init = async () => {
-  console.info('开始加载');
-
   threeClass.setContainer('threeContainer')
 
-  console.info('加载完成')
   ifInited.value = true
 }
 

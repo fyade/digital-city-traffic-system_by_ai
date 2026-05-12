@@ -4,19 +4,14 @@ import { R } from "../common/R";
 
 const currentConfig = serverConfig.currentConfig();
 
-let apiKey = ''
-if (currentConfig.mode === 'dev') {
-  apiKey = 'xt6jjinic2y93fbb_1754479138269'
-} else if (currentConfig.mode === 'prod') {
-  apiKey = 'kexm4wmlr9zvvw87_1760019751694'
-}
+const DCTS_REQUEST_TIMEOUT = 1000 * 60 * 10;
 
 export const axi = axios.create({
-  baseURL: `http://localhost:${currentConfig.port}`,
-  timeout: 1000 * 60 * 10,
+  baseURL: `http://${currentConfig.dctsHost}:${currentConfig.port}`,
+  timeout: DCTS_REQUEST_TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
-    [currentConfig.headerApiKeyName]: apiKey,
+    [currentConfig.headerApiKeyName]: currentConfig.dctsApiKey,
   }
 });
 
@@ -25,7 +20,7 @@ axi.interceptors.response.use(
       return response;
     },
     error => {
-      return Promise.reject(error.response.data);
+      return Promise.reject(error?.response?.data || error);
     }
 )
 

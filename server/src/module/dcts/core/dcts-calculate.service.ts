@@ -243,9 +243,9 @@ export class DctsCalculateService {
       const strategyParamIds_ct = strategyParams_ct.map(item => item.id)
 
       const strategyTypes_t = strategyTypes_ct.filter(type => type.strategyType === base.SLSTTTypeEnum.T_TOP)
-      const strategyTypes_mset = strategyTypes_t.map(item => modifiedStartEndTime.find(m => m[0] === item.id));
-      const minStartTimeOfT = strategyTypes_mset.length > 0 ? Math.min(...strategyTypes_mset.map(item => item[1])) : 0
-      const maxEndTimeOfT = strategyTypes_mset.length > 0 ? Math.max(...strategyTypes_mset.map(item => item[2])) : 0
+      const strategyTypes_mset = strategyTypes_t.map(item => modifiedStartEndTime.find(m => m[0] === item.id)).filter(Boolean);
+      const minStartTimeOfT = strategyTypes_mset.length > 0 ? Math.min(...strategyTypes_mset.map(item => item![1])) : 0
+      const maxEndTimeOfT = strategyTypes_mset.length > 0 ? Math.max(...strategyTypes_mset.map(item => item![2])) : 0
 
       // 策略类型为微调策略的
       const strategyTypes_fineTuning = strategyTypes.filter(item => item.strategyType === base.SLSTTTypeEnum.T_FINE_TUNING)
