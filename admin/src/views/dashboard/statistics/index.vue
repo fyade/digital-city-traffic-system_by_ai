@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { NButton, NCard, NGrid, NGridItem, NIcon, NStatistic, NTable } from 'naive-ui';
+import { NButton, NCard, NDatePicker, NGrid, NGridItem, NIcon, NSpace, NStatistic, NTable } from 'naive-ui';
 import { Close } from '@vicons/ionicons5';
 import * as echarts from 'echarts';
 import { activeVehiclesApi, congestionApi, signalLightStatusApi, trafficOverviewApi, vehicleFlowStatisticsApi } from '@/api/module/dcts/statistics.ts';
@@ -27,6 +27,10 @@ const activeVehicles = ref<ActiveVehicleVo[]>([]);
 const congestionCells = ref<CongestionCellVo[]>([]);
 const congestionMax = ref(0);
 const refreshing = ref(false);
+const timeRange = ref<[number, number]>([
+  Date.now() - 24 * 60 * 60 * 1000,
+  Date.now(),
+]);
 
 const overviewCards = [
   { label: '车辆总数', key: 'totalVehicles' as const },
@@ -40,8 +44,7 @@ async function loadAllData() {
     const overviewRes = await trafficOverviewApi();
     overview.value = overviewRes;
 
-    const now = Date.now();
-    const dayAgo = now - 24 * 60 * 60 * 1000;
+    const [startTime, endTime] = timeRange.value;
     const flowRes = await vehicleFlowStatisticsApi({
       points: [
         { lon: 116.0, lat: 39.6 },
@@ -49,8 +52,8 @@ async function loadAllData() {
         { lon: 116.8, lat: 40.2 },
         { lon: 116.0, lat: 40.2 },
       ],
-      startTime: dayAgo,
-      endTime: now,
+      startTime,
+      endTime,
       groupBy: 'hour',
     });
 
@@ -65,7 +68,7 @@ async function loadAllData() {
       const groups = await signalLightGroupInfoApi.selectAll({});
       const groupIds = (groups as { id: number }[]).map(g => g.id);
       if (groupIds.length > 0 && signalLightChart) {
-        const statusRes = await signalLightStatusApi({ groupIds, timeRange: [dayAgo, now] });
+        const statusRes = await signalLightStatusApi({ groupIds, timeRange: [startTime, endTime] });
         const colorSums: Record<string, number> = {};
         for (const item of statusRes as SignalLightStatusDistributionVo[]) {
           colorSums[item.color] = (colorSums[item.color] || 0) + item.totalDurationMs;
@@ -159,12 +162,19 @@ onBeforeUnmount(() => {
     <div class="statistics-container">
       <div class="page-header">
         <h2 class="page-title">交通流量统计</h2>
-        <div class="header-actions">
+        <n-space align="center">
+          <n-date-picker
+            v-model:value="timeRange"
+            type="datetimerange"
+            clearable
+            format="MM-dd HH:mm"
+            style="width: 280px"
+          />
           <n-button size="small" :loading="refreshing" @click="loadAllData">刷新数据</n-button>
           <n-button text @click="gotoDashboardHome" class="close-btn">
             <n-icon :component="Close" size="24" />
           </n-button>
-        </div>
+        </n-space>
       </div>
 
     <!-- 概览卡片 -->
@@ -263,12 +273,6 @@ onBeforeUnmount(() => {
   font-size: 20px;
   font-weight: 600;
   margin: 0;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
 }
 
 .close-btn {
