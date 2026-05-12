@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { NCard, NGrid, NGridItem, NStatistic } from 'naive-ui';
+import { NButton, NCard, NGrid, NGridItem, NIcon, NStatistic } from 'naive-ui';
+import { Close } from '@vicons/ionicons5';
 import * as echarts from 'echarts';
 import { trafficOverviewApi, vehicleFlowStatisticsApi } from '@/api/module/dcts/statistics.ts';
 import type { TrafficOverviewVo, VehicleFlowVo } from '@/type/module/dcts/statistics.ts';
+import { gotoDashboardHome } from '@/views/dashboard/utils/base.ts';
 
 // 概览数据
 const overview = ref<TrafficOverviewVo>({
@@ -108,7 +110,12 @@ onBeforeUnmount(() => {
 <template>
   <div class="statistics-overlay">
     <div class="statistics-container">
-      <h2 class="page-title">交通流量统计</h2>
+      <div class="page-header">
+        <h2 class="page-title">交通流量统计</h2>
+        <n-button text @click="gotoDashboardHome" class="close-btn">
+          <n-icon :component="Close" size="24" />
+        </n-button>
+      </div>
 
     <!-- 概览卡片 -->
     <n-grid :cols="3" :x-gap="16" :y-gap="16" class="overview-section">
@@ -150,10 +157,21 @@ onBeforeUnmount(() => {
   margin: 0 auto;
 }
 
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
 .page-title {
   font-size: 20px;
   font-weight: 600;
-  margin-bottom: 16px;
+  margin: 0;
+}
+
+.close-btn {
+  margin-left: auto;
 }
 
 .overview-section {
