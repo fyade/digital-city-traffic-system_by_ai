@@ -32,6 +32,7 @@ import { UserFlightRestrictionZoneUserApplyModule } from './airspace/user-flight
 import { FlightRouteUserApplyModule } from './airspace/flight-route-user-apply/flight-route-user-apply.module';
 import { UserFlightRouteUserApplyModule } from './airspace/user-flight-route-user-apply/user-flight-route-user-apply.module';
 import { AircraftTrackPointModule } from './aircraft-manage/aircraft-track-point/aircraft-track-point.module';
+import { StatisticsModule } from './statistics/statistics.module';
 
 @Module({
   imports: [
@@ -67,7 +68,8 @@ import { AircraftTrackPointModule } from './aircraft-manage/aircraft-track-point
     UserFlightRestrictionZoneUserApplyModule,
     FlightRouteUserApplyModule,
     UserFlightRouteUserApplyModule,
-    AircraftTrackPointModule
+    AircraftTrackPointModule,
+    StatisticsModule,
   ]
 })
 export class DctsModule {

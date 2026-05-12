@@ -352,6 +352,15 @@ const routes: RouteRecordRaw[] = [
         ]
       },
       {
+        path: 'statistics',
+        name: '~dashboard/statistics',
+        meta: {
+          label: '交通统计',
+          icon: 'trending-up',
+        },
+        component: () => import('@/views/dashboard/statistics/index.vue'),
+      },
+      {
         path: ':pathMatch(.*)*',
         redirect: '/dashboard'
       }
