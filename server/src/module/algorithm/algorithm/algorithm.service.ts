@@ -22,21 +22,25 @@ export class AlgorithmService {
   async algorithm(dto: AlgorithmDto): Promise<R> {
     const permission = dto.perms;
     const sfPermissionsOfUserid = await this.authService.getSFPermissionsOfUserid(this.bcs.getUserData().userId, dto.pperms, permission, this.bcs.getUserData().loginRole, final.Y);
-    if (sfPermissionsOfUserid.length > 0) {
-      const permissionId = sfPermissionsOfUserid.every(item => item.ifUseUp === final.Y)
-        ? sfPermissionsOfUserid[sfPermissionsOfUserid.length - 1].permissionId
-        : sfPermissionsOfUserid[sfPermissionsOfUserid.findIndex(item => item.ifUseUp === final.N)].permissionId;
-      const interfaceGroup = await this.interfaceGroupFacadeService.selOneInterfaceGroup(permissionId);
-      const inter = await this.interfaceFacadeService.selAllInterface({ perms: dto.perms });
-      if (interfaceGroup && inter.length > 0) {
-        const response = await requestSF({
-          baseURL: interfaceGroup.baseURL,
-          url: inter[0].url,
-          data: dto.data,
-        });
-        return R.ok(response);
-      }
+    if (sfPermissionsOfUserid.length === 0) {
+      throw new Exception('未找到对应算法权限。', 403);
     }
-    throw new Exception('');
+    const permissionId = sfPermissionsOfUserid.every(item => item.ifUseUp === final.Y)
+      ? sfPermissionsOfUserid[sfPermissionsOfUserid.length - 1].permissionId
+      : sfPermissionsOfUserid[sfPermissionsOfUserid.findIndex(item => item.ifUseUp === final.N)].permissionId;
+    const interfaceGroup = await this.interfaceGroupFacadeService.selOneInterfaceGroup(permissionId);
+    if (!interfaceGroup) {
+      throw new Exception('接口组不存在。', 404);
+    }
+    const inter = await this.interfaceFacadeService.selAllInterface({ perms: dto.perms });
+    if (inter.length === 0) {
+      throw new Exception('接口不存在。', 404);
+    }
+    const response = await requestSF({
+      baseURL: interfaceGroup.baseURL,
+      url: inter[0].url,
+      data: dto.data,
+    });
+    return R.ok(response);
   }
 }

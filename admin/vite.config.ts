@@ -33,8 +33,8 @@ export default defineConfig(({mode}) => {
       '**/*.obj', '**/*.mtl'
     ],
     plugins: [
-      Inspect(),
-      visualizer(),
+      ...(mode === 'dev' ? [Inspect()] : []),
+      ...(process.env.ANALYZE ? [visualizer()] : []),
       vue(),
       createSvgIconsPlugin({
         iconDirs: [path.resolve(root, 'src/assets/icon')],
