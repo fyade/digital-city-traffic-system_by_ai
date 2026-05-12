@@ -77,6 +77,24 @@ export class SignalLightStatusDistributionDto {
   timeRange: [number, number];
 }
 
+export class AircraftTrajectoryDto {
+  @ApiProperty({ description: '航空器名称', required: true })
+  @IsNotEmpty({ message: '航空器名称不能为空' })
+  name: string;
+
+  @ApiProperty({ description: '开始时间戳(ms)', required: true })
+  @Type(() => Number)
+  @IsNotEmpty()
+  @IsNumber()
+  startTime: number;
+
+  @ApiProperty({ description: '结束时间戳(ms)', required: true })
+  @Type(() => Number)
+  @IsNotEmpty()
+  @IsNumber()
+  endTime: number;
+}
+
 export class CongestionDto {
   @ApiProperty({ description: '最小经度', required: true })
   @Type(() => Number)

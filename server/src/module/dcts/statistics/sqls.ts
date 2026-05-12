@@ -118,6 +118,26 @@ export function activeAircraftSql(): string {
   `;
 }
 
+export function aircraftTrajectorySql(aircraftName: string, startTime: number, endTime: number): string {
+  const startISO = new Date(startTime).toISOString();
+  const endISO = new Date(endTime).toISOString();
+  return `
+    SELECT
+      atp.id,
+      atp.aircraft_id AS "aircraftId",
+      ST_X(atp.point) AS "lon",
+      ST_Y(atp.point) AS "lat",
+      atp.heading,
+      atp.create_time AS "createTime"
+    FROM aircraft_track_point atp
+    JOIN low_altitude_aircraft la ON la.id = atp.aircraft_id
+    WHERE la.name = '${aircraftName.replace(/'/g, "''")}'
+      AND atp.create_time BETWEEN '${startISO}'::timestamp AND '${endISO}'::timestamp
+      AND atp.deleted = '${final.N}'
+    ORDER BY atp.create_time ASC
+  `;
+}
+
 export function activeVehiclesLast5MinSql(): string {
   return `
     SELECT COUNT(DISTINCT vehicle_id)::int AS "activeCount"

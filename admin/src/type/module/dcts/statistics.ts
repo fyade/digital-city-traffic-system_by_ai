@@ -73,3 +73,12 @@ export class ActiveAircraftVo {
   lastLat!: number;
   lastSeen!: string;
 }
+
+export class AircraftTrajectoryPointVo {
+  id!: number;
+  aircraftId!: number;
+  lon!: number;
+  lat!: number;
+  heading!: number;
+  createTime!: string;
+}

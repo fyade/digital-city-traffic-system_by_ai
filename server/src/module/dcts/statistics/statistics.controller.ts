@@ -4,6 +4,7 @@ import { StatisticsService } from './statistics.service';
 import { Authorize } from '../../../decorator/authorize.decorator';
 import { R } from '../../../common/R';
 import {
+  AircraftTrajectoryDto,
   CongestionDto,
   SignalLightStatusDistributionDto,
   VehicleFlowStatisticsDto,
@@ -77,5 +78,15 @@ export class StatisticsController {
   })
   async activeAircraft(): Promise<R> {
     return this.statisticsService.activeAircraft();
+  }
+
+  @Post('/aircraft-trajectory')
+  @ApiOperation({ summary: '查询航空器轨迹' })
+  @Authorize({
+    permission: 'dcts:statistics:aircraftTrajectory',
+    label: '查询航空器轨迹',
+  })
+  async aircraftTrajectory(@Body() dto: AircraftTrajectoryDto): Promise<R> {
+    return this.statisticsService.aircraftTrajectory(dto);
   }
 }

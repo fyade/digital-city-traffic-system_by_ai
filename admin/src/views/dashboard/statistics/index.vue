@@ -3,8 +3,8 @@ import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { NButton, NCard, NDatePicker, NGrid, NGridItem, NIcon, NInput, NSpace, NStatistic, NSwitch, NTable } from 'naive-ui';
 import { Close } from '@vicons/ionicons5';
 import * as echarts from 'echarts';
-import { activeAircraftApi, activeVehiclesApi, congestionApi, signalLightStatusApi, trafficOverviewApi, vehicleFlowStatisticsApi } from '@/api/module/dcts/statistics.ts';
-import type { ActiveAircraftVo, ActiveVehicleVo, CongestionCellVo, SignalLightStatusDistributionVo, TrafficOverviewVo, VehicleFlowVo } from '@/type/module/dcts/statistics.ts';
+import { activeAircraftApi, activeVehiclesApi, aircraftTrajectoryApi, congestionApi, signalLightStatusApi, trafficOverviewApi, vehicleFlowStatisticsApi } from '@/api/module/dcts/statistics.ts';
+import type { ActiveAircraftVo, ActiveVehicleVo, AircraftTrajectoryPointVo, CongestionCellVo, SignalLightStatusDistributionVo, TrafficOverviewVo, VehicleFlowVo } from '@/type/module/dcts/statistics.ts';
 import { gotoDashboardHome } from '@/views/dashboard/utils/base.ts';
 import { signalLightGroupInfoApi } from '@/api/module/dcts/signalLight/signalLightGroupInfo.ts';
 import { queryVehicleTrajectoryApi } from '@/api/module/dcts/spatialData.ts';
@@ -36,6 +36,10 @@ const congestionMax = ref(0);
 const trajectoryPlate = ref('');
 const trajectoryPoints = ref<VehicleTrackPointDto[]>([]);
 const trajectoryLoading = ref(false);
+
+const aircraftTrajectoryName = ref('');
+const aircraftTrajectoryPoints = ref<AircraftTrajectoryPointVo[]>([]);
+const aircraftTrajectoryLoading = ref(false);
 
 const autoRefresh = ref(false);
 let autoRefreshTimer: ReturnType<typeof setInterval> | null = null;
@@ -159,6 +163,23 @@ onMounted(async () => {
 function handleResize() {
   vehicleFlowChart?.resize();
   signalLightChart?.resize();
+}
+
+async function queryAircraftTrajectory() {
+  if (!aircraftTrajectoryName.value) return;
+  aircraftTrajectoryLoading.value = true;
+  try {
+    const [startTime, endTime] = timeRange.value;
+    aircraftTrajectoryPoints.value = await aircraftTrajectoryApi({
+      name: aircraftTrajectoryName.value,
+      startTime,
+      endTime,
+    }) as AircraftTrajectoryPointVo[];
+  } catch {
+    aircraftTrajectoryPoints.value = [];
+  } finally {
+    aircraftTrajectoryLoading.value = false;
+  }
 }
 
 async function queryTrajectory() {
@@ -344,6 +365,39 @@ onBeforeUnmount(() => {
         </tbody>
       </n-table>
       <div v-else class="empty-hint">输入车牌号查询车辆轨迹</div>
+    </n-card>
+
+    <!-- 航空器轨迹查询 -->
+    <n-card title="航空器轨迹查询" class="chart-card">
+      <n-space align="center" style="margin-bottom: 12px">
+        <n-input
+          v-model:value="aircraftTrajectoryName"
+          placeholder="输入航空器名称"
+          clearable
+          style="width: 200px"
+          @keyup.enter="queryAircraftTrajectory"
+        />
+        <n-button size="small" :loading="aircraftTrajectoryLoading" @click="queryAircraftTrajectory">查询轨迹</n-button>
+      </n-space>
+      <n-table :single-line="false" size="small" v-if="aircraftTrajectoryPoints.length > 0">
+        <thead>
+          <tr>
+            <th>序号</th>
+            <th>位置(经度,纬度)</th>
+            <th>方向角</th>
+            <th>时间</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(pt, idx) in aircraftTrajectoryPoints" :key="pt.id">
+            <td>{{ idx + 1 }}</td>
+            <td>{{ pt.lon.toFixed(6) }}, {{ pt.lat.toFixed(6) }}</td>
+            <td>{{ pt.heading }}°</td>
+            <td>{{ new Date(pt.createTime).toLocaleString() }}</td>
+          </tr>
+        </tbody>
+      </n-table>
+      <div v-else class="empty-hint">输入航空器名称查询轨迹</div>
     </n-card>
     </div>
   </div>

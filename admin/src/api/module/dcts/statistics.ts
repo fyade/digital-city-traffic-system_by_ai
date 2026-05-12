@@ -51,3 +51,11 @@ export function activeAircraftApi() {
     method: 'GET',
   });
 }
+
+export function aircraftTrajectoryApi(data: { name: string; startTime: number; endTime: number }) {
+  return request<AircraftTrajectoryPointVo[]>({
+    url: '/dcts/statistics/aircraft-trajectory',
+    method: 'POST',
+    data,
+  });
+}

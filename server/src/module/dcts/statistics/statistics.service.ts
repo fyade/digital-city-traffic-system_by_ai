@@ -3,11 +3,12 @@ import { PostgresqlPrismaoService } from '../../../infra/prisma/postgresql.prism
 import { DctsCalculateService } from '../core/dcts-calculate.service';
 import { R } from '../../../common/R';
 import {
+  AircraftTrajectoryDto,
   CongestionDto,
   SignalLightStatusDistributionDto,
   VehicleFlowStatisticsDto,
 } from './dto';
-import { activeAircraftSql, activeVehiclesLast5MinSql, activeVehiclesSql, congestionSql, vehicleFlowSql } from './sqls';
+import { activeAircraftSql, activeVehiclesLast5MinSql, activeVehiclesSql, aircraftTrajectorySql, congestionSql, vehicleFlowSql } from './sqls';
 import { final } from '../../../util/base';
 
 @Injectable()
@@ -110,6 +111,21 @@ export class StatisticsService {
       lastLon: Number(r.lastLon),
       lastLat: Number(r.lastLat),
       lastSeen: r.lastSeen,
+    })));
+  }
+
+  async aircraftTrajectory(dto: AircraftTrajectoryDto): Promise<R> {
+    const sql = aircraftTrajectorySql(dto.name, dto.startTime, dto.endTime);
+    const rows = await this.pgsqlPrismao.$queryRawUnsafe<
+      { id: number; aircraftId: number; lon: number; lat: number; heading: number; createTime: string }[]
+    >(sql);
+    return R.ok(rows.map(r => ({
+      id: r.id,
+      aircraftId: r.aircraftId,
+      lon: Number(r.lon),
+      lat: Number(r.lat),
+      heading: r.heading,
+      createTime: r.createTime,
     })));
   }
 
