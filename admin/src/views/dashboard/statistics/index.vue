@@ -15,6 +15,10 @@ const overview = ref<TrafficOverviewVo>({
   totalVehicles: 0,
   totalSignalLightGroups: 0,
   activeVehiclesLast5Min: 0,
+  totalFlightRestrictionZones: 0,
+  totalFlightRoutes: 0,
+  totalAircraft: 0,
+  activeAircraftLast5Min: 0,
 });
 
 // 车辆流量图表
@@ -40,8 +44,12 @@ const timeRange = ref<[number, number]>([
 
 const overviewCards = [
   { label: '车辆总数', key: 'totalVehicles' as const },
-  { label: '信号灯组总数', key: 'totalSignalLightGroups' as const },
   { label: '近5分钟活跃车辆', key: 'activeVehiclesLast5Min' as const },
+  { label: '信号灯组总数', key: 'totalSignalLightGroups' as const },
+  { label: '航空器总数', key: 'totalAircraft' as const },
+  { label: '近5分钟活跃航空器', key: 'activeAircraftLast5Min' as const },
+  { label: '限飞区', key: 'totalFlightRestrictionZones' as const },
+  { label: '航线', key: 'totalFlightRoutes' as const },
 ];
 
 async function loadAllData() {
@@ -201,7 +209,7 @@ onBeforeUnmount(() => {
       </div>
 
     <!-- 概览卡片 -->
-    <n-grid :cols="3" :x-gap="16" :y-gap="16" class="overview-section">
+    <n-grid :cols="4" :x-gap="16" :y-gap="16" class="overview-section" responsive="screen">
       <n-grid-item v-for="card in overviewCards" :key="card.key">
         <n-card :title="card.label" hoverable>
           <n-statistic :value="overview[card.key]" />

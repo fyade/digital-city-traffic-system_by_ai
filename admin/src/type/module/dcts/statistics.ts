@@ -33,6 +33,10 @@ export class TrafficOverviewVo {
   totalVehicles!: number;
   totalSignalLightGroups!: number;
   activeVehiclesLast5Min!: number;
+  totalFlightRestrictionZones!: number;
+  totalFlightRoutes!: number;
+  totalAircraft!: number;
+  activeAircraftLast5Min!: number;
 }
 
 export class ActiveVehicleVo {

@@ -63,7 +63,8 @@ export class StatisticsService {
   }
 
   async overview(): Promise<R> {
-    const [totalVehiclesResult, totalGroupsResult, activeVehiclesResult] =
+    const [totalVehiclesResult, totalGroupsResult, activeVehiclesResult,
+      totalZonesResult, totalRoutesResult, totalAircraftResult, activeAircraftResult] =
       await Promise.all([
         this.pgsqlPrismao.$queryRawUnsafe<{ total: number }[]>(
           `SELECT COUNT(*) AS "total" FROM vehicle_info WHERE deleted = '${final.N}'`,
@@ -74,13 +75,27 @@ export class StatisticsService {
         this.pgsqlPrismao.$queryRawUnsafe<{ activeCount: number }[]>(
           activeVehiclesLast5MinSql(),
         ),
+        this.pgsqlPrismao.$queryRawUnsafe<{ total: number }[]>(
+          `SELECT COUNT(*) AS "total" FROM flight_restriction_zone WHERE deleted = '${final.N}'`,
+        ),
+        this.pgsqlPrismao.$queryRawUnsafe<{ total: number }[]>(
+          `SELECT COUNT(*) AS "total" FROM flight_route WHERE deleted = '${final.N}'`,
+        ),
+        this.pgsqlPrismao.$queryRawUnsafe<{ total: number }[]>(
+          `SELECT COUNT(*) AS "total" FROM low_altitude_aircraft WHERE deleted = '${final.N}'`,
+        ),
+        this.pgsqlPrismao.$queryRawUnsafe<{ activeCount: number }[]>(
+          `SELECT COUNT(DISTINCT aircraft_id)::int AS "activeCount" FROM aircraft_track_point WHERE create_time >= NOW() - INTERVAL '5 minutes' AND deleted = '${final.N}'`,
+        ),
       ]);
     return R.ok({
       totalVehicles: Number(totalVehiclesResult[0]?.total || 0),
       totalSignalLightGroups: Number(totalGroupsResult[0]?.total || 0),
-      activeVehiclesLast5Min: Number(
-        activeVehiclesResult[0]?.activeCount || 0,
-      ),
+      activeVehiclesLast5Min: Number(activeVehiclesResult[0]?.activeCount || 0),
+      totalFlightRestrictionZones: Number(totalZonesResult[0]?.total || 0),
+      totalFlightRoutes: Number(totalRoutesResult[0]?.total || 0),
+      totalAircraft: Number(totalAircraftResult[0]?.total || 0),
+      activeAircraftLast5Min: Number(activeAircraftResult[0]?.activeCount || 0),
     });
   }
 
