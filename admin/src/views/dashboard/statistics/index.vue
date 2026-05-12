@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { NButton, NCard, NDatePicker, NGrid, NGridItem, NIcon, NInput, NSpace, NStatistic, NTable } from 'naive-ui';
+import { NButton, NCard, NDatePicker, NGrid, NGridItem, NIcon, NInput, NSpace, NStatistic, NSwitch, NTable } from 'naive-ui';
 import { Close } from '@vicons/ionicons5';
 import * as echarts from 'echarts';
 import { activeAircraftApi, activeVehiclesApi, congestionApi, signalLightStatusApi, trafficOverviewApi, vehicleFlowStatisticsApi } from '@/api/module/dcts/statistics.ts';
@@ -36,6 +36,17 @@ const congestionMax = ref(0);
 const trajectoryPlate = ref('');
 const trajectoryPoints = ref<VehicleTrackPointDto[]>([]);
 const trajectoryLoading = ref(false);
+
+const autoRefresh = ref(false);
+let autoRefreshTimer: ReturnType<typeof setInterval> | null = null;
+
+function toggleAutoRefresh(val: boolean) {
+  if (val) {
+    autoRefreshTimer = setInterval(loadAllData, 30000);
+  } else {
+    if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null; }
+  }
+}
 
 const refreshing = ref(false);
 const timeRange = ref<[number, number]>([
@@ -184,6 +195,7 @@ function exportActiveVehiclesCSV() {
 }
 
 onBeforeUnmount(() => {
+  if (autoRefreshTimer) { clearInterval(autoRefreshTimer); }
   window.removeEventListener('resize', handleResize);
   vehicleFlowChart?.dispose();
   signalLightChart?.dispose();
@@ -203,6 +215,8 @@ onBeforeUnmount(() => {
             format="MM-dd HH:mm"
             style="width: 280px"
           />
+          <n-switch v-model:value="autoRefresh" @update:value="toggleAutoRefresh" size="small" />
+          <span style="font-size:12px;color:#999">自动(30s)</span>
           <n-button size="small" :loading="refreshing" @click="loadAllData">刷新数据</n-button>
           <n-button text @click="gotoDashboardHome" class="close-btn">
             <n-icon :component="Close" size="24" />
