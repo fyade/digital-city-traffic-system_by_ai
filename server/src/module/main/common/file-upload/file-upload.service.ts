@@ -297,13 +297,8 @@ export class FileUploadService {
       });
     });
     // 使用 Promise.all 等待所有写入操作完成
-    Promise.all(promises)
-      .then(() => {
-        fs.closeSync(outputFd);
-      })
-      .catch((error) => {
-        this.winston.error(error);
-      });
+    await Promise.all(promises);
+    fs.closeSync(outputFd);
     for (let i = 0; i < fileInfos.length; i++) {
       try {
         await this.mysqlPrisma.updateById<FileDto>('tbl_file', {
