@@ -119,3 +119,12 @@ When you need to re-generate Prisma clients (schema changes), run:
 pnpm generate:prisma
 ```
 This generates both MySQL and PostgreSQL clients into `prisma-generated/`. The generated clients are checked into git.
+
+## Adding Frontend Entry Points
+
+When new frontend routes are added (e.g., a new dashboard page or admin panel page), I do **NOT** have the ability to add navigation entry points directly. The following must be done by the user:
+
+- **大屏页右键菜单** (Dashboard right-click context menu): User must add the entry manually.
+- **管理端侧边栏菜单** (Admin panel sidebar menu): User must add the entry manually.
+
+**My responsibility**: After adding a new route, I must tell the user what entry points are needed and where, so they can add them.
