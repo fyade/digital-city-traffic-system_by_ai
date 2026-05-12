@@ -38,12 +38,12 @@ export class GenerateMockStrategyDataModule {
     // 创建2个信号灯组
     const group1Result = await this.pgsqlPrismao.$queryRawUnsafe<{ id: number }[]>(
       `INSERT INTO signal_light_group_info (name, description, location, create_by, create_role, update_by, update_role, create_time, update_time, deleted)
-       VALUES ('测试路口A', '模拟路口A', ST_SetSRID(ST_MakePoint(116.4, 39.9), 4326), 'mock_scpt', 'admin', 'mock_scpt', 'admin', '${now}', '${now}', '${final.N}')
+       VALUES ('测试路口A', '模拟路口A', ST_SetSRID(ST_MakePoint(118.9227, 32.1065), 4326), 'mock_scpt', 'admin', 'mock_scpt', 'admin', '${now}', '${now}', '${final.N}')
        RETURNING id`,
     );
     const group2Result = await this.pgsqlPrismao.$queryRawUnsafe<{ id: number }[]>(
       `INSERT INTO signal_light_group_info (name, description, location, create_by, create_role, update_by, update_role, create_time, update_time, deleted)
-       VALUES ('测试路口B', '模拟路口B', ST_SetSRID(ST_MakePoint(116.5, 40.0), 4326), 'mock_scpt', 'admin', 'mock_scpt', 'admin', '${now}', '${now}', '${final.N}')
+       VALUES ('测试路口B', '模拟路口B', ST_SetSRID(ST_MakePoint(118.9327, 32.1065), 4326), 'mock_scpt', 'admin', 'mock_scpt', 'admin', '${now}', '${now}', '${final.N}')
        RETURNING id`,
     );
     const groupId1 = group1Result[0].id;
