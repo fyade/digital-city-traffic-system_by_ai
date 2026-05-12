@@ -30,6 +30,22 @@ export function vehicleFlowSql(dto: VehicleFlowStatisticsDto): string {
   `;
 }
 
+export function activeVehiclesSql(): string {
+  return `
+    SELECT DISTINCT ON (vtp.vehicle_id)
+      vi.id AS "vehicleId",
+      vi.plate_number AS "plateNumber",
+      vi.vehicle_type AS "vehicleType",
+      ST_X(vtp.point) AS "lastLon",
+      ST_Y(vtp.point) AS "lastLat",
+      vtp.create_time AS "lastSeen"
+    FROM vehicle_track_point vtp
+    JOIN vehicle_info vi ON vi.id = vtp.vehicle_id AND vi.deleted = '${final.N}'
+    WHERE vtp.deleted = '${final.N}'
+    ORDER BY vtp.vehicle_id, vtp.create_time DESC
+  `;
+}
+
 export function activeVehiclesLast5MinSql(): string {
   return `
     SELECT COUNT(DISTINCT vehicle_id)::int AS "activeCount"

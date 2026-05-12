@@ -29,3 +29,10 @@ export function trafficOverviewApi() {
     method: 'GET',
   });
 }
+
+export function activeVehiclesApi() {
+  return request<ActiveVehicleVo[]>({
+    url: '/dcts/statistics/active-vehicles',
+    method: 'GET',
+  });
+}

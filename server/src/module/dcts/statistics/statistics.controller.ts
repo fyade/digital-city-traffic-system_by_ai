@@ -47,4 +47,14 @@ export class StatisticsController {
   async overview(): Promise<R> {
     return this.statisticsService.overview();
   }
+
+  @Get('/active-vehicles')
+  @ApiOperation({ summary: '活跃车辆实时列表' })
+  @Authorize({
+    permission: 'dcts:statistics:activeVehicles',
+    label: '活跃车辆实时列表',
+  })
+  async activeVehicles(): Promise<R> {
+    return this.statisticsService.activeVehicles();
+  }
 }

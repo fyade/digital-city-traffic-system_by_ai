@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { NButton, NCard, NGrid, NGridItem, NIcon, NStatistic } from 'naive-ui';
+import { NButton, NCard, NGrid, NGridItem, NIcon, NStatistic, NTable } from 'naive-ui';
 import { Close } from '@vicons/ionicons5';
 import * as echarts from 'echarts';
-import { signalLightStatusApi, trafficOverviewApi, vehicleFlowStatisticsApi } from '@/api/module/dcts/statistics.ts';
-import type { SignalLightStatusDistributionVo, TrafficOverviewVo, VehicleFlowVo } from '@/type/module/dcts/statistics.ts';
+import { activeVehiclesApi, signalLightStatusApi, trafficOverviewApi, vehicleFlowStatisticsApi } from '@/api/module/dcts/statistics.ts';
+import type { ActiveVehicleVo, SignalLightStatusDistributionVo, TrafficOverviewVo, VehicleFlowVo } from '@/type/module/dcts/statistics.ts';
 import { gotoDashboardHome } from '@/views/dashboard/utils/base.ts';
 import { signalLightGroupInfoApi } from '@/api/module/dcts/signalLight/signalLightGroupInfo.ts';
 
@@ -22,6 +22,8 @@ let vehicleFlowChart: echarts.ECharts | null = null;
 // 信号灯状态图表
 const signalLightChartRef = ref<HTMLDivElement>();
 let signalLightChart: echarts.ECharts | null = null;
+
+const activeVehicles = ref<ActiveVehicleVo[]>([]);
 
 const overviewCards = [
   { label: '车辆总数', key: 'totalVehicles' as const },
@@ -120,6 +122,9 @@ onMounted(async () => {
     });
   }
 
+  // 活跃车辆列表
+  try { activeVehicles.value = await activeVehiclesApi(); } catch { /* ignore */ }
+
   window.addEventListener('resize', handleResize);
 });
 
@@ -162,6 +167,31 @@ onBeforeUnmount(() => {
     <!-- 信号灯状态分布 -->
     <n-card title="信号灯状态分布" class="chart-card">
       <div ref="signalLightChartRef" class="chart-box"></div>
+    </n-card>
+
+    <!-- 活跃车辆列表 -->
+    <n-card title="活跃车辆实时列表" class="chart-card">
+      <n-table :single-line="false" size="small">
+        <thead>
+          <tr>
+            <th>车牌号</th>
+            <th>车辆类型</th>
+            <th>最后位置(经度,纬度)</th>
+            <th>最后活跃时间</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="v in activeVehicles" :key="v.vehicleId">
+            <td>{{ v.plateNumber }}</td>
+            <td>{{ v.vehicleType }}</td>
+            <td>{{ v.lastLon.toFixed(6) }}, {{ v.lastLat.toFixed(6) }}</td>
+            <td>{{ new Date(v.lastSeen).toLocaleString() }}</td>
+          </tr>
+          <tr v-if="activeVehicles.length === 0">
+            <td colspan="4" style="text-align:center;color:#999">暂无活跃车辆数据</td>
+          </tr>
+        </tbody>
+      </n-table>
     </n-card>
     </div>
   </div>

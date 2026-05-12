@@ -34,3 +34,12 @@ export class TrafficOverviewVo {
   totalSignalLightGroups!: number;
   activeVehiclesLast5Min!: number;
 }
+
+export class ActiveVehicleVo {
+  vehicleId!: number;
+  plateNumber!: string;
+  vehicleType!: string;
+  lastLon!: number;
+  lastLat!: number;
+  lastSeen!: string;
+}
