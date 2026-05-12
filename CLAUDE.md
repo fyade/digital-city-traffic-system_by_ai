@@ -56,8 +56,10 @@ AppModule
 
 ### Database
 
-- **MySQL** (`prisma/mysql.schema.prisma`): Main business data. All models managed by Prisma, with soft delete (`deleted = 'N'/'Y'`) and audit fields (`create_by`, `update_by`, `create_role`, `update_role`, `create_time`, `update_time`).
-- **PostgreSQL + PostGIS** (`prisma/postgresql.schema.prisma`): Geographic data. OSM road network tables (`planet_osm_nodes/ways/rels/line`) imported by osm2pgsql — these table structures must NOT be modified (per README).
+- **MySQL** (`prisma/mysql.schema.prisma`): 仅 `sys_*` 前缀的管理表（用户、角色、菜单、部门、字典、接口、配置等）。使用 `MysqlPrismaService` / `MysqlPrismaoService`。
+- **PostgreSQL + PostGIS** (`prisma/postgresql.schema.prisma`): 业务数据 + 地理数据。包括 `vehicle_*`、`signal_light_*`、`aircraft_*`、`airspace_*`、`planet_osm_*` 等。使用 `PostgresqlPrismaService` / `PostgresqlPrismaoService`。
+
+**重要**: 写新代码时必须确认表属于哪个数据库，使用对应的 Prisma 服务。可通过 `prisma/mysql.schema.prisma` 和 `prisma/postgresql.schema.prisma` 查阅。
 
 ### Module Directory Convention
 

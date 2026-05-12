@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PostgresqlPrismaoService } from '../../../infra/prisma/postgresql.prismao.service';
-import { MysqlPrismaoService } from '../../../infra/prisma/mysql.prismao.service';
 import { DctsCalculateService } from '../core/dcts-calculate.service';
 import { R } from '../../../common/R';
 import {
@@ -14,7 +13,6 @@ import { final } from '../../../util/base';
 export class StatisticsService {
   constructor(
     private readonly pgsqlPrismao: PostgresqlPrismaoService,
-    private readonly mysqlPrismao: MysqlPrismaoService,
     private readonly dctsCalculateService: DctsCalculateService,
   ) {}
 
@@ -66,7 +64,7 @@ export class StatisticsService {
   async overview(): Promise<R> {
     const [totalVehiclesResult, totalGroupsResult, activeVehiclesResult] =
       await Promise.all([
-        this.mysqlPrismao.$queryRawUnsafe<{ total: number }[]>(
+        this.pgsqlPrismao.$queryRawUnsafe<{ total: number }[]>(
           `SELECT COUNT(*) AS "total" FROM vehicle_info WHERE deleted = '${final.N}'`,
         ),
         this.pgsqlPrismao.$queryRawUnsafe<{ total: number }[]>(
