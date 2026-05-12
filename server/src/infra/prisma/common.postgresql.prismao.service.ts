@@ -18,6 +18,13 @@ export class CommonPostgresqlPrismaoService {
   }
 
   /**
+   * Escape a string value for safe SQL LIKE usage.
+   */
+  private escapeLike(str: string): string {
+    return str.replace(/\\/g, '\\\\').replace(/'/g, "''").replace(/%/g, '\\%').replace(/_/g, '\\_');
+  }
+
+  /**
    * 生成sql
    * @param dto
    * - 查询时：type、tblName必填
@@ -98,7 +105,7 @@ export class CommonPostgresqlPrismaoService {
             }
             if (baseUtils.typeOf(datum) === 'object') {
             } else {
-              sql += ` and ${baseUtils.toSnakeCase(key)} like '%${datum}%' `
+              sql += ` and ${baseUtils.toSnakeCase(key)} like '%${this.escapeLike(datum)}%' `
             }
           }
         }
