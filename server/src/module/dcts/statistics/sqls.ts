@@ -106,8 +106,8 @@ export function activeAircraftSql(): string {
   return `
     SELECT DISTINCT ON (atp.aircraft_id)
       la.id AS "aircraftId",
-      la.name AS "name",
-      la.model AS "model",
+      la.aircraft_name AS "name",
+      la.type AS "model",
       ST_X(atp.point) AS "lastLon",
       ST_Y(atp.point) AS "lastLat",
       atp.create_time AS "lastSeen"
@@ -131,7 +131,7 @@ export function aircraftTrajectorySql(aircraftName: string, startTime: number, e
       atp.create_time AS "createTime"
     FROM aircraft_track_point atp
     JOIN low_altitude_aircraft la ON la.id = atp.aircraft_id
-    WHERE la.name = '${aircraftName.replace(/'/g, "''")}'
+    WHERE la.aircraft_name = '${aircraftName.replace(/'/g, "''")}'
       AND atp.create_time BETWEEN '${startISO}'::timestamp AND '${endISO}'::timestamp
       AND atp.deleted = '${final.N}'
     ORDER BY atp.create_time ASC
