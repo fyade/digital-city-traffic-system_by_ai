@@ -44,3 +44,10 @@ export function congestionApi(data: CongestionDto) {
     data,
   });
 }
+
+export function activeAircraftApi() {
+  return request<ActiveAircraftVo[]>({
+    url: '/dcts/statistics/active-aircraft',
+    method: 'GET',
+  });
+}

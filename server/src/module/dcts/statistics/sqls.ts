@@ -102,6 +102,22 @@ export function congestionSql(
   `;
 }
 
+export function activeAircraftSql(): string {
+  return `
+    SELECT DISTINCT ON (atp.aircraft_id)
+      la.id AS "aircraftId",
+      la.name AS "name",
+      la.model AS "model",
+      ST_X(atp.point) AS "lastLon",
+      ST_Y(atp.point) AS "lastLat",
+      atp.create_time AS "lastSeen"
+    FROM aircraft_track_point atp
+    JOIN low_altitude_aircraft la ON la.id = atp.aircraft_id AND la.deleted = '${final.N}'
+    WHERE atp.deleted = '${final.N}'
+    ORDER BY atp.aircraft_id, atp.create_time DESC
+  `;
+}
+
 export function activeVehiclesLast5MinSql(): string {
   return `
     SELECT COUNT(DISTINCT vehicle_id)::int AS "activeCount"

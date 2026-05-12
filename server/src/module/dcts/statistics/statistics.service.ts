@@ -7,7 +7,7 @@ import {
   SignalLightStatusDistributionDto,
   VehicleFlowStatisticsDto,
 } from './dto';
-import { activeVehiclesLast5MinSql, activeVehiclesSql, congestionSql, vehicleFlowSql } from './sqls';
+import { activeAircraftSql, activeVehiclesLast5MinSql, activeVehiclesSql, congestionSql, vehicleFlowSql } from './sqls';
 import { final } from '../../../util/base';
 
 @Injectable()
@@ -107,6 +107,20 @@ export class StatisticsService {
       vehicleId: r.vehicleId,
       plateNumber: r.plateNumber,
       vehicleType: r.vehicleType,
+      lastLon: Number(r.lastLon),
+      lastLat: Number(r.lastLat),
+      lastSeen: r.lastSeen,
+    })));
+  }
+
+  async activeAircraft(): Promise<R> {
+    const rows = await this.pgsqlPrismao.$queryRawUnsafe<
+      { aircraftId: number; name: string; model: string; lastLon: number; lastLat: number; lastSeen: string }[]
+    >(activeAircraftSql());
+    return R.ok(rows.map(r => ({
+      aircraftId: r.aircraftId,
+      name: r.name,
+      model: r.model,
       lastLon: Number(r.lastLon),
       lastLat: Number(r.lastLat),
       lastSeen: r.lastSeen,

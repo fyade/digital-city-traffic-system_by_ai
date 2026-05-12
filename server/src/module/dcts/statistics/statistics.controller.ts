@@ -68,4 +68,14 @@ export class StatisticsController {
   async congestion(@Body() dto: CongestionDto): Promise<R> {
     return this.statisticsService.congestion(dto);
   }
+
+  @Get('/active-aircraft')
+  @ApiOperation({ summary: '活跃航空器实时列表' })
+  @Authorize({
+    permission: 'dcts:statistics:activeAircraft',
+    label: '活跃航空器实时列表',
+  })
+  async activeAircraft(): Promise<R> {
+    return this.statisticsService.activeAircraft();
+  }
 }

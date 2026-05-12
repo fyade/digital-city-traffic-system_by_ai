@@ -64,3 +64,12 @@ export class CongestionCellVo {
   vehicleCount!: number;
   level!: 'low' | 'medium' | 'high';
 }
+
+export class ActiveAircraftVo {
+  aircraftId!: number;
+  name!: string;
+  model!: string;
+  lastLon!: number;
+  lastLat!: number;
+  lastSeen!: string;
+}

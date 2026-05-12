@@ -3,8 +3,8 @@ import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { NButton, NCard, NDatePicker, NGrid, NGridItem, NIcon, NInput, NSpace, NStatistic, NTable } from 'naive-ui';
 import { Close } from '@vicons/ionicons5';
 import * as echarts from 'echarts';
-import { activeVehiclesApi, congestionApi, signalLightStatusApi, trafficOverviewApi, vehicleFlowStatisticsApi } from '@/api/module/dcts/statistics.ts';
-import type { ActiveVehicleVo, CongestionCellVo, SignalLightStatusDistributionVo, TrafficOverviewVo, VehicleFlowVo } from '@/type/module/dcts/statistics.ts';
+import { activeAircraftApi, activeVehiclesApi, congestionApi, signalLightStatusApi, trafficOverviewApi, vehicleFlowStatisticsApi } from '@/api/module/dcts/statistics.ts';
+import type { ActiveAircraftVo, ActiveVehicleVo, CongestionCellVo, SignalLightStatusDistributionVo, TrafficOverviewVo, VehicleFlowVo } from '@/type/module/dcts/statistics.ts';
 import { gotoDashboardHome } from '@/views/dashboard/utils/base.ts';
 import { signalLightGroupInfoApi } from '@/api/module/dcts/signalLight/signalLightGroupInfo.ts';
 import { queryVehicleTrajectoryApi } from '@/api/module/dcts/spatialData.ts';
@@ -30,6 +30,7 @@ const signalLightChartRef = ref<HTMLDivElement>();
 let signalLightChart: echarts.ECharts | null = null;
 
 const activeVehicles = ref<ActiveVehicleVo[]>([]);
+const activeAircraft = ref<ActiveAircraftVo[]>([]);
 const congestionCells = ref<CongestionCellVo[]>([]);
 const congestionMax = ref(0);
 const trajectoryPlate = ref('');
@@ -100,6 +101,7 @@ async function loadAllData() {
     } catch { /* ignore */ }
 
     try { activeVehicles.value = await activeVehiclesApi(); } catch { /* ignore */ }
+    try { activeAircraft.value = await activeAircraftApi(); } catch { /* ignore */ }
 
     try {
       const cells = await congestionApi({ minLon: 116.0, maxLon: 116.8, minLat: 39.6, maxLat: 40.2, cellsPerSide: 8 });
@@ -267,6 +269,31 @@ onBeforeUnmount(() => {
           </tr>
           <tr v-if="activeVehicles.length === 0">
             <td colspan="4" style="text-align:center;color:#999">暂无活跃车辆数据</td>
+          </tr>
+        </tbody>
+      </n-table>
+    </n-card>
+
+    <!-- 活跃航空器列表 -->
+    <n-card title="活跃航空器实时列表" class="chart-card">
+      <n-table :single-line="false" size="small">
+        <thead>
+          <tr>
+            <th>名称</th>
+            <th>型号</th>
+            <th>最后位置(经度,纬度)</th>
+            <th>最后活跃时间</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="a in activeAircraft" :key="a.aircraftId">
+            <td>{{ a.name }}</td>
+            <td>{{ a.model }}</td>
+            <td>{{ a.lastLon.toFixed(6) }}, {{ a.lastLat.toFixed(6) }}</td>
+            <td>{{ new Date(a.lastSeen).toLocaleString() }}</td>
+          </tr>
+          <tr v-if="activeAircraft.length === 0">
+            <td colspan="4" style="text-align:center;color:#999">暂无活跃航空器数据</td>
           </tr>
         </tbody>
       </n-table>
