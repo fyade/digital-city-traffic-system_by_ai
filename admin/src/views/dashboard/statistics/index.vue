@@ -131,6 +131,22 @@ function handleResize() {
   signalLightChart?.resize();
 }
 
+function exportActiveVehiclesCSV() {
+  if (activeVehicles.value.length === 0) return;
+  const header = '车牌号,车辆类型,最后经度,最后纬度,最后活跃时间';
+  const rows = activeVehicles.value.map(v =>
+    `${v.plateNumber},${v.vehicleType},${v.lastLon.toFixed(6)},${v.lastLat.toFixed(6)},${new Date(v.lastSeen).toLocaleString()}`,
+  );
+  const csv = '﻿' + header + '\n' + rows.join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `活跃车辆_${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
   vehicleFlowChart?.dispose();
@@ -189,6 +205,9 @@ onBeforeUnmount(() => {
 
     <!-- 活跃车辆列表 -->
     <n-card title="活跃车辆实时列表" class="chart-card">
+      <template #header-extra>
+        <n-button size="small" @click="exportActiveVehiclesCSV" :disabled="activeVehicles.length === 0">导出CSV</n-button>
+      </template>
       <n-table :single-line="false" size="small">
         <thead>
           <tr>
