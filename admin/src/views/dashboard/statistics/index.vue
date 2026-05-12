@@ -106,8 +106,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="statistics-container">
-    <h2 class="page-title">交通流量统计</h2>
+  <div class="statistics-overlay">
+    <div class="statistics-container">
+      <h2 class="page-title">交通流量统计</h2>
 
     <!-- 概览卡片 -->
     <n-grid :cols="3" :x-gap="16" :y-gap="16" class="overview-section">
@@ -127,14 +128,26 @@ onBeforeUnmount(() => {
     <n-card title="信号灯状态分布" class="chart-card">
       <div ref="signalLightChartRef" class="chart-box"></div>
     </n-card>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.statistics-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+  background: var(--n-color, #fff);
+  overflow-y: auto;
+}
+
 .statistics-container {
   padding: 16px;
-  overflow-y: auto;
-  height: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .page-title {
